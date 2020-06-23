@@ -21,6 +21,8 @@ let
 
       ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/wallpaper.jpg
 
+      systemctl restart --user polybar
+
       i3-msg workspace number 1
     '';
   };
