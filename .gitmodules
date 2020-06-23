@@ -1,0 +1,3 @@
+[submodule "nix-home/pkgs/comma"]
+	path = nix-home/pkgs/comma
+	url = https://github.com/Shopify/comma

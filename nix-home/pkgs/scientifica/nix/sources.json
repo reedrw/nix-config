@@ -1,0 +1,50 @@
+{
+    "bitsnpicas": {
+        "branch": "master",
+        "description": "Bits'N'Picas - Bitmap & Emoji Font Creation & Conversion Tools",
+        "homepage": "",
+        "owner": "kreativekorp",
+        "repo": "bitsnpicas",
+        "rev": "9fbe3016f12ae11b9bb56c02316dbf895007503b",
+        "sha256": "0j0mggid2v0m5f5bpyb9f0hn47md7mvjigipv0y5d1gvwkciasfc",
+        "type": "tarball",
+        "url": "https://github.com/kreativekorp/bitsnpicas/archive/9fbe3016f12ae11b9bb56c02316dbf895007503b.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "f73bf8d584148677b01859677a63191c31911eae",
+        "sha256": "0jlmrx633jvqrqlyhlzpvdrnim128gc81q5psz2lpp2af8p8q9qs",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/f73bf8d584148677b01859677a63191c31911eae.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "nixos-19.09",
+        "description": "A read-only mirror of NixOS/nixpkgs tracking the released channels. Send issues and PRs to",
+        "homepage": "https://github.com/NixOS/nixpkgs",
+        "owner": "NixOS",
+        "repo": "nixpkgs-channels",
+        "rev": "8260cd5bc65fad88ad8881b32c990e5659cc417a",
+        "sha256": "0lxpjly889jksyf944nm25f0syqdxy2ya3p7cdzz4wfqbr76blln",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/8260cd5bc65fad88ad8881b32c990e5659cc417a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "scientifica": {
+        "branch": "master",
+        "description": "tall, condensed, bitmap font for geeks.",
+        "homepage": "",
+        "owner": "NerdyPepper",
+        "repo": "scientifica",
+        "rev": "bb4cfa5af8710602e4965cb1f7297a7792217a41",
+        "sha256": "103x7pi5kysq75mw5jfjlrqxb2vi676b013da5grspyinrcia7j0",
+        "type": "tarball",
+        "url": "https://github.com/NerdyPepper/scientifica/archive/bb4cfa5af8710602e4965cb1f7297a7792217a41.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
