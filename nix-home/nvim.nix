@@ -30,6 +30,7 @@ in
     vimdiffAlias = true;
     plugins = with pkgs.vimPlugins; [
       base16-vim
+      gitgutter
       nerdtree
       suda-vim
       tabular
@@ -93,6 +94,8 @@ in
       call timer_start(100, function('s:ModeCheck'), {'repeat': -1})
 
       set hidden
+      set ttimeoutlen=50
+      set updatetime=40
       set mouse=a
       set noshowmode
       set nohlsearch
