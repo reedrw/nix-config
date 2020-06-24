@@ -20,14 +20,6 @@ let
     };
   };
 
-  zsh-sudo = {
-    name = "zsh-sudo";
-    src = builtins.fetchTarball {
-      url = sources.zsh-sudo.url;
-      sha256 = sources.zsh-sudo.sha256;
-    };
-  };
-
   ohmyzsh = pkgs.fetchFromGitHub {
     owner = sources.ohmyzsh.owner;
     repo = sources.ohmyzsh.repo;
@@ -47,7 +39,6 @@ in
     plugins = [
       fzf-tab
       zsh-syntax-highlighting
-      zsh-sudo
     ];
     autocd = true;
     initExtra = ''
@@ -61,6 +52,7 @@ in
       EOF
 
       source "${ohmyzsh}/lib/git.zsh"
+      source "${ohmyzsh}/plugins/sudo/sudo.plugin.zsh"
 
       colors
       setopt promptsubst

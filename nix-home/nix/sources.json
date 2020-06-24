@@ -29,10 +29,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "b706a919172955e16a1ab97f36a95b9ee4d9f1dc",
-        "sha256": "01mf36ndzh657x8kx0fpq66zq7zf6bpiv2pg5zs7z0lglkm0x9xx",
+        "rev": "cea89f54391c810198a7ace05f1063dd7e596bb7",
+        "sha256": "091ws4q8rgd9gzim9x8v7rgx99lw1d8kym4r1r2jy7fdxfxh6z5k",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/b706a919172955e16a1ab97f36a95b9ee4d9f1dc.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/cea89f54391c810198a7ace05f1063dd7e596bb7.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
@@ -81,18 +81,6 @@
         "sha256": "1j4fg0xhnwk0hf89djv0l2gzrj5dna1a9g8vjdxgdq0pilz5hqnj",
         "type": "tarball",
         "url": "https://github.com/sheerun/vim-polyglot/archive/8b6c06e7239eb46d5b5096fd7fe9507aca88b091.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "zsh-sudo": {
-        "branch": "master",
-        "description": "Extracted \"sudo\" plugin from oh-my-zsh",
-        "homepage": null,
-        "owner": "hcgraf",
-        "repo": "zsh-sudo",
-        "rev": "d8084def6bb1bde2482e7aa636743f40c69d9b32",
-        "sha256": "1dpm51w3wjxil8sxqw4qxim5kmf6afmkwz1yfhldpdlqm7rfwpi3",
-        "type": "tarball",
-        "url": "https://github.com/hcgraf/zsh-sudo/archive/d8084def6bb1bde2482e7aa636743f40c69d9b32.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-syntax-highlighting": {
