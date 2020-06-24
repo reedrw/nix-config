@@ -51,6 +51,15 @@ in
         up-line-or-beginning-search
       EOF
 
+      while read -r i; do
+        setopt "$i"
+      done << EOF
+        correct
+        correctall
+        interactivecomments
+        histverify
+      EOF
+
       source "${ohmyzsh}/lib/git.zsh"
       source "${ohmyzsh}/plugins/sudo/sudo.plugin.zsh"
 
@@ -63,6 +72,8 @@ in
       ZSH_THEME_GIT_PROMPT_SUFFIX=" %{$reset_color%}"
       ZSH_THEME_GIT_PROMPT_DIRTY=" *"
       ZSH_THEME_GIT_PROMPT_CLEAN=""
+
+      SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 
       #  Check if current shell is a ranger subshell
       if test "$RANGER_LEVEL"; then
