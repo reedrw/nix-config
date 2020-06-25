@@ -22,6 +22,7 @@ in
     ./nix-home/nvim.nix
     ./nix-home/picom.nix
     ./nix-home/polybar.nix
+    ./nix-home/ranger.nix
     ./nix-home/rofi.nix
     ./nix-home/urxvt.nix
     ./nix-home/xsession.nix
