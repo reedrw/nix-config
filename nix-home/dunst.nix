@@ -10,7 +10,7 @@
         shrink = "yes";
         padding = 16;
         horizontal_padding = 16;
-        frame_width = 2;
+        frame_width = 0;
         frame_color = "${base00-hex}";
         separator_color = "frame";
         font = "scientifica 8";
