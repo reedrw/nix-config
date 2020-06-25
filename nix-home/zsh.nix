@@ -147,7 +147,7 @@ in
       ln   = "ln -v";
       mv   = "mv -v";
       rm   = "rm -v";
-      ix   = "curl -F 'f:1 = <-' ix.io";
+      ix   = "curl -F 'f:1=<-' ix.io";
     };
   };
 }
