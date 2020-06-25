@@ -49,6 +49,7 @@ in
           "Print" = "exec --no-startup-id flameshot gui";
           "${mod}+Return" = "exec --no-startup-id ${term}";
           "${mod}+d" = "focus child";
+          "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
           "${sup}+Right" = "resize grow width 5 px or 5 ppt";
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";

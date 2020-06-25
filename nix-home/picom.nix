@@ -40,7 +40,7 @@ in
       "_GTK_FRAME_EXTENTS@:c"
     ];
     extraOptions = ''
-      corner-radius = 5;
+      corner-radius = 7;
       shadow-radius = 10;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"

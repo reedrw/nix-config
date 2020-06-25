@@ -97,7 +97,7 @@ in
         ${pkgs.fzf}/bin/fzf
         --ansi   # Enable ANSI color support, necessary for showing groups
         --expect='$continuous_trigger' # For continuous completion
-        --color=dark
+        --color=16
         --nth=2,3 --delimiter='\x00'  # Don't search prefix
         --layout=reverse --height=''\'''${FZF_TMUX_HEIGHT:=75%}'
         --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
@@ -142,7 +142,7 @@ in
       ":q" = "exit";
       ls   = "${pkgs.exa}/bin/exa -lh --git";
       tree = "${pkgs.exa}/bin/exa --tree";
-      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
+      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never -p";
       cp   = "cp -v";
       ln   = "ln -v";
       mv   = "mv -v";

@@ -60,6 +60,8 @@ in
     # fonts
     artwiz-lemon
     scientifica
+    twemoji-color-font
+    noto-fonts
 
   ];
 
