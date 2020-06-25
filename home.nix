@@ -52,11 +52,15 @@ in
 
 
   home.packages = with pkgs; [
-    artwiz-lemon
+
+    # utilities
     c
     comma
-    ranger
+
+    # fonts
+    artwiz-lemon
     scientifica
+
   ];
 
   services = {
