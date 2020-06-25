@@ -24,6 +24,8 @@ let
       systemctl restart --user polybar
 
       i3-msg workspace number 1
+
+      pidof urxvtd || urxvtd -q -o -f
     '';
   };
 in
