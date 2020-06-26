@@ -96,6 +96,8 @@ in
       set hidden
       set ttimeoutlen=50
       set updatetime=40
+      set tabstop=4
+      set autoindent
       set mouse=a
       set noshowmode
       set nohlsearch

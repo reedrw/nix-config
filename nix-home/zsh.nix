@@ -142,7 +142,7 @@ in
       ":q" = "exit";
       ls   = "${pkgs.exa}/bin/exa -lh --git";
       tree = "${pkgs.exa}/bin/exa --tree";
-      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never -p";
+      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
       cp   = "cp -v";
       ln   = "ln -v";
       mv   = "mv -v";
