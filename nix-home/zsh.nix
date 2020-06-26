@@ -146,7 +146,7 @@ in
       ls   = "${pkgs.exa}/bin/exa -lh --git";
       mv   = "mv -v";
       rm   = "rm -v";
-      tree = "${pkgs.exa}/bin/exa --tree";
+      tree = "${pkgs.exa}/bin/exa -lh --git --tree";
       x    = "exit";
     };
   };
