@@ -137,16 +137,18 @@ in
       source ${config.lib.base16.base16template "shell"}
     '';
     shellAliases = {
-      x    = "exit";
       ":q" = "exit";
-      ls   = "${pkgs.exa}/bin/exa -lh --git";
-      tree = "${pkgs.exa}/bin/exa --tree";
-      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
+      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never -p";
       cp   = "cp -v";
+      df   = "${pkgs.pydf}/bin/pydf";
+      ix   = "curl -F 'f:1=<-' ix.io";
       ln   = "ln -v";
+      ls   = "${pkgs.exa}/bin/exa -lh --git";
       mv   = "mv -v";
       rm   = "rm -v";
-      ix   = "curl -F 'f:1=<-' ix.io";
+      tree = "${pkgs.exa}/bin/exa --tree";
+      x    = "exit";
     };
   };
 }
+

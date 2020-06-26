@@ -34,3 +34,4 @@ stdenv.mkDerivation rec {
       --prefix PATH : ${xclip.out}/bin
   '';
 }
+

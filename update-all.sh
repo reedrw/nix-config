@@ -6,3 +6,4 @@ find . -type f -name "update-sources.sh" | while read -r updatescript; do
   ./update-sources.sh
   popd || exit
 done
+

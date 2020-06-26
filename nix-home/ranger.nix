@@ -12,7 +12,9 @@
 
     ".config/ranger/rifle.conf".source = builtins.toFile "rifle.conf" ''
         ext nix = ''${VISUAL:-$EDITOR} -- "$@"
+        ext sh  = ''${VISUAL:-$EDITOR} -- "$@"
       '';
   };
 
 }
+
