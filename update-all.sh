@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p bash
 
 find . -type f -name "update-sources.sh" | while read -r updatescript; do
   pushd "$(dirname -- "$updatescript")" || exit
-  sh ./update-sources.sh
+  ./update-sources.sh
   popd || exit
 done

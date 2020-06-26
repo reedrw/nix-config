@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p niv
 
-nix run nixpkgs.niv -c niv update
+niv update
