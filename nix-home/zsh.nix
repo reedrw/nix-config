@@ -77,7 +77,7 @@ in
       SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 
       #  Check if current shell is a ranger subshell
-      if test "$RANGER_LEVEL"; then
+      if test "$RANGER_LEVEL"&& ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
         alias ranger="exit"
         export PROMPT="%{$bg[red]$fg[black]%} RANGER %{$reset_color%} $PROMPT"
       fi

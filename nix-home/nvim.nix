@@ -25,6 +25,14 @@ in
 
   programs.neovim = {
     enable = true;
+    package = pkgs.neovim-unwrapped.overrideAttrs ( oldAttrs: rec {
+      src = pkgs.fetchFromGitHub {
+        owner = sources.neovim.owner;
+        repo = sources.neovim.repo;
+        rev = sources.neovim.rev;
+        sha256 = sources.neovim.sha256;
+      };
+    });
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
@@ -51,9 +59,6 @@ in
       let g:airline#extensions#tabline#formatter = 'unique_tail'
       let g:airline#extensions#tabline#show_tabs = 0
 
-      let g:suda_smart_edit = 1
-      let g:suda#prefix = 'sudo://'
-
       let g:airline_mode_map = {
         \ '__'     : ' - ',
         \ 'c'      : ' C ',
@@ -73,6 +78,9 @@ in
         \ 'V'      : 'V-L',
         \ ''     : 'V-B',
       \}
+
+      let g:suda_smart_edit = 1
+      let g:suda#prefix = 'sudo://'
 
       let base16colorspace=256
       colorscheme base16-default-dark
@@ -96,8 +104,10 @@ in
       set hidden
       set ttimeoutlen=50
       set updatetime=40
-      set tabstop=4
+      set tabstop=2
+      set expandtab
       set autoindent
+      set shiftwidth=2
       set mouse=a
       set noshowmode
       set nohlsearch

@@ -23,6 +23,18 @@
         "url": "https://github.com/Aloxaf/fzf-tab/archive/d92299baafdf197c93a88e54f9bbc1c8bb31d427.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "neovim": {
+        "branch": "master",
+        "description": "Vim-fork focused on extensibility and usability",
+        "homepage": "https://neovim.io",
+        "owner": "neovim",
+        "repo": "neovim",
+        "rev": "48ac77a14c65c18f1f4cd4ac8e657c645e9ca101",
+        "sha256": "1dfm300zzhc7zpkxaf13pgm03k48xn07xapjs0n1ccic6y3bfqx7",
+        "type": "tarball",
+        "url": "https://github.com/neovim/neovim/archive/48ac77a14c65c18f1f4cd4ac8e657c645e9ca101.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "ohmyzsh": {
         "branch": "master",
         "description": "🙃 A delightful community-driven (with 1500+ contributors) framework for managing your zsh configuration. Includes 200+ optional plugins (rails, git, OSX, hub, capistrano, brew, ant, php, python, etc), over 140 themes to spice up your morning, and an auto-update tool so that makes it easy to keep up with the latest updates from the community.",
