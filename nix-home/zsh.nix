@@ -127,6 +127,8 @@ in
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
 
+      bindkey -e
+
       bindkey '^[[A' up-line-or-beginning-search
       bindkey '^[[B' down-line-or-beginning-search
       bindkey '^[[H' beginning-of-line
