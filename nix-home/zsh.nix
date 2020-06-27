@@ -134,6 +134,18 @@ in
       bindkey '^[[8~' end-of-line
 
       source ${config.lib.base16.base16template "shell"}
+
+      git(){
+        case "$1" in
+          clone)
+            command git clone --recurse-submodules "''${@:2}"
+          ;;
+          *)
+            command git "$@"
+          ;;
+        esac
+      }
+
     '';
     shellAliases = {
       ":q" = "exit";

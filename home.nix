@@ -56,12 +56,14 @@ in
     # utilities
     c
     comma
+    git
 
     # fonts
     artwiz-lemon
+    dejavu_fonts
+    noto-fonts
     scientifica
     twemoji-color-font
-    noto-fonts
 
   ];
 
