@@ -41,6 +41,7 @@ in
       zsh-syntax-highlighting
     ];
     autocd = true;
+    defaultKeymap = "emacs";
     initExtra = ''
       while read -r i; do
         autoload -Uz "$i"

@@ -16,6 +16,7 @@ let
 
       touchpad="$(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
 
+      xset r rate 250 50
       xrdb -load ~/.Xresources
       xinput --disable $touchpad
 
