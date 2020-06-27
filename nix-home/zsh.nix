@@ -128,14 +128,10 @@ in
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
 
-      bindkey -e
-
-      bindkey '^[[A' up-line-or-beginning-search
-      bindkey '^[[B' down-line-or-beginning-search
-      bindkey '^[[H' beginning-of-line
-      bindkey '^[[E'  end-of-line
-      bindkey '^[[1;5C' forward-word
-      bindkey '^[[1;5D' backward-word
+      bindkey '^[[A'  up-line-or-beginning-search
+      bindkey '^[[B'  down-line-or-beginning-search
+      bindkey '^[[7~' beginning-of-line
+      bindkey '^[[8~' end-of-line
 
       source ${config.lib.base16.base16template "shell"}
     '';
