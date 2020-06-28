@@ -14,18 +14,20 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
   (
     cd "$(dirname -- "$updatescript")" || exit
     (
-      while :; do
-        for (( i=0; i<${#chars}; i++ )); do
-          sleep 0.075
-          echo -en "[${chars:$i:1}]" "$white Running $bold$green$(realpath --relative-to="$dir" "$updatescript")$reset..." "\r"
-        done
-      done &
-      trap 'kill -9 $!' $(seq 0 15)
 
       TEMP=$(mktemp)
-      $updatescript > "$TEMP"
+      $updatescript > "$TEMP" &
+
+      while [[ -d /proc/$! ]]; do
+        for (( i=0; i<${#chars}; i++ )); do
+          sleep 0.075
+          echo -en "[$green${chars:$i:1}$reset]$white Running $bold$green$(realpath --relative-to="$dir" "$updatescript")$reset..." "\r"
+        done
+      done
+
       echo -e "\n\n$(<"$TEMP")\n"
       rm "$TEMP"
     )
   )
 done
+

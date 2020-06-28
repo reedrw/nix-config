@@ -23,6 +23,18 @@
         "url": "https://github.com/Aloxaf/fzf-tab/archive/d92299baafdf197c93a88e54f9bbc1c8bb31d427.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "home-manager": {
+        "branch": "master",
+        "description": "Manage a user environment using Nix",
+        "homepage": "https://rycee.gitlab.io/home-manager/",
+        "owner": "rycee",
+        "repo": "home-manager",
+        "rev": "600f39f966459e571c881f0e4f4af16b4eb16329",
+        "sha256": "1nksmqnjq05j96yrhlm3dbv6gnpp44a0di75bx1faq7avc2qkad4",
+        "type": "tarball",
+        "url": "https://github.com/rycee/home-manager/archive/600f39f966459e571c881f0e4f4af16b4eb16329.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "neovim": {
         "branch": "master",
         "description": "Vim-fork focused on extensibility and usability",
