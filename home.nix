@@ -31,9 +31,6 @@ in
 
   nixpkgs.overlays = [ (import ./nix-home/overlay.nix) ];
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
-
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home = {
@@ -52,6 +49,9 @@ in
 
 
   home.packages = with pkgs; [
+
+    # home-manager
+    (import sources.home-manager {inherit pkgs;}).home-manager
 
     # utilities
     c
