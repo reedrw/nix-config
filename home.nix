@@ -49,7 +49,6 @@ in
     variant = "${variant}";
   };
 
-
   home.packages = with pkgs; [
 
     # utilities
