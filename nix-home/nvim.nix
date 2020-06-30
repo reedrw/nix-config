@@ -25,14 +25,6 @@ in
 
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim-unwrapped.overrideAttrs ( oldAttrs: rec {
-      src = pkgs.fetchFromGitHub {
-        owner = sources.neovim.owner;
-        repo = sources.neovim.repo;
-        rev = sources.neovim.rev;
-        sha256 = sources.neovim.sha256;
-      };
-    });
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
@@ -46,7 +38,6 @@ in
       vim-airline-themes
       vim-polyglot
     ];
-    # source ${config.lib.base16.base16template "vim"}
     extraConfig = ''
       if !exists('g:airline_symbols')
         let g:airline_symbols = {}
@@ -119,6 +110,7 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
+      source ${config.lib.base16.base16template "vim"}
     '';
   };
 }

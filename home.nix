@@ -57,6 +57,7 @@ in
     c
     comma
     git
+    niv
 
     # fonts
     artwiz-lemon
