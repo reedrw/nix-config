@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "cmvnd",
         "repo": "fonts",
-        "rev": "80c10a036c85a9d49489ebb8daeb5c156a84b7c7",
-        "sha256": "0nm5frgsg1w924a3890fn856jj9f9xv6qyri91riyd8ikmqdirh0",
+        "rev": "ee3232e688537ea57574d5106d9260becc73f285",
+        "sha256": "14v9zjfa2lnqv22gr6hdm9b6jvglazgq8jral5dl90283g7965qg",
         "type": "tarball",
-        "url": "https://github.com/cmvnd/fonts/archive/80c10a036c85a9d49489ebb8daeb5c156a84b7c7.tar.gz",
+        "url": "https://github.com/cmvnd/fonts/archive/ee3232e688537ea57574d5106d9260becc73f285.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

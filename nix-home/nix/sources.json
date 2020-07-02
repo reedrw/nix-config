@@ -41,10 +41,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "ce28ac42c8e9933b1b3ca041bed0a3f1140eada2",
-        "sha256": "0zg5lm9n9q0w63bll44c419vv61swxm5m1ckim0nia0zg1rixzi6",
+        "rev": "62648d71bb05116287206d83181f9daa5a59ba67",
+        "sha256": "0pj73hvjzmp9x1b4b3zi9mlihzb9g04kfz230hmwz3kxpymw879q",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/ce28ac42c8e9933b1b3ca041bed0a3f1140eada2.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/62648d71bb05116287206d83181f9daa5a59ba67.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
@@ -101,10 +101,10 @@
         "homepage": "github.com/zsh-users/zsh-syntax-highlighting",
         "owner": "zsh-users",
         "repo": "zsh-syntax-highlighting",
-        "rev": "91d2eeaf23c47341e8dc7ad66dbf85e38c2674de",
-        "sha256": "1160bbhpd2p6qlw1b5k86z243iv0yhv6x7pf414sr8q4cm59x2h0",
+        "rev": "fb929edc30192407a9298aad64f55ca1b19a464e",
+        "sha256": "0l6130bly44zssq68wa8hyj0liyhr86avqlwg7vhkhcdhmy7h6pj",
         "type": "tarball",
-        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/91d2eeaf23c47341e8dc7ad66dbf85e38c2674de.tar.gz",
+        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/fb929edc30192407a9298aad64f55ca1b19a464e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
