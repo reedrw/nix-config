@@ -55,6 +55,7 @@ in
     c
     comma
     git
+    ix
     niv
 
     # fonts

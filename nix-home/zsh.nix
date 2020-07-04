@@ -56,7 +56,6 @@ in
         setopt "$i"
       done << EOF
         correct
-        correctall
         interactivecomments
         histverify
       EOF
@@ -153,7 +152,6 @@ in
       cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never --plain";
       cp   = "cp -v";
       df   = "${pkgs.pydf}/bin/pydf";
-      ix   = "curl -F 'f:1=<-' ix.io";
       ln   = "ln -v";
       ls   = "${pkgs.exa}/bin/exa -lh --git";
       mv   = "mv -v";
