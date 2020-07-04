@@ -41,8 +41,8 @@ done
 find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
   dir="$(dirname -- "$updatescript")"
   cd "$dir" || exit
-  fn="$(readlink -f ./nix/sources.json)"
-  diff -u --label="$fn" "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')" --label="$fn" <(niv show) >> "/tmp/$shpid.diff"
+  fn="$(realpath --relative-to="$pwd" ./nix/sources.json)"
+  diff -u --label="a/$fn" "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')" --label="b/$fn" <(niv show) >> "/tmp/$shpid.diff"
   rm "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')"
 done
 
