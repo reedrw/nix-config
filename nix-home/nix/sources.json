@@ -29,10 +29,10 @@
         "homepage": "https://rycee.gitlab.io/home-manager/",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "7f7348b47049e8d25fb5b98db1d6215f8f643f0d",
-        "sha256": "1s8j8h42k354xzwlqizbzxlqvsagx7yrxl20qfxgxmx522ajw63p",
+        "rev": "7dc322c1ebe049dde356386ff46809c13bcfbff9",
+        "sha256": "1rvckhczi3f285fl0f7bwq8icn08pizqn3408fg0gvv89cb1vqi8",
         "type": "tarball",
-        "url": "https://github.com/rycee/home-manager/archive/7f7348b47049e8d25fb5b98db1d6215f8f643f0d.tar.gz",
+        "url": "https://github.com/rycee/home-manager/archive/7dc322c1ebe049dde356386ff46809c13bcfbff9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "ohmyzsh": {
@@ -41,10 +41,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "62648d71bb05116287206d83181f9daa5a59ba67",
-        "sha256": "0pj73hvjzmp9x1b4b3zi9mlihzb9g04kfz230hmwz3kxpymw879q",
+        "rev": "a15f0f0e9ff17c1ca5c6d694d732e72c7c03a62b",
+        "sha256": "1byyhkd17sdrm5pz1k31xy1w8r6y85dsmhwqzy5kqzlsxbinjwxr",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/62648d71bb05116287206d83181f9daa5a59ba67.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/a15f0f0e9ff17c1ca5c6d694d732e72c7c03a62b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
