@@ -46,7 +46,7 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
   rm "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')"
 done
 
-echo -en "$bold$yellow"Updated Sources:"$reset\n"
+echo -en "$bold$yellow"Updated sources:"$reset\n"
 bat --theme=base16 --paging=never -p "/tmp/$shpid.diff"
 rm "/tmp/$shpid.diff"
 echo -en "$norm"
