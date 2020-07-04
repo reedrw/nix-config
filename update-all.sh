@@ -7,15 +7,14 @@ shpid="$$"
 green="$(tput setaf 2)"
 yellow="$(tput setaf 3)"
 white="$(tput setaf 7)"
-bold="$(tput bold)"
 reset="$(tput sgr 0)"
+bold="$(tput bold)"
 hide="$(tput civis)"
 norm="$(tput cnorm)"
 chars="/-\|"
 pwd="$PWD"
 
 echo -en "$hide"
-
 find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
   (
     dir="$(dirname -- "$updatescript")"
@@ -39,7 +38,6 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
   )
 done
 
-
 find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
   dir="$(dirname -- "$updatescript")"
   cd "$dir" || exit
@@ -51,6 +49,5 @@ done
 echo -en "$bold$yellow"Updated Sources:"$reset\n"
 bat --theme=base16 --paging=never -p "/tmp/$shpid.diff"
 rm "/tmp/$shpid.diff"
-
 echo -en "$norm"
 

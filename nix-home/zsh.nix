@@ -66,7 +66,7 @@ in
 
       colors
       setopt promptsubst
-      PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m:%(!.%{$fg[red]%}.%{$fg[green]%}) %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
+      PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m:%{$fg_bold[blue]%} %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
       RPROMPT='%(?..%{$fg[red]%} %? %{$reset_color%})%B %{$reset_color%}%h'
 
       ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[yellow]%} "
