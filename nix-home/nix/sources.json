@@ -35,7 +35,7 @@
         "url": "https://github.com/rycee/home-manager/archive/7dc322c1ebe049dde356386ff46809c13bcfbff9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "ohmyzsh": {
+    "oh-my-zsh": {
         "branch": "master",
         "description": "🙃 A delightful community-driven (with 1500+ contributors) framework for managing your zsh configuration. Includes 200+ optional plugins (rails, git, OSX, hub, capistrano, brew, ant, php, python, etc), over 140 themes to spice up your morning, and an auto-update tool so that makes it easy to keep up with the latest updates from the community.",
         "homepage": "https://ohmyz.sh/",

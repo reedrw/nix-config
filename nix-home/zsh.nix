@@ -20,11 +20,11 @@ let
     };
   };
 
-  ohmyzsh = pkgs.fetchFromGitHub {
-    owner = sources.ohmyzsh.owner;
-    repo = sources.ohmyzsh.repo;
-    rev = sources.ohmyzsh.rev;
-    sha256 = sources.ohmyzsh.sha256;
+  oh-my-zsh = pkgs.fetchFromGitHub {
+    owner = sources.oh-my-zsh.owner;
+    repo = sources.oh-my-zsh.repo;
+    rev = sources.oh-my-zsh.rev;
+    sha256 = sources.oh-my-zsh.sha256;
   };
 
 in
@@ -61,8 +61,8 @@ in
         histverify
       EOF
 
-      source "${ohmyzsh}/lib/git.zsh"
-      source "${ohmyzsh}/plugins/sudo/sudo.plugin.zsh"
+      source "${oh-my-zsh}/lib/git.zsh"
+      source "${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh"
 
       colors
       setopt promptsubst
