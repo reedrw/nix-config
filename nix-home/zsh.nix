@@ -66,10 +66,10 @@ in
 
       colors
       setopt promptsubst
-      PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m: %(!.%{$bg[red]$fg[black]%}.%{$bg[green]$fg[black]%}) %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
-      RPROMPT='%(?..%{$bg[red]$fg[black]%} %? %{$reset_color%})%B %{$reset_color%}%h'
+      PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m:%(!.%{$fg[red]%}.%{$fg[green]%}) %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
+      RPROMPT='%(?..%{$fg[red]%} %? %{$reset_color%})%B %{$reset_color%}%h'
 
-      ZSH_THEME_GIT_PROMPT_PREFIX="%{$bg[yellow]$fg[black]%} "
+      ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[yellow]%} "
       ZSH_THEME_GIT_PROMPT_SUFFIX=" %{$reset_color%}"
       ZSH_THEME_GIT_PROMPT_DIRTY=" *"
       ZSH_THEME_GIT_PROMPT_CLEAN=""
@@ -79,7 +79,7 @@ in
       #  Check if current shell is a ranger subshell
       if test "$RANGER_LEVEL"&& ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
         alias ranger="exit"
-        export PROMPT="%{$bg[red]$fg[black]%} RANGER %{$reset_color%} $PROMPT"
+        export PROMPT="%{$fg[red]%}RANGER %{$reset_color%} $PROMPT"
       fi
 
       compinit
