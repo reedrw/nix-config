@@ -7,8 +7,12 @@ green="$(tput setaf 2)"
 white="$(tput setaf 7)"
 bold="$(tput bold)"
 reset="$(tput sgr 0)"
+hide="$(tput civis)"
+norm="$(tput cnorm)"
 chars="/-\|"
 dir=$PWD
+
+echo -en "$hide"
 
 find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
   (
@@ -30,4 +34,6 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
     )
   )
 done
+
+echo -en "$norm"
 
