@@ -25,10 +25,12 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
       TEMP="$(mktemp)"
       $updatescript > "$TEMP" &
 
+      relpath="$(realpath --relative-to="$pwd" "$updatescript")"
+
       while [[ -d /proc/"$!" ]]; do
         for (( i=0; i<${#chars}; i++ )); do
           sleep 0.075
-          echo -en "[$green${chars:$i:1}$reset]$white Running $bold$green$(realpath --relative-to="$pwd" "$updatescript")$reset..." "\r"
+          echo -en "[$green${chars:$i:1}$reset]$white Running $bold$green$relpath$reset..." "\r"
         done
       done
 
