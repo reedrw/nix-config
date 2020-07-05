@@ -18,8 +18,9 @@ echo -en "$hide"
 find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
   (
     dir="$(dirname -- "$updatescript")"
+    md5="$(md5sum <<<"$dir" | awk '{print $1}')"
     cd "$dir" || exit
-    niv show > "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')"
+    niv show > "/tmp/$md5"
     (
 
       TEMP=$(mktemp)
@@ -34,16 +35,12 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
 
       echo -e "\n\n$(<"$TEMP")\n"
       rm "$TEMP"
+
+      fn="$(realpath --relative-to="$pwd" ./nix/sources.json)"
+      diff -u --label="a/$fn" "/tmp/$md5" --label="b/$fn" <(niv show) >> "/tmp/$shpid.diff"
+      rm "/tmp/$md5"
     )
   )
-done
-
-find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r updatescript; do
-  dir="$(dirname -- "$updatescript")"
-  cd "$dir" || exit
-  fn="$(realpath --relative-to="$pwd" ./nix/sources.json)"
-  diff -u --label="a/$fn" "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')" --label="b/$fn" <(niv show) >> "/tmp/$shpid.diff"
-  rm "/tmp/$(md5sum <<<"$dir" | awk '{print $1}')"
 done
 
 echo -en "$bold$yellow"Updated sources:"$reset\n"
