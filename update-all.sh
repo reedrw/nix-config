@@ -22,11 +22,10 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
     cd "$dir" || exit
     niv show > "/tmp/$md5"
     (
-
-      TEMP=$(mktemp)
+      TEMP="$(mktemp)"
       $updatescript > "$TEMP" &
 
-      while [[ -d /proc/$! ]]; do
+      while [[ -d /proc/"$!" ]]; do
         for (( i=0; i<${#chars}; i++ )); do
           sleep 0.075
           echo -en "[$green${chars:$i:1}$reset]$white Running $bold$green$(realpath --relative-to="$pwd" "$updatescript")$reset..." "\r"
