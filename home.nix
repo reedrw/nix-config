@@ -31,24 +31,6 @@ in
 
   nixpkgs.overlays = [ (import ./nix-home/overlay.nix) ];
 
-  programs.home-manager.enable = true;
-
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
-  home = {
-    username = "reed";
-    homeDirectory = "/home/reed";
-    sessionVariables = {
-      EDITOR = "nvim";
-    };
-  };
-
-  themes.base16 = {
-    enable = true;
-    scheme = "${scheme}";
-    variant = "${variant}";
-  };
-
   home.packages = with pkgs; [
 
     # utilities
@@ -66,6 +48,28 @@ in
     twemoji-color-font
 
   ];
+
+  programs = {
+    home-manager = {
+      enable = true;
+    };
+  };
+
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home = {
+    username = "reed";
+    homeDirectory = "/home/reed";
+    sessionVariables = {
+      EDITOR = "nvim";
+    };
+  };
+
+  themes.base16 = {
+    enable = true;
+    scheme = "${scheme}";
+    variant = "${variant}";
+  };
 
   services = {
     flameshot = {
