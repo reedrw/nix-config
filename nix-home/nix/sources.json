@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "sheerun",
         "repo": "vim-polyglot",
-        "rev": "d09a56a494863afd789cba1850e123dfc1dd26cf",
-        "sha256": "02z4aidr8bbcrvfj2c5jgradm6n2c1c9hywb22wn8bwiig8aiqv3",
+        "rev": "9c3c0bc082e0d58d15dc6f24d8a335931417e2f0",
+        "sha256": "0pdfq512qh54zj24iwihr30xb8dxw67ix2yj0sb88qy07phab8k2",
         "type": "tarball",
-        "url": "https://github.com/sheerun/vim-polyglot/archive/d09a56a494863afd789cba1850e123dfc1dd26cf.tar.gz",
+        "url": "https://github.com/sheerun/vim-polyglot/archive/9c3c0bc082e0d58d15dc6f24d8a335931417e2f0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-syntax-highlighting": {
