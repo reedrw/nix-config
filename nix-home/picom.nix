@@ -6,14 +6,16 @@ in
 {
   services.picom = {
     enable = true;
-    package = pkgs.picom.overrideAttrs ( oldAttrs: rec {
-      src = pkgs.fetchFromGitHub {
-        owner = sources.picom.owner;
-        repo = sources.picom.repo;
-        rev = sources.picom.rev;
-        sha256 = sources.picom.sha256;
-      };
-    });
+    package = pkgs.picom.overrideAttrs (
+      oldAttrs: rec {
+        src = pkgs.fetchFromGitHub {
+          owner = sources.picom.owner;
+          repo = sources.picom.repo;
+          rev = sources.picom.rev;
+          sha256 = sources.picom.sha256;
+        };
+      }
+    );
     backend = "glx";
     shadow = true;
     shadowOffsets = [ (-2) (-2) ];
