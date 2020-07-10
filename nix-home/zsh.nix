@@ -149,14 +149,14 @@ in
     shellAliases = {
       ":q" = "exit";
       b    = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
-      cat  = "${pkgs.bat}/bin/bat --theme=base16 --paging=never --plain";
+      cat  = "b --plain";
       cp   = "cp -v";
       df   = "${pkgs.pydf}/bin/pydf";
       ln   = "ln -v";
       ls   = "${pkgs.exa}/bin/exa -lh --git";
       mv   = "mv -v";
       rm   = "rm -v";
-      tree = "${pkgs.exa}/bin/exa -lh --git --tree";
+      tree = "ls --tree";
       x    = "exit";
     };
   };
