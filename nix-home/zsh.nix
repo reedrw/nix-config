@@ -29,135 +29,142 @@ let
 
 in
 {
+  programs = {
 
-  programs.dircolors = {
-    enable = true;
-  };
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
-  programs.zsh = {
-    enable = true;
-    plugins = [
-      fzf-tab
-      zsh-syntax-highlighting
-    ];
-    autocd = true;
-    defaultKeymap = "emacs";
-    initExtra = ''
-      while read -r i; do
-        autoload -Uz "$i"
-      done << EOF
+    dircolors = {
+      enable = true;
+    };
+
+    zsh = {
+      enable = true;
+      plugins = [
+        fzf-tab
+        zsh-syntax-highlighting
+      ];
+      autocd = true;
+      defaultKeymap = "emacs";
+      initExtra = ''
+        while read -r i; do
+          autoload -Uz "$i"
+        done << EOF
+          colors
+          compinit
+          down-line-or-beginning-search
+          up-line-or-beginning-search
+        EOF
+
+        while read -r i; do
+          setopt "$i"
+        done << EOF
+          correct
+          interactivecomments
+          histverify
+        EOF
+
+        source "${oh-my-zsh}/lib/git.zsh"
+        source "${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh"
+
         colors
+        setopt promptsubst
+        PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m:%{$fg_bold[blue]%} %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
+        RPROMPT='%(?..%{$fg[red]%} %? %{$reset_color%})%B %{$reset_color%}%h'
+
+        ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
+        ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
+        ZSH_THEME_GIT_PROMPT_DIRTY=" *"
+        ZSH_THEME_GIT_PROMPT_CLEAN=""
+
+        SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
+
+        #  Check if current shell is a ranger subshell
+        if test "$RANGER_LEVEL"&& ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
+          alias ranger="exit"
+          export PROMPT="%{$fg[red]%}RANGER %{$reset_color%} $PROMPT"
+        fi
+
         compinit
-        down-line-or-beginning-search
-        up-line-or-beginning-search
-      EOF
 
-      while read -r i; do
-        setopt "$i"
-      done << EOF
-        correct
-        interactivecomments
-        histverify
-      EOF
+        local extract="
+        # trim input
+        local in=\''${\''${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
+        # get ctxt for current completion
+        local -A ctxt=(\"\''${(@ps:\2:)CTXT}\")
+        # real path
+        local realpath=\''${ctxt[IPREFIX]}\''${ctxt[hpre]}\$in
+        realpath=\''${(Qe)~realpath}
+        "
 
-      source "${oh-my-zsh}/lib/git.zsh"
-      source "${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh"
+        FZF_TAB_COMMAND=(
+          ${pkgs.fzf}/bin/fzf
+          --ansi   # Enable ANSI color support, necessary for showing groups
+          --expect='$continuous_trigger' # For continuous completion
+          --color=16
+          --nth=2,3 --delimiter='\x00'  # Don't search prefix
+          --layout=reverse --height=''\'''${FZF_TMUX_HEIGHT:=75%}'
+          --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
+          '--query=$query'   # $query will be expanded to query string at runtime.
+          '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+        )
+        zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 
-      colors
-      setopt promptsubst
-      PROMPT='%(!.%B%{$fg[red]%}%n%{$reset_color%}@.%{$fg[green]%}%n%{$reset_color%}@)%m:%{$fg_bold[blue]%} %(!.%d.%~) %{$reset_color%}$(git_prompt_info) %(!.#.$) '
-      RPROMPT='%(?..%{$fg[red]%} %? %{$reset_color%})%B %{$reset_color%}%h'
-
-      ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
-      ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
-      ZSH_THEME_GIT_PROMPT_DIRTY=" *"
-      ZSH_THEME_GIT_PROMPT_CLEAN=""
-
-      SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
-
-      #  Check if current shell is a ranger subshell
-      if test "$RANGER_LEVEL"&& ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
-        alias ranger="exit"
-        export PROMPT="%{$fg[red]%}RANGER %{$reset_color%} $PROMPT"
-      fi
-
-      compinit
-
-      local extract="
-      # trim input
-      local in=\''${\''${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
-      # get ctxt for current completion
-      local -A ctxt=(\"\''${(@ps:\2:)CTXT}\")
-      # real path
-      local realpath=\''${ctxt[IPREFIX]}\''${ctxt[hpre]}\$in
-      realpath=\''${(Qe)~realpath}
-      "
-
-      FZF_TAB_COMMAND=(
-        ${pkgs.fzf}/bin/fzf
-        --ansi   # Enable ANSI color support, necessary for showing groups
-        --expect='$continuous_trigger' # For continuous completion
-        --color=16
-        --nth=2,3 --delimiter='\x00'  # Don't search prefix
-        --layout=reverse --height=''\'''${FZF_TMUX_HEIGHT:=75%}'
-        --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-        '--query=$query'   # $query will be expanded to query string at runtime.
-        '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
-      )
-      zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
-
-      zstyle ':fzf-tab:*' extraopts '--no-sort'
-      zstyle ':completion:*' sort false
-      zstyle ':fzf-tab:*' insert-space true
-      zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
-      zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'${pkgs.exa}/bin/exa -1 --color=always $realpath'
-      zstyle ':fzf-tab:complete:(vi|vim|nvim):*' extra-opts --preview=$extract'[ -d $realpath ] && ${pkgs.exa}/bin/exa -1 --color=always $realpath || ${pkgs.bat}/bin/bat -p --theme=base16 --color=always $realpath'
-      zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
+        zstyle ':fzf-tab:*' extraopts '--no-sort'
+        zstyle ':completion:*' sort false
+        zstyle ':fzf-tab:*' insert-space true
+        zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
+        zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'${pkgs.exa}/bin/exa -1 --color=always $realpath'
+        zstyle ':fzf-tab:complete:(vi|vim|nvim):*' extra-opts --preview=$extract'[ -d $realpath ] && ${pkgs.exa}/bin/exa -1 --color=always $realpath || ${pkgs.bat}/bin/bat -p --theme=base16 --color=always $realpath'
+        zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
 
 
-      zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-      zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
-      zstyle ':completion:*' menu select
-      zstyle ':completion:*' special-dirs true
-      zmodload zsh/complist
+        zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+        zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+        zstyle ':completion:*' menu select
+        zstyle ':completion:*' special-dirs true
+        zmodload zsh/complist
 
-      zle -N up-line-or-beginning-search
-      zle -N down-line-or-beginning-search
+        zle -N up-line-or-beginning-search
+        zle -N down-line-or-beginning-search
 
-      unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
-      unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
+        unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
+        unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
 
-      bindkey '^[[A'  up-line-or-beginning-search
-      bindkey '^[[B'  down-line-or-beginning-search
-      bindkey '^[[7~' beginning-of-line
-      bindkey '^[[8~' end-of-line
+        bindkey '^[[A'  up-line-or-beginning-search
+        bindkey '^[[B'  down-line-or-beginning-search
+        bindkey '^[[7~' beginning-of-line
+        bindkey '^[[8~' end-of-line
 
-      source ${config.lib.base16.base16template "shell"}
+        source ${config.lib.base16.base16template "shell"}
 
-      git(){
-        case "$1" in
-          clone)
-            command git clone --recurse-submodules "''${@:2}"
-          ;;
-          *)
-            command git "$@"
-          ;;
-        esac
-      }
+        git(){
+          case "$1" in
+            clone)
+              command git clone --recurse-submodules "''${@:2}"
+            ;;
+            *)
+              command git "$@"
+            ;;
+          esac
+        }
 
-    '';
-    shellAliases = {
-      ":q" = "exit";
-      b    = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
-      cat  = "b --plain";
-      cp   = "cp -v";
-      df   = "${pkgs.pydf}/bin/pydf";
-      ln   = "ln -v";
-      ls   = "${pkgs.exa}/bin/exa -lh --git";
-      mv   = "mv -v";
-      rm   = "rm -v";
-      tree = "ls --tree";
-      x    = "exit";
+      '';
+      shellAliases = {
+        ":q" = "exit";
+        b    = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
+        cat  = "b --plain";
+        cp   = "cp -v";
+        df   = "${pkgs.pydf}/bin/pydf";
+        ln   = "ln -v";
+        ls   = "${pkgs.exa}/bin/exa -lh --git";
+        mv   = "mv -v";
+        rm   = "rm -v";
+        tree = "ls --tree";
+        x    = "exit";
+      };
     };
   };
 }
