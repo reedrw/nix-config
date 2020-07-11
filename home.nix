@@ -6,6 +6,24 @@ let
   scheme =  "onedark";
   variant = "onedark";
 
+  packages = with pkgs; [
+
+    # utilities
+    c
+    comma
+    git
+    ix
+    niv
+
+    # fonts
+    artwiz-lemon
+    dejavu_fonts
+    noto-fonts
+    scientifica
+    twemoji-color-font
+
+  ];
+
   sources = import ./nix-home/nix/sources.nix;
 
   base16-nix = builtins.fetchTarball {
@@ -31,23 +49,7 @@ in
 
   nixpkgs.overlays = [ (import ./nix-home/overlay.nix) ];
 
-  home.packages = with pkgs; [
-
-    # utilities
-    c
-    comma
-    git
-    ix
-    niv
-
-    # fonts
-    artwiz-lemon
-    dejavu_fonts
-    noto-fonts
-    scientifica
-    twemoji-color-font
-
-  ];
+  home.packages = packages;
 
   programs = {
     home-manager = {

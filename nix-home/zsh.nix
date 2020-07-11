@@ -161,6 +161,7 @@ in
         ln   = "ln -v";
         ls   = "${pkgs.exa}/bin/exa -lh --git";
         mv   = "mv -v";
+        ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         rm   = "rm -v";
         tree = "ls --tree";
         x    = "exit";
