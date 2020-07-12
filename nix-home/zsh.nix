@@ -68,6 +68,7 @@ in
 
         source "${oh-my-zsh}/lib/git.zsh"
         source "${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh"
+        source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
 
         colors
         setopt promptsubst
@@ -82,9 +83,23 @@ in
         SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 
         #  Check if current shell is a ranger subshell
-        if test "$RANGER_LEVEL"&& ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
+        if test "$RANGER_LEVEL" && ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
           alias ranger="exit"
           export PROMPT="%{$fg[red]%}RANGER %{$reset_color%} $PROMPT"
+        fi
+
+        #  nix-shell prompt
+        if [[ $IN_NIX_SHELL != "" ]] || [[ $IN_NIX_RUN != "" ]]; then
+          output=$(echo $ANY_NIX_SHELL_PKGS | xargs)
+            if [[ -n $name ]] && [[ $name != shell ]]; then
+              output+=" "$name
+            fi
+          if [[ -n $output ]]; then
+            output=$(echo $output $additional_pkgs | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
+          else
+            printf "[unknown environment]"
+          fi
+          export PROMPT="%{$fg_bold[green]%}nix-shell:%{$reset_color%} { %{$fg[cyan]%}$output %{$reset_color%}}: %{$fg_bold[blue]%}%(!.%d.%~) %{$reset_color%} %(!.#.$) "
         fi
 
         compinit
