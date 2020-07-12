@@ -7,6 +7,7 @@ in pkgs.mkShell rec {
   
   buildInputs = with pkgs; [
     (import sources.home-manager {inherit pkgs;}).home-manager
+    niv
   ];
 
 }

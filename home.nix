@@ -13,7 +13,6 @@ let
     comma
     git
     ix
-    niv
 
     # fonts
     artwiz-lemon
@@ -75,6 +74,9 @@ in
 
   services = {
     flameshot = {
+      enable = true;
+    };
+    lorri = {
       enable = true;
     };
   };

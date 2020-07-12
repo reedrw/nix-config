@@ -31,6 +31,10 @@ in
 {
   programs = {
 
+    command-not-found = {
+      enable = true;
+    };
+
     direnv = {
       enable = true;
       enableZshIntegration = true;
