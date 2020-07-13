@@ -29,6 +29,9 @@ let
 
 in
 {
+
+  services.lorri.enable = true;
+
   programs = {
 
     command-not-found = {

@@ -76,9 +76,6 @@ in
     flameshot = {
       enable = true;
     };
-    lorri = {
-      enable = true;
-    };
   };
 
   home.stateVersion = "20.09";
