@@ -29,10 +29,10 @@
         "homepage": "https://rycee.gitlab.io/home-manager/",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "5f189acce44dc39ea4055bfd8064adaf90d7fb5a",
-        "sha256": "0ibmvg3k9m9yzh8ln3jlh47nrvgg81iy8gpl112wjimlp6gagxw6",
+        "rev": "e0fb488e57568d338b987992c4832a83a11badaf",
+        "sha256": "076j1cxx20rg7fhbp8518mgm0wvhm2g7h2cqa727jjrvm6gcs6cj",
         "type": "tarball",
-        "url": "https://github.com/rycee/home-manager/archive/5f189acce44dc39ea4055bfd8064adaf90d7fb5a.tar.gz",
+        "url": "https://github.com/rycee/home-manager/archive/e0fb488e57568d338b987992c4832a83a11badaf.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oh-my-zsh": {
@@ -41,10 +41,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "e3131d98aa056145ed34ef19dfe77efff87be21b",
-        "sha256": "18k6mixhhf01bhb0p19di9260qsrkz8frzk1xckx2wb3w9hm96yf",
+        "rev": "ff7618cf744a289a9ba9c332be08ed5304d2f45f",
+        "sha256": "00yvf5rbv2fspv12h0jlda063fv0kj6zaannz0xcqknaj2d8pyqz",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/e3131d98aa056145ed34ef19dfe77efff87be21b.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/ff7618cf744a289a9ba9c332be08ed5304d2f45f.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
@@ -101,10 +101,10 @@
         "homepage": "github.com/zsh-users/zsh-syntax-highlighting",
         "owner": "zsh-users",
         "repo": "zsh-syntax-highlighting",
-        "rev": "fb929edc30192407a9298aad64f55ca1b19a464e",
-        "sha256": "0l6130bly44zssq68wa8hyj0liyhr86avqlwg7vhkhcdhmy7h6pj",
+        "rev": "cdd7f899cb9aae7b5a39729d3b5aab33f89b4f6f",
+        "sha256": "1f7m6pywkgmgsvsdrys4jkpxp0y09hf9z0wgpiva9fbialmha5fq",
         "type": "tarball",
-        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/fb929edc30192407a9298aad64f55ca1b19a464e.tar.gz",
+        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/cdd7f899cb9aae7b5a39729d3b5aab33f89b4f6f.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
