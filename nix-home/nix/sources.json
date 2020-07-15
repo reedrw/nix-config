@@ -29,10 +29,10 @@
         "homepage": "https://rycee.gitlab.io/home-manager/",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "e0fb488e57568d338b987992c4832a83a11badaf",
-        "sha256": "076j1cxx20rg7fhbp8518mgm0wvhm2g7h2cqa727jjrvm6gcs6cj",
+        "rev": "a49ce0e9edcd717ce6e66041aabd656c02903904",
+        "sha256": "1h9rmyg62ksn127fg0k4yzyifjy4ffvanhs18ibvhsfr9biadi0j",
         "type": "tarball",
-        "url": "https://github.com/rycee/home-manager/archive/e0fb488e57568d338b987992c4832a83a11badaf.tar.gz",
+        "url": "https://github.com/rycee/home-manager/archive/a49ce0e9edcd717ce6e66041aabd656c02903904.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oh-my-zsh": {
@@ -101,10 +101,10 @@
         "homepage": "github.com/zsh-users/zsh-syntax-highlighting",
         "owner": "zsh-users",
         "repo": "zsh-syntax-highlighting",
-        "rev": "cdd7f899cb9aae7b5a39729d3b5aab33f89b4f6f",
-        "sha256": "1f7m6pywkgmgsvsdrys4jkpxp0y09hf9z0wgpiva9fbialmha5fq",
+        "rev": "2d60a47cc407117815a1d7b331ef226aa400a344",
+        "sha256": "1pnxr39cayhsvggxihsfa3rqys8rr2pag3ddil01w96kw84z4id2",
         "type": "tarball",
-        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/cdd7f899cb9aae7b5a39729d3b5aab33f89b4f6f.tar.gz",
+        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/2d60a47cc407117815a1d7b331ef226aa400a344.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
