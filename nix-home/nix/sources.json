@@ -41,10 +41,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "ff7618cf744a289a9ba9c332be08ed5304d2f45f",
-        "sha256": "00yvf5rbv2fspv12h0jlda063fv0kj6zaannz0xcqknaj2d8pyqz",
+        "rev": "c99f3c50fa46a93be28be88632889404fff3b958",
+        "sha256": "11b56m8zx3bh2x8wzg87mdsd3y9sj7n2h3jwr0ndrnxwr9ksdiik",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/ff7618cf744a289a9ba9c332be08ed5304d2f45f.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/c99f3c50fa46a93be28be88632889404fff3b958.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
