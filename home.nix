@@ -23,6 +23,10 @@ let
 
   ];
 
+  config = builtins.toFile "config.nix" ''
+    { allowUnfree = true; }
+  '';
+
   sources = import ./nix-home/nix/sources.nix;
 
   base16-nix = builtins.fetchTarball {
@@ -34,7 +38,7 @@ in
 {
 
   imports = [
-    (import "${base16-nix}/base16.nix")
+    "${base16-nix}/base16.nix"
     ./nix-home/dunst.nix
     ./nix-home/nvim.nix
     ./nix-home/picom.nix
@@ -46,7 +50,12 @@ in
     ./nix-home/zsh.nix
   ];
 
-  nixpkgs.overlays = [ (import ./nix-home/overlay.nix) ];
+  nixpkgs = {
+    config = import "${config}";
+    overlays = [ (import ./nix-home/overlay.nix) ];
+  };
+
+  xdg.configFile."nixpkgs/config.nix".source = "${config}";
 
   home.packages = packages;
 
