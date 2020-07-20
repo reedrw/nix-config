@@ -55,7 +55,9 @@ in
     overlays = [ (import ./nix-home/overlay.nix) ];
   };
 
-  xdg.configFile."nixpkgs/config.nix".source = "${config}";
+  xdg.configFile = {
+    "nixpkgs/config.nix".source = "${config}";
+  };
 
   home.packages = packages;
 
