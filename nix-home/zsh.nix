@@ -176,8 +176,8 @@ in
       '';
       shellAliases = {
         ":q" = "exit";
-        b    = "${pkgs.bat}/bin/bat --theme=base16 --paging=never";
-        cat  = "b --plain";
+        b    = "${pkgs.bat}/bin/bat --theme=base16";
+        cat  = "b --plain --paging=never";
         cp   = "cp -v";
         df   = "${pkgs.pydf}/bin/pydf";
         ln   = "ln -v";
