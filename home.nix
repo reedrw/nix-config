@@ -72,12 +72,9 @@ in
     overlays = [ (import ./nix-home/overlay.nix) ];
   };
 
-  xdg.configFile = {
-    "nixpkgs/config.nix".source = "${config}";
-  };
-
   home = {
     file = {
+      ".config/nixpkgs/config.nix".source = "${config}";
       ".profile".source = "${profile}";
     };
     packages = packages;
