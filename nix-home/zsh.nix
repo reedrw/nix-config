@@ -75,6 +75,7 @@ in
 
         source ${oh-my-zsh}/lib/git.zsh
         source ${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
+        source ${config.lib.base16.base16template "shell"}
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
 
         colors
@@ -159,8 +160,6 @@ in
         bindkey '^[[B'  down-line-or-beginning-search
         bindkey '^[[7~' beginning-of-line
         bindkey '^[[8~' end-of-line
-
-        source ${config.lib.base16.base16template "shell"}
 
         git(){
           case "$1" in
