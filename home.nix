@@ -27,23 +27,6 @@ let
     { allowUnfree = true; }
   '';
 
-  profile = builtins.toFile "profile" ''
-    if type xdg-open > /dev/null 2>&1 ; then
-      export XDG_DESKTOP_DIR="''${HOME}"
-      export XDG_CONFIG_HOME="''${HOME}/.config"
-      export XDG_DOCUMENTS_DIR="''${HOME}/files"
-      export XDG_DOWNLOAD_DIR="''${HOME}/downloads"
-      export XDG_MUSIC_DIR="''${HOME}/music"
-      export XDG_PICTURES_DIR="''${HOME}/images"
-      export XDG_VIDEOS_DIR="''${HOME}/videos"
-      export XDG_PUBLICSHARE_DIR="/non/existent"
-    fi
-
-    export GTK_IM_MODULE=ibus
-    export XMODIFIERS=@im=ibus
-    export QT_IM_MODULE=ibus
-  '';
-
   sources = import ./nix-home/nix/sources.nix;
 
   base16-nix = builtins.fetchTarball {
@@ -72,11 +55,22 @@ in
     overlays = [ (import ./nix-home/overlay.nix) ];
   };
 
-  home = {
-    file = {
-      ".config/nixpkgs/config.nix".source = "${config}";
-      ".profile".source = "${profile}";
+  xdg = {
+    userDirs = {
+      enable = true;
+      desktop = "\$HOME";
+      documents = "\$HOME/files";
+      download = "\$HOME/downloads";
+      music = "\$HOME/music";
+      pictures = "\$HOME/images";
+      videos = "\$HOME/videos";
     };
+    configFile = {
+      "nixpkgs/config.nix".source = "${config}";
+    };
+  };
+
+  home = {
     packages = packages;
   };
 

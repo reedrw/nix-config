@@ -73,8 +73,8 @@ in
       let g:suda_smart_edit = 1
       let g:suda#prefix = 'sudo://'
 
+      source ${config.lib.base16.base16template "vim"}
       let base16colorspace=256
-      colorscheme base16-default-dark
       syntax on
       set t_Co=256
       set title
@@ -110,7 +110,6 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
-      source ${config.lib.base16.base16template "vim"}
     '';
   };
 }
