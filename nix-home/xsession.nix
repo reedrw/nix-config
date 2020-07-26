@@ -91,6 +91,7 @@ in
       extraConfig = ''
         for_window [class="URxvt"] border none
         exec --no-startup-id "${autorun}"
+        exec --no-startup-id sh -c '[[ -f ~/.autostart.sh ]] && ~/.autostart.sh'
       '';
     };
   };

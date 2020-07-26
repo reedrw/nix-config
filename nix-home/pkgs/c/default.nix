@@ -9,7 +9,7 @@ let
     name = "c";
     executable = true;
     text = ''
-      #${pkgs.stdenv.shell}
+      #!${pkgs.stdenv.shell}
 
       if [[ -p /dev/stdin ]] ; then
         xclip -i -selection clipboard

@@ -22,6 +22,7 @@
         ignore_newline = "no";
         show_indicators = "no";
         startup_notification = false;
+        hide_duplicate_count = true;
       };
       urgency_low = {
         background = "#${base00-hex}";
