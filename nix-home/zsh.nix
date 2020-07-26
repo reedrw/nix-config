@@ -73,9 +73,9 @@ in
           histverify
         EOF
 
-        source "${oh-my-zsh}/lib/git.zsh"
-        source "${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh"
-        eval "$(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)"
+        source ${oh-my-zsh}/lib/git.zsh
+        source ${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
+        source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
 
         colors
         setopt promptsubst
