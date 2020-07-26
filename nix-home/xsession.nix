@@ -29,6 +29,52 @@ let
       pidof urxvtd || urxvtd -q -o -f
     '';
   };
+
+  selecterm = pkgs.writeTextFile {
+    name = "select-term.sh";
+    executable = true;
+    text = ''
+      #!${pkgs.stdenv.shell}
+
+      read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
+      # Width and Height in px need to be converted to columns/rows
+      # To get these magic values, make a fullscreen st, and divide your screen width by ''${tput cols}, height by ''${tput lines}
+      (( W /= 5 ))
+      (( H /= 11 ))
+      # Arithmetic operations to correct for border
+      g=$((''${W}-5))x$((''${H}-3))+''${X}+''${Y}
+      urxvtc -name float -g $g
+    '';
+  };
+
+  record = pkgs.writeTextFile {
+    name = "record.sh";
+    executable = true;
+    text = ''
+      #!${pkgs.stdenv.shell}
+
+      startrec(){
+        set $(${pkgs.slop}/bin/slop -q -o -f '%x %y %w %h')
+
+        ${pkgs.ffmpeg}/bin/ffmpeg -loglevel error \
+          -show_region 1 \
+          -s ''${3}x''${4} \
+          -r 60 \
+          -f x11grab \
+          -i :0.0+''${1},''${2} \
+          -pix_fmt yuv444p \
+          -crf 16 \
+          -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
+          ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
+      }
+
+      pid="$(pgrep -f x11grab)" && \
+        ( kill "$pid"; ${pkgs.libnotify}/bin/notify-send -t 2000 "recording stopped" ) || \
+        startrec
+
+    '';
+  };
+
 in
 {
   xsession = {
@@ -49,6 +95,7 @@ in
         keybindings = lib.mkOptionDefault {
           "Print" = "exec --no-startup-id flameshot gui";
           "${mod}+Return" = "exec --no-startup-id ${term}";
+          "${sup}+Return" = "exec --no-startup-id ${selecterm}";
           "${mod}+d" = "focus child";
           "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
@@ -56,6 +103,7 @@ in
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "exec --no-startup-id rofi -show run -lines 10 -width 40";
+          "${mod}+r" = "exec --no-startup-id ${record}";
         };
         colors = with config.lib.base16.theme; {
           focused = {
@@ -90,6 +138,7 @@ in
       };
       extraConfig = ''
         for_window [class="URxvt"] border none
+        for_window [class="URxvt" title="float"] floating enable
         exec --no-startup-id "${autorun}"
         exec --no-startup-id sh -c '[[ -f ~/.autostart.sh ]] && ~/.autostart.sh'
       '';
