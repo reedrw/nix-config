@@ -30,8 +30,6 @@ let
 in
 {
 
-  services.lorri.enable = true;
-
   programs = {
 
     command-not-found = {
@@ -41,6 +39,7 @@ in
     direnv = {
       enable = true;
       enableZshIntegration = true;
+      enableNixDirenvIntegration = true;
     };
 
     dircolors = {
@@ -93,7 +92,7 @@ in
         #  Check if current shell is a ranger subshell
         if test "$RANGER_LEVEL" && ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
           alias ranger="exit"
-          export PROMPT="%{$fg[red]%}RANGER %{$reset_color%} $PROMPT"
+          export PROMPT="(ranger) $PROMPT"
         fi
 
         #  nix-shell prompt
