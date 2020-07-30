@@ -62,14 +62,13 @@ let
           -r 60 \
           -f x11grab \
           -i :0.0+''${1},''${2} \
-          -pix_fmt yuv444p \
           -crf 16 \
           -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
           ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
       }
 
       pid="$(pgrep -f x11grab)" && \
-        ( kill "$pid"; ${pkgs.libnotify}/bin/notify-send -t 2000 "recording stopped" ) || \
+        ( kill -SIGINT "$pid"; sleep .3; ${pkgs.libnotify}/bin/notify-send "recording stopped" ) || \
         startrec
 
     '';

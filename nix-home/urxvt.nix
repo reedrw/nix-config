@@ -4,11 +4,12 @@ let
 
   sources = import ./nix/sources.nix;
 
-  urxvt-font-size = pkgs.fetchFromGitHub {
-    owner = sources.urxvt-font-size.owner;
-    repo = sources.urxvt-font-size.repo;
-    rev = sources.urxvt-font-size.rev;
-    sha256 = sources.urxvt-font-size.sha256;
+  urxvt-font-size = with sources.urxvt-font-size;
+  pkgs.fetchFromGitHub {
+    owner = owner;
+    repo = repo;
+    rev = rev;
+    sha256 = sha256;
   };
 in
 {

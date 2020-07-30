@@ -6,25 +6,32 @@ let
 
   fzf-tab = {
     name = "fzf-tab";
-    src = builtins.fetchTarball {
-      url = sources.fzf-tab.url;
-      sha256 = sources.fzf-tab.sha256;
+    src = with sources.fzf-tab;
+    pkgs.fetchFromGitHub {
+      owner = owner;
+      repo = repo;
+      rev = rev;
+      sha256 = sha256;
     };
   };
 
   zsh-syntax-highlighting = {
     name = "zsh-syntax-highlighting";
-    src = builtins.fetchTarball {
-      url = sources.zsh-syntax-highlighting.url;
-      sha256 = sources.zsh-syntax-highlighting.sha256;
+    src = with sources.zsh-syntax-highlighting;
+    pkgs.fetchFromGitHub {
+      owner = owner;
+      repo = repo;
+      rev = rev;
+      sha256 = sha256;
     };
   };
 
-  oh-my-zsh = pkgs.fetchFromGitHub {
-    owner = sources.oh-my-zsh.owner;
-    repo = sources.oh-my-zsh.repo;
-    rev = sources.oh-my-zsh.rev;
-    sha256 = sources.oh-my-zsh.sha256;
+  oh-my-zsh = with sources.oh-my-zsh;
+  pkgs.fetchFromGitHub {
+    owner = owner;
+    repo = repo;
+    rev = rev;
+    sha256 = sha256;
   };
 
 in
@@ -71,6 +78,8 @@ in
           interactivecomments
           histverify
         EOF
+
+        unsetopt nomatch
 
         source ${oh-my-zsh}/lib/git.zsh
         source ${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
@@ -124,13 +133,14 @@ in
         FZF_TAB_COMMAND=(
           ${pkgs.fzf}/bin/fzf
           --ansi   # Enable ANSI color support, necessary for showing groups
-          --expect='$continuous_trigger' # For continuous completion
+          --expect='$continuous_trigger,$print_query' # For continuous completion
           --color=16
           --nth=2,3 --delimiter='\x00'  # Don't search prefix
           --layout=reverse --height=''\'''${FZF_TMUX_HEIGHT:=75%}'
           --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
           '--query=$query'   # $query will be expanded to query string at runtime.
           '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+          --print-query
         )
         zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 

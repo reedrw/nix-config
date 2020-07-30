@@ -9,22 +9,23 @@ let
 
   sources = import ./nix/sources.nix;
 
-  BNP = fetchFromGitHub {
-    owner = sources.bitsnpicas.owner;
-    repo = sources.bitsnpicas.repo;
-    rev = sources.bitsnpicas.rev;
-    sha256 = sources.bitsnpicas.sha256;
+  BNP = with sources.bitsnpicas;
+  fetchFromGitHub {
+    owner = owner;
+    repo = repo;
+    rev = rev;
+    sha256 = sha256;
   };
 in
 stdenv.mkDerivation rec {
-  pname = "scientifica";
-  version = "2.1";
+  name = "scientifica";
 
-  src = fetchFromGitHub {
-    owner = sources.scientifica.owner;
-    repo = pname;
-    rev = sources.scientifica.rev;
-    sha256 = sources.scientifica.sha256;
+  src = with sources.scientifica;
+  fetchFromGitHub {
+    owner = owner;
+    repo = name;
+    rev = rev;
+    sha256 = sha256;
   };
 
   nativeBuildInputs = [ fontforge jre ];
@@ -35,14 +36,10 @@ stdenv.mkDerivation rec {
     ./build.sh
   '';
 
-
   installPhase = ''
-    install -D -m644 build/scientifica/otb/scientifica.otb          "$out/share/fonts/scientifica.otb"
-    install -D -m644 build/scientifica/otb/scientificaBold.otb      "$out/share/fonts/scientificaBold.otb"
-    install -D -m644 build/scientifica/otb/scientificaItalic.otb    "$out/share/fonts/scientificaItalic.otb"
-    install -D -m644 build/scientifica/ttf/scientifica.ttf          "$out/share/fonts/scientifica.ttf"
-    install -D -m644 build/scientifica/ttf/scientificaBold.ttf      "$out/share/fonts/scientificaBold.ttf"
-    install -D -m644 build/scientifica/ttf/scientificaItalic.ttf    "$out/share/fonts/scientificaItalic.ttf"
+    mkdir -p "$out/share/fonts/"
+    install -D -m644 build/scientifica/otb/* "$out/share/fonts/"
+    install -D -m644 build/scientifica/ttf/* "$out/share/fonts/"
   '';
 
   meta = {

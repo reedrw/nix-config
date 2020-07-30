@@ -1,37 +1,13 @@
-{ pkgs ? import <nixpkgs> { }
-, stdenv ? pkgs.stdenv
-, makeWrapper ? pkgs.makeWrapper
-, xclip ? pkgs.xclip
-}:
+{ pkgs ? import <nixpkgs> {} }:
 
-let
-  c = pkgs.writeTextFile {
-    name = "c";
-    executable = true;
-    text = ''
-      #!${pkgs.stdenv.shell}
+pkgs.writeShellScriptBin "c" ''
 
-      if [[ -p /dev/stdin ]] ; then
-        xclip -i -selection clipboard
-      else
-        xclip -o -selection clipboard
-      fi
-    '';
-  };
-in
-stdenv.mkDerivation rec {
-  name = "c";
+  xclip(){
+    ${pkgs.xclip}/bin/xclip "$@"
+  }
 
-  src = ./.;
-
- BuildInputs = [ xclip.out ];
- nativeBuildInputs = [ makeWrapper ];
-
-  installPhase = ''
-    mkdir -p $out/bin
-    cp -v ${c} $out/bin/c
-    wrapProgram $out/bin/c \
-      --prefix PATH : ${xclip.out}/bin
-  '';
-}
+  [[ -p /dev/stdin ]] && \
+    xclip -i -selection clipboard || \
+    xclip -o -selection clipboard
+''
 

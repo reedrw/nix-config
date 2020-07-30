@@ -6,9 +6,10 @@ in
 stdenv.mkDerivation {
   name = "ix";
 
-  src = builtins.fetchurl {
-    url = sources.ix.url;
-    sha256 = sources.ix.sha256;
+  src = with sources.ix;
+  builtins.fetchurl {
+    url = url;
+    sha256 = sha256;
   };
 
   phases = "installPhase";

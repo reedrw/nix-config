@@ -11,11 +11,12 @@ in
 stdenv.mkDerivation rec {
   name = "artwiz-lemon";
 
-  src = fetchFromGitHub {
-    owner = sources.artwiz-lemon.owner;
-    repo = sources.artwiz-lemon;
-    rev = sources.artwiz-lemon.rev;
-    sha256 = sources.artwiz-lemon.sha256;
+  src = with sources.artwiz-lemon;
+  fetchFromGitHub {
+    owner = owner;
+    repo = repo;
+    rev = rev;
+    sha256 = sha256;
   };
 
   installPhase = ''

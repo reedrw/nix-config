@@ -8,15 +8,15 @@ in
     enable = true;
     package = pkgs.picom.overrideAttrs (
       oldAttrs: rec {
-        src = pkgs.fetchFromGitHub {
-          owner = sources.picom.owner;
-          repo = sources.picom.repo;
-          rev = sources.picom.rev;
-          sha256 = sources.picom.sha256;
+        src = with sources.picom;
+        pkgs.fetchFromGitHub {
+          owner = owner;
+          repo = repo;
+          rev = rev;
+          sha256 = sha256;
         };
       }
     );
-    backend = "glx";
     shadow = true;
     shadowOffsets = [ (-2) (-2) ];
     shadowOpacity = "0.3";
@@ -35,17 +35,21 @@ in
       "name      = 'bar'"
       "name      = 'Notification'"
       "class_g  ?= 'Notify-osd'"
-      "class_g   = 'Coky'"
-      "class_g   = 'Polybar'"
       "class_g   = 'Cairo-clock'"
       "class_g   = 'slop'"
       "_GTK_FRAME_EXTENTS@:c"
     ];
+    menuOpacity = "0.8";
     extraOptions = ''
+      blur-method  = "dual_kawase";
+      blur-strength = 15;
       corner-radius = 7;
       shadow-radius = 10;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
+      ];
+      blur-background-exclude = [
+        "class_g = 'slop'"
       ];
     '';
   };

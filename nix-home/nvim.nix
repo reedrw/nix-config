@@ -6,17 +6,23 @@ let
 
   suda-vim = pkgs.vimUtils.buildVimPlugin {
     name = "suda-vim";
-    src = builtins.fetchTarball {
-      url = sources.suda-vim.url;
-      sha256 = sources.suda-vim.sha256;
+    src = with sources.suda-vim;
+    pkgs.fetchFromGitHub {
+      owner = owner;
+      repo = repo;
+      rev = rev;
+      sha256 = sha256;
     };
   };
 
   vim-polyglot = pkgs.vimUtils.buildVimPlugin {
     name = "vim-polyglot";
-    src = builtins.fetchTarball {
-      url = sources.vim-polyglot.url;
-      sha256 = sources.vim-polyglot.sha256;
+    src = with sources.vim-polyglot;
+    pkgs.fetchFromGitHub {
+      owner = owner;
+      repo = repo;
+      rev = rev;
+      sha256 = sha256;
     };
   };
 
@@ -38,7 +44,7 @@ in
       vim-airline-themes
       vim-polyglot
     ];
-    extraConfig = ''
+    extraConfig = with config.lib.base16;''
       if !exists('g:airline_symbols')
         let g:airline_symbols = {}
       endif
@@ -73,7 +79,7 @@ in
       let g:suda_smart_edit = 1
       let g:suda#prefix = 'sudo://'
 
-      source ${config.lib.base16.base16template "vim"}
+      source ${base16template "vim"}
       let base16colorspace=256
       syntax on
       set t_Co=256

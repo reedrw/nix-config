@@ -17,10 +17,10 @@
         "homepage": null,
         "owner": "Aloxaf",
         "repo": "fzf-tab",
-        "rev": "ebe6d1b28a7ef63c34d29b42e4f4a520507d2965",
-        "sha256": "15106zq6pzj25a1mxrk3aibzy912i3lgzvrfh16alb5x18h6m144",
+        "rev": "8d8a31785c44b77263323ebf40b0c406d7547bc0",
+        "sha256": "0nsx2ldl3da52ar1svxpsrrvfksrih35jgrh41k90y28lrhjlmmz",
         "type": "tarball",
-        "url": "https://github.com/Aloxaf/fzf-tab/archive/ebe6d1b28a7ef63c34d29b42e4f4a520507d2965.tar.gz",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/8d8a31785c44b77263323ebf40b0c406d7547bc0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "home-manager": {
@@ -29,10 +29,34 @@
         "homepage": "https://rycee.gitlab.io/home-manager/",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "7b73f840712de88093f6c056e3c658e114ca0b3c",
-        "sha256": "1f4q0sapfm77gzph00rzcppv9kpnwhb856n9n27ff14f6ri59ci3",
+        "rev": "bb6eb9b13e3d40a22633fb80cbc75347af5bed3c",
+        "sha256": "0pz0f1igj0rcnzyqjqh43sdvrb9vgwqwfwifg0rl90sbqgcmxpf4",
         "type": "tarball",
-        "url": "https://github.com/rycee/home-manager/archive/7b73f840712de88093f6c056e3c658e114ca0b3c.tar.gz",
+        "url": "https://github.com/rycee/home-manager/archive/bb6eb9b13e3d40a22633fb80cbc75347af5bed3c.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "mpv-webm": {
+        "branch": "master",
+        "description": "Simple WebM maker for mpv, with no external dependencies.",
+        "homepage": "",
+        "owner": "ekisu",
+        "repo": "mpv-webm",
+        "rev": "69601ddfd72c44cfa954d36f7bf79f0914ca64ab",
+        "sha256": "1619ch4wy1dcwgb2379z7r81c931s1y320kb8y8mqswmbrrgfxyh",
+        "type": "tarball",
+        "url": "https://github.com/ekisu/mpv-webm/archive/69601ddfd72c44cfa954d36f7bf79f0914ca64ab.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "mpv_thumbnail_script": {
+        "branch": "nil-props",
+        "description": "A Lua script to show preview thumbnails in mpv's OSC seekbar, sans external dependencies",
+        "homepage": null,
+        "owner": "blankname",
+        "repo": "mpv_thumbnail_script",
+        "rev": "ddb1b48646a8a02843c3010841880f2f5932b153",
+        "sha256": "0wx9g2q3mvak2s494myz31nwmbms5wdwdq87rqs4in518bsx1q81",
+        "type": "tarball",
+        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/ddb1b48646a8a02843c3010841880f2f5932b153.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oh-my-zsh": {
@@ -41,10 +65,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "95218372402afc9aeafc89c0984310387ce79599",
-        "sha256": "0fgxq2d6lajk5fjbr9vwhhnw58gbk6yhbc49pcj563lwk2kc4d9f",
+        "rev": "8755c5f101f801738dd249c7685dcf30dd03a7b2",
+        "sha256": "0z6bcv91xxfnaj42n7yzlx0wv14f87wws0n5cciy2g4yd3kyzmkq",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/95218372402afc9aeafc89c0984310387ce79599.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/8755c5f101f801738dd249c7685dcf30dd03a7b2.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {

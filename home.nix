@@ -13,6 +13,7 @@ let
     comma
     git
     ix
+    nix-tree
 
     # fonts
     artwiz-lemon
@@ -29,9 +30,10 @@ let
 
   sources = import ./nix-home/nix/sources.nix;
 
-  base16-nix = builtins.fetchTarball {
-    url = sources.base16-nix.url;
-    sha256 = sources.base16-nix.sha256;
+  base16-nix = with sources.base16-nix;
+  builtins.fetchTarball {
+    url = url;
+    sha256 = sha256;
   };
 
 in
@@ -40,6 +42,7 @@ in
   imports = [
     "${base16-nix}/base16.nix"
     ./nix-home/dunst.nix
+    ./nix-home/mpv.nix
     ./nix-home/nvim.nix
     ./nix-home/picom.nix
     ./nix-home/polybar.nix
@@ -70,10 +73,6 @@ in
     };
   };
 
-  home = {
-    packages = packages;
-  };
-
   programs = {
     home-manager = {
       enable = true;
@@ -88,6 +87,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
+    packages = packages;
   };
 
   themes.base16 = {
