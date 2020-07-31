@@ -26,6 +26,18 @@ let
     };
   };
 
+  nivscript = pkgs.writeShellScriptBin "nivscript" ''
+    package=$(</dev/stdin)
+
+    if type niv &> /dev/null; then
+      niv=niv
+    else
+      niv="nix run nixpkgs.niv -c niv"
+    fi
+
+    $niv add $package | sed -u 's/\x1b\[[0-9;]*m//g'
+  '';
+
 in
 {
 
@@ -82,6 +94,7 @@ in
       source ${base16template "vim"}
       let base16colorspace=256
       syntax on
+      set autochdir
       set t_Co=256
       set title
       set number
@@ -116,6 +129,8 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
+      map <Leader>gh viwyA = with sources.<esc>pA;<CR>pkgs.fetchFromGitHub {};<esc>hi<CR><esc>kA<CR>owner = owner;<CR>repo = repo;<CR>rev = rev;<CR>sha256 = sha256;<esc>j
+      map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}/bin/nivscript<CR>wv^deld$<Leader>gh
     '';
   };
 }

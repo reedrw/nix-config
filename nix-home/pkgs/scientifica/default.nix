@@ -9,7 +9,7 @@ let
 
   sources = import ./nix/sources.nix;
 
-  BNP = with sources.bitsnpicas;
+  bitsnpicas = with sources.bitsnpicas;
   fetchFromGitHub {
     owner = owner;
     repo = repo;
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     patchShebangs ./build.sh
-    export BNP="${BNP}/downloads/BitsNPicas.jar"
+    export BNP="${bitsnpicas}/downloads/BitsNPicas.jar"
     ./build.sh
   '';
 

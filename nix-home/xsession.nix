@@ -136,6 +136,9 @@ in
         };
       };
       extraConfig = ''
+        for_window [class="Firefox"] border none
+        for_window [class="mpv"] border none
+        for_window [class="TelegramDesktop"] border none
         for_window [class="URxvt"] border none
         for_window [class="URxvt" title="float"] floating enable
         exec --no-startup-id "${autorun}"
