@@ -58,7 +58,7 @@ if [[ -s "/tmp/$shpid.diff" ]]; then
           installedHomeManager="$(nix-channel --list | grep "home-manager " | cut -d' ' -f2-)"
 
           echo "Checking home-manager..."
-          if [[ "$installedHomeManager" != "$nixpkgsURL" ]]; then
+          if [[ "$installedHomeManager" != "$HomeManagerURL" ]]; then
             echo "Installing home-manager..."
             nix-channel --add "$HomeManagerURL" home-manager
             nix-channel --update
