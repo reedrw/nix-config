@@ -1,0 +1,38 @@
+{
+    "fzf-tab": {
+        "branch": "master",
+        "description": "Replace zsh's default completion selection menu with fzf!",
+        "homepage": null,
+        "owner": "Aloxaf",
+        "repo": "fzf-tab",
+        "rev": "4108af7dc37fc89f59ada74eab79b2037db311fc",
+        "sha256": "1lal6smxgdnwl54y0qsl4knjvsnyry985dc78d3dr1mp1rjg4cji",
+        "type": "tarball",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/4108af7dc37fc89f59ada74eab79b2037db311fc.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "oh-my-zsh": {
+        "branch": "master",
+        "description": "🙃 A delightful community-driven (with 1700+ contributors) framework for managing your zsh configuration. Includes 200+ optional plugins (rails, git, OSX, hub, capistrano, brew, ant, php, python, etc), over 140 themes to spice up your morning, and an auto-update tool so that makes it easy to keep up with the latest updates from the community.",
+        "homepage": "https://ohmyz.sh",
+        "owner": "ohmyzsh",
+        "repo": "ohmyzsh",
+        "rev": "4ab273e19ad1768163e662831b3418a2fc9b6eee",
+        "sha256": "044ppadca34dsav3bk4qk0yx793iik2i141v313j4dxykxnyc4ny",
+        "type": "tarball",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/4ab273e19ad1768163e662831b3418a2fc9b6eee.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "zsh-syntax-highlighting": {
+        "branch": "master",
+        "description": "Fish shell like syntax highlighting for Zsh.",
+        "homepage": "github.com/zsh-users/zsh-syntax-highlighting",
+        "owner": "zsh-users",
+        "repo": "zsh-syntax-highlighting",
+        "rev": "2d60a47cc407117815a1d7b331ef226aa400a344",
+        "sha256": "1pnxr39cayhsvggxihsfa3rqys8rr2pag3ddil01w96kw84z4id2",
+        "type": "tarball",
+        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/2d60a47cc407117815a1d7b331ef226aa400a344.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

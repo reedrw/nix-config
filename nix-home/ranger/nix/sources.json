@@ -1,0 +1,14 @@
+{
+    "ranger-archives": {
+        "branch": "master",
+        "description": "Ranger Plugin for Creating and Extracting Archives",
+        "homepage": "",
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "rev": "4460a257aeeff9b1edef5be9d96b44d1cdaccfbb",
+        "sha256": "1hrnhxcd9q67nllkd6vrr3cqf2vfifnd123hm6drpcv95mdx8lpk",
+        "type": "tarball",
+        "url": "https://github.com/maximtrp/ranger-archives/archive/4460a257aeeff9b1edef5be9d96b44d1cdaccfbb.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

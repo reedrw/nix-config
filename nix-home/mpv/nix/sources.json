@@ -1,0 +1,26 @@
+{
+    "mpv-webm": {
+        "branch": "master",
+        "description": "Simple WebM maker for mpv, with no external dependencies.",
+        "homepage": "",
+        "owner": "ekisu",
+        "repo": "mpv-webm",
+        "rev": "69601ddfd72c44cfa954d36f7bf79f0914ca64ab",
+        "sha256": "1619ch4wy1dcwgb2379z7r81c931s1y320kb8y8mqswmbrrgfxyh",
+        "type": "tarball",
+        "url": "https://github.com/ekisu/mpv-webm/archive/69601ddfd72c44cfa954d36f7bf79f0914ca64ab.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "mpv_thumbnail_script": {
+        "branch": "nil-props",
+        "description": "A Lua script to show preview thumbnails in mpv's OSC seekbar, sans external dependencies",
+        "homepage": null,
+        "owner": "blankname",
+        "repo": "mpv_thumbnail_script",
+        "rev": "ddb1b48646a8a02843c3010841880f2f5932b153",
+        "sha256": "0wx9g2q3mvak2s494myz31nwmbms5wdwdq87rqs4in518bsx1q81",
+        "type": "tarball",
+        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/ddb1b48646a8a02843c3010841880f2f5932b153.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

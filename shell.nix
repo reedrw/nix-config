@@ -1,7 +1,7 @@
 with import <nixpkgs> {};
 let
 
-  sources = import ./nix-home/nix/sources.nix;
+  sources = import ./nix/sources.nix;
 
 in pkgs.mkShell rec {
   

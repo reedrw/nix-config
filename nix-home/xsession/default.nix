@@ -20,7 +20,7 @@ let
       xrdb -load ~/.Xresources
       xinput --disable $touchpad
 
-      ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/wallpaper.jpg
+      ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/xsession/wallpaper.jpg
 
       systemctl restart --user polybar
 
@@ -141,6 +141,9 @@ in
         exec --no-startup-id "${autorun}"
       '';
     };
+  };
+  services.flameshot = {
+      enable = true;
   };
 }
 

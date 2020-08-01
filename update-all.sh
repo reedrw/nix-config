@@ -34,7 +34,7 @@ find . -type f -name "update-sources.sh" -exec readlink -f {} \; | while read -r
         done
       done
 
-      echo -e "\n\n$(<"$TEMP")\n"
+      echo -e "\n$(<"$TEMP")"
       rm "$TEMP"
 
       fn="$(realpath --relative-to="$pwd" ./nix/sources.json)"
@@ -46,6 +46,41 @@ done
 
 echo -en "$bold$yellow"Updated sources:"$reset\n"
 bat --theme=base16 --paging=never -p "/tmp/$shpid.diff"
-rm "/tmp/$shpid.diff"
 echo -en "$norm"
+
+if [[ -s "/tmp/$shpid.diff" ]]; then
+  while true; do
+    read -p "Do you wish to install these updates?" yn
+    case $yn in
+        [Yy*]* )
+          HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
+          nixpkgsURL="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)"
+          installedHomeManager="$(nix-channel --list | grep "home-manager " | cut -d' ' -f2-)"
+
+          echo "Checking home-manager..."
+          if [[ "$installedHomeManager" != "$nixpkgsURL" ]]; then
+            echo "Installing home-manager..."
+            nix-channel --add "$HomeManagerURL" home-manager
+            nix-channel --update
+          fi
+
+          sudo -k
+          installedNixpkgs="$(sudo nix-channel --list | grep "nixos " | cut -d' ' -f2-)" || exit 1
+          echo "Checking nixpkgs..."
+          if [[ "$installedNixpkgs" != "$nixpkgsURL" ]]; then
+            echo "Updating nixpkgs..."
+            sudo nix-channel --add "$nixpkgsURL" nixos
+            sudo nix-channel --update
+            sudo nixos-rebuild switch --upgrade
+          fi
+
+          echo "Building home-manager config..."
+          home-manager switch
+        break;;
+        [Nn]* ) exit
+        ;;
+    esac
+  done
+fi
+rm "/tmp/$shpid.diff"
 

@@ -1,0 +1,14 @@
+{
+    "base16-nix": {
+        "branch": "master",
+        "description": "Home manager module for themeing programs with base16 templates",
+        "homepage": null,
+        "owner": "atpotts",
+        "repo": "base16-nix",
+        "rev": "4f192afaa0852fefb4ce3bde87392a0b28d6ddc8",
+        "sha256": "1yf59vpd1i8lb2ml7ha8v6i4mv1b0xwss8ngzw08s39j838gyx6h",
+        "type": "tarball",
+        "url": "https://github.com/atpotts/base16-nix/archive/4f192afaa0852fefb4ce3bde87392a0b28d6ddc8.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

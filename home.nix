@@ -1,10 +1,6 @@
 { config, lib,  pkgs, ... }:
 
 let
-  # Base16 colorschemes
-  # https://github.com/atpotts/base16-nix/blob/master/schemes.json
-  scheme =  "onedark";
-  variant = "onedark";
 
   packages = with pkgs; [
 
@@ -28,34 +24,26 @@ let
     { allowUnfree = true; }
   '';
 
-  sources = import ./nix-home/nix/sources.nix;
-
-  base16-nix = with sources.base16-nix;
-  builtins.fetchTarball {
-    url = url;
-    sha256 = sha256;
-  };
-
 in
 {
 
   imports = [
-    "${base16-nix}/base16.nix"
-    ./nix-home/dunst.nix
-    ./nix-home/mpv.nix
-    ./nix-home/nvim.nix
-    ./nix-home/picom.nix
-    ./nix-home/polybar.nix
-    ./nix-home/ranger.nix
-    ./nix-home/rofi.nix
-    ./nix-home/st.nix
-    ./nix-home/xsession.nix
-    ./nix-home/zsh.nix
+    ./nix-home/base16/default.nix
+    ./nix-home/dunst/default.nix
+    ./nix-home/mpv/default.nix
+    ./nix-home/nvim/default.nix
+    ./nix-home/picom/default.nix
+    ./nix-home/polybar/default.nix
+    ./nix-home/ranger/default.nix
+    ./nix-home/rofi/default.nix
+    ./nix-home/st/default.nix
+    ./nix-home/xsession/default.nix
+    ./nix-home/zsh/default.nix
   ];
 
   nixpkgs = {
     config = import "${config}";
-    overlays = [ (import ./nix-home/overlay.nix) ];
+    overlays = [ (import ./overlay.nix) ];
   };
 
   xdg = {
@@ -88,18 +76,6 @@ in
       EDITOR = "nvim";
     };
     packages = packages;
-  };
-
-  themes.base16 = {
-    enable = true;
-    scheme = "${scheme}";
-    variant = "${variant}";
-  };
-
-  services = {
-    flameshot = {
-      enable = true;
-    };
   };
 
   home.stateVersion = "20.09";
