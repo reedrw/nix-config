@@ -36,6 +36,7 @@ let
     fi
 
     $niv add $package | sed -u 's/\x1b\[[0-9;]*m//g'
+    sleep 1
   '';
 
 in

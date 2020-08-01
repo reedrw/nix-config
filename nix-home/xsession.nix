@@ -2,7 +2,7 @@
 
 let
 
-  term = "urxvtc";
+  term = "st";
 
   mod = "Mod1";
   sup = "Mod4";
@@ -25,8 +25,6 @@ let
       systemctl restart --user polybar
 
       i3-msg workspace number 1
-
-      pidof urxvtd || urxvtd -q -o -f
     '';
   };
 
@@ -43,7 +41,7 @@ let
       (( H /= 11 ))
       # Arithmetic operations to correct for border
       g=$((''${W}-5))x$((''${H}-3))+''${X}+''${Y}
-      urxvtc -name float -g $g
+      st -t float -g $g
     '';
   };
 
@@ -78,7 +76,6 @@ in
 {
   xsession = {
     enable = true;
-    scriptPath = ".hm-xsession";
     windowManager.i3 = {
       enable = true;
       package = pkgs.i3-gaps;
@@ -139,10 +136,9 @@ in
         for_window [class="Firefox"] border none
         for_window [class="mpv"] border none
         for_window [class="TelegramDesktop"] border none
-        for_window [class="URxvt"] border none
-        for_window [class="URxvt" title="float"] floating enable
+        for_window [class="st-256color"] border none
+        for_window [class="st-256color" title="float"] floating enable
         exec --no-startup-id "${autorun}"
-        exec --no-startup-id sh -c '[[ -f ~/.autostart.sh ]] && ~/.autostart.sh'
       '';
     };
   };

@@ -17,10 +17,10 @@
         "homepage": null,
         "owner": "Aloxaf",
         "repo": "fzf-tab",
-        "rev": "8d8a31785c44b77263323ebf40b0c406d7547bc0",
-        "sha256": "0nsx2ldl3da52ar1svxpsrrvfksrih35jgrh41k90y28lrhjlmmz",
+        "rev": "4108af7dc37fc89f59ada74eab79b2037db311fc",
+        "sha256": "1lal6smxgdnwl54y0qsl4knjvsnyry985dc78d3dr1mp1rjg4cji",
         "type": "tarball",
-        "url": "https://github.com/Aloxaf/fzf-tab/archive/8d8a31785c44b77263323ebf40b0c406d7547bc0.tar.gz",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/4108af7dc37fc89f59ada74eab79b2037db311fc.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "home-manager": {
@@ -29,10 +29,10 @@
         "homepage": "https://rycee.gitlab.io/home-manager/",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "bb6eb9b13e3d40a22633fb80cbc75347af5bed3c",
-        "sha256": "0pz0f1igj0rcnzyqjqh43sdvrb9vgwqwfwifg0rl90sbqgcmxpf4",
+        "rev": "f119d4d1423cec5cee7a7b75e51d329fe2b28325",
+        "sha256": "07ldcmb1jva85wdj2bm6r990xjmsrbkv0zrvkh2qj16vdiy0wjhk",
         "type": "tarball",
-        "url": "https://github.com/rycee/home-manager/archive/bb6eb9b13e3d40a22633fb80cbc75347af5bed3c.tar.gz",
+        "url": "https://github.com/rycee/home-manager/archive/f119d4d1423cec5cee7a7b75e51d329fe2b28325.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mpv-webm": {
@@ -65,10 +65,10 @@
         "homepage": "https://ohmyz.sh/",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "8755c5f101f801738dd249c7685dcf30dd03a7b2",
-        "sha256": "0z6bcv91xxfnaj42n7yzlx0wv14f87wws0n5cciy2g4yd3kyzmkq",
+        "rev": "345cb99e5bbdd404e2da0d0e294623eccc130c27",
+        "sha256": "15ygd7hdjnd2m9b72imzzv2cifipiqxj4xpw6idl3bbdq4l2wl9r",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/8755c5f101f801738dd249c7685dcf30dd03a7b2.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/345cb99e5bbdd404e2da0d0e294623eccc130c27.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "picom": {
@@ -83,6 +83,18 @@
         "url": "https://github.com/ibhagwan/picom/archive/82ecc90b51fa2489d26ef3f08abe1f06efcb53d8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "ranger-archives": {
+        "branch": "master",
+        "description": "Ranger Plugin for Creating and Extracting Archives",
+        "homepage": "",
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "rev": "4460a257aeeff9b1edef5be9d96b44d1cdaccfbb",
+        "sha256": "1hrnhxcd9q67nllkd6vrr3cqf2vfifnd123hm6drpcv95mdx8lpk",
+        "type": "tarball",
+        "url": "https://github.com/maximtrp/ranger-archives/archive/4460a257aeeff9b1edef5be9d96b44d1cdaccfbb.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "suda-vim": {
         "branch": "master",
         "description": "An alternative sudo.vim for Vim and Neovim, limited support sudo in Windows",
@@ -93,18 +105,6 @@
         "sha256": "13kbnd58nxyk7zaswjbd6cn3c24s8mmwj9pxp0fx6m16qcc7nwj6",
         "type": "tarball",
         "url": "https://github.com/lambdalisue/suda.vim/archive/24a1c09ddb7ca61559f7f082c3d0b1dd13737e27.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "urxvt-font-size": {
-        "branch": "master",
-        "description": "Change the urxvt font size on the fly",
-        "homepage": "",
-        "owner": "majutsushi",
-        "repo": "urxvt-font-size",
-        "rev": "0984499379e420de651dcfeedfbb7938867c44f8",
-        "sha256": "02d3kx8fsbinqv32ghdh3qid82nx3zvygmshplpwkxpss8a2sipl",
-        "type": "tarball",
-        "url": "https://github.com/majutsushi/urxvt-font-size/archive/0984499379e420de651dcfeedfbb7938867c44f8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-polyglot": {
