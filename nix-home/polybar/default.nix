@@ -8,7 +8,7 @@ let
     text = with config.lib.base16.theme; ''
       #!${pkgs.stdenv.shell}
 
-      day="$(${pkgs.coreutils}/bin/date +%d)"
+      day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
       cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" | ${pkgs.gnused}/bin/sed '1d')"
       top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
 
