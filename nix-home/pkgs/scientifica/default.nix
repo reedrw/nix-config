@@ -38,7 +38,6 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p "$out/share/fonts/"
-    install -D -m644 build/scientifica/otb/* "$out/share/fonts/"
     install -D -m644 build/scientifica/ttf/* "$out/share/fonts/"
   '';
 

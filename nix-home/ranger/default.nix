@@ -46,8 +46,14 @@ let
           --prefix PATH : ${ccat}/bin \
           --prefix PATH : ${pkgs.atool}/bin \
           --prefix PATH : ${pkgs.dragon-drop}/bin \
+          --prefix PATH : ${pkgs.ffmpegthumbnailer}/bin \
+          --prefix PATH : ${pkgs.fontforge}/bin \
+          --prefix PATH : ${pkgs.imagemagick}/bin \
           --prefix PATH : ${pkgs.jq}/bin \
+          --prefix PATH : ${pkgs.libarchive}/bin \
+          --prefix PATH : ${pkgs.mediainfo}/bin \
           --prefix PATH : ${pkgs.poppler_utils}/bin \
+          --prefix PATH : ${pkgs.python38Packages.pdf2image}/bin \
           --prefix PATH : ${pkgs.ueberzug}/bin \
           --prefix PATH : ${pkgs.zip}/bin
       '';
@@ -61,21 +67,30 @@ in
 
   xdg.configFile = {
     "ranger/rc.conf".text = ''
-        alias touch shell touch
-        map e console touch%space
-        map D shell dragon -a -x %p
-        set preview_images true
-        set preview_images_method ueberzug
-      '';
+      map e console touch%space
+      map D shell dragon -a -x %p
+      set preview_images true
+      set use_preview_script true
+      set preview_script ~/.config/ranger/scope.sh
+      set preview_images_method ueberzug
+    '';
 
     "ranger/rifle.conf".text = ''
-        ext gif = mpv -- "$@"
-        ext mkv = mpv -- "$@"
-        ext mp4 = mpv -- "$@"
-        ext webm = mpv -- "$@"
-        ext nix = ''${VISUAL:-$EDITOR} -- "$@"
-        ext sh  = ''${VISUAL:-$EDITOR} -- "$@"
-      '';
+      ext gif = mpv -- "$@"
+      ext mkv = mpv -- "$@"
+      ext mp4 = mpv -- "$@"
+      ext webm = mpv -- "$@"
+      ext nix = ''${VISUAL:-$EDITOR} -- "$@"
+      ext sh  = ''${VISUAL:-$EDITOR} -- "$@"
+    '';
+
+    "ranger/scope.sh".source = pkgs.writeTextFile {
+      name = "scope.sh";
+      executable = true;
+      text = builtins.readFile ./scope.sh;
+    };
+
+
     "ranger/plugins/compress.py".source = "${ranger-archives}/compress.py";
     "ranger/plugins/extract.py".source = "${ranger-archives}/extract.py";
   };

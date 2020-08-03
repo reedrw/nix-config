@@ -50,7 +50,7 @@ echo -en "$norm"
 
 if [[ -s "/tmp/$shpid.diff" ]]; then
   while true; do
-    read -p "Do you wish to switch to install the above updates? [Y/n] " yn
+    read -p "Do you wish to install the above updates? [Y/n] " yn
     case $yn in
         [Yy*] ) ./install.sh
         break;;
