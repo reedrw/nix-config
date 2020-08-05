@@ -10,17 +10,5 @@
         "type": "tarball",
         "url": "https://github.com/lambdalisue/suda.vim/archive/da785547bb9aa8a497f0e0fce332d9f6a5ee5955.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "vim-polyglot": {
-        "branch": "master",
-        "description": "A solid language pack for Vim.",
-        "homepage": "",
-        "owner": "sheerun",
-        "repo": "vim-polyglot",
-        "rev": "56121b4e27cb48efb17be55a969b2f0d725266f8",
-        "sha256": "1zirax1iss5mgqllwmc4kybycn73alcqgnnx296vgjw8d1b0qpc3",
-        "type": "tarball",
-        "url": "https://github.com/sheerun/vim-polyglot/archive/56121b4e27cb48efb17be55a969b2f0d725266f8.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

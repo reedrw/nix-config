@@ -55,6 +55,7 @@ let
           --prefix PATH : ${pkgs.poppler_utils}/bin \
           --prefix PATH : ${pkgs.python38Packages.pdf2image}/bin \
           --prefix PATH : ${pkgs.ueberzug}/bin \
+          --prefix PATH : ${pkgs.unzip}/bin \
           --prefix PATH : ${pkgs.zip}/bin
       '';
     }

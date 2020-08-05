@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }
+{ pkgs ? import <nixpkgs> {}
 , stdenv ? pkgs.stdenv
 , fetchFromGitHub ? pkgs.fetchFromGitHub
 }:

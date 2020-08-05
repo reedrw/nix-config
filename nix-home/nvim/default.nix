@@ -15,17 +15,6 @@ let
     };
   };
 
-  vim-polyglot = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-polyglot";
-    src = with sources.vim-polyglot;
-    pkgs.fetchFromGitHub {
-      owner = owner;
-      repo = repo;
-      rev = rev;
-      sha256 = sha256;
-    };
-  };
-
   nivscript = pkgs.writeShellScriptBin "nivscript" ''
     package=$(</dev/stdin)
 
