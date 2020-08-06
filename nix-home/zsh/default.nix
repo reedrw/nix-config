@@ -6,15 +6,15 @@ let
 
   fzf-tab = {
     name = "fzf-tab";
-    src = (sources.fzf-tab);
+    src = sources.fzf-tab;
   };
 
   zsh-syntax-highlighting = {
     name = "zsh-syntax-highlighting";
-    src = (sources.zsh-syntax-highlighting);
+    src = sources.zsh-syntax-highlighting;
   };
 
-  oh-my-zsh = (sources.oh-my-zsh);
+  oh-my-zsh = sources.oh-my-zsh;
 
 in
 {

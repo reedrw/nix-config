@@ -8,7 +8,7 @@ in
     enable = true;
     package = pkgs.picom.overrideAttrs (
       oldAttrs: rec {
-        src = (sources.picom);
+        src = sources.picom;
       }
     );
     shadow = true;

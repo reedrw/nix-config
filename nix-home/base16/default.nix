@@ -4,7 +4,7 @@ let
 
   sources = import ./nix/sources.nix;
 
-  base16-nix = (sources.base16-nix);
+  base16-nix = sources.base16-nix;
 
 in
 {

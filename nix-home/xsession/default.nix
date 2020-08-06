@@ -8,69 +8,51 @@ let
   sup = "Mod4";
 
   # This is will  run when i3 starts
-  autorun = pkgs.writeTextFile {
-    name = "autorun.sh";
-    executable = true;
-    text = ''
-      #!${pkgs.stdenv.shell}
+  autorun = pkgs.writeShellScript "autorun.sh" ''
+    touchpad="$(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
 
-      touchpad="$(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
+    xset r rate 250 50
+    xrdb -load ~/.Xresources
+    xinput --disable $touchpad
 
-      xset r rate 250 50
-      xrdb -load ~/.Xresources
-      xinput --disable $touchpad
+    ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/xsession/wallpaper.jpg
 
-      ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/xsession/wallpaper.jpg
+    systemctl restart --user polybar
 
-      systemctl restart --user polybar
+    i3-msg workspace number 1
+  '';
 
-      i3-msg workspace number 1
-    '';
-  };
+  selecterm = pkgs.writeShellScript "select-term.sh" ''
+    read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
+    # Width and Height in px need to be converted to columns/rows
+    # To get these magic values, make a fullscreen st, and divide your screen width by ''${tput cols}, height by ''${tput lines}
+    (( W /= 5 ))
+    (( H /= 11 ))
+    # Arithmetic operations to correct for border
+    g=$((''${W}-5))x$((''${H}-3))+''${X}+''${Y}
+    st -t float -g $g
+  '';
 
-  selecterm = pkgs.writeTextFile {
-    name = "select-term.sh";
-    executable = true;
-    text = ''
-      #!${pkgs.stdenv.shell}
+  record = pkgs.writeShellScript "record.sh" ''
+    startrec(){
+      set $(${pkgs.slop}/bin/slop -q -o -f '%x %y %w %h')
 
-      read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
-      # Width and Height in px need to be converted to columns/rows
-      # To get these magic values, make a fullscreen st, and divide your screen width by ''${tput cols}, height by ''${tput lines}
-      (( W /= 5 ))
-      (( H /= 11 ))
-      # Arithmetic operations to correct for border
-      g=$((''${W}-5))x$((''${H}-3))+''${X}+''${Y}
-      st -t float -g $g
-    '';
-  };
+      ${pkgs.ffmpeg}/bin/ffmpeg -loglevel error \
+        -show_region 1 \
+        -s ''${3}x''${4} \
+        -r 60 \
+        -f x11grab \
+        -i :0.0+''${1},''${2} \
+        -crf 16 \
+        -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
+        ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
+    }
 
-  record = pkgs.writeTextFile {
-    name = "record.sh";
-    executable = true;
-    text = ''
-      #!${pkgs.stdenv.shell}
+    pid="$(pgrep -f x11grab)" && \
+      ( kill -SIGINT "$pid"; sleep .3; ${pkgs.libnotify}/bin/notify-send "recording stopped" ) || \
+      startrec
 
-      startrec(){
-        set $(${pkgs.slop}/bin/slop -q -o -f '%x %y %w %h')
-
-        ${pkgs.ffmpeg}/bin/ffmpeg -loglevel error \
-          -show_region 1 \
-          -s ''${3}x''${4} \
-          -r 60 \
-          -f x11grab \
-          -i :0.0+''${1},''${2} \
-          -crf 16 \
-          -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
-          ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
-      }
-
-      pid="$(pgrep -f x11grab)" && \
-        ( kill -SIGINT "$pid"; sleep .3; ${pkgs.libnotify}/bin/notify-send "recording stopped" ) || \
-        startrec
-
-    '';
-  };
+  '';
 
 in
 {

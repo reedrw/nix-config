@@ -4,20 +4,20 @@ let
 
   sources = import ./nix/sources.nix;
 
-  ranger-archives = (sources.ranger-archives);
+  ranger-archives = sources.ranger-archives;
 
   ccat = pkgs.writeShellScriptBin "bat"''
     ${pkgs.bat}/bin/bat --theme=base16 "$@"
   '';
 
-  rangercommand = pkgs.writeShellScriptBin "rangercommand"''
+  rangercommand = pkgs.writeShellScript "rangercommand"''
     cd $@
     ranger
     $SHELL
   '';
 
-  rangerlaunch = pkgs.writeShellScriptBin "rangerlaunch"''
-    st -e ${rangercommand}/bin/rangercommand $@
+  rangerlaunch = pkgs.writeShellScript "rangerlaunch"''
+    st -e ${rangercommand} $@
   '';
 
   ranger = pkgs.ranger.overrideAttrs (
@@ -30,7 +30,7 @@ let
         Name=ranger
         Comment=Launches the ranger file manager
         Icon=utilities-terminal
-        Exec=${rangerlaunch}/bin/rangerlaunch
+        Exec=${rangerlaunch}
         Categories=ConsoleOnly;System;FileTools;FileManager
         MimeType=inode/directory;
         Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
@@ -79,11 +79,7 @@ in
       ext sh  = ''${VISUAL:-$EDITOR} -- "$@"
     '';
 
-    "ranger/scope.sh".source = pkgs.writeTextFile {
-      name = "scope.sh";
-      executable = true;
-      text = builtins.readFile ./scope.sh;
-    };
+    "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);
 
 
     "ranger/plugins/compress.py".source = "${ranger-archives}/compress.py";

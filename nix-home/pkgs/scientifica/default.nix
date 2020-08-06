@@ -10,9 +10,7 @@ in
 stdenv.mkDerivation rec {
   name = "scientifica";
 
-  src = builtins.fetchTarball {
-    inherit (sources.scientifica) url sha256;
-  };
+  src = sources.scientifica;
 
   installPhase = ''
     mkdir -p "$out/share/fonts/"
@@ -20,8 +18,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
-    description = "Tall and condensed bitmap font for geeks.";
-    homepage = "https://github.com/NerdyPepper/scientifica";
+    inherit (sources.scientifica) description homepage;
     license = stdenv.lib.licenses.ofl;
   };
 }

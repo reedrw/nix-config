@@ -4,11 +4,11 @@ let
 
   sources = import ./nix/sources.nix;
 
-  mpv-webm = (sources.mpv-webm);
+  mpv-webm = sources.mpv-webm;
 
   mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
     name = "mpv_thumbnail_script";
-    src = (sources.mpv_thumbnail_script);
+    src = sources.mpv_thumbnail_script;
 
     nativeBuildInputs = [ pkgs.python3 ];
 
