@@ -87,6 +87,8 @@ in
     packages = packages;
   };
 
+  systemd.user.startServices = true;
+
   home.stateVersion = "20.09";
 }
 
