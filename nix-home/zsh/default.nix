@@ -6,33 +6,15 @@ let
 
   fzf-tab = {
     name = "fzf-tab";
-    src = with sources.fzf-tab;
-    pkgs.fetchFromGitHub {
-      owner = owner;
-      repo = repo;
-      rev = rev;
-      sha256 = sha256;
-    };
+    src = (sources.fzf-tab);
   };
 
   zsh-syntax-highlighting = {
     name = "zsh-syntax-highlighting";
-    src = with sources.zsh-syntax-highlighting;
-    pkgs.fetchFromGitHub {
-      owner = owner;
-      repo = repo;
-      rev = rev;
-      sha256 = sha256;
-    };
+    src = (sources.zsh-syntax-highlighting);
   };
 
-  oh-my-zsh = with sources.oh-my-zsh;
-  pkgs.fetchFromGitHub {
-    owner = owner;
-    repo = repo;
-    rev = rev;
-    sha256 = sha256;
-  };
+  oh-my-zsh = (sources.oh-my-zsh);
 
 in
 {

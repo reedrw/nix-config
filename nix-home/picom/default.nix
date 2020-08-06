@@ -8,13 +8,7 @@ in
     enable = true;
     package = pkgs.picom.overrideAttrs (
       oldAttrs: rec {
-        src = with sources.picom;
-        pkgs.fetchFromGitHub {
-          owner = owner;
-          repo = repo;
-          rev = rev;
-          sha256 = sha256;
-        };
+        src = (sources.picom);
       }
     );
     shadow = true;

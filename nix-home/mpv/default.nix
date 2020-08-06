@@ -4,23 +4,12 @@ let
 
   sources = import ./nix/sources.nix;
 
-  mpv-webm = with sources.mpv-webm;
-  pkgs.fetchFromGitHub {
-    owner = owner;
-    repo = repo;
-    rev = rev;
-    sha256 = sha256;
-  };
+  mpv-webm = (sources.mpv-webm);
 
   mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
     name = "mpv_thumbnail_script";
-    src = with sources.mpv_thumbnail_script;
-    pkgs.fetchFromGitHub {
-      owner = owner;
-      repo = repo;
-      rev = rev;
-      sha256 = sha256;
-    };
+    src = (sources.mpv_thumbnail_script);
+
     nativeBuildInputs = [ pkgs.python3 ];
 
     patchPhase = ''

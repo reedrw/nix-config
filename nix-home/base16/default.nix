@@ -4,11 +4,7 @@ let
 
   sources = import ./nix/sources.nix;
 
-  base16-nix = with sources.base16-nix;
-  builtins.fetchTarball {
-    url = url;
-    sha256 = sha256;
-  };
+  base16-nix = (sources.base16-nix);
 
 in
 {

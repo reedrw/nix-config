@@ -2,21 +2,13 @@
 
 let
 
-  calnotify = pkgs.writeTextFile {
-    name = "calnotify.sh";
-    executable = true;
-    text = with config.lib.base16.theme; ''
-      #!${pkgs.stdenv.shell}
+  calnotify = with config.lib.base16.theme; pkgs.writeShellScriptBin "calnotify.sh" ''
+    day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
+    cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" | ${pkgs.gnused}/bin/sed '1d')"
+    top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
 
-      day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
-      cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" | ${pkgs.gnused}/bin/sed '1d')"
-      top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
-
-      ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
-
-    '';
-
-  };
+    ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
+  '';
 in
 {
   services.polybar = {
@@ -46,7 +38,7 @@ in
       "module/date" = {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
-        label = "%{A1:${calnotify}:}%date%%{A}";
+        label = "%{A1:${calnotify}/bin/calnotify.sh:}%date%%{A}";
         format = "<label>";
         label-padding = 5;
       };

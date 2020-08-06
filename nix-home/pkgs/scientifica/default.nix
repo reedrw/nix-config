@@ -10,10 +10,8 @@ in
 stdenv.mkDerivation rec {
   name = "scientifica";
 
-  src = with sources.scientifica;
-  builtins.fetchTarball {
-    url = url;
-    sha256 = sha256;
+  src = builtins.fetchTarball {
+    inherit (sources.scientifica) url sha256;
   };
 
   installPhase = ''

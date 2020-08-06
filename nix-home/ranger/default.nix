@@ -4,13 +4,7 @@ let
 
   sources = import ./nix/sources.nix;
 
-  ranger-archives = with sources.ranger-archives;
-  pkgs.fetchFromGitHub {
-    owner = owner;
-    repo = repo;
-    rev = rev;
-    sha256 = sha256;
-  };
+  ranger-archives = (sources.ranger-archives);
 
   ccat = pkgs.writeShellScriptBin "bat"''
     ${pkgs.bat}/bin/bat --theme=base16 "$@"

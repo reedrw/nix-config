@@ -6,13 +6,7 @@ let
 
   suda-vim = pkgs.vimUtils.buildVimPlugin {
     name = "suda-vim";
-    src = with sources.suda-vim;
-    pkgs.fetchFromGitHub {
-      owner = owner;
-      repo = repo;
-      rev = rev;
-      sha256 = sha256;
-    };
+    src = (sources.suda-vim);
   };
 
   nivscript = pkgs.writeShellScriptBin "nivscript" ''
