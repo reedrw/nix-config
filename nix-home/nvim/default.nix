@@ -113,8 +113,7 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
-      map <Leader>gh viwyA = with sources.<esc>pA;<CR>pkgs.fetchFromGitHub {};<esc>hi<CR><esc>kA<CR>owner = owner;<CR>repo = repo;<CR>rev = rev;<CR>sha256 = sha256;<esc>j
-      map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}/bin/nivscript<CR>wv^deld$<Leader>gh
+      map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}/bin/nivscript<CR>wv^deld$viwyA = sources.<esc>pA;
     '';
   };
 }
