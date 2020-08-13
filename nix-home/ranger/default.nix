@@ -76,7 +76,7 @@ in
       ext mp4 = mpv -- "$@"
       ext webm = mpv -- "$@"
       ext nix = ''${VISUAL:-$EDITOR} -- "$@"
-      ext sh  = ''${VISUAL:-$EDITOR} -- "$@"
+      mime ^text,  label editor = $EDITOR -- "$@"
     '';
 
     "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);

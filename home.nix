@@ -13,10 +13,7 @@ let
 
     # fonts
     artwiz-lemon
-    dejavu_fonts
-    noto-fonts
     scientifica
-    twemoji-color-font
 
   ];
 
@@ -46,6 +43,7 @@ in
     ./nix-home/ranger/default.nix
     ./nix-home/rofi/default.nix
     ./nix-home/st/default.nix
+    ./nix-home/weechat/default.nix
     ./nix-home/xsession/default.nix
     ./nix-home/zsh/default.nix
   ];

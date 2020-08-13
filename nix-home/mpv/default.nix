@@ -30,6 +30,12 @@ in
     config = {
       profile = "gpu-hq";
       osc = "no";
+      volume = 70;
+    };
+    profiles = {
+      "extension.gif" = {
+        loop-file = "inf";
+      };
     };
   };
   xdg.configFile = {
@@ -37,6 +43,7 @@ in
     "mpv/scripts/mpv_thumbnail_script_client_osc.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_client_osc.lua";
     "mpv/scripts/mpv_thumbnail_script_server.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_server.lua";
     "mpv/script-opts/mpv_thumbnail_script.conf".text = ''
+      mpv_no_sub=yes
       autogenerate_max_duration=0
     '';
   };
