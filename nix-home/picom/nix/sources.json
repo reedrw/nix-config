@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "ibhagwan",
         "repo": "picom",
-        "rev": "44b4970f70d6b23759a61a2b94d9bfb4351b41b1",
-        "sha256": "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh",
+        "rev": "c212f65c4f1d88ee53e28646e6bc0564055a5cfc",
+        "sha256": "1wxl1hnc6xpn62k55c57p3v009cbc8g6fzy3gp4la5xnkhylb38g",
         "type": "tarball",
-        "url": "https://github.com/ibhagwan/picom/archive/44b4970f70d6b23759a61a2b94d9bfb4351b41b1.tar.gz",
+        "url": "https://github.com/ibhagwan/picom/archive/c212f65c4f1d88ee53e28646e6bc0564055a5cfc.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

@@ -75,6 +75,7 @@ in
       ext mkv = mpv -- "$@"
       ext mp4 = mpv -- "$@"
       ext webm = mpv -- "$@"
+      ext pdf = zathura -- "$@"
       ext nix = ''${VISUAL:-$EDITOR} -- "$@"
       mime ^text,  label editor = $EDITOR -- "$@"
     '';

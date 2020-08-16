@@ -45,6 +45,7 @@ in
     ./nix-home/st/default.nix
     ./nix-home/weechat/default.nix
     ./nix-home/xsession/default.nix
+    ./nix-home/zathura/default.nix
     ./nix-home/zsh/default.nix
   ];
 

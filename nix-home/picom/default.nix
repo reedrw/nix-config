@@ -33,17 +33,11 @@ in
       "class_g   = 'slop'"
       "_GTK_FRAME_EXTENTS@:c"
     ];
-    menuOpacity = "0.8";
     extraOptions = ''
-      blur-method  = "dual_kawase";
-      blur-strength = 15;
       corner-radius = 7;
       shadow-radius = 10;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
-      ];
-      blur-background-exclude = [
-        "class_g = 'slop'"
       ];
     '';
   };
