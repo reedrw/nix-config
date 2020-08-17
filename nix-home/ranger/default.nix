@@ -4,8 +4,6 @@ let
 
   sources = import ./nix/sources.nix;
 
-  ranger-archives = sources.ranger-archives;
-
   ccat = pkgs.writeShellScriptBin "bat"''
     ${pkgs.bat}/bin/bat --theme=base16 "$@"
   '';
@@ -17,7 +15,7 @@ let
   '';
 
   rangerlaunch = pkgs.writeShellScript "rangerlaunch"''
-    st -e ${rangercommand} $@
+    urxvtc -e ${rangercommand} $@
   '';
 
   ranger = pkgs.ranger.overrideAttrs (
@@ -71,11 +69,11 @@ in
     '';
 
     "ranger/rifle.conf".text = ''
-      ext gif = mpv -- "$@"
-      ext mkv = mpv -- "$@"
-      ext mp4 = mpv -- "$@"
-      ext webm = mpv -- "$@"
-      ext pdf = zathura -- "$@"
+      ext gif, flag f = mpv -- "$@"
+      ext mkv, flag f = mpv -- "$@"
+      ext mp4, flag f = mpv -- "$@"
+      ext pdf, flag f = zathura -- "$@"
+      ext webm, flat f = mpv -- "$@"
       ext nix = ''${VISUAL:-$EDITOR} -- "$@"
       mime ^text,  label editor = $EDITOR -- "$@"
     '';
@@ -83,8 +81,8 @@ in
     "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);
 
 
-    "ranger/plugins/compress.py".source = "${ranger-archives}/compress.py";
-    "ranger/plugins/extract.py".source = "${ranger-archives}/extract.py";
+    "ranger/plugins/compress.py".source = "${sources.ranger-archives}/compress.py";
+    "ranger/plugins/extract.py".source = "${sources.ranger-archives}/extract.py";
   };
 
 }

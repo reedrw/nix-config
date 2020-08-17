@@ -42,7 +42,7 @@ in
     ./nix-home/polybar/default.nix
     ./nix-home/ranger/default.nix
     ./nix-home/rofi/default.nix
-    ./nix-home/st/default.nix
+    ./nix-home/urxvt/default.nix
     ./nix-home/weechat/default.nix
     ./nix-home/xsession/default.nix
     ./nix-home/zathura/default.nix

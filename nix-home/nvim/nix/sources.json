@@ -1,4 +1,16 @@
 {
+    "rnix-lsp": {
+        "branch": "master",
+        "description": "WIP Language Server for Nix! [maintainer=@jD91mZM2]",
+        "homepage": "",
+        "owner": "elkowar",
+        "repo": "rnix-lsp",
+        "rev": "440eec5e2aad0bc3008fc78699aabedafac8e9ee",
+        "sha256": "0m7dn8swmp72dgqr3dcnf1nxihvh0dpf4zpcy9jn9xbj5g416l6i",
+        "type": "tarball",
+        "url": "https://github.com/elkowar/rnix-lsp/archive/440eec5e2aad0bc3008fc78699aabedafac8e9ee.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "suda-vim": {
         "branch": "master",
         "description": "🥪 An alternative sudo.vim for Vim and Neovim, limited support sudo in Windows",

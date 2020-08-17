@@ -1,0 +1,14 @@
+{
+    "urxvt-font-size": {
+        "branch": "master",
+        "description": "Change the urxvt font size on the fly",
+        "homepage": "",
+        "owner": "majutsushi",
+        "repo": "urxvt-font-size",
+        "rev": "0984499379e420de651dcfeedfbb7938867c44f8",
+        "sha256": "02d3kx8fsbinqv32ghdh3qid82nx3zvygmshplpwkxpss8a2sipl",
+        "type": "tarball",
+        "url": "https://github.com/majutsushi/urxvt-font-size/archive/0984499379e420de651dcfeedfbb7938867c44f8.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

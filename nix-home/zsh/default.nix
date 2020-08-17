@@ -14,8 +14,6 @@ let
     src = sources.zsh-syntax-highlighting;
   };
 
-  oh-my-zsh = sources.oh-my-zsh;
-
 in
 {
 
@@ -63,8 +61,8 @@ in
 
         unsetopt nomatch
 
-        source ${oh-my-zsh}/lib/git.zsh
-        source ${oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
+        source ${sources.oh-my-zsh}/lib/git.zsh
+        source ${sources.oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
         source ${config.lib.base16.base16template "shell"}
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
 

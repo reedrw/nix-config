@@ -4,8 +4,6 @@ let
 
   sources = import ./nix/sources.nix;
 
-  mpv-webm = sources.mpv-webm;
-
   mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
     name = "mpv_thumbnail_script";
     src = sources.mpv_thumbnail_script;
@@ -39,7 +37,7 @@ in
     };
   };
   xdg.configFile = {
-    "mpv/scripts/webm.lua".source = "${mpv-webm}/build/webm.lua";
+    "mpv/scripts/webm.lua".source = "${sources.mpv-webm}/build/webm.lua";
     "mpv/scripts/mpv_thumbnail_script_client_osc.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_client_osc.lua";
     "mpv/scripts/mpv_thumbnail_script_server.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_server.lua";
     "mpv/script-opts/mpv_thumbnail_script.conf".text = ''

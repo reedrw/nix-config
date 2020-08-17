@@ -27,11 +27,24 @@ in
 
   programs.neovim = {
     enable = true;
+    package = pkgs.neovim-unwrapped.overrideAttrs (
+      oldAttrs: rec {
+        buildInputs = oldAttrs.buildInputs ++ [ pkgs.makeWrapper ];
+        postInstall = ''
+
+        wrapProgram $out/bin/nvim \
+          --prefix PATH : ${sources.rnix-lsp}/bin \
+          --prefix PATH : ${pkgs.nodejs}/bin
+
+        '';
+      }
+    );
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
     plugins = with pkgs.vimPlugins; [
       base16-vim
+      coc-nvim
       gitgutter
       nerdtree
       suda-vim
@@ -115,6 +128,9 @@ in
       nnoremap hmb :Hm build
       map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}/bin/nivscript<CR>wv^deld$viwyA = sources.<esc>pA;
     '';
+  };
+  xdg.configFile = {
+    "nvim/coc-settings.json".source = ./coc-settings.json;
   };
 }
 
