@@ -36,6 +36,7 @@ in
   imports = [
     ./nix-home/base16/default.nix
     ./nix-home/dunst/default.nix
+    ./nix-home/mpd/default.nix
     ./nix-home/mpv/default.nix
     ./nix-home/nvim/default.nix
     ./nix-home/picom/default.nix

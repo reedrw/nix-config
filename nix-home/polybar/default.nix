@@ -45,8 +45,10 @@ in
       "module/i3" = {
         type = "internal/i3";
         label-unfocused-foreground = "#${base03-hex}";
+        label-urgent-foreground = "#${base09-hex}";
         label-unfocused-padding = 1;
         label-focused-padding = 1;
+        label-urgent-padding = 1;
       };
     };
     script = ''
