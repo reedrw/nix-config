@@ -4,47 +4,25 @@ let
 
   sources  = import ./nix/sources.nix;
 
-  suda-vim = pkgs.vimUtils.buildVimPlugin {
-    name = "suda-vim";
-    src = sources.suda-vim;
-  };
-
-  nivscript = pkgs.writeShellScriptBin "nivscript" ''
-    package=$(</dev/stdin)
-
-    if type niv &> /dev/null; then
-      niv=niv
-    else
-      niv="nix run nixpkgs.niv -c niv"
-    fi
-
-    $niv add $package | sed -u 's/\x1b\[[0-9;]*m//g'
-    sleep 1
-  '';
-
 in
 {
-
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim-unwrapped.overrideAttrs (
-      oldAttrs: rec {
-        buildInputs = oldAttrs.buildInputs ++ [ pkgs.makeWrapper ];
-        postInstall = ''
-
-        wrapProgram $out/bin/nvim \
-          --prefix PATH : ${sources.rnix-lsp}/bin \
-          --prefix PATH : ${pkgs.nodejs}/bin
-
-        '';
-      }
-    );
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
-    plugins = with pkgs.vimPlugins; [
+    plugins = with pkgs.vimPlugins; let
+      suda-vim = pkgs.vimUtils.buildVimPlugin {
+        name = "suda-vim";
+        src = sources.suda-vim;
+      };
+      vim-colors-pencil = pkgs.vimUtils.buildVimPlugin {
+        name = "vim-colors-pencil";
+        src = sources.vim-colors-pencil;
+      };
+    in [
+      vim-colors-pencil
       base16-vim
-      coc-nvim
       gitgutter
       nerdtree
       suda-vim
@@ -53,7 +31,20 @@ in
       vim-airline-themes
       vim-polyglot
     ];
-    extraConfig = with config.lib.base16;''
+    extraConfig = with config.lib.base16; let
+      nivscript = pkgs.writeShellScript "nivscript" ''
+        package=$(</dev/stdin)
+
+        if type niv &> /dev/null; then
+          niv=niv
+        else
+          niv="nix run nixpkgs.niv -c niv"
+        fi
+
+        $niv add $package | sed -u 's/\x1b\[[0-9;]*m//g'
+        sleep 1
+      '';
+    in ''
       if !exists('g:airline_symbols')
         let g:airline_symbols = {}
       endif
@@ -126,11 +117,8 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
-      map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}/bin/nivscript<CR>wv^deld$viwyA = sources.<esc>pA;
+      map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}<CR>wv^deld$viwyA = sources.<esc>pA;
     '';
-  };
-  xdg.configFile = {
-    "nvim/coc-settings.json".source = ./coc-settings.json;
   };
 }
 

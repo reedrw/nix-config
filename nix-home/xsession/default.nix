@@ -126,8 +126,8 @@ in
       '';
     };
   };
-  services.flameshot = {
-      enable = true;
+  services = {
+    flameshot.enable = true;
   };
 }
 

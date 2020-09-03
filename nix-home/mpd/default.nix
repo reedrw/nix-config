@@ -1,9 +1,5 @@
 { config, lib, pkgs, ... }:
-let
 
-  ncmpcpp = pkgs.ncmpcpp.override { visualizerSupport = true;};
-
-in
 {
   services.mpd = {
     enable = true;
@@ -73,7 +69,9 @@ in
     allow_for_physical_item_deletion = "yes"
   '';
 
-  home.packages = [ ncmpcpp ];
+  home.packages = let
+    ncmpcpp = pkgs.ncmpcpp.override { visualizerSupport = true; };
+  in [ ncmpcpp ];
 
 }
 

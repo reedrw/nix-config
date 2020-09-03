@@ -4,23 +4,6 @@ let
 
   sources = import ./nix/sources.nix;
 
-  mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
-    name = "mpv_thumbnail_script";
-    src = sources.mpv_thumbnail_script;
-
-    nativeBuildInputs = [ pkgs.python3 ];
-
-    patchPhase = ''
-      patchShebangs ./concat_files.py
-    '';
-
-    installPhase = ''
-      mkdir -p "$out"
-      cp -v *.lua "$out"
-    '';
-
-  };
-
 in
 {
   programs.mpv = {
@@ -36,7 +19,23 @@ in
       };
     };
   };
-  xdg.configFile = {
+  xdg.configFile = let
+    mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
+      name = "mpv_thumbnail_script";
+      src = sources.mpv_thumbnail_script;
+
+      nativeBuildInputs = [ pkgs.python3 ];
+
+      patchPhase = ''
+        patchShebangs ./concat_files.py
+      '';
+
+      installPhase = ''
+        mkdir -p "$out"
+        cp -v *.lua "$out"
+      '';
+    };
+  in {
     "mpv/scripts/webm.lua".source = "${sources.mpv-webm}/build/webm.lua";
     "mpv/scripts/mpv_thumbnail_script_client_osc.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_client_osc.lua";
     "mpv/scripts/mpv_thumbnail_script_server.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_server.lua";

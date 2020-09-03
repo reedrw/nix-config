@@ -1,16 +1,4 @@
 {
-    "rnix-lsp": {
-        "branch": "master",
-        "description": "WIP Language Server for Nix! [maintainer=@jD91mZM2]",
-        "homepage": "",
-        "owner": "elkowar",
-        "repo": "rnix-lsp",
-        "rev": "440eec5e2aad0bc3008fc78699aabedafac8e9ee",
-        "sha256": "0m7dn8swmp72dgqr3dcnf1nxihvh0dpf4zpcy9jn9xbj5g416l6i",
-        "type": "tarball",
-        "url": "https://github.com/elkowar/rnix-lsp/archive/440eec5e2aad0bc3008fc78699aabedafac8e9ee.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "suda-vim": {
         "branch": "master",
         "description": "🥪 An alternative sudo.vim for Vim and Neovim, limited support sudo in Windows",
@@ -21,6 +9,18 @@
         "sha256": "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6",
         "type": "tarball",
         "url": "https://github.com/lambdalisue/suda.vim/archive/da785547bb9aa8a497f0e0fce332d9f6a5ee5955.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-colors-pencil": {
+        "branch": "master",
+        "description": "Light (& dark) color scheme inspired by iA Writer",
+        "homepage": "",
+        "owner": "reedes",
+        "repo": "vim-colors-pencil",
+        "rev": "1779fa52b8aeddc35f3b91442c59f201815c24e0",
+        "sha256": "1gxb8s21ksrhc8ncbyr8r93mbwrwwq7j68ilrwy6h10z9a39ciqm",
+        "type": "tarball",
+        "url": "https://github.com/reedes/vim-colors-pencil/archive/1779fa52b8aeddc35f3b91442c59f201815c24e0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

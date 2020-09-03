@@ -1,15 +1,5 @@
 { config, lib, pkgs, ... }:
 
-let
-
-  calnotify = with config.lib.base16.theme; pkgs.writeShellScript "calnotify.sh" ''
-    day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
-    cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed -e 's/^/ /g' -e 's/$/ /g' -e "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" -e '1d')"
-    top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
-
-    ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
-  '';
-in
 {
   services.polybar = {
     enable = true;
@@ -35,7 +25,15 @@ in
       "module/battery" = {
         type = "internal/battery";
       };
-      "module/date" = {
+      "module/date" = let
+        calnotify = with config.lib.base16.theme; pkgs.writeShellScript "calnotify.sh" ''
+          day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
+          cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed -e 's/^/ /g' -e 's/$/ /g' -e "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" -e '1d')"
+          top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
+
+          ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
+        '';
+      in {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
         label = "%{A1:${calnotify}:}%date%%{A}";

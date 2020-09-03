@@ -169,6 +169,12 @@ handle_image() {
                      -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
                 && exit 6 || exit 1;;
 
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/msword|application/vnd.oasis.opendocument.text)
+            soffice --headless --convert-to png "${FILE_PATH}" \
+            && mv "${FILE_PATH%%.*}.png" "${IMAGE_CACHE_PATH}" \
+            && exit 6 || exit 1
+        ;;
+
 
         ## ePub, MOBI, FB2 (using Calibre)
         # application/epub+zip|application/x-mobipocket-ebook|\

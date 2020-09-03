@@ -4,16 +4,6 @@ let
 
   sources = import ./nix/sources.nix;
 
-  fzf-tab = {
-    name = "fzf-tab";
-    src = sources.fzf-tab;
-  };
-
-  zsh-syntax-highlighting = {
-    name = "zsh-syntax-highlighting";
-    src = sources.zsh-syntax-highlighting;
-  };
-
 in
 {
 
@@ -35,7 +25,16 @@ in
 
     zsh = {
       enable = true;
-      plugins = [
+      plugins = let
+        fzf-tab = {
+          name = "fzf-tab";
+          src = sources.fzf-tab;
+        };
+        zsh-syntax-highlighting = {
+          name = "zsh-syntax-highlighting";
+          src = sources.zsh-syntax-highlighting;
+        };
+      in [
         fzf-tab
         zsh-syntax-highlighting
       ];
@@ -95,7 +94,7 @@ in
           else
             printf "[unknown environment]"
           fi
-          export PROMPT="%{$fg_bold[green]%}nix-shell:%{$reset_color%} [ %{$fg[yellow]%}$output%{$reset_color%} ] %{$fg[blue]%}%(!.%d.%~) %{$reset_color%}%(!.#.$) "
+          PROMPT="%{$fg_bold[green]%}nix-shell:%{$reset_color%} [ %{$fg[yellow]%}$output%{$reset_color%} ] %{$fg[blue]%}%(!.%d.%~) %{$reset_color%}%(!.#.$) "
         fi
 
         compinit
@@ -174,6 +173,7 @@ in
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         rm   = "rm -v";
         tree = "ls --tree";
+        wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
         x    = "exit";
       };
     };

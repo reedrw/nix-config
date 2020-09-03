@@ -9,6 +9,7 @@ let
     comma
     git
     ix
+    libreoffice
     nix-tree
 
     # fonts
@@ -70,11 +71,7 @@ in
     };
   };
 
-  programs = {
-    home-manager = {
-      enable = true;
-    };
-  };
+  programs.home-manager.enable = true;
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
