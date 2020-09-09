@@ -56,5 +56,20 @@ in
       "keysym.C-Down"   = "font-size:decrease";
     };
   };
+  systemd.user = {
+    services = {
+      urxvtd = {
+        Unit = {
+          Description = "URxvt Terminal Daemon";
+        };
+        Service = {
+          ExecStart = "${pkgs.rxvt-unicode}/bin/urxvtd -q -o";
+        };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
+      };
+    };
+  };
 }
 

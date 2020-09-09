@@ -7,23 +7,6 @@ let
   mod = "Mod1";
   sup = "Mod4";
 
-  # This is will  run when i3 starts
-  autorun = pkgs.writeShellScript "autorun.sh" ''
-    touchpad="$(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
-
-    xset r rate 250 50
-    xrdb -load ~/.Xresources
-    xinput --disable $touchpad
-
-    ${pkgs.feh}/bin/feh --bg-fill ~/.config/nixpkgs/nix-home/xsession/wallpaper.jpg
-
-    systemctl restart --user polybar
-
-    i3-msg workspace number 1
-
-    pidof urxvtd || urxvtd -q -o -f
-  '';
-
   selecterm = pkgs.writeShellScript "select-term.sh" ''
     read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
     # Width and Height in px need to be converted to columns/rows
@@ -115,19 +98,77 @@ in
             indicator = "#${base00-hex}";
           };
         };
+        window.commands = [
+          {
+            command = "border none";
+            criteria = {
+              class = "Firefox";
+            };
+          }
+          {
+            command = "border none";
+            criteria = {
+              class = "mpv";
+            };
+          }
+          {
+            command = "border none";
+            criteria = {
+              class = "TelgramDesktop";
+            };
+          }
+          {
+            command = "border none";
+            criteria = {
+              class = "URxvt";
+            };
+          }
+          {
+            command = "floating enable";
+            criteria = {
+              class = "URxvt";
+              title = "float";
+            };
+          }
+        ];
+        startup = [
+          { command = "systemctl --user restart picom";
+            always = true;
+            notification = false;
+          }
+          {
+            command = "systemctl --user restart polybar";
+            always = true;
+            notification = false;
+          }
+          {
+            command = "xset r rate 250 50";
+            always = true;
+            notification = false;
+          }
+          {
+            command = "xrdb -load ~/.Xresources";
+            notification = false;
+          }
+          {
+            command = "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)";
+            notification = false;
+          }
+          {
+            command = "${pkgs.feh}/bin/feh --bg-fill ~/.background-image";
+            notification = false;
+          }
+          {
+            command = "i3-msg workspace number 1";
+            notification = false;
+          }
+        ];
       };
-      extraConfig = ''
-        for_window [class="Firefox"] border none
-        for_window [class="mpv"] border none
-        for_window [class="TelegramDesktop"] border none
-        for_window [class="URxvt"] border none
-        for_window [class="URxvt" title="float"] floating enable
-        exec --no-startup-id "${autorun}"
-      '';
     };
   };
   services = {
     flameshot.enable = true;
   };
+  home.file.".background-image".source = ./wallpaper.jpg;
 }
 
