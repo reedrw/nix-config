@@ -14,14 +14,18 @@ in
     plugins = with pkgs.vimPlugins; let
       suda-vim = pkgs.vimUtils.buildVimPlugin {
         name = "suda-vim";
-        src = sources.suda-vim;
+        src = pkgs.fetchFromGitHub {
+          owner = "lambdalisue";
+          repo = "suda.vim";
+          rev = "da785547bb9aa8a497f0e0fce332d9f6a5ee5955";
+          sha256 = "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6";
+        };
       };
       vim-colors-pencil = pkgs.vimUtils.buildVimPlugin {
         name = "vim-colors-pencil";
         src = sources.vim-colors-pencil;
       };
     in [
-      vim-colors-pencil
       base16-vim
       gitgutter
       nerdtree
@@ -29,6 +33,7 @@ in
       tabular
       vim-airline
       vim-airline-themes
+      vim-colors-pencil
       vim-polyglot
     ];
     extraConfig = with config.lib.base16; let

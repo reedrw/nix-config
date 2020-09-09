@@ -11,6 +11,7 @@ let
     ix
     libreoffice
     nix-tree
+    rsync
 
     # fonts
     artwiz-lemon
@@ -35,20 +36,20 @@ in
 {
 
   imports = [
-    ./nix-home/base16/default.nix
-    ./nix-home/dunst/default.nix
-    ./nix-home/mpd/default.nix
-    ./nix-home/mpv/default.nix
-    ./nix-home/nvim/default.nix
-    ./nix-home/picom/default.nix
-    ./nix-home/polybar/default.nix
-    ./nix-home/ranger/default.nix
-    ./nix-home/rofi/default.nix
-    ./nix-home/urxvt/default.nix
-    ./nix-home/weechat/default.nix
-    ./nix-home/xsession/default.nix
-    ./nix-home/zathura/default.nix
-    ./nix-home/zsh/default.nix
+    ./modules/base16/default.nix
+    ./modules/dunst/default.nix
+    ./modules/mpd/default.nix
+    ./modules/mpv/default.nix
+    ./modules/nvim/default.nix
+    ./modules/picom/default.nix
+    ./modules/polybar/default.nix
+    ./modules/ranger/default.nix
+    ./modules/rofi/default.nix
+    ./modules/urxvt/default.nix
+    ./modules/weechat/default.nix
+    ./modules/xsession/default.nix
+    ./modules/zathura/default.nix
+    ./modules/zsh/default.nix
   ];
 
   nixpkgs = {
