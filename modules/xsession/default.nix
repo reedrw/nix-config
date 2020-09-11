@@ -114,12 +114,6 @@ in
           {
             command = "border none";
             criteria = {
-              class = "TelgramDesktop";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
               class = "URxvt";
             };
           }
@@ -132,7 +126,8 @@ in
           }
         ];
         startup = [
-          { command = "systemctl --user restart picom";
+          {
+            command = "systemctl --user restart picom";
             always = true;
             notification = false;
           }
@@ -156,6 +151,7 @@ in
           }
           {
             command = "${pkgs.feh}/bin/feh --bg-fill ~/.background-image";
+            always = true;
             notification = false;
           }
           {

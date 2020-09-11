@@ -7,7 +7,6 @@ let
     # utilities
     c
     comma
-    git
     ix
     libreoffice
     nix-tree
