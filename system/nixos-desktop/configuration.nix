@@ -85,9 +85,6 @@
           }
         ];
       };
-      libinput = {
-        accelProfile = "flat";
-      };
     };
   };
 
@@ -97,7 +94,6 @@
       corefonts
       dejavu_fonts
       ipafont
-      joypixels
       kochi-substitute
       source-code-pro
       ttf_bitstream_vera
