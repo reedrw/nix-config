@@ -1,17 +1,17 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash
 
-#HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
+HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
 nixpkgsURL="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)"
 nurURL="$(jq -r '.["NUR"].url' ./nix/sources.json)"
 NixOShardwareURL="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)"
 
-#installedHomeManager="$(nix-channel --list | grep "home-manager " | cut -d' ' -f2-)"
-#if [[ "$installedHomeManager" != "$HomeManagerURL" ]]; then
-#  echo "Installing pinned home-manager..."
-#  nix-channel --add "$HomeManagerURL" home-manager
-#  nix-channel --update
-#fi
+installedHomeManager="$(nix-channel --list | grep "home-manager " | cut -d' ' -f2-)"
+if [[ "$installedHomeManager" != "$HomeManagerURL" ]]; then
+  echo "Installing pinned home-manager..."
+  nix-channel --add "$HomeManagerURL" home-manager
+  nix-channel --update
+fi
 
 installedNixpkgs="$(sudo nix-channel --list | grep "nixos " | cut -d' ' -f2-)"
 if [[ "$installedNixpkgs" != "$nixpkgsURL" ]]; then
