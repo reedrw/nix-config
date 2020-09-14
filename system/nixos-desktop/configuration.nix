@@ -14,6 +14,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+    allowBroken = true;
     packageOverrides = pkgs: {
       nur = import <nur> {
         inherit pkgs;

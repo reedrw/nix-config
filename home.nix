@@ -23,6 +23,7 @@ let
   config = builtins.toFile "config.nix" ''
     {
       allowUnfree = true;
+      allowBroken = true;
       packageOverrides = pkgs: {
         nur = import ${sources.NUR} {
           inherit pkgs;
@@ -35,20 +36,20 @@ in
 {
 
   imports = [
-    ./modules/base16/default.nix
-    ./modules/dunst/default.nix
-    ./modules/mpd/default.nix
-    ./modules/mpv/default.nix
-    ./modules/nvim/default.nix
-    ./modules/picom/default.nix
-    ./modules/polybar/default.nix
-    ./modules/ranger/default.nix
-    ./modules/rofi/default.nix
-    ./modules/urxvt/default.nix
-    ./modules/weechat/default.nix
-    ./modules/xsession/default.nix
-    ./modules/zathura/default.nix
-    ./modules/zsh/default.nix
+    ./modules/base16
+    ./modules/dunst
+    ./modules/mpd
+    ./modules/mpv
+    ./modules/nvim
+    ./modules/picom
+    ./modules/polybar
+    ./modules/ranger
+    ./modules/rofi
+    ./modules/urxvt
+    ./modules/weechat
+    ./modules/xsession
+    ./modules/zathura
+    ./modules/zsh
   ];
 
   nixpkgs = {
