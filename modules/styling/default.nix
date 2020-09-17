@@ -3,10 +3,10 @@
 {
   home = {
     packages = with pkgs; [
-      libsForQt5.qtstyleplugins
       adwaita-qt
-      qt5.qtbase
+      libsForQt5.qtstyleplugins
       papirus-icon-theme
+      qt5.qtbase
       qt5ct
     ];
 
@@ -16,6 +16,7 @@
   };
 
   xdg.configFile = {
+    "Trolltech.conf".source = ./Trolltech.conf;
     "gtk-3.0/settings.ini".source = ./settings.ini;
     "qt5ct/qt5ct.conf".text = ''
       [Appearance]
@@ -46,28 +47,6 @@
 
       [SettingsWindow]
       geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\xc1\0\0\x1\f\0\0\x3\xa9\0\0\x3\xdb\0\0\0\xc6\0\0\x1\x11\0\0\x3\xa4\0\0\x3\xd6\0\0\0\0\0\0\0\0\a\x80\0\0\0\xc6\0\0\x1\x11\0\0\x3\xa4\0\0\x3\xd6)
-    '';
-    "Trolltech.conf".text = ''
-      [Qt]
-      font="Sans Serif,9,-1,5,50,0,0,0,0,0"
-      Palette\active=#abb2bf, #282c34, #323741, #2d313a, #1e2128, #21242b, #abb2bf, #ffffff, #abb2bf, #ffffff, #282c34, #000000, #000080, #ffffff, #0000ff, #ff00ff, #939599, #000000, #ffffdc, #000000
-      Palette\inactive=#abb2bf, #282c34, #323741, #2d313a, #1e2128, #21242b, #abb2bf, #ffffff, #abb2bf, #ffffff, #282c34, #000000, #000080, #ffffff, #0000ff, #ff00ff, #939599, #000000, #ffffdc, #000000
-      Palette\disabled=#696f79, #282c34, #323741, #2d313a, #1e2128, #1a1d22, #696f79, #ffffff, #696f79, #ffffff, #282c34, #000000, #000080, #ffffff, #0000ff, #ff00ff, #939599, #000000, #ffffdc, #000000
-      fontPath=@Invalid()
-      embedFonts=true
-      style=GTK+
-      doubleClickInterval=400
-      cursorFlashTime=1000
-      wheelScrollLines=3
-      resolveSymlinks=false
-      globalStrut\width=0
-      globalStrut\height=0
-      useRtlExtensions=false
-      XIMInputStyle=On The Spot
-      DefaultInputMethod=xim
-      audiosink=Auto
-      videomode=Auto
-      GUIEffects=none
     '';
   };
 }
