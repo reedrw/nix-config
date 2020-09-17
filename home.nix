@@ -45,6 +45,7 @@ in
     ./modules/polybar
     ./modules/ranger
     ./modules/rofi
+    ./modules/styling
     ./modules/urxvt
     ./modules/weechat
     ./modules/xsession
