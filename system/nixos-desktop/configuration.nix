@@ -23,9 +23,7 @@
   };
 
   nix = {
-    #package = pkgs.nixUnstable;
     extraOptions = ''
-      #experimental-features = nix-command flakes
       keep-outputs = true
       keep-derivations = true
     '';
@@ -33,6 +31,7 @@
 
   # Use the systemd-boot EFI boot loader.
   boot = {
+    kernelModules = [ "kvm-intel" ];
     extraModulePackages = with pkgs; [ nur.repos.suhr.v4l2loopback-dc ];
     loader = {
       systemd-boot.enable = true;
@@ -124,15 +123,12 @@
 
   virtualisation = {
     docker.enable = true;
-    #virtualbox.host = {
-    #  enable = true;
-    #  enableExtensionPack = true;
-    #};
+    libvirtd.enable = true;
   };
 
   users.users.reed = {
     isNormalUser = true;
-    extraGroups = [ "audio" "docker" "vboxusers" "wheel" ];
+    extraGroups = [ "audio" "docker" "libvirtd" "wheel" ];
     shell = pkgs.zsh;
   };
 

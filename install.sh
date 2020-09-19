@@ -42,6 +42,4 @@ echo "Updating user nix-env..."
 nix-env -u
 echo "Updating search cache..."
 nix search -u > /dev/null
-echo "Optimizing nix store..."
-nix-store --optimise --verbose
 
