@@ -11,7 +11,6 @@ let
     libreoffice
     nix-tree
     rsync
-    sent
 
     # fonts
     artwiz-lemon
