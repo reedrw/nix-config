@@ -1,6 +1,3 @@
 [submodule "nix-home/pkgs/comma"]
 	path = nix-home/pkgs/comma
 	url = git@github.com:Shopify/comma.git
-[submodule "pkgs/comma"]
-	path = pkgs/comma
-	url = git@github.com:fzakaria/comma
