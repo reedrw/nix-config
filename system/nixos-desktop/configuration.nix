@@ -97,6 +97,7 @@
       kochi-substitute
       source-code-pro
       ttf_bitstream_vera
+      noto-fonts-emoji
     ];
     enableDefaultFonts = true;
     fontconfig = {

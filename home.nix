@@ -10,7 +10,6 @@ let
     ix
     libreoffice
     nix-tree
-    rsync
 
     # fonts
     artwiz-lemon
