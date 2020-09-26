@@ -160,6 +160,15 @@ in
           esac
         }
 
+        touch(){
+          for file in "$@"; do
+            if [[ "$file" = */* ]]; then
+              mkdir -p "''${file%/*}"
+            fi;
+            command touch "$file";
+          done
+        }
+
       '';
       shellAliases = {
         ":q" = "exit";

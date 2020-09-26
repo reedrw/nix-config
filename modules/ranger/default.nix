@@ -83,6 +83,8 @@ in
       ext ogg = mpv -- "$@"
       ext mp3 = mpv -- "$@"
       ext gif, flag f = mpv -- "$@"
+      ext png, flag f = mpv -- "$@"
+      ext jpg, flag f = mpv -- "$@"
       ext mkv, flag f = mpv -- "$@"
       ext mp4, flag f = mpv -- "$@"
       ext pdf, flag f = zathura -- "$@"

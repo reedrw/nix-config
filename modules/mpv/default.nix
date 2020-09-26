@@ -10,13 +10,9 @@ in
     enable = true;
     config = {
       profile = "gpu-hq";
+      loop-file = "inf";
       osc = "no";
       volume = 70;
-    };
-    profiles = {
-      "extension.gif" = {
-        loop-file = "inf";
-      };
     };
   };
   xdg.configFile = let

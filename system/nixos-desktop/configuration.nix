@@ -31,8 +31,11 @@
 
   # Use the systemd-boot EFI boot loader.
   boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelModules = [ "kvm-intel" ];
-    extraModulePackages = with pkgs; [ nur.repos.suhr.v4l2loopback-dc ];
+    extraModulePackages = let
+      v4l2loopback-dc = pkgs.linuxPackages_latest.callPackage "${pkgs.nur.repo-sources.suhr}/pkgs/v4l2loopback-dc" {};
+    in [ v4l2loopback-dc ];
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
