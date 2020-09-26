@@ -47,7 +47,7 @@ in
       internalBorder = 15;
       letterSpace = -6;
       perl-ext-common = "default,matcher,font-size";
-      url-launcher = "firefox";
+      url-launcher = "xdg-open";
       iso14755 = false;
       "matcher.button" = 1;
       "keysym.Shift-Control-V" = "eval:paste_clipboard";
