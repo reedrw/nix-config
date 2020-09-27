@@ -12,7 +12,6 @@ in
       }
     );
     shadow = true;
-    shadowOffsets = [ (-2) (-2) ];
     shadowOpacity = "0.3";
     shadowExclude = [
       "! name   ~= ''"
@@ -35,7 +34,7 @@ in
     ];
     extraOptions = ''
       corner-radius = 7;
-      shadow-radius = 10;
+      shadow-radius = 20;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
       ];

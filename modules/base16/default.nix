@@ -12,8 +12,8 @@ in
   # https://github.com/atpotts/base16-nix/blob/master/schemes.json
   themes.base16 = {
     enable = true;
-    scheme = "onedark";
-    variant = "onedark";
+    scheme = "tomorrow";
+    variant = "tomorrow-night";
   };
 
 }
