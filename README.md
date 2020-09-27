@@ -8,5 +8,6 @@ My NixOS [home-manager](https://github.com/rycee/home-manager) config files
 cd ~/.config
 git clone --recurse-submodules https://github.com:reedrw/nix-config nixpkgs
 cd nixpkgs
-./install.sh
+nix-shell
+home-manager switch
 ```
