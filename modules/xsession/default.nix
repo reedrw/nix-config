@@ -78,7 +78,7 @@ in
           };
           focusedInactive = {
             border = "#${base03-hex}";
-            childBorder = "#${base00-hex}";
+            childBorder = "#${base03-hex}";
             background = "#${base03-hex}";
             text = "#${base03-hex}";
             indicator = "#${base03-hex}";
@@ -91,8 +91,8 @@ in
             indicator = "#${base03-hex}";
           };
           urgent = {
-            border = "#${base00-hex}";
-            childBorder = "#${base00-hex}";
+            border = "#${base03-hex}";
+            childBorder = "#${base03-hex}";
             background = "#${base00-hex}";
             text = "#${base05-hex}";
             indicator = "#${base00-hex}";

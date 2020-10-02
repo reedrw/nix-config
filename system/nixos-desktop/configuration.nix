@@ -127,9 +127,11 @@
     libvirtd.enable = true;
   };
 
+  programs.adb.enable = true;
+
   users.users.reed = {
     isNormalUser = true;
-    extraGroups = [ "audio" "docker" "libvirtd" "wheel" ];
+    extraGroups = [ "adbusers" "audio" "docker" "libvirtd" "wheel" ];
     shell = pkgs.zsh;
   };
 

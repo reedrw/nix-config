@@ -94,7 +94,7 @@ in
           else
             printf "[unknown environment]"
           fi
-          PROMPT="%{$fg_bold[green]%}nix-shell:%{$reset_color%} [ %{$fg[yellow]%}$output%{$reset_color%} ] %{$fg[blue]%}%(!.%d.%~) %{$reset_color%}%(!.#.$) "
+          PROMPT="%(!.%{$fg_bold[red]%}.%{$fg_bold[green]%})nix-shell:%{$reset_color%} [ %{$fg[yellow]%}$output%{$reset_color%} ] %{$fg[blue]%}%(!.%d.%~) %{$reset_color%}%(!.#.$) "
         fi
 
         compinit
