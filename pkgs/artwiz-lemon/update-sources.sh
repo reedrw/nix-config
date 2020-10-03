@@ -1,1 +1,1 @@
-../../../update-sources.sh
+../../update-sources.sh
