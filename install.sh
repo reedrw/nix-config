@@ -35,11 +35,11 @@ if [[ "$installedNUR" != "$nurURL" ]]; then
 fi
 
 echo "Rebuilding NixOS..."
-sudo nixos-rebuild switch --upgrade
+sudo nixos-rebuild switch --upgrade 2>&1 | nom
 echo "Rebuilding home-manager..."
-home-manager switch
+home-manager switch 2>&1 | nom
 echo "Updating user nix-env..."
-nix-env -u
+nix-env -u 2>&1 | nom
 echo "Updating search cache..."
 nix search -u > /dev/null
 

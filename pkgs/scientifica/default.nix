@@ -2,15 +2,14 @@
 , stdenv ? pkgs.stdenv
 }:
 
-let
-
-  sources = import ./nix/sources.nix;
-
-in
 stdenv.mkDerivation rec {
-  name = "scientifica";
+  pname = "scientifica";
+  version = "2.1";
 
-  src = sources.scientifica;
+  src = builtins.fetchTarball {
+    url = "https://github.com/NerdyPepper/scientifica/releases/download/v${version}/scientifica-v${version}.tar";
+    sha256 = "1mji70h5qdplx0rlhijrdpbmvd0c6fvnr70sla032gfs5g6f78cn";
+  };
 
   installPhase = ''
     mkdir -p "$out/share/fonts/"
@@ -18,7 +17,8 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
-    inherit (sources.scientifica) description homepage;
+    description = "tall, condensed, bitmap font for geeks.";
+    homepage = "https://github.com/NerdyPepper/scientifica";
     license = stdenv.lib.licenses.ofl;
   };
 }
