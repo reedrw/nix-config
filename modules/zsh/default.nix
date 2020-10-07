@@ -149,6 +149,12 @@ in
         bindkey '^[[7~' beginning-of-line
         bindkey '^[[8~' end-of-line
 
+        c(){
+          [[ -p /dev/stdin ]] && \
+            ${pkgs.xclip}/bin/xclip -i -selection clipboard || \
+            ${pkgs.xclip}/bin/xclip -o -selection clipboard
+        }
+
         git(){
           case "$1" in
             clone)

@@ -5,15 +5,15 @@ let
   packages = with pkgs; [
 
     # utilities
-    c
-    comma
-    ix
+    cachix
+    nur.repos.reedrw.comma
+    nur.repos.reedrw.ix
     libreoffice
     nix-tree
 
     # fonts
-    artwiz-lemon
-    scientifica
+    nur.repos.reedrw.artwiz-lemon
+    nur.repos.reedrw.scientifica
 
   ];
 
@@ -56,7 +56,6 @@ in
 
   nixpkgs = {
     config = import "${config}";
-    overlays = [ (import ./overlay.nix) ];
   };
 
   xdg = {
