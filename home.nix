@@ -5,7 +5,6 @@ let
   packages = with pkgs; [
 
     # utilities
-    cachix
     nur.repos.reedrw.comma
     nur.repos.reedrw.ix
     libreoffice
