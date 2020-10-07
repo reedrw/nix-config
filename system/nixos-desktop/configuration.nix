@@ -6,6 +6,8 @@
 
 {
   imports = [
+      # Use cachix
+      ./cachix.nix
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       <nixos-hardware/common/cpu/intel>
@@ -23,6 +25,7 @@
   };
 
   nix = {
+    autoOptimiseStore = true;
     extraOptions = ''
       keep-outputs = true
       keep-derivations = true
