@@ -23,18 +23,6 @@
         "url": "https://github.com/nix-community/home-manager/archive/0006da1381b87844c944fe8b925ec864ccf19348.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "nix-output-monitor": {
-        "branch": "master",
-        "description": "Pipe your nix-build output through the nix-output-monitor to get additional information while building.",
-        "homepage": "",
-        "owner": "maralorn",
-        "repo": "nix-output-monitor",
-        "rev": "a0e0b09124ce73ed1ca4f8e9bdd267dc151a823f",
-        "sha256": "1k9fni02y7xb97mkif1k7s0y1xv06hnqbkds35k4gg8mnf5z911i",
-        "type": "tarball",
-        "url": "https://github.com/maralorn/nix-output-monitor/archive/a0e0b09124ce73ed1ca4f8e9bdd267dc151a823f.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "nixos-hardware": {
         "branch": "master",
         "description": "A collection of NixOS modules covering hardware quirks.",
