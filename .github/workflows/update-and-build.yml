@@ -12,8 +12,8 @@ jobs:
           - reedrw
         nixPath:
           - nixpkgs=channel:nixos-unstable
-        configFile:
-          - '**/configuration.nix'
+        machines:
+          - nixos-desktop
 
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +42,7 @@ jobs:
     - name: Build system
       run: ./ci.sh system
       env:
-        CONFIGURATION: ${{ matrix.configfile }}
+        machine: ${{ matrix.machines }}
 
     - name: Build home-manager
       run: ./ci.sh home-manager
