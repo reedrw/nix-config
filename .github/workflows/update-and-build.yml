@@ -28,7 +28,7 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
 
     - name: Setup nix-shell
-      run: nix-shell -I nixos=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz shell.nix --run 'exit'
+      run: nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz shell.nix --run 'exit'
 
     - name: Update sources
       run: ./update-all.sh
