@@ -6,6 +6,7 @@
 
 let
 
+  # Dummy file for CI to work
   dummy = builtins.toFile "dummy.nix" ''
   {
   fileSystems."/" =
