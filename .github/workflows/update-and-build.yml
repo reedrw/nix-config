@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Install nix
       uses: cachix/install-nix-action@v11
+          with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.3
@@ -28,18 +30,16 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
 
     - name: Setup nix-shell
-      run: nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz shell.nix --run 'exit'
+      run: nix-shell shell.nix --run 'exit'
 
     - name: Update sources
       run: ./update-all.sh
       env:
-        NIX_PATH: nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build system
       run: ./ci.sh system
       env:
-        NIX_PATH: nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
         machine: ${{ matrix.machines }}
 
     - name: Build home-manager
