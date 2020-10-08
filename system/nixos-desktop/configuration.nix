@@ -6,7 +6,7 @@
 
 let
 
-  # dummy files for ci to work
+  # dummy hardware-configuration file for ci to work
   dummy-hw = builtins.toFile "dummy.nix" ''
   {
   fileSystems."/" =
@@ -16,7 +16,7 @@ let
   }
   '';
 
-# dummy file for ci to work
+  # dummy file for ci to work
   dummy = builtins.toFile "dummy.nix" ''
   {
 
