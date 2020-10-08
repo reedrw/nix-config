@@ -17,8 +17,6 @@ jobs:
     steps:
     - name: Install nix
       uses: cachix/install-nix-action@v11
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.3
