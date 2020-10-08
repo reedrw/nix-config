@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash
+#! nix-shell -i bash -p jq
 
 case $1 in
   system)
