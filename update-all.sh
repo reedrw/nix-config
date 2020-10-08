@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
+#! nix-shell -i bash
 pwd="$PWD"
 
 find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do

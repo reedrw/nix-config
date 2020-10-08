@@ -33,6 +33,7 @@ jobs:
     - name: Update sources
       run: ./update-all.sh
       env:
+        NIX_PATH: nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build system
