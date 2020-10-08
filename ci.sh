@@ -3,7 +3,7 @@
 
 case $1 in
   system)
-    nix-build \
+    nix-build --keep-going \
       -I nixos-config=./system/$machine/configuration.nix \
       -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" \
       -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" \
@@ -12,7 +12,7 @@ case $1 in
       exit 1
   ;;
   home-manager)
-    nix-build \
+    nix-build --keep-going \
       -I home-manager="$(jq -r '.["home-manager"].url' ./nix/sources.json)" \
       -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" \
       '<home-manager/home-manager/home-manager.nix>' \
