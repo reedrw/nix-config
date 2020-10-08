@@ -37,9 +37,9 @@ fi
 echo "Rebuilding NixOS..."
 sudo nixos-rebuild switch --upgrade
 echo "Rebuilding home-manager..."
-home-manager switch 2>&1
+home-manager switch
 echo "Updating user nix-env..."
-nix-env -u 2>&1
+nix-env -u
 echo "Updating search cache..."
 nix search -u > /dev/null
 
