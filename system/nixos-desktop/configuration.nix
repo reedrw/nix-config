@@ -6,8 +6,8 @@
 
 let
 
-  # Dummy file for CI to work
-  dummy = builtins.toFile "dummy.nix" ''
+  # dummy files for ci to work
+  dummy-hw = builtins.toFile "dummy.nix" ''
   {
   fileSystems."/" =
     { device = "/dev/sda1";
@@ -16,11 +16,18 @@ let
   }
   '';
 
+# dummy file for ci to work
+  dummy = builtins.toFile "dummy.nix" ''
+  {
+
+  }
+  '';
+
   cachix = if builtins.pathExists ./cachix.nix
     then import ./cachix.nix else import dummy;
 
   hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
-    then import ./hardware-configuration.nix else import dummy;
+    then import ./hardware-configuration.nix else import dummy-hw;
 
 in
 {
