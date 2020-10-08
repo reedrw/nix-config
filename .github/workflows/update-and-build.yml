@@ -1,0 +1,58 @@
+name: "Update and build"
+on:
+  #schedule:
+  #  - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        cachixName:
+          - reedrw
+        nixPath:
+          - nixpkgs=channel:nixos-unstable
+        configFile:
+          - '**/configuration.nix'
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install nix
+      uses: cachix/install-nix-action@v11
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
+    - name: Setup cachix
+      uses: cachix/cachix-action@v6
+      with:
+        name: ${{ matrix.cachixName }}
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+
+    - name: Setup nix-shell
+      run: nix-shell shell.nix --run 'exit'
+
+    - name: Update sources
+      run: ./update-all.sh
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build system
+      run: ./ci.sh system
+      env:
+        CONFIGURATION: ${{ matrix.configfile }}
+
+    - name: Build home-manager
+      run: ./ci.sh home-manager
+
+    - name: Commit and push
+      uses: EndBug/add-and-commit@v5
+      with:
+        author_name: GitHub Action
+        author_email: action@github.com
+        message: "automated update"
+        add: "--all"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

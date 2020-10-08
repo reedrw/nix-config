@@ -1,0 +1,20 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash
+
+case $1 in
+  system)
+    nix-build '<nixpkgs/nixos>' -A system -I nixos-config=$CONFIGURATION \
+      -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" \
+      -I nixos="$(jq -r '.["nixos-unstable"].url' ./nix/sources.json)" \
+      -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" || \
+      exit 1
+  ;;
+  home-manager)
+    nix-build "<home-manager/home-manager/home-manager.nix>" \
+      -I home-manager="$(jq -r '.["home-manager"].url' ./nix/sources.json)" \
+      --attr activationPackage \
+      --argstr confPath ./home.nix || \
+      exit 1
+  ;;
+esac
+
