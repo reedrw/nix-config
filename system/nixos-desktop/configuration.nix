@@ -6,11 +6,20 @@
 
 let
 
+  dummy = builtins.toFile "dummy.nix" ''
+  {
+  fileSystems."/" =
+    { device = "/dev/sda1";
+      fsType = "ext4";
+    };
+  }
+  '';
+
   cachix = if builtins.pathExists ./cachix.nix
-    then import ./cachix.nix else [];
+    then import ./cachix.nix else import dummy;
 
   hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
-    then import ./hardware-configuration.nix else [];
+    then import ./hardware-configuration.nix else import dummy;
 
 in
 {
