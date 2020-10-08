@@ -4,12 +4,21 @@
 
 { config, pkgs, ... }:
 
+let
+
+  cachix = if builtins.pathExists ./cachix.nix
+    then import ./cachix.nix else [];
+
+  hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
+    then import ./hardware-configuration.nix else [];
+
+in
 {
   imports = [
       # Use cachix
-      ./cachix.nix
+      cachix
       # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      hardware-configuration
       <nixos-hardware/common/cpu/intel>
       <nixos-hardware/common/pc/ssd>
     ];
