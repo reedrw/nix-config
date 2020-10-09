@@ -158,10 +158,10 @@ in
         git(){
           case "$1" in
             clone)
-              command git clone --recurse-submodules "''${@:2}"
+              ${pkgs.gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
             ;;
             *)
-              command git "$@"
+              ${pkgs.gitAndTools.hub}/bin/hub "$@"
             ;;
           esac
         }
