@@ -6,7 +6,7 @@ My NixOS [home-manager](https://github.com/rycee/home-manager) config files
 
 ```sh
 cd ~/.config
-git clone --recurse-submodules https://github.com:reedrw/nix-config nixpkgs
+git clone https://github.com/reedrw/nix-config nixpkgs
 cd nixpkgs
 cachix use reedrw # Optional
 nix-shell
