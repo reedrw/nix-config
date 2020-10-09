@@ -12,6 +12,7 @@ jobs:
           - reedrw
         machines:
           - nixos-desktop
+          - nixos-t400
           - nixos-t520
 
     runs-on: ubuntu-latest
