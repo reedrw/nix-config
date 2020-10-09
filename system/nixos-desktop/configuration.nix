@@ -6,21 +6,13 @@
 
 let
 
-  # dummy hardware-configuration file for ci to work
+  # dummy files for ci to work
+  dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
-  {
-  fileSystems."/" =
-    { device = "/dev/sda1";
-      fsType = "ext4";
-    };
-  }
-  '';
-
-  # dummy file for ci to work
-  dummy = builtins.toFile "dummy.nix" ''
-  {
-
-  }
+    {
+      fileSystems."/".device = "/dev/sda1";
+      fileSystems."/".fsType = "ext4";
+    }
   '';
 
   cachix = if builtins.pathExists ./cachix.nix
