@@ -182,6 +182,7 @@ in
         cat  = "b --plain --paging=never";
         cp   = "cp -v";
         df   = "${pkgs.pydf}/bin/pydf";
+        hms  = "home-manager switch";
         ln   = "ln -v";
         ls   = "${pkgs.exa}/bin/exa -lh --git";
         mv   = "mv -v";

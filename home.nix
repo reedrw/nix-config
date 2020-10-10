@@ -5,10 +5,11 @@ let
   packages = with pkgs; [
 
     # utilities
-    nur.repos.reedrw.comma
-    nur.repos.reedrw.ix
+    git
     libreoffice
     nix-tree
+    nur.repos.reedrw.comma
+    nur.repos.reedrw.ix
 
     # fonts
     nur.repos.reedrw.artwiz-lemon
