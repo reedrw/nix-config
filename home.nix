@@ -5,6 +5,7 @@ let
   packages = with pkgs; [
 
     # utilities
+    cachix
     git
     libreoffice
     nix-tree
