@@ -32,7 +32,7 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
 
     - name: Setup nix-shell
-      run: nix-shell shell.nix --run 'exit'
+      run: nix-shell -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix --run 'exit'
 
     - name: Update sources
       run: ./update-all.sh
