@@ -39,6 +39,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Re-build nix-shell
+      run: nix-shell -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix --run 'exit'
+
     - name: Build system
       run: ./ci.sh system
       env:
