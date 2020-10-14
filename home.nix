@@ -6,6 +6,7 @@ let
 
     # utilities
     cachix
+    firefox
     git
     libreoffice
     nix-tree
