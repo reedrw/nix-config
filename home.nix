@@ -5,13 +5,32 @@ let
   packages = with pkgs; [
 
     # utilities
+    bitwarden
     cachix
     firefox
     git
+    htop
+    lazydocker
     libreoffice
+    ngrok
     nix-tree
     nur.repos.reedrw.comma
     nur.repos.reedrw.ix
+    nur.repos.reedrw.noisetorch
+    nur.repos.suhr.droidcam
+    pavucontrol
+    screen
+    virt-manager
+
+    # chat
+    discord
+    tdesktop
+    teams
+
+    # games
+    multimc
+    nur.repos.reedrw.r2mod_cli
+    steam
 
     # fonts
     nur.repos.reedrw.artwiz-lemon
