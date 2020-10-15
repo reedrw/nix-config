@@ -25,6 +25,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2.3.3
 
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     - name: Setup cachix
       uses: cachix/cachix-action@v6
       with:
