@@ -17,6 +17,7 @@ let
     nur.repos.reedrw.comma
     nur.repos.reedrw.ix
     nur.repos.reedrw.noisetorch
+    nur.repos.reedrw.teletype
     nur.repos.suhr.droidcam
     pavucontrol
     screen
