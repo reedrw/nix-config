@@ -64,6 +64,7 @@ in
         source ${sources.oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
         source ${config.lib.base16.base16template "shell"}
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
+        source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
         colors
         setopt promptsubst
@@ -76,12 +77,6 @@ in
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
         SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
-
-        #  Check if current shell is a ranger subshell
-        if test "$RANGER_LEVEL" && ! [[ $(ps -o comm= $PPID) == "nvim" ]]; then
-          alias ranger="exit"
-          export PROMPT="(ranger) $PROMPT"
-        fi
 
         #  nix-shell prompt
         if [[ $IN_NIX_SHELL != "" ]] || [[ $IN_NIX_RUN != "" ]]; then
@@ -178,19 +173,20 @@ in
       '';
       shellAliases = {
         ":q" = "exit";
-        b    = "${pkgs.bat}/bin/bat --theme=base16";
-        cat  = "b --plain --paging=never";
-        cp   = "cp -v";
-        df   = "${pkgs.pydf}/bin/pydf";
-        hms  = "home-manager switch";
-        ln   = "ln -v";
-        ls   = "${pkgs.exa}/bin/exa -lh --git";
-        mv   = "mv -v";
+        b = "${pkgs.bat}/bin/bat --theme=base16";
+        cat = "b --plain --paging=never";
+        cp = "cp -v";
+        df = "${pkgs.pydf}/bin/pydf";
+        hms = "home-manager switch";
+        ln = "ln -v";
+        ls = "${pkgs.exa}/bin/exa -lh --git";
+        mv = "mv -v";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
-        rm   = "rm -v";
+        ranger = "ranger_cd";
+        rm = "rm -v";
         tree = "ls --tree";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
-        x    = "exit";
+        x = "exit";
       };
     };
   };
