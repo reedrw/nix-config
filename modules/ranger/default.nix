@@ -65,10 +65,11 @@ in
 
   xdg.configFile = {
     "ranger/rc.conf".text = ''
-      map e console touch%space
       map D shell dragon -a -x %p
-      map ex extract
-      map ec compress
+      map S q
+      map e console touch%space
+      map xc compress
+      map xx extract
       set preview_images true
       set use_preview_script true
       set preview_script ~/.config/ranger/scope.sh
@@ -85,6 +86,7 @@ in
       ext gif, flag f = mpv -- "$@"
       ext png, flag f = mpv -- "$@"
       ext jpg, flag f = mpv -- "$@"
+      ext jpeg, flag f = mpv -- "$@"
       ext mkv, flag f = mpv -- "$@"
       ext mp4, flag f = mpv -- "$@"
       ext pdf, flag f = zathura -- "$@"
