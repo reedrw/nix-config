@@ -16,7 +16,7 @@
         font = "scientifica 8";
         line_height = 4;
         markup = "full";
-        format = ''%s\n%b'';
+        format = ''<i>%s</i>\n%b'';
         alignment = "left";
         word_wrap = "yes";
         ignore_newline = "no";

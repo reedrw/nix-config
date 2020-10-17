@@ -18,6 +18,24 @@ let
     urxvtc -e ${rangercommand} $@
   '';
 
+  bins = with pkgs; [
+    ccat
+    atool
+    dragon-drop
+    ffmpegthumbnailer
+    fontforge
+    imagemagick
+    jq
+    libarchive
+    libreoffice
+    mediainfo
+    poppler_utils
+    python38Packages.pdf2image
+    ueberzug
+    unrar
+    unzip
+    zip
+  ];
 
 in
 {
@@ -40,22 +58,7 @@ in
           EOF
 
           wrapProgram $out/bin/ranger \
-            --prefix PATH : ${ccat}/bin \
-            --prefix PATH : ${pkgs.atool}/bin \
-            --prefix PATH : ${pkgs.dragon-drop}/bin \
-            --prefix PATH : ${pkgs.ffmpegthumbnailer}/bin \
-            --prefix PATH : ${pkgs.fontforge}/bin \
-            --prefix PATH : ${pkgs.imagemagick}/bin \
-            --prefix PATH : ${pkgs.jq}/bin \
-            --prefix PATH : ${pkgs.libarchive}/bin \
-            --prefix PATH : ${pkgs.libreoffice}/bin \
-            --prefix PATH : ${pkgs.mediainfo}/bin \
-            --prefix PATH : ${pkgs.poppler_utils}/bin \
-            --prefix PATH : ${pkgs.python38Packages.pdf2image}/bin \
-            --prefix PATH : ${pkgs.ueberzug}/bin \
-            --prefix PATH : ${pkgs.unrar}/bin \
-            --prefix PATH : ${pkgs.unzip}/bin \
-            --prefix PATH : ${pkgs.zip}/bin
+            --prefix PATH : ${pkgs.stdenv.lib.makeBinPath bins}
         '';
       }
     );

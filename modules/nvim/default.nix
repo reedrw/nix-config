@@ -21,10 +21,6 @@ in
           sha256 = "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6";
         };
       };
-      vim-colors-pencil = pkgs.vimUtils.buildVimPlugin {
-        name = "vim-colors-pencil";
-        src = sources.vim-colors-pencil;
-      };
     in [
       base16-vim
       gitgutter
@@ -33,7 +29,6 @@ in
       tabular
       vim-airline
       vim-airline-themes
-      vim-colors-pencil
       vim-polyglot
     ];
     extraConfig = with config.lib.base16; let
