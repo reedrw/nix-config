@@ -1,9 +1,9 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p jq
+#! nix-shell -i bash -p jq nix-build-uncached
 
 case $1 in
   system)
-    nix-build --keep-going \
+    nix-build-uncached --keep-going \
       -I nixos-config=./system/$machine/configuration.nix \
       -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" \
       -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" \
@@ -12,7 +12,7 @@ case $1 in
       exit 1
   ;;
   home-manager)
-    nix-build --keep-going \
+    nix-build-uncached --keep-going \
       -I home-manager="$(jq -r '.["home-manager"].url' ./nix/sources.json)" \
       -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" \
       '<home-manager/home-manager/home-manager.nix>' \
