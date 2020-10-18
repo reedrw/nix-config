@@ -67,6 +67,7 @@ in
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "exec --no-startup-id rofi -show run -lines 10 -width 40";
           "${mod}+r" = "exec --no-startup-id ${record}";
+          "${mod}+p" = "exec --no-startup-id ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
         };
         colors = with config.lib.base16.theme; {
           focused = {
