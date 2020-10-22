@@ -8,15 +8,15 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2.3.3
     env:
       EMAIL: action@github.com
       GIT_AUTHOR_NAME: GitHub Action
       GIT_COMMITOR_NAME: GitHub Action
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
     - name: Install nix
       uses: cachix/install-nix-action@v11
       with:
