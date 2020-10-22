@@ -1,0 +1,30 @@
+name: "GitHub Actions Shell"
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'The command to run'
+        required: true
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+    env:
+      EMAIL: action@github.com
+      GIT_AUTHOR_NAME: GitHub Action
+      GIT_COMMITOR_NAME: GitHub Action
+
+    steps:
+    - name: Install nix
+      uses: cachix/install-nix-action@v11
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
+    - name: Run command
+      run: ${{ github.event.inputs.command }}
+
