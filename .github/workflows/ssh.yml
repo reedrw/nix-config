@@ -1,0 +1,32 @@
+name: "SSH Debug"
+on:
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      EMAIL: action@github.com
+      GIT_AUTHOR_NAME: GitHub Action
+      GIT_COMMITOR_NAME: GitHub Action
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
+    - name: Install nix
+      uses: cachix/install-nix-action@v11
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
+    - name: Start SSH via ngrok
+      uses: P3TERX/ssh2actions@v1.0.0
+      with:
+        mode: ngrok
+      env:
+        NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+        NGROK_REGION: us
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+
