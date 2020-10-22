@@ -9,11 +9,7 @@ jobs:
           - reedrw
 
     runs-on: ubuntu-latest
-    env:
-      EMAIL: action@github.com
-      GIT_AUTHOR_NAME: GitHub Action
-      GIT_COMMITOR_NAME: GitHub Action
-
+    steps:
     - name: Install nix
       uses: cachix/install-nix-action@v11
       with:
@@ -36,4 +32,7 @@ jobs:
         NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
         NGROK_REGION: us
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        EMAIL: action@github.com
+        GIT_AUTHOR_NAME: GitHub Action
+        GIT_COMMITOR_NAME: GitHub Action
 
