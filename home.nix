@@ -6,6 +6,7 @@ let
 
     # utilities
     bitwarden
+    bitwarden-cli
     cachix
     firefox
     git
