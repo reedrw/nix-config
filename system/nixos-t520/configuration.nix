@@ -96,7 +96,39 @@ in
     };
   };
 
-  fonts.fontconfig.enable = true;
+  fonts = {
+    fonts = with pkgs; [
+      carlito
+      corefonts
+      dejavu_fonts
+      ipafont
+      kochi-substitute
+      source-code-pro
+      ttf_bitstream_vera
+      noto-fonts-emoji
+    ];
+    enableDefaultFonts = true;
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        monospace = [
+          "Bitstream Vera Sans Mono"
+          "DejaVu Sans Mono"
+          "IPAGothic"
+        ];
+        sansSerif = [
+          "Bitstream Vera Sans"
+          "DejaVu Sans Serif"
+          "IPAPGothic"
+        ];
+        serif = [
+          "Bitstream Vera Serif"
+          "DejaVu Serif"
+          "IPAPMincho"
+        ];
+      };
+    };
+  };
 
   services.sshd.enable = true;
 
