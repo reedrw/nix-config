@@ -19,8 +19,8 @@ let
   '';
 
   bins = with pkgs; [
-    ccat
     atool
+    ccat
     dragon-drop
     ffmpegthumbnailer
     fontforge
@@ -31,6 +31,7 @@ let
     mediainfo
     poppler_utils
     python38Packages.pdf2image
+    tmux
     ueberzug
     unrar
     unzip
