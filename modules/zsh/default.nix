@@ -4,6 +4,33 @@ let
 
   sources = import ./nix/sources.nix;
 
+  tmux = sources.tmux;
+
+  tmuxnew = pkgs.tmux.overrideAttrs (
+    old: rec {
+      version = sources.tmux.rev;
+      src = sources.tmux;
+    }
+  );
+
+  tmuxconf = builtins.toFile "tmuxconf" ''
+    set -g status off
+  '';
+
+  fzf-tab-new = pkgs.stdenv.mkDerivation {
+    name = "fzf-tab";
+    src = sources.fzf-tab;
+
+    installPhase = ''
+      mkdir -p $out
+      cp -rv ./ $out
+      substituteInPlace $out/lib/ftb-tmux-popup \
+        --replace tmux ${tmuxnew}/bin/tmux
+    '';
+
+
+  };
+
 in
 {
 
@@ -28,7 +55,7 @@ in
       plugins = let
         fzf-tab = {
           name = "fzf-tab";
-          src = sources.fzf-tab;
+          src = fzf-tab-new;
         };
         zsh-syntax-highlighting = {
           name = "zsh-syntax-highlighting";
@@ -104,19 +131,16 @@ in
         realpath=\''${(Qe)~realpath}
         "
 
-        FZF_TAB_COMMAND=(
-          ${pkgs.fzf}/bin/fzf
+        FZF_TAB_FLAGS=(
           --ansi   # Enable ANSI color support, necessary for showing groups
-          --expect='$continuous_trigger,$print_query' # For continuous completion
           --color=16
           --nth=2,3 --delimiter='\x00'  # Don't search prefix
-          --layout=reverse --height=''\'''${FZF_TMUX_HEIGHT:=75%}'
+          --layout=reverse
           --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-          '--query=$query'   # $query will be expanded to query string at runtime.
-          '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
           --print-query
         )
-        zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+        zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+        zstyle ':fzf-tab:*' fzf-flags $FZF_TAB_FLAGS
 
         zstyle ':fzf-tab:*' extraopts '--no-sort'
         zstyle ':completion:*' sort false
@@ -169,6 +193,8 @@ in
             command touch "$file";
           done
         }
+
+        [[ $TERM != "screen" ]] && exec ${tmuxnew}/bin/tmux -f ${tmuxconf}
 
       '';
       shellAliases = {

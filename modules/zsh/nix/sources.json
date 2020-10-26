@@ -23,6 +23,18 @@
         "url": "https://github.com/ohmyzsh/ohmyzsh/archive/fcb6fa78a1304f9a8eff2a7563658de04a13d499.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "tmux": {
+        "branch": "master",
+        "description": "tmux source code",
+        "homepage": "",
+        "owner": "tmux",
+        "repo": "tmux",
+        "rev": "9a5b2c93a7129a6e6e74e4b6d4c2c78dd568b8d4",
+        "sha256": "08iwphmxyybs5njnlhjf6q8rb58qafgjlr1cvc70g9ndn0b4bcmh",
+        "type": "tarball",
+        "url": "https://github.com/tmux/tmux/archive/9a5b2c93a7129a6e6e74e4b6d4c2c78dd568b8d4.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "zsh-syntax-highlighting": {
         "branch": "master",
         "description": "Fish shell like syntax highlighting for Zsh.",
