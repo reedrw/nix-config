@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "Aloxaf",
         "repo": "fzf-tab",
-        "rev": "0915bf591a5e38c189d8d971a4e35b711cfc373f",
-        "sha256": "1fkfmzzzpzwljb3884wg5wzry1hpfrzbkwvw2m7yw531kcdmr8y4",
+        "rev": "a7c4890445d6c7a8cc7b64fed3c4e62711ad5b5f",
+        "sha256": "1x3xwbqxknkwa891q1bnzvaikx45hfdhhi6l617ik15z3j9wjb06",
         "type": "tarball",
-        "url": "https://github.com/Aloxaf/fzf-tab/archive/0915bf591a5e38c189d8d971a4e35b711cfc373f.tar.gz",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/a7c4890445d6c7a8cc7b64fed3c4e62711ad5b5f.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oh-my-zsh": {
@@ -17,10 +17,10 @@
         "homepage": "https://ohmyz.sh",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "3b1699b59527ee8095397b9909a37d55689a0481",
-        "sha256": "178nxclfjql3m25amignqjknjyv60n71va07pb6xn61kdw56jmbm",
+        "rev": "fcb6fa78a1304f9a8eff2a7563658de04a13d499",
+        "sha256": "1bgw0hq94laiifiic8v962s5ncm35p5ywjnxcx1qh6qc7nm29986",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/3b1699b59527ee8095397b9909a37d55689a0481.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/fcb6fa78a1304f9a8eff2a7563658de04a13d499.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-syntax-highlighting": {
