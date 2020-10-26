@@ -21,6 +21,7 @@ let
     nur.repos.reedrw.teletype
     nur.repos.suhr.droidcam
     pavucontrol
+    psmisc
     screen
     virt-manager
 
