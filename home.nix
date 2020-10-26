@@ -55,8 +55,6 @@ let
     }
   '';
 
-  user = builtins.getEnv "USER";
-
 in
 {
 
@@ -102,8 +100,8 @@ in
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home = {
-    username = user;
-    homeDirectory = "/home/" + user;
+    username = "reed";
+    homeDirectory = "/home/reed";
     sessionVariables = {
       EDITOR = "nvim";
     };
