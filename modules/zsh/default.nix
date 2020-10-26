@@ -25,7 +25,8 @@ let
       mkdir -p $out
       cp -rv ./ $out
       substituteInPlace $out/lib/ftb-tmux-popup \
-        --replace tmux ${tmuxnew}/bin/tmux
+        --replace tmux ${tmuxnew}/bin/tmux \
+        --replace " fzf " " ${pkgs.fzf}/bin/fzf "
     '';
 
 
@@ -33,6 +34,8 @@ let
 
 in
 {
+
+  home.packages = [ tmuxnew ];
 
   programs = {
 
@@ -121,20 +124,9 @@ in
 
         compinit
 
-        local extract="
-        # trim input
-        local in=\''${\''${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
-        # get ctxt for current completion
-        local -A ctxt=(\"\''${(@ps:\2:)CTXT}\")
-        # real path
-        local realpath=\''${ctxt[IPREFIX]}\''${ctxt[hpre]}\$in
-        realpath=\''${(Qe)~realpath}
-        "
-
         FZF_TAB_FLAGS=(
           --ansi   # Enable ANSI color support, necessary for showing groups
           --color=16
-          --nth=2,3 --delimiter='\x00'  # Don't search prefix
           --layout=reverse
           --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
           --print-query
