@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "tmux",
         "repo": "tmux",
-        "rev": "9a5b2c93a7129a6e6e74e4b6d4c2c78dd568b8d4",
-        "sha256": "08iwphmxyybs5njnlhjf6q8rb58qafgjlr1cvc70g9ndn0b4bcmh",
+        "rev": "20e89605c905baef50f0dd4d7d4901190173292f",
+        "sha256": "14pj2xbnlcsf08pv9asngnkgaaxr8qlcgcmy4j4bpazw86q1vh2r",
         "type": "tarball",
-        "url": "https://github.com/tmux/tmux/archive/9a5b2c93a7129a6e6e74e4b6d4c2c78dd568b8d4.tar.gz",
+        "url": "https://github.com/tmux/tmux/archive/20e89605c905baef50f0dd4d7d4901190173292f.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-autosuggestions": {
