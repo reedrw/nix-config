@@ -15,6 +15,7 @@ let
 
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off
+    set -g destroy-unattached on
   '';
 
   fzf-tab-new = pkgs.stdenv.mkDerivation {
@@ -34,8 +35,6 @@ let
 
 in
 {
-
-  home.packages = [ tmuxnew ];
 
   programs = {
 
