@@ -75,6 +75,9 @@ in
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''
+
+        [[ $TERM != "screen" ]] && exec ${tmuxnew}/bin/tmux -f ${tmuxconf}
+
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
@@ -142,13 +145,8 @@ in
         zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
         zstyle ':fzf-tab:*' fzf-flags $FZF_TAB_FLAGS
 
-        zstyle ':fzf-tab:*' extraopts '--no-sort'
         zstyle ':completion:*' sort false
-        zstyle ':fzf-tab:*' insert-space true
         zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
-        zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'${pkgs.exa}/bin/exa -1 --color=always $realpath'
-        zstyle ':fzf-tab:complete:(vi|vim|nvim):*' extra-opts --preview=$extract'[ -d $realpath ] && ${pkgs.exa}/bin/exa -1 --color=always $realpath || ${pkgs.bat}/bin/bat -p --theme=base16 --color=always $realpath'
-        zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
 
 
         zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
@@ -193,8 +191,6 @@ in
             command touch "$file";
           done
         }
-
-        [[ $TERM != "screen" ]] && exec ${tmuxnew}/bin/tmux -f ${tmuxconf}
 
       '';
       shellAliases = {
