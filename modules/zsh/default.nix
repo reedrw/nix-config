@@ -63,8 +63,13 @@ in
           name = "zsh-syntax-highlighting";
           src = sources.zsh-syntax-highlighting;
         };
+        zsh-autosuggestions = {
+          name = "zsh-autosuggestions";
+          src = sources.zsh-autosuggestions;
+        };
       in [
         fzf-tab
+        zsh-autosuggestions
         zsh-syntax-highlighting
       ];
       autocd = true;
@@ -104,6 +109,10 @@ in
         ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}) "
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
+
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${config.lib.base16.theme.base02}"
+        ZSH_AUTOSUGGEST_STRATEGY="completion"
+        ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
         SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 
