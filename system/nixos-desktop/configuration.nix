@@ -53,6 +53,7 @@ in
   # Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = [ "kvm-intel" ];
+    supportedFilesystems = [ "ntfs" ];
     extraModulePackages = [ pkgs.nur.repos.suhr.v4l2loopback-dc ];
     loader = {
       systemd-boot.enable = true;
@@ -81,33 +82,50 @@ in
 
   time.timeZone = "America/New_York";
 
-  services = {
-    xserver = {
-      enable = true;
-      videoDrivers = [ "amdgpu" ];
-      monitorSection = ''
-        ModeLine "1920x1080_144.00"  325.08  1920 1944 1976 2056  1080 1083 1088 1098 +hsync +vsync
-        Option "PreferredMode" "1920x1080_144.00"
-      '';
-      displayManager = {
-        autoLogin = {
-          enable = true;
-          user = "reed";
-        };
-        lightdm = {
-          enable = true;
-          greeter.enable = false;
-        };
-        session = [
-          {
-            manage = "desktop";
-            name = "xsession";
-            start = ''exec $HOME/.xsession'';
-          }
-        ];
+  services.xserver = {
+    enable = true;
+    videoDrivers = [ "amdgpu" ];
+    monitorSection = ''
+      ModeLine "1920x1080_144.00"  325.08  1920 1944 1976 2056  1080 1083 1088 1098 +hsync +vsync
+      Option "PreferredMode" "1920x1080_144.00"
+    '';
+    displayManager = {
+      autoLogin = {
+        enable = true;
+        user = "reed";
       };
+      lightdm = {
+        enable = true;
+        greeter.enable = false;
+      };
+      session = [
+        {
+          manage = "desktop";
+          name = "xsession";
+          start = ''exec $HOME/.xsession'';
+        }
+      ];
     };
   };
+
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+  networking.firewall.allowedUDPPorts = [ 5353 ];
+
+  services.nfs.server = {
+    enable = true;
+    exports = ''
+      /export       nixos-t520.local(insecure,rw,sync,no_subtree_check)
+      /export/BigHD nixos-t520.local(insecure,rw,sync,no_subtree_check)
+    '';
+  };
+  networking.firewall.allowedTCPPorts = [ 2049 ];
 
   fonts = {
     fonts = with pkgs; [
