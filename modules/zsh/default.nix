@@ -206,6 +206,7 @@ in
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
+        ssh = "TERM=xterm ssh";
         tree = "ls --tree";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
         x = "exit";
