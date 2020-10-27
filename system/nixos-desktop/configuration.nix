@@ -108,25 +108,6 @@ in
     };
   };
 
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-    publish = {
-      enable = true;
-      addresses = true;
-    };
-  };
-  networking.firewall.allowedUDPPorts = [ 5353 ];
-
-  services.nfs.server = {
-    enable = true;
-    exports = ''
-      /export       nixos-t520.local(insecure,rw,sync,no_subtree_check)
-      /export/BigHD nixos-t520.local(insecure,rw,sync,no_subtree_check)
-    '';
-  };
-  networking.firewall.allowedTCPPorts = [ 2049 ];
-
   fonts = {
     fonts = with pkgs; [
       carlito
@@ -160,6 +141,27 @@ in
       };
     };
   };
+
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+  networking.firewall.allowedUDPPorts = [ 5353 ];
+
+  services.nfs.server = {
+    enable = true;
+    exports = ''
+      /export       nixos-t520.local(insecure,rw,sync,no_subtree_check)
+      /export/BigHD nixos-t520.local(insecure,rw,sync,no_subtree_check)
+    '';
+  };
+  networking.firewall.allowedTCPPorts = [ 2049 ];
+
+  services.sshd.enable = true;
 
   virtualisation = {
     docker.enable = true;
