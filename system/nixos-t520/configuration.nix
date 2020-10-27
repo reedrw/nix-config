@@ -130,6 +130,22 @@ in
     };
   };
 
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+  networking.firewall.allowedUDPPorts = [ 5353 ];
+
+  fileSystems."/mnt/BigHD" = {
+    device = "nixos-desktop.local:/export/BigHD";
+    fsType = "nfs4";
+    options = [ "x-systemd.automount" "x-systemd.idle-timeout=600" "noauto" ];
+  };
+
   services.sshd.enable = true;
 
   users.users.reed = {
