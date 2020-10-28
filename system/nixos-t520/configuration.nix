@@ -5,7 +5,7 @@
 { config, pkgs, ... }:
 
 let
-
+# {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
@@ -20,9 +20,11 @@ let
 
   hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
     then import ./hardware-configuration.nix else import dummy-hw;
-
+# }}}
 in
 {
+
+# {{{ Imports
   imports =
     [
       # Use cachix
@@ -31,7 +33,8 @@ in
       hardware-configuration
       <nixos-hardware/lenovo/thinkpad/t420>
     ];
-
+# }}}
+# {{{ Nix and nixpkgs
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
@@ -49,18 +52,18 @@ in
       keep-derivations = true
     '';
   };
-
+# }}}
+# {{{ Boot settings
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
-
-  networking = {
-    hostName = "nixos-t520";
-    networkmanager.enable = true;
-  };
-
+# }}}
+# {{{ Time and locale
+  time.timeZone = "America/New_York";
+# }}}
+# {{{ Sound and hardware
   sound.enable = true;
 
   hardware = {
@@ -70,9 +73,8 @@ in
     };
     pulseaudio.enable = true;
   };
-
-  time.timeZone = "America/New_York";
-
+# }}}
+# {{{ X server
   services = {
     xserver = {
       enable = true;
@@ -95,7 +97,8 @@ in
       };
     };
   };
-
+# }}}
+# {{{ Fonts
   fonts = {
     fonts = with pkgs; [
       carlito
@@ -129,7 +132,8 @@ in
       };
     };
   };
-
+# }}}
+# {{{ Services
   services.avahi = {
     enable = true;
     nssmdns = true;
@@ -138,22 +142,34 @@ in
       addresses = true;
     };
   };
-  networking.firewall.allowedUDPPorts = [ 5353 ];
 
+  services.sshd.enable = true;
+
+  # NFS mount
   fileSystems."/mnt/BigHD" = {
     device = "nixos-desktop.local:/export/BigHD";
     fsType = "nfs4";
     options = [ "x-systemd.automount" "x-systemd.idle-timeout=600" "noauto" ];
   };
-
-  services.sshd.enable = true;
-
+# }}}
+# {{{ Networking
+  networking = {
+    hostName = "nixos-t520";
+    networkmanager.enable = true;
+    firewall.allowedUDPPorts = [ 5353 ];
+  };
+# }}}
+# {{{ Virtualization
+  virtualisation.docker.enable = true;
+# }}}
+# {{{ Users
   users.users.reed = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "audio" ];
+    extraGroups = [ "docker" "wheel" "networkmanager" "audio" ];
     shell = pkgs.zsh;
   };
-
+# }}}
+# {{{
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -161,6 +177,7 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.03"; # Did you read the comment?
+# }}}
 
 }
 
