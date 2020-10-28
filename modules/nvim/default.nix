@@ -109,6 +109,7 @@ in
       set mouse=a
       set noshowmode
       set nohlsearch
+      set foldmethod=marker
       command -nargs=* Hm !home-manager <args>
       highlight Comment cterm=italic gui=italic
       vnoremap <C-c> "*y
@@ -117,6 +118,7 @@ in
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
+      nnoremap <Space> za
       map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}<CR>wv^deld$viwyA = sources.<esc>pA;
     '';
   };

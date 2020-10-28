@@ -5,7 +5,7 @@
 { config, pkgs, ... }:
 
 let
-
+# {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
@@ -20,9 +20,11 @@ let
 
   hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
     then import ./hardware-configuration.nix else import dummy-hw;
-
+# }}}
 in
 {
+
+# {{{ Imports
   imports = [
       # Use cachix
       cachix
@@ -31,7 +33,8 @@ in
       <nixos-hardware/common/cpu/intel>
       <nixos-hardware/common/pc/ssd>
     ];
-
+# }}}
+# {{{ Nix and nixpkgs
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
@@ -49,8 +52,9 @@ in
       keep-derivations = true
     '';
   };
-
-  # Use the systemd-boot EFI boot loader.
+# }}}
+# {{{ Boot settings
+# Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = [ "kvm-intel" ];
     supportedFilesystems = [ "ntfs" ];
@@ -60,9 +64,11 @@ in
       efi.canTouchEfiVariables = true;
     };
   };
-
-  networking.hostName = "nixos-desktop";
-
+# }}}
+# {{{ Time and locale
+  time.timeZone = "America/New_York";
+# }}}
+# {{{ Sound and hardware
   sound.enable = true;
 
   hardware = {
@@ -79,9 +85,8 @@ in
       extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
     };
   };
-
-  time.timeZone = "America/New_York";
-
+# }}}
+# {{{ X server
   services.xserver = {
     enable = true;
     videoDrivers = [ "amdgpu" ];
@@ -107,7 +112,8 @@ in
       ];
     };
   };
-
+# }}}
+# {{{ Fonts
   fonts = {
     fonts = with pkgs; [
       carlito
@@ -141,8 +147,9 @@ in
       };
     };
   };
-
-  services.avahi = {
+# }}}
+# {{{ Services
+services.avahi = {
     enable = true;
     nssmdns = true;
     publish = {
@@ -150,7 +157,6 @@ in
       addresses = true;
     };
   };
-  networking.firewall.allowedUDPPorts = [ 5353 ];
 
   services.nfs.server = {
     enable = true;
@@ -159,23 +165,33 @@ in
       /export/BigHD nixos-t520.local(insecure,rw,sync,no_subtree_check)
     '';
   };
-  networking.firewall.allowedTCPPorts = [ 2049 ];
 
   services.sshd.enable = true;
-
+# }}}
+# {{{ Networking
+  networking = {
+    hostName = "nixos-desktop";
+    firewall.allowedTCPPorts = [ 2049 ];
+    firewall.allowedUDPPorts = [ 5353 ];
+  };
+# }}}
+# {{{ Virtualization
   virtualisation = {
     docker.enable = true;
     libvirtd.enable = true;
   };
-
+# }}}
+# {{{ Programs
   programs.adb.enable = true;
-
+# }}}
+# {{{ Users
   users.users.reed = {
     isNormalUser = true;
     extraGroups = [ "adbusers" "audio" "docker" "libvirtd" "wheel" ];
     shell = pkgs.zsh;
   };
-
+# }}}
+# {{{
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -183,6 +199,7 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.03"; # Did you read the comment?
+# }}}
 
 }
 
