@@ -24,6 +24,7 @@
       tabular
       vim-airline
       vim-airline-themes
+      vim-fugitive
       vim-polyglot
     ];
     extraConfig = with config.lib.base16; let
@@ -106,7 +107,9 @@
       set nohlsearch
       set foldmethod=marker
       command -nargs=* Hm !home-manager <args>
-      highlight Comment cterm=italic gui=italic
+      autocmd VimEnter * hi Comment cterm=italic gui=italic
+      autocmd VimEnter * hi Folded cterm=bold ctermfg=DarkBlue ctermbg=none
+      autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
       vnoremap <C-c> "*y
       vnoremap <C-x> "*d
       cnoremap <Up> <C-p>
