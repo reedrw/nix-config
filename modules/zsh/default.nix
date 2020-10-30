@@ -208,12 +208,13 @@ in
         ":q" = "exit";
         b = "${pkgs.bat}/bin/bat --theme=base16";
         cat = "b --plain --paging=never";
-        cp = "cp -v";
+        cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
         hms = "home-manager switch";
         ln = "ln -v";
         ls = "${pkgs.exa}/bin/exa -lh --git";
-        mv = "mv -v";
+        mkdir = "mkdir -vp";
+        mv = "mv -iv";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
