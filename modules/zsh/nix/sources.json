@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "Aloxaf",
         "repo": "fzf-tab",
-        "rev": "0f5622a64b273d203046b570e76ba5baef84be58",
-        "sha256": "16gmrys93dqjmg2cmdy19savr0c4mndwyi5zcnfgh8asyp7xsdfn",
+        "rev": "4434589907a77e9df2e98e3dcaf96e8d8e767e21",
+        "sha256": "0g14kxm7l4rwqc3fncmhiywd38gr6kgbfpqdwqr6dsi44xm2dxi3",
         "type": "tarball",
-        "url": "https://github.com/Aloxaf/fzf-tab/archive/0f5622a64b273d203046b570e76ba5baef84be58.tar.gz",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/4434589907a77e9df2e98e3dcaf96e8d8e767e21.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oh-my-zsh": {
@@ -17,10 +17,10 @@
         "homepage": "https://ohmyz.sh",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "63922b5ec435d04ea31ee33138061f1d812beefe",
-        "sha256": "1qwq09myr53qc2i7ljp4s8d3vxnnxc8sgzqbxkscig7d72aqhr7v",
+        "rev": "852a44094a3bb4df39f8f778bc7ada2ddda09727",
+        "sha256": "0021rayw5wiwgjfwy7d6g577xidws58vk7y9xxhidnmk9sr4vri7",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/63922b5ec435d04ea31ee33138061f1d812beefe.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/852a44094a3bb4df39f8f778bc7ada2ddda09727.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "tmux": {
@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "tmux",
         "repo": "tmux",
-        "rev": "20e89605c905baef50f0dd4d7d4901190173292f",
-        "sha256": "14pj2xbnlcsf08pv9asngnkgaaxr8qlcgcmy4j4bpazw86q1vh2r",
+        "rev": "ffe39edf2fdd8f0489c05022ca8f6e9994396881",
+        "sha256": "0pjjb64qg6vhgk5x7zfv9vhbiz53wd2raymslrhw76vzzl2g3gzq",
         "type": "tarball",
-        "url": "https://github.com/tmux/tmux/archive/20e89605c905baef50f0dd4d7d4901190173292f.tar.gz",
+        "url": "https://github.com/tmux/tmux/archive/ffe39edf2fdd8f0489c05022ca8f6e9994396881.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-autosuggestions": {
