@@ -8,6 +8,7 @@ in
     enable = true;
     package = pkgs.picom.overrideAttrs (
       oldAttrs: rec {
+        version = "next-ibhagwan";
         src = sources.picom;
       }
     );
