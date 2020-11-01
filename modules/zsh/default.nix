@@ -16,18 +16,6 @@ let
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off
     set -g destroy-unattached on
-    set -g mouse on
-
-    bind -n C-DoubleClick1Pane if -F '#{m/r:^[^:]*:[0-9]+:,#{mouse_word}}' {
-      popup -w90% -h90% -KE -d '#{pane_current_path}' -R '
-        vim `echo #{mouse_word}|awk -F: "{print \"+\"\\$2,\\$1}"`
-      '
-      } {
-        popup -w90% -h90% -KE -d '#{pane_current_path}' -R '
-          vim "#{mouse_word}"
-        '
-      }
-
   '';
 
   fzf-tab-new = pkgs.stdenv.mkDerivation {
