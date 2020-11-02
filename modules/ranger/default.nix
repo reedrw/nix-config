@@ -31,7 +31,7 @@ let
     mediainfo
     poppler_utils
     python38Packages.pdf2image
-    tmux
+    tmuxnew
     ueberzug
     unrar
     unzip

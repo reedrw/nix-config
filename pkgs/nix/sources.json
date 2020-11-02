@@ -1,0 +1,14 @@
+{
+    "tmux": {
+        "branch": "master",
+        "description": "tmux source code",
+        "homepage": "",
+        "owner": "tmux",
+        "repo": "tmux",
+        "rev": "ffe39edf2fdd8f0489c05022ca8f6e9994396881",
+        "sha256": "0pjjb64qg6vhgk5x7zfv9vhbiz53wd2raymslrhw76vzzl2g3gzq",
+        "type": "tarball",
+        "url": "https://github.com/tmux/tmux/archive/ffe39edf2fdd8f0489c05022ca8f6e9994396881.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

@@ -78,6 +78,7 @@ in
 
   nixpkgs = {
     config = import "${config}";
+    overlays = [ (import ./pkgs) ];
   };
 
   xdg = {

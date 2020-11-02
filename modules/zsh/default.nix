@@ -4,15 +4,6 @@ let
 
   sources = import ./nix/sources.nix;
 
-  tmux = sources.tmux;
-
-  tmuxnew = pkgs.tmux.overrideAttrs (
-    old: rec {
-      version = sources.tmux.rev;
-      src = sources.tmux;
-    }
-  );
-
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off
     set -g destroy-unattached on
@@ -26,7 +17,7 @@ let
       mkdir -p $out
       cp -rv ./ $out
       substituteInPlace $out/lib/ftb-tmux-popup \
-        --replace tmux ${tmuxnew}/bin/tmux \
+        --replace tmux ${pkgs.tmuxnew}/bin/tmux \
         --replace " fzf " " ${pkgs.fzf}/bin/fzf "
     '';
 
@@ -76,7 +67,7 @@ in
       defaultKeymap = "emacs";
       initExtra = ''
 
-        [[ $TERM != "screen" ]] && exec ${tmuxnew}/bin/tmux -f ${tmuxconf}
+        [[ $TERM != "screen" ]] && exec ${pkgs.tmuxnew}/bin/tmux -f ${tmuxconf}
 
         while read -r i; do
           autoload -Uz "$i"
