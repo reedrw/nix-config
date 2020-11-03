@@ -149,7 +149,7 @@ in
   };
 # }}}
 # {{{ Services
-services.avahi = {
+  services.avahi = {
     enable = true;
     nssmdns = true;
     publish = {
@@ -161,8 +161,8 @@ services.avahi = {
   services.nfs.server = {
     enable = true;
     exports = ''
-      /export       nixos-t520.local(insecure,rw,sync,no_subtree_check)
-      /export/BigHD nixos-t520.local(insecure,rw,sync,no_subtree_check)
+      /export       192.168.1.0/24(insecure,rw,sync,no_subtree_check)
+      /export/BigHD 192.168.1.0/24(insecure,rw,sync,no_subtree_check)
     '';
   };
 
@@ -170,6 +170,7 @@ services.avahi = {
 # }}}
 # {{{ Networking
   networking = {
+    networkmanager.enable = true;
     hostName = "nixos-desktop";
     firewall.allowedTCPPorts = [ 2049 ];
     firewall.allowedUDPPorts = [ 5353 ];
@@ -183,11 +184,12 @@ services.avahi = {
 # }}}
 # {{{ Programs
   programs.adb.enable = true;
+  environment.pathsToLink = [ "/share/zsh" ];
 # }}}
 # {{{ Users
   users.users.reed = {
     isNormalUser = true;
-    extraGroups = [ "adbusers" "audio" "docker" "libvirtd" "wheel" ];
+    extraGroups = [ "adbusers" "audio" "docker" "libvirtd" "networkmanager" "wheel" ];
     shell = pkgs.zsh;
   };
 # }}}
