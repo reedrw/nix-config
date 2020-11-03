@@ -199,7 +199,6 @@ in
         rm = "rm -v";
         ssh = "TERM=xterm ssh";
         tree = "ls --tree";
-        vim = "nvim";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
         x = "exit";
       };
