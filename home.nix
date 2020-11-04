@@ -5,6 +5,7 @@ let
   packages = with pkgs; [
 
     # utilities
+    acpi
     bitwarden
     bitwarden-cli
     cachix
