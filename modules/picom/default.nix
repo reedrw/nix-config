@@ -6,12 +6,7 @@ in
 {
   services.picom = {
     enable = true;
-    package = pkgs.picom.overrideAttrs (
-      oldAttrs: rec {
-        version = "next-ibhagwan";
-        src = sources.picom;
-      }
-    );
+    package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
     shadow = true;
     shadowOpacity = "0.3";
     shadowExclude = [
