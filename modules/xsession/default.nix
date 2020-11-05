@@ -39,6 +39,20 @@ let
 
   '';
 
+  brotab-rofi = pkgs.writeShellScript "brotab-rofi.sh" ''
+    ${pkgs.brotab}/bin/bt list | \
+      sed "s/\t/~/" | \
+      column -t -s'~' | \
+      sed -e "s/$/^/g" | \
+      tr '\n' ' ' | \
+      sed -e "s/\t/\n/g" -e "s/\^ /^/g" | \
+      rofi -p "Switch tab" -dmenu -sep '^' -eh 2 | \
+      head -1 | \
+      cut -d$' ' -f1 | \
+      xargs -L1 ${pkgs.brotab}/bin/bt activate
+
+  '';
+
 in
 {
   xsession = {
@@ -68,6 +82,7 @@ in
           "${sup}+space" = "exec --no-startup-id rofi -show run -lines 10 -width 40";
           "${mod}+r" = "exec --no-startup-id ${record}";
           "${mod}+p" = "exec --no-startup-id ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "${mod}+t" = "exec --no-startup-id ${brotab-rofi}";
         };
         colors = with config.lib.base16.theme; {
           focused = {
