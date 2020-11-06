@@ -195,7 +195,7 @@ in
         mkdir = "mkdir -vp";
         mv = "mv -iv";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
-        ranger = "TERM=xterm-256color ranger_cd";
+        ranger = "TERM=screen-256color ranger_cd";
         rm = "rm -v";
         ssh = "TERM=xterm ssh";
         tree = "ls --tree";
