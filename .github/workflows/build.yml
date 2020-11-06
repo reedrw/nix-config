@@ -1,0 +1,51 @@
+name: "Build and populate cache"
+on:
+  push:
+  schedule:
+    - cron: '50 2 * * *'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        cachixName:
+          - reedrw
+        machines:
+          - nixos-desktop
+          - nixos-t400
+          - nixos-t520
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install nix
+      uses: cachix/install-nix-action@v11
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.3
+
+    - name: Free disk space
+      run: |
+        df -h
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
+    - name: Setup cachix
+      uses: cachix/cachix-action@v6
+      with:
+        name: ${{ matrix.cachixName }}
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+
+    - name: Setup nix-shell
+      run: nix-shell -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix --run 'exit'
+
+    - name: Build system
+      run: ./ci.sh system
+      env:
+        machine: ${{ matrix.machines }}
+
+    - name: Build home-manager
+      run: ./ci.sh home-manager
+
