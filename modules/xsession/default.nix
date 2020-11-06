@@ -46,7 +46,7 @@ let
       sed -e "s/$/^/g" | \
       tr '\n' ' ' | \
       sed -e "s/\t/\n/g" -e "s/\^ /^/g" | \
-      rofi -p "Switch tab" -dmenu -sep '^' -eh 2 | \
+      rofi -p "Switch tab" -dmenu -sep '^' -eh 2 -i | \
       head -1 | \
       cut -d$' ' -f1 | \
       xargs -L1 ${pkgs.brotab}/bin/bt activate
