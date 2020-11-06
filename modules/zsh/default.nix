@@ -69,8 +69,6 @@ in
 
         [[ $TERM != "screen" ]] && exec ${pkgs.tmuxnew}/bin/tmux -f ${tmuxconf}
 
-        export TERM=xterm-256color
-
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
@@ -197,7 +195,7 @@ in
         mkdir = "mkdir -vp";
         mv = "mv -iv";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
-        ranger = "ranger_cd";
+        ranger = "TERM=xterm-256color ranger_cd";
         rm = "rm -v";
         ssh = "TERM=xterm ssh";
         tree = "ls --tree";
