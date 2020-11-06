@@ -69,6 +69,8 @@ in
 
         [[ $TERM != "screen" ]] && exec ${pkgs.tmuxnew}/bin/tmux -f ${tmuxconf}
 
+        export TERM=xterm-256color
+
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
