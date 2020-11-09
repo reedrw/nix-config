@@ -23,7 +23,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Checkout repository
-      uses: actions/checkout@v2.3.3
+      uses: actions/checkout@v2.3.4
 
     - name: Free disk space
       run: |
@@ -33,7 +33,7 @@ jobs:
         df -h
 
     - name: Setup cachix
-      uses: cachix/cachix-action@v6
+      uses: cachix/cachix-action@v7
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -53,6 +53,9 @@ jobs:
 
     - name: Build home-manager
       run: ./ci.sh home-manager
+
+    - name: Update nix-index database
+      run: nix-shell -p nix-index --run "nix-index -d ./modules/comma"
 
     - name: Commit and push
       uses: EndBug/add-and-commit@v5

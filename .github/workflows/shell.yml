@@ -20,13 +20,13 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Setup cachix
-      uses: cachix/cachix-action@v6
+      uses: cachix/cachix-action@v7
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
 
     - name: Checkout repository
-      uses: actions/checkout@v2.3.3
+      uses: actions/checkout@v2.3.4
 
     - name: Run command
       run: ${{ github.event.inputs.command }}
