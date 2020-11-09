@@ -23,7 +23,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Checkout repository
-      uses: actions/checkout@v2.3.3
+      uses: actions/checkout@v2.3.4
 
     - name: Free disk space
       run: |
