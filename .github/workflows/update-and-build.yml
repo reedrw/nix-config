@@ -10,10 +10,6 @@ jobs:
       matrix:
         cachixName:
           - reedrw
-        machines:
-          - nixos-desktop
-          - nixos-t400
-          - nixos-t520
 
     runs-on: ubuntu-latest
     steps:
@@ -46,10 +42,20 @@ jobs:
     - name: Build nix-shell
       run: nix-build -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix
 
-    - name: Build system
+    - name: Build system (desktop)
       run: ./ci.sh system
       env:
-        machine: ${{ matrix.machines }}
+        machine: nixos-desktop
+
+    - name: Build system (t400)
+      run: ./ci.sh system
+      env:
+        machine: nixos-t400
+
+    - name: Build system (t520)
+      run: ./ci.sh system
+      env:
+        machine: nixos-t520
 
     - name: Build home-manager
       run: ./ci.sh home-manager
