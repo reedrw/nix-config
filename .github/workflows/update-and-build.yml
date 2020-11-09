@@ -38,16 +38,13 @@ jobs:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
 
-    - name: Setup nix-shell
-      run: nix-shell -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix --run 'exit'
-
     - name: Update sources
       run: ./update-all.sh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Re-build nix-shell
-      run: nix-shell -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix --run 'exit'
+    - name: Build nix-shell
+      run: nix-build -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix
 
     - name: Build system
       run: ./ci.sh system
