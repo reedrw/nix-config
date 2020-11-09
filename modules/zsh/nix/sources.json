@@ -17,10 +17,10 @@
         "homepage": "https://ohmyz.sh",
         "owner": "ohmyzsh",
         "repo": "ohmyzsh",
-        "rev": "3e6ee85a161c8089955c19364728e167025a911d",
-        "sha256": "06bq5ii89i9mq93fh5ri9f76b39qycrvggzinj3isjx5kdzr5k7z",
+        "rev": "fa780867d9745bfbd6c190859645d4c92405d961",
+        "sha256": "0w9ihcy5pj9g10qdxdy2mnfccqp2jd80w1kl6rlh6ybvr6b76i0y",
         "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/3e6ee85a161c8089955c19364728e167025a911d.tar.gz",
+        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/fa780867d9745bfbd6c190859645d4c92405d961.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-autosuggestions": {
