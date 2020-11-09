@@ -16,7 +16,6 @@ let
     libreoffice
     ngrok
     nix-tree
-    nur.repos.reedrw.comma
     nur.repos.reedrw.ix
     nur.repos.reedrw.noisetorch
     nur.repos.reedrw.teletype
@@ -61,6 +60,7 @@ in
 
   imports = [
     ./modules/base16
+    ./modules/comma
     ./modules/dunst
     ./modules/mpd
     ./modules/mpv
