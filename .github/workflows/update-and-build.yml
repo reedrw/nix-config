@@ -61,7 +61,7 @@ jobs:
       run: ./ci.sh home-manager
 
     - name: Update nix-index database
-      run: nix-shell -p nix-index --run "nix-index -d ./modules/comma"
+      run: nix-shell -p nix-index --run "nix-index -f $(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json) -d ./modules/comma"
 
     - name: Commit and push
       uses: EndBug/add-and-commit@v5
