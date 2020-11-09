@@ -11,6 +11,18 @@
         "url": "https://github.com/nix-community/NUR/archive/8ec62db1a71858a68a9d74de1fa0978c20ebf151.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "devshell": {
+        "branch": "master",
+        "description": "Per project developer environments",
+        "homepage": "",
+        "owner": "numtide",
+        "repo": "devshell",
+        "rev": "0d44c41e670d0ef700c42006acac30ae91ecf9a2",
+        "sha256": "0y23wn1gqm24lib27byl0r5zhqlzac20nx8vbj8s1x2h52dnp1i6",
+        "type": "tarball",
+        "url": "https://github.com/numtide/devshell/archive/0d44c41e670d0ef700c42006acac30ae91ecf9a2.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "home-manager": {
         "branch": "master",
         "description": "Manage a user environment using Nix  [maintainer=@rycee] ",
