@@ -13,7 +13,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: technote-space/auto-cancel-redundant-workflow@v1
+
+    - name: Cancel Previous Runs
+      uses: rokroskar/workflow-run-cleanup-action@v0.2.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install nix
       uses: cachix/install-nix-action@v12
