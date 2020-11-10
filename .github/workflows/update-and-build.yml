@@ -61,6 +61,7 @@ jobs:
 
     - name: Apply diff
       run: |
+        ls -R ~/artifact
         git apply ~/artifact/update.diff
 
     - name: Update nix-index database
@@ -105,6 +106,7 @@ jobs:
 
     - name: Apply diff
       run: |
+        ls -R ~/artifact
         git apply ~/artifact/update.diff
 
     - name: Build nix-shell
@@ -146,6 +148,7 @@ jobs:
 
     - name: Apply diff
       run: |
+        ls -R ~/artifact
         git apply ~/artifact/update.diff
 
     - name: Build system
@@ -184,6 +187,7 @@ jobs:
 
     - name: Apply diff
       run: |
+        ls -R ~/artifact
         git apply ~/artifact/update.diff
 
     - name: Build home-manager
@@ -206,6 +210,7 @@ jobs:
 
     - name: Apply diff
       run: |
+        ls -R ~/artifact
         git apply ~/artifact/update.diff
 
     - name: download nix-index artifact
@@ -216,6 +221,7 @@ jobs:
 
     - name: Replace nix-index db
       run: |
+        ls -R ~/artifact
         rm -v ./modules/comma/files
         cp -v ~/artifact/nix-index/files ./modules/comma
 
