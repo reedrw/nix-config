@@ -61,8 +61,7 @@ jobs:
 
     - name: Apply diff
       run: |
-        ls -R ~/artifact
-        git apply ~/artifact/update.diff
+        git apply ~/artifact/update.diff/update.diff
 
     - name: Update nix-index database
       run: |
@@ -106,8 +105,7 @@ jobs:
 
     - name: Apply diff
       run: |
-        ls -R ~/artifact
-        git apply ~/artifact/update.diff
+        git apply ~/artifact/update.diff/update.diff
 
     - name: Build nix-shell
       run: nix-build -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix
@@ -148,8 +146,7 @@ jobs:
 
     - name: Apply diff
       run: |
-        ls -R ~/artifact
-        git apply ~/artifact/update.diff
+        git apply ~/artifact/update.diff/update.diff
 
     - name: Build system
       run: ./ci.sh system
@@ -187,12 +184,10 @@ jobs:
 
     - name: Apply diff
       run: |
-        ls -R ~/artifact
-        git apply ~/artifact/update.diff
+        git apply ~/artifact/update.diff/update.diff
 
     - name: Build home-manager
       run: ./ci.sh home-manager
-
 
   push:
     name: Commit and push
@@ -210,8 +205,7 @@ jobs:
 
     - name: Apply diff
       run: |
-        ls -R ~/artifact
-        git apply ~/artifact/update.diff
+        git apply ~/artifact/update.diff/update.diff
 
     - name: download nix-index artifact
       uses: actions/download-artifact@v2
@@ -221,11 +215,8 @@ jobs:
 
     - name: Replace nix-index db
       run: |
-        ls -R ~/artifact
         rm -v ./modules/comma/files
-        cp -v ~/artifact/nix-index/files ./modules/comma
-
-    - uses: technote-space/workflow-conclusion-action@v2
+        cp -v ~/artifact/nix-index/files/files ./modules/comma
 
     - name: Commit and push
       uses: EndBug/add-and-commit@v5
@@ -236,4 +227,3 @@ jobs:
         add: "--all"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: env.WORKFLOW_CONCLUSION == 'success'
