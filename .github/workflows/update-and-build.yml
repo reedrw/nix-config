@@ -112,7 +112,7 @@ jobs:
 
   system:
     name: Build system
-    needs: shell
+    needs: update
     strategy:
       matrix:
         cachixName:
@@ -155,7 +155,7 @@ jobs:
 
   home-manager:
     name: Build home-manager
-    needs: shell
+    needs: update
     strategy:
       matrix:
         cachixName:
