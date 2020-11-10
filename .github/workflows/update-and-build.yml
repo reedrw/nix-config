@@ -15,9 +15,7 @@ jobs:
     steps:
 
     - name: Cancel Previous Runs
-      uses: rokroskar/workflow-run-cleanup-action@v0.2.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: technote-space/auto-cancel-redundant-workflow@v1.6.3
 
     - name: Install nix
       uses: cachix/install-nix-action@v12
