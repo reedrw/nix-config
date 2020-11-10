@@ -219,6 +219,8 @@ jobs:
         rm -v ./modules/comma/files
         cp -v ~/artifact/nix-index/files ./modules/comma
 
+    - uses: technote-space/workflow-conclusion-action@v2
+
     - name: Commit and push
       uses: EndBug/add-and-commit@v5
       with:
@@ -228,3 +230,4 @@ jobs:
         add: "--all"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: env.WORKFLOW_CONCLUSION == 'success'
