@@ -1,8 +1,6 @@
 name: "Build and populate cache"
 on:
   push:
-  schedule:
-    - cron: '50 2 * * *'
 
 jobs:
   build:
@@ -17,6 +15,17 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+    - name: Cancel previous runs
+      uses: styfle/cancel-workflow-action@0.6.0
+      with:
+        access_token: ${{ github.token }}
+
+    - name: Cancel update workflow
+      uses: styfle/cancel-workflow-action@0.6.0
+      with:
+        workflow_id:  2906087
+        access_token: ${{ github.token }}
+
     - name: Install nix
       uses: cachix/install-nix-action@v12
       with:
