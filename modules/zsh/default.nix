@@ -88,8 +88,8 @@ in
 
         unsetopt nomatch
 
-        source ${sources.oh-my-zsh}/lib/git.zsh
-        source ${sources.oh-my-zsh}/plugins/sudo/sudo.plugin.zsh
+        source ${pkgs.oh-my-zsh.src}/lib/git.zsh
+        source ${pkgs.oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
         source ${config.lib.base16.base16template "shell"}
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
         source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null

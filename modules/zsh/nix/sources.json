@@ -11,18 +11,6 @@
         "url": "https://github.com/Aloxaf/fzf-tab/archive/c664275e695e74829e12311c6f17c2d36c9c5b69.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "oh-my-zsh": {
-        "branch": "master",
-        "description": "🙃 A delightful community-driven (with 1700+ contributors) framework for managing your zsh configuration. Includes 200+ optional plugins (rails, git, OSX, hub, capistrano, brew, ant, php, python, etc), over 140 themes to spice up your morning, and an auto-update tool so that makes it easy to keep up with the latest updates from the community.",
-        "homepage": "https://ohmyz.sh",
-        "owner": "ohmyzsh",
-        "repo": "ohmyzsh",
-        "rev": "eef04c62c2dfbd81f9fee6752e3b7e0b9c3bf617",
-        "sha256": "15gisyawg9g8xan5dawzj3jmqnwdiki95dxjgwyswfks2vcfakl6",
-        "type": "tarball",
-        "url": "https://github.com/ohmyzsh/ohmyzsh/archive/eef04c62c2dfbd81f9fee6752e3b7e0b9c3bf617.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "zsh-autosuggestions": {
         "branch": "master",
         "description": "Fish-like autosuggestions for zsh",
