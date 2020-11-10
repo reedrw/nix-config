@@ -18,13 +18,13 @@ jobs:
     - name: Cancel previous runs
       uses: styfle/cancel-workflow-action@0.6.0
       with:
-        access_token: ${{ github.token }}
+        access_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Cancel update workflow
       uses: styfle/cancel-workflow-action@0.6.0
       with:
         workflow_id:  2906087
-        access_token: ${{ github.token }}
+        access_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install nix
       uses: cachix/install-nix-action@v12
