@@ -244,3 +244,16 @@ jobs:
         branch: ${{ github.ref }}
         force: true
 
+  telegram:
+    name: Telegram
+    needs: push
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2.0.1
+
+      - uses: haishanh/actions-telegram-notification@v1
+        with:
+          notification-token: ${{ secrets.NOTIFICATION_TOKEN }}
+          job-status: ${{ env.WORKFLOW_CONCLUSION }}
+

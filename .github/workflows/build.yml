@@ -100,3 +100,17 @@ jobs:
 
     - name: Build nix-shell
       run: nix-build -I nixpkgs="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)" shell.nix
+
+  telegram:
+    name: Telegram
+    needs: [cancel, system, home-manager, shell]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2.0.1
+
+      - uses: haishanh/actions-telegram-notification@v1
+        with:
+          notification-token: ${{ secrets.NOTIFICATION_TOKEN }}
+          job-status: ${{ env.WORKFLOW_CONCLUSION }}
+
