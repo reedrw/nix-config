@@ -252,8 +252,9 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v2.0.1
 
-      - uses: haishanh/actions-telegram-notification@v1
+      - uses: yanzay/notify-telegram@v0.1.0
         with:
-          notification-token: ${{ secrets.NOTIFICATION_TOKEN }}
-          job-status: ${{ env.WORKFLOW_CONCLUSION }}
+          chat: ${{ secrets.NOTIFICATION_CHAT_ID }}
+          token: ${{ secrets.NOTIFICATION_TOKEN }}
+          status: ${{ env.WORKFLOW_CONCLUSION }}
 
