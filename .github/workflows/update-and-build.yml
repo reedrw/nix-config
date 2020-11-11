@@ -207,7 +207,7 @@ jobs:
       run: |
         git apply ~/artifact/update.diff/update.diff
 
-    - name: download nix-index artifact
+    - name: Download nix-index artifact
       uses: actions/download-artifact@v2
       with:
         name: nix-index db
