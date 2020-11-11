@@ -218,12 +218,22 @@ jobs:
         rm -v ./modules/comma/files
         cp -v ~/artifact/nix-index/files/files ./modules/comma
 
-    - name: Commit and push
-      uses: EndBug/add-and-commit@v5
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "automated update" -a
+
+    - name: Remove large blobs from history
+      run: |
+        nix run nixpkgs.bfg-repo-cleaner -c bfg -b 20M
+        git reflog expire --expire=now --all
+        git gc --prune=now --aggressive
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
       with:
-        author_name: GitHub Action
-        author_email: action@github.com
-        message: "automated update"
-        add: "--all"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+        force: true
+
