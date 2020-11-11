@@ -251,12 +251,12 @@ jobs:
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2.0.1
-
       - uses: yanzay/notify-telegram@v0.1.0
         with:
           chat: ${{ secrets.NOTIFICATION_CHAT_ID }}
           token: ${{ secrets.NOTIFICATION_TOKEN }}
           status: ${{ env.WORKFLOW_CONCLUSION }}
+        if: env.WORKFLOW_CONCLUSION == 'failure'
 
   cleanup_job:
     name: Delete artifacts
