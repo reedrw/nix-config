@@ -201,6 +201,8 @@ jobs:
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
 
     - name: Download diff artifact
       uses: actions/download-artifact@v2
