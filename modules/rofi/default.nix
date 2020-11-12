@@ -194,8 +194,11 @@
         2> /dev/null
     '';
   in ''
-    export SUDO_ASKPASS=${rofi-askpass}
-    alias sudo="sudo -A"
+    if [[ ! -z $DISPLAY ]]; then
+      export SSH_ASKPASS="${rofi-askpass}"
+      export SUDO_ASKPASS="${rofi-askpass}"
+      alias sudo='sudo -A'
+    fi
   '';
 
 }
