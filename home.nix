@@ -12,7 +12,6 @@ let
     firefox
     git
     htop
-    lazydocker
     libreoffice
     ngrok
     nix-tree
