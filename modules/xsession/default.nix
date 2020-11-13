@@ -80,6 +80,7 @@ in
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "exec --no-startup-id rofi -show run -lines 10 -width 40";
+          "${mod}+e" = "exec --no-startup-id ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
           "${mod}+r" = "exec --no-startup-id ${record}";
           "${mod}+p" = "exec --no-startup-id ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
           "${mod}+t" = "exec --no-startup-id ${brotab-rofi}";
