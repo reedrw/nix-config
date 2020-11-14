@@ -24,6 +24,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
 
+    - name: Download niv
+      run: nix run nixpkgs.niv -c exit
+
     - name: Update sources
       run: ./update-all.sh
       env:
