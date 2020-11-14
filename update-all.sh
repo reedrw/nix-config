@@ -1,5 +1,4 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i bash
+#! /usr/bin/env bash
 pwd="$PWD"
 
 find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do
