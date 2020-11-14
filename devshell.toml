@@ -1,6 +1,8 @@
 name = "nix-config"
 
 packages = [
+  "cargo",
+  "gcc",
   "home-manager",
   "jq",
   "niv",
