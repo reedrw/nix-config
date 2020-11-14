@@ -149,7 +149,7 @@ jobs:
         git apply ~/artifact/update.diff/update.diff
 
     - name: Build system
-      run: ./ci.sh system
+      run: nix run nixpkgs.nix-build-uncached -c nix-build-uncached -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix -A $machine
       env:
         machine: ${{ matrix.machines }}
 
@@ -187,7 +187,7 @@ jobs:
         git apply ~/artifact/update.diff/update.diff
 
     - name: Build home-manager
-      run: ./ci.sh home-manager
+      run: nix run nixpkgs.nix-build-uncached -c nix-build-uncached ci.nix -A home-manager
 
   push:
     name: Commit and push
