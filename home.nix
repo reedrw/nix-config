@@ -1,7 +1,5 @@
-{ config, lib,  pkgs, ... }:
-
+{ config, lib, pkgs, ... }:
 let
-
   packages = with pkgs; [
 
     # utilities
@@ -113,4 +111,3 @@ in
 
   home.stateVersion = "20.09";
 }
-

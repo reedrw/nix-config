@@ -1,20 +1,18 @@
 { config, lib, pkgs, ... }:
-
 let
-
   sources = import ./nix/sources.nix;
 
-  ccat = pkgs.writeShellScriptBin "bat"''
+  ccat = pkgs.writeShellScriptBin "bat" ''
     ${pkgs.bat}/bin/bat --theme=base16 "$@"
   '';
 
-  rangercommand = pkgs.writeShellScript "rangercommand"''
+  rangercommand = pkgs.writeShellScript "rangercommand" ''
     cd $@
     ranger
     $SHELL
   '';
 
-  rangerlaunch = pkgs.writeShellScript "rangerlaunch"''
+  rangerlaunch = pkgs.writeShellScript "rangerlaunch" ''
     urxvtc -e ${rangercommand} $@
   '';
 
@@ -41,31 +39,33 @@ let
 in
 {
 
-  home.packages = let
-    myranger = pkgs.ranger.overrideAttrs (
-      oldAttrs: rec {
-        buildInputs = oldAttrs.buildInputs ++ [ pkgs.makeWrapper ];
-        postInstall = ''
-          cat << EOF > $out/share/applications/ranger.desktop
-          [Desktop Entry]
-          Type=Application
-          Name=ranger
-          Comment=Launches the ranger file manager
-          Icon=utilities-terminal
-          Exec=${rangerlaunch}
-          Categories=ConsoleOnly;System;FileTools;FileManager
-          MimeType=inode/directory;
-          Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
-          EOF
+  home.packages =
+    let
+      myranger = pkgs.ranger.overrideAttrs (
+        oldAttrs: rec {
+          buildInputs = oldAttrs.buildInputs ++ [ pkgs.makeWrapper ];
+          postInstall = ''
+            cat << EOF > $out/share/applications/ranger.desktop
+            [Desktop Entry]
+            Type=Application
+            Name=ranger
+            Comment=Launches the ranger file manager
+            Icon=utilities-terminal
+            Exec=${rangerlaunch}
+            Categories=ConsoleOnly;System;FileTools;FileManager
+            MimeType=inode/directory;
+            Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
+            EOF
 
-          wrapProgram $out/bin/ranger \
-            --prefix PATH : ${pkgs.stdenv.lib.makeBinPath bins}
-        '';
-      }
-    );
-    # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
-    ranger = myranger.override { imagePreviewSupport = false; };
-  in [ ranger ];
+            wrapProgram $out/bin/ranger \
+              --prefix PATH : ${pkgs.stdenv.lib.makeBinPath bins}
+          '';
+        }
+      );
+      # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
+      ranger = myranger.override { imagePreviewSupport = false; };
+    in
+    [ ranger ];
 
   xdg.configFile = {
     "ranger/rc.conf".text = ''
@@ -107,4 +107,3 @@ in
     "ranger/plugins/extract.py".source = "${sources.ranger-archives}/extract.py";
   };
 }
-

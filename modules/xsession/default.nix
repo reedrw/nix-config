@@ -1,7 +1,5 @@
 { config, lib, pkgs, ... }:
-
 let
-
   term = "urxvtc";
 
   mod = "Mod1";
@@ -61,7 +59,7 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       config = {
-        bars = [];
+        bars = [ ];
         gaps = {
           inner = 10;
         };
@@ -184,4 +182,3 @@ in
   };
   home.file.".background-image".source = ./wallpaper.jpg;
 }
-

@@ -44,4 +44,3 @@ echo "Rebuilding home-manager..."
 home-manager switch
 echo "Updating search cache..."
 nix search -u > /dev/null
-

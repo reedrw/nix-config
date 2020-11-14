@@ -1,5 +1,4 @@
 { config, lib, pkgs, ... }:
-
 let
 
   sources = import ./nix/sources.nix;
@@ -52,8 +51,8 @@ in
       "matcher.button" = 1;
       "keysym.Shift-Control-V" = "eval:paste_clipboard";
       "keysym.Shift-Control-C" = "eval:selection_to_clipboard";
-      "keysym.C-Up"     = "font-size:increase";
-      "keysym.C-Down"   = "font-size:decrease";
+      "keysym.C-Up" = "font-size:increase";
+      "keysym.C-Down" = "font-size:decrease";
     };
   };
   systemd.user = {
@@ -72,4 +71,3 @@ in
     };
   };
 }
-

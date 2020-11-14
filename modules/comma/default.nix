@@ -1,5 +1,4 @@
 { config, lib, pkgs, ... }:
-
 let
 
   indexCache = builtins.fetchurl {
@@ -12,7 +11,8 @@ in
 
   home.packages = [ pkgs.nur.repos.reedrw.comma ];
 
-  home.file.".cache/nix-index/files".source = if builtins.pathExists ./files
+  home.file.".cache/nix-index/files".source =
+    if builtins.pathExists ./files
     then ./files else indexCache;
 
 }

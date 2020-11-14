@@ -3,9 +3,8 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
 let
-# {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
+  # {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
@@ -15,16 +14,18 @@ let
     }
   '';
 
-  cachix = if builtins.pathExists ./cachix.nix
+  cachix =
+    if builtins.pathExists ./cachix.nix
     then import ./cachix.nix else import dummy;
 
-  hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
+  hardware-configuration =
+    if builtins.pathExists ./hardware-configuration.nix
     then import ./hardware-configuration.nix else import dummy-hw;
-# }}}
+  # }}}
 in
 {
 
-# {{{ Imports
+  # {{{ Imports
   imports =
     [
       # Use cachix
@@ -33,8 +34,8 @@ in
       hardware-configuration
       <nixos-hardware/lenovo/thinkpad/t420>
     ];
-# }}}
-# {{{ Nix and nixpkgs
+  # }}}
+  # {{{ Nix and nixpkgs
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
@@ -52,18 +53,18 @@ in
       keep-derivations = true
     '';
   };
-# }}}
-# {{{ Boot settings
+  # }}}
+  # {{{ Boot settings
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
-# }}}
-# {{{ Time and locale
+  # }}}
+  # {{{ Time and locale
   time.timeZone = "America/New_York";
-# }}}
-# {{{ Sound and hardware
+  # }}}
+  # {{{ Sound and hardware
   sound.enable = true;
 
   hardware = {
@@ -73,8 +74,8 @@ in
     };
     pulseaudio.enable = true;
   };
-# }}}
-# {{{ X server
+  # }}}
+  # {{{ X server
   services = {
     xserver = {
       enable = true;
@@ -97,8 +98,8 @@ in
       };
     };
   };
-# }}}
-# {{{ Fonts
+  # }}}
+  # {{{ Fonts
   fonts = {
     fonts = with pkgs; [
       carlito
@@ -132,8 +133,8 @@ in
       };
     };
   };
-# }}}
-# {{{ Services
+  # }}}
+  # {{{ Services
   services.avahi = {
     enable = true;
     nssmdns = true;
@@ -151,25 +152,25 @@ in
     fsType = "nfs4";
     options = [ "x-systemd.automount" "x-systemd.idle-timeout=600" "noauto" ];
   };
-# }}}
-# {{{ Networking
+  # }}}
+  # {{{ Networking
   networking = {
     hostName = "nixos-t520";
     networkmanager.enable = true;
     firewall.allowedUDPPorts = [ 5353 ];
   };
-# }}}
-# {{{ Virtualization
+  # }}}
+  # {{{ Virtualization
   virtualisation.docker.enable = true;
-# }}}
-# {{{ Users
+  # }}}
+  # {{{ Users
   users.users.reed = {
     isNormalUser = true;
     extraGroups = [ "docker" "wheel" "networkmanager" "audio" ];
     shell = pkgs.zsh;
   };
-# }}}
-# {{{
+  # }}}
+  # {{{
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -177,7 +178,6 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.03"; # Did you read the comment?
-# }}}
+  # }}}
 
 }
-

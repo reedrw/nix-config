@@ -1,6 +1,5 @@
-with import <nixpkgs> {};
+with import <nixpkgs> { };
 let
-
   sources = import ./nix/sources.nix;
 
   devshell = import "${sources.devshell}/overlay.nix";
@@ -18,5 +17,5 @@ let
   };
 
 
-in pkgs.mkDevShell.fromTOML ./devshell.toml
-
+in
+pkgs.mkDevShell.fromTOML ./devshell.toml

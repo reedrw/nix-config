@@ -17,7 +17,8 @@
           sha256 = "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6";
         };
       };
-    in [
+    in
+    [
       base16-vim
       gitgutter
       nerdtree
@@ -41,7 +42,8 @@
         $niv add $package | sed -u 's/\x1b\[[0-9;]*m//g'
         sleep 1
       '';
-    in ''
+    in
+    ''
       if !exists('g:airline_symbols')
         let g:airline_symbols = {}
       endif
@@ -122,4 +124,3 @@
     '';
   };
 }
-

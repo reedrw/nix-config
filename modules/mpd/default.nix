@@ -25,7 +25,7 @@
     settings = {
       visualizer_fifo_path = "/tmp/mpd.fifo";
       visualizer_output_name = "fifo";
-      visualizer_sync_interval= "30";
+      visualizer_sync_interval = "30";
       visualizer_in_stereo = "yes";
       visualizer_look = "xx";
       song_columns_list_format = "(6f)[blue]{l} (25)[red]{a} (40)[green]{t|f} (30)[yellow]{b}";
@@ -62,4 +62,3 @@
   };
 
 }
-

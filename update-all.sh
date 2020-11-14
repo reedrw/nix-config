@@ -14,4 +14,3 @@ find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript
     )
   )
 done
-

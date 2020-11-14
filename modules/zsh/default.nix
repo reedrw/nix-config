@@ -1,7 +1,5 @@
 { config, lib, pkgs, ... }:
-
 let
-
   sources = import ./nix/sources.nix;
 
   tmuxconf = builtins.toFile "tmuxconf" ''
@@ -45,24 +43,26 @@ in
 
     zsh = {
       enable = true;
-      plugins = let
-        fzf-tab = {
-          name = "fzf-tab";
-          src = fzf-tab-new;
-        };
-        zsh-syntax-highlighting = {
-          name = "zsh-syntax-highlighting";
-          src = sources.zsh-syntax-highlighting;
-        };
-        zsh-autosuggestions = {
-          name = "zsh-autosuggestions";
-          src = sources.zsh-autosuggestions;
-        };
-      in [
-        fzf-tab
-        zsh-autosuggestions
-        zsh-syntax-highlighting
-      ];
+      plugins =
+        let
+          fzf-tab = {
+            name = "fzf-tab";
+            src = fzf-tab-new;
+          };
+          zsh-syntax-highlighting = {
+            name = "zsh-syntax-highlighting";
+            src = sources.zsh-syntax-highlighting;
+          };
+          zsh-autosuggestions = {
+            name = "zsh-autosuggestions";
+            src = sources.zsh-autosuggestions;
+          };
+        in
+        [
+          fzf-tab
+          zsh-autosuggestions
+          zsh-syntax-highlighting
+        ];
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''
@@ -205,4 +205,3 @@ in
     };
   };
 }
-

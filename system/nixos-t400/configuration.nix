@@ -4,9 +4,7 @@
 
 
 { config, pkgs, ... }:
-
 let
-
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
@@ -16,10 +14,12 @@ let
     }
   '';
 
-  cachix = if builtins.pathExists ./cachix.nix
+  cachix =
+    if builtins.pathExists ./cachix.nix
     then import ./cachix.nix else import dummy;
 
-  hardware-configuration = if builtins.pathExists ./hardware-configuration.nix
+  hardware-configuration =
+    if builtins.pathExists ./hardware-configuration.nix
     then import ./hardware-configuration.nix else import dummy-hw;
 
 in
@@ -114,4 +114,3 @@ in
   system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
