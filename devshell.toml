@@ -4,6 +4,7 @@ packages = [
   "home-manager",
   "jq",
   "niv",
+  "pre-commit",
 ]
 
 [env]
