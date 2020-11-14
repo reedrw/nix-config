@@ -6,3 +6,5 @@ packages = [
   "niv",
 ]
 
+[env]
+SHELLCHECK_OPTS = "-e SC1008"
