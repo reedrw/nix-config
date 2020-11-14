@@ -1,0 +1,8 @@
+name = "nix-config"
+
+packages = [
+  "home-manager",
+  "jq",
+  "niv",
+]
+
