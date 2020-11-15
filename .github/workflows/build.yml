@@ -94,7 +94,7 @@ jobs:
 
   telegram:
     name: Telegram
-    needs: [cancel, system, home-manager, shell]
+    needs: [system, home-manager, shell]
     runs-on: ubuntu-latest
     if: always()
     steps:
