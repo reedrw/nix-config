@@ -28,8 +28,6 @@ jobs:
 
     - name: Update sources
       run: ./update-all.sh
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3
