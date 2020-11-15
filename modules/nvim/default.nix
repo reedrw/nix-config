@@ -19,6 +19,7 @@
       };
     in
     [
+      The_NERD_Commenter
       base16-vim
       gitgutter
       nerdtree
