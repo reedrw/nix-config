@@ -9,6 +9,7 @@ let
     cachix
     firefox
     git
+    github-cli
     htop
     libreoffice
     ngrok
