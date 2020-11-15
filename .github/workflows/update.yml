@@ -33,6 +33,8 @@ jobs:
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
       with:
         author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         commit-message: Update dependencies
