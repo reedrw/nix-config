@@ -28,10 +28,3 @@ jobs:
       uses: P3TERX/ssh2actions@v1.0.0
       with:
         mode: ngrok
-      env:
-        NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-        NGROK_REGION: us
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-        EMAIL: action@github.com
-        GIT_AUTHOR_NAME: GitHub Action
-        GIT_COMMITOR_NAME: GitHub Action

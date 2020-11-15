@@ -32,7 +32,3 @@ jobs:
 
     - name: Run command
       run: ${{ github.event.inputs.command }}
-    env:
-      EMAIL: action@github.com
-      GIT_AUTHOR_NAME: GitHub Action
-      GIT_COMMITOR_NAME: GitHub Action
