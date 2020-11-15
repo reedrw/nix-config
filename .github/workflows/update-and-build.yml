@@ -194,7 +194,7 @@ jobs:
 
   push:
     name: Create pull request
-    needs: [update, nix-index, shell, system, home-manager]
+    needs: [update, shell, system, home-manager]
     runs-on: ubuntu-latest
     steps:
     - name: Install nix
