@@ -47,7 +47,7 @@ jobs:
 
     - name: Send notification
       uses: yanzay/notify-telegram@v0.1.0
-      if: always()
+      if: job.status != 'success'
       with:
         chat: ${{ secrets.NOTIFICATION_CHAT_ID }}
         token: ${{ secrets.NOTIFICATION_TOKEN }}
