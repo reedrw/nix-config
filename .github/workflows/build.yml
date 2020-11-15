@@ -26,7 +26,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Setup cachix
-      uses: cachix/cachix-action@v7
+      uses: cachix/cachix-action@v8
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -54,7 +54,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Setup cachix
-      uses: cachix/cachix-action@v7
+      uses: cachix/cachix-action@v8
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -81,7 +81,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Setup cachix
-      uses: cachix/cachix-action@v7
+      uses: cachix/cachix-action@v8
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
