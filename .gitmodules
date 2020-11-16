@@ -1,3 +1,0 @@
-[submodule "pkgs/comma"]
-	path = pkgs/comma
-	url = https://github.com/fzakaria/comma
