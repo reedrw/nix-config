@@ -2,12 +2,6 @@
 let
   sources = import ./nix/sources.nix;
 
-  tmuxconf = builtins.toFile "tmuxconf" ''
-    set -g status off
-    set -g destroy-unattached on
-    set -g mouse on
-  '';
-
   fzf-tab-new = pkgs.stdenv.mkDerivation {
     name = "fzf-tab";
     src = sources.fzf-tab;
@@ -68,8 +62,6 @@ in
       defaultKeymap = "emacs";
       initExtra = ''
 
-        [[ $TERM != "screen" ]] && exec ${pkgs.tmuxnew}/bin/tmux -f ${tmuxconf}
-
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
@@ -128,6 +120,7 @@ in
         compinit
 
         FZF_TAB_FLAGS=(
+          -i
           --ansi   # Enable ANSI color support, necessary for showing groups
           --color=16
           --layout=reverse

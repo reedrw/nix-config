@@ -1,4 +1,13 @@
 { config, lib, pkgs, ... }:
+let
+  tmuxconf = builtins.toFile "tmuxconf" ''
+    set -g status off
+    set -g destroy-unattached on
+    set -g mouse on
+    set -g default-terminal 'tmux-256color'
+    set -ga terminal-overrides ',alacritty:RGB'
+  '';
+in
 {
 
   programs.alacritty = {
@@ -38,6 +47,12 @@
       padding:
         x: 15
         y: 15
+
+    shell:
+      program: ${pkgs.tmuxnew}/bin/tmux
+      args:
+        - -f
+        - ${tmuxconf}
 
     ################
 
