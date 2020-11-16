@@ -5,6 +5,7 @@ let
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off
     set -g destroy-unattached on
+    set -g mouse on
   '';
 
   fzf-tab-new = pkgs.stdenv.mkDerivation {

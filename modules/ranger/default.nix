@@ -13,7 +13,7 @@ let
   '';
 
   rangerlaunch = pkgs.writeShellScript "rangerlaunch" ''
-    urxvtc -e ${rangercommand} $@
+    alacritty -e ${rangercommand} $@
   '';
 
   bins = with pkgs; [

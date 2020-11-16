@@ -57,6 +57,7 @@ in
 {
 
   imports = [
+    ./modules/alacritty
     ./modules/base16
     ./modules/comma
     ./modules/dunst
@@ -68,7 +69,6 @@ in
     ./modules/ranger
     ./modules/rofi
     ./modules/styling
-    ./modules/urxvt
     ./modules/weechat
     ./modules/xsession
     ./modules/zathura

@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  term = "urxvtc";
+  term = "alacritty";
 
   mod = "Mod1";
   sup = "Mod4";
@@ -12,8 +12,7 @@ let
     (( W /= 5 ))
     (( H /= 11 ))
     # Arithmetic operations to correct for border
-    g=$((''${W}-5))x$((''${H}-3))+''${X}+''${Y}
-    urxvtc -name float -g $g
+    alacritty -t float -d $((''${W}-5)) $((''${H}-3)) --position ''${X} ''${Y}
   '';
 
   record = pkgs.writeShellScript "record.sh" ''
@@ -129,13 +128,13 @@ in
           {
             command = "border none";
             criteria = {
-              class = "URxvt";
+              class = "Alacritty";
             };
           }
           {
             command = "floating enable";
             criteria = {
-              class = "URxvt";
+              class = "Alacritty";
               title = "float";
             };
           }
