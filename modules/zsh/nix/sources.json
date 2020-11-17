@@ -9,6 +9,7 @@
         "sha256": "02q468idh26f2ibbd3slw9kligpqwjz7vqwyqhlxqiizas8zjq4x",
         "type": "tarball",
         "url": "https://github.com/Aloxaf/fzf-tab/archive/b2aae4cca5b1838d406d146a6118fb4aa12228c9.tar.gz",
+
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-autosuggestions": {

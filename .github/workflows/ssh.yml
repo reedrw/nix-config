@@ -14,7 +14,9 @@ jobs:
       uses: dopplerhq/cli-action@v1
 
     - name: Pass all secrets to next steps
-      run: while read -rd $'' line; do echo "$line" >> $GITHUB_ENV; done < <( doppler secrets download --no-file --format=json | jq -r 'to_entries|map("\(.key)<<EOF\n\(.value)\nEOF\u0000")[]' )
+      run: |
+        while read -rd $'' line; do echo "$line" >> $GITHUB_ENV; done < <( doppler secrets download --no-file --format=json | jq "." | grep -v DOPPLER | jq -r 'to_entries|map("\(.key)<<EOF\n\(.value)\nEOF\u0000")[]' )
+        while read -r line; do echo "::add-mask::$line"; done < <( doppler secrets download --no-file --format=json | jq "." | grep -V DOPPER | jq -r 'to_entries|map("\(.value)\u0000")[]' )
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
