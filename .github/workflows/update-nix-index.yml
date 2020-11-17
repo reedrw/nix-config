@@ -11,7 +11,12 @@ jobs:
       uses: dopplerhq/cli-action@v1
 
     - name: Pass all secrets to next steps
-      run: doppler secrets download --no-file --format=env >> $GITHUB_ENV;
+      run: |
+        while read -rd $'' line
+          do
+            export "$line"
+          done < <( doppler secrets download --no-file --format=json jq -r <<<"$values" \
+              'to_entries|map("\(.key)=\(.value)\u0000")[]')
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
@@ -20,7 +25,6 @@ jobs:
       with:
         app_id: ${{ env.APP_ID }}
         private_key: ${{ env.APP_PRIVATE_KEY }}
-
 
     - name: Install nix
       uses: cachix/install-nix-action@v12
