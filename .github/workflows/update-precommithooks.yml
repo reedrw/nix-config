@@ -7,14 +7,19 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+    - name: Install Doppler CLI
+      uses: dopplerhq/cli-action@v1
+
+    - name: Pass all secrets to next steps
+      run: doppler secrets download --no-file --format=env >> $GITHUB_ENV;
+      env:
+        DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
     - uses: tibdex/github-app-token@v1.1.1
       id: generate-token
       with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.APP_PRIVATE_KEY }}
-
-    - name: Install Doppler CLI
-      uses: dopplerhq/cli-action@v1
+        app_id: ${{ env.APP_ID }}
+        private_key: ${{ env.APP_PRIVATE_KEY }}
 
     - name: Install nix
       uses: cachix/install-nix-action@v12
