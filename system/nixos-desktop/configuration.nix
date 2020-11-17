@@ -167,7 +167,10 @@ in
     '';
   };
 
-  services.plex.enable = true;
+  services.plex = {
+    enable = true;
+    openFirewall = true;
+  };
 
   services.sshd.enable = true;
   # }}}
