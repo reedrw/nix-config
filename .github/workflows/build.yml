@@ -28,7 +28,7 @@ jobs:
         while read -rd $'' line
           do
             export "$line"
-          done < <( doppler secrets download --no-file --format=json jq -r <<<"$values" \
+          done < <( doppler secrets download --no-file --format=json | jq -r \
               'to_entries|map("\(.key)=\(.value)\u0000")[]')
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
         while read -rd $'' line
           do
             export "$line"
-          done < <( doppler secrets download --no-file --format=json jq -r <<<"$values" \
+          done < <( doppler secrets download --no-file --format=json | jq -r \
               'to_entries|map("\(.key)=\(.value)\u0000")[]')
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
@@ -109,7 +109,7 @@ jobs:
         while read -rd $'' line
           do
             export "$line"
-          done < <( doppler secrets download --no-file --format=json jq -r <<<"$values" \
+          done < <( doppler secrets download --no-file --format=json | jq -r \
               'to_entries|map("\(.key)=\(.value)\u0000")[]')
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
@@ -145,7 +145,7 @@ jobs:
         while read -rd $'' line
           do
             export "$line"
-          done < <( doppler secrets download --no-file --format=json jq -r <<<"$values" \
+          done < <( doppler secrets download --no-file --format=json | jq -r \
               'to_entries|map("\(.key)=\(.value)\u0000")[]')
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
