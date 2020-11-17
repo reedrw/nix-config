@@ -13,6 +13,14 @@ jobs:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
+    - name: Install Doppler CLI
+      uses: dopplerhq/cli-action@v1
+
+    - name: Test Doppler Access
+      run: doppler run -- printenv | grep SECRET_NAME
+      env:
+        DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
     - name: Install nix
       uses: cachix/install-nix-action@v12
       with:
