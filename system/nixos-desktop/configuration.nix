@@ -167,6 +167,8 @@ in
     '';
   };
 
+  services.plex.enable = true;
+
   services.sshd.enable = true;
   # }}}
   # {{{ Networking
