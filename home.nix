@@ -11,10 +11,10 @@ let
     git
     github-cli
     htop
+    ix
     libreoffice
     ngrok
     nix-tree
-    nur.repos.reedrw.ix
     nur.repos.reedrw.noisetorch
     nur.repos.reedrw.teletype
     nur.repos.suhr.droidcam
