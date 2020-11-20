@@ -10,13 +10,11 @@ let
 in
 {
 
-  programs.alacritty = {
-    enable = true;
-  };
+  programs.alacritty.enable = true;
 
   xdg.configFile."alacritty/alacritty.yml".text = ''
-
-    ################
+    import:
+      - ${config.lib.base16.base16template "alacritty"}
 
     live_config_reload: true
 
@@ -53,15 +51,6 @@ in
       args:
         - -f
         - ${tmuxconf}
-
-    ################
-
-    mouse_bindings:
-    - { mouse: Middle, action: PasteSelection }
-
-
-    ################
-    ${builtins.readFile "${config.lib.base16.base16template "alacritty"}" }
   '';
 
 }
