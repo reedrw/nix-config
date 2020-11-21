@@ -31,6 +31,9 @@ jobs:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
 
+    - name: Setup NIX_PATH
+      run: echo "export NIX_PATH=nixpkgs=channel:nixos-unstable" >> ~/.profile
+
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
 
