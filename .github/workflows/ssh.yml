@@ -32,7 +32,11 @@ jobs:
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
 
     - name: Setup NIX_PATH
-      run: echo "export NIX_PATH=nixpkgs=channel:nixos-unstable" >> ~/.bashrc
+      run: |
+        cat << EOF >> ~/.bash_profile
+        export NIX_PATH=nixpkgs=channel:nixos-unstable
+        source ~/.bashrc
+        EOF
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
@@ -42,11 +46,3 @@ jobs:
       env:
         TELEGRAM_BOT_TOKEN: ${{ env.NOTIFICATION_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ env.NOTIFICATION_CHAT_ID }}
-    #- name: Start SSH via ngrok
-      #uses: P3TERX/ssh2actions@v1.0.0
-      #with:
-        #mode: ngrok
-      #env:
-        #NGROK_TOKEN: ${{ env.NGROK_TOKEN }}
-        #NGROK_REGION: us
-        #SSH_PASSWORD: ${{ env.SSH_PASSWORD }}
