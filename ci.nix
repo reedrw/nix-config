@@ -11,6 +11,5 @@ in
 
   home-manager = (import "${sources.home-manager}/home-manager/home-manager.nix" { pkgs = import "${sources.nixpkgs-unstable}" { }; confPath = ./home.nix; }).activationPackage;
 
-  shell = import ./shell.nix;
 
 }
