@@ -11,7 +11,8 @@ let
       cp -rv ./ $out
       substituteInPlace $out/lib/ftb-tmux-popup \
         --replace tmux ${pkgs.tmuxnew}/bin/tmux \
-        --replace " fzf " " ${pkgs.fzf}/bin/fzf "
+        --replace ' fzf ' ' ${pkgs.fzf}/bin/fzf ' \
+        --replace '$commands[fzf]' '${pkgs.fzf}/bin/fzf'
     '';
 
 
