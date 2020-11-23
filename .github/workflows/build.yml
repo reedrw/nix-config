@@ -20,6 +20,13 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+    - name: Free disk space
+      run: |
+        df -h
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v1
 
@@ -58,6 +65,13 @@ jobs:
           - reedrw
     runs-on: ubuntu-latest
     steps:
+    - name: Free disk space
+      run: |
+        df -h
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v1
 
@@ -95,6 +109,13 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+    - name: Free disk space
+      run: |
+        df -h
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v1
 
