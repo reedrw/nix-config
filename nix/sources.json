@@ -47,7 +47,7 @@
         "url": "https://github.com/NixOS/nixos-hardware/archive/40ade7c0349d31e9f9722c7331de3c473f65dce0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "nixpkgs-unstable": {
+    "nixpkgs": {
         "branch": "master",
         "description": "Nix Packages collection",
         "homepage": null,
