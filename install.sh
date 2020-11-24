@@ -6,7 +6,7 @@ if [[ -n "$SUDO_ASKPASS" ]]; then
 fi
 
 HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
-nixpkgsURL="$(jq -r '.["nixpkgs-unstable"].url' ./nix/sources.json)"
+nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
 nurURL="$(jq -r '.["NUR"].url' ./nix/sources.json)"
 NixOShardwareURL="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)"
 
