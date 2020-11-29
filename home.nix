@@ -15,7 +15,7 @@ let
     libreoffice
     ngrok
     nix-tree
-    nur.repos.reedrw.noisetorch
+    noisetorch
     nur.repos.reedrw.teletype
     nur.repos.suhr.droidcam
     pavucontrol
