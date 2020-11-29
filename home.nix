@@ -4,6 +4,7 @@ let
 
     # utilities
     acpi
+    anki
     bitwarden
     bitwarden-cli
     cachix
