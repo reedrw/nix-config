@@ -22,6 +22,7 @@ let
     if builtins.pathExists ./hardware-configuration.nix
     then import ./hardware-configuration.nix else import dummy-hw;
   # }}}
+
 in
 {
 
@@ -56,15 +57,22 @@ in
   # }}}
   # {{{ Boot settings
   # Use the systemd-boot EFI boot loader.
-  boot = {
-    kernelModules = [ "kvm-intel" ];
-    supportedFilesystems = [ "ntfs" ];
-    extraModulePackages = [ pkgs.nur.repos.suhr.v4l2loopback-dc ];
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
+  boot =
+    let
+      kernel = pkgs.linuxPackages;
+      droidcam = pkgs.nur.repos.suhr.droidcam;
+      v4l2loopback-dc = kernel.callPackage "${pkgs.nur.repo-sources.suhr}/pkgs/v4l2loopback-dc" { inherit droidcam; };
+    in
+    {
+      kernelPackages = kernel;
+      kernelModules = [ "kvm-intel" ];
+      supportedFilesystems = [ "ntfs" ];
+      extraModulePackages = [ v4l2loopback-dc ];
+      loader = {
+        systemd-boot.enable = true;
+        efi.canTouchEfiVariables = true;
+      };
     };
-  };
   # }}}
   # {{{ Time and locale
   time.timeZone = "America/New_York";
