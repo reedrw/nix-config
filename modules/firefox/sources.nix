@@ -40,6 +40,11 @@ pkgs: [
     sha256 = "17h1yy8k4l3kqbjbz84avg9jqaa0cl9x19ri76vlflz7ks54i7fs";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "refined-github-";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3688699/refined_github-20.12.3-an+fx.xpi";
+    sha256 = "0zkab5yan8ibnmsl4cqa312gqx3davvi7gfvlqzc33ca887s4z6z";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
     url = "https://addons.mozilla.org/firefox/downloads/file/3685222/sponsorblock_skip_sponsorships_on_youtube-2.0.9-an+fx.xpi";
     sha256 = "1m4slqpfbximmf4igvp2dfl0x55rmyal97kv1ra1j6506w6n1bjv";
