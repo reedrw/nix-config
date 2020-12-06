@@ -15,6 +15,11 @@ pkgs: [
     sha256 = "187frmvb6z7k3p4yr15v10y4piz0fm6zhqp1jxqqhyaxdszrzwqw";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "decentraleyes";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3672658/decentraleyes-2.0.15-an+fx.xpi";
+    sha256 = "1pvdb0fz7jqbzwlrhdkjxhafai70bncywdsx3qsw3325d28hcm15";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
     url = "https://addons.mozilla.org/firefox/downloads/file/3664669/duckduckgo_privacy_essentials-2020.10.21-an+fx.xpi";
     sha256 = "1xjfh56znkxffi4kmcrsxqhf3kaal17rc58v1a77p0xx0n8b2kfr";
@@ -23,6 +28,16 @@ pkgs: [
     name = "matte-black-blue";
     url = "https://addons.mozilla.org/firefox/downloads/file/3596772/matte_black_blue-2020.6.25-an+fx.xpi";
     sha256 = "0k6qrak9qvnh31sm5frhj925jqpyzcxkk494955s985x2pyg8kmv";
+  })
+  (pkgs.fetchFirefoxAddon {
+    name = "old-reddit-redirect";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3611260/old_reddit_redirect-1.2.0-an+fx.xpi";
+    sha256 = "0khflj40dy5fqzvcsff14f54bypplbqqzdwnd6v916ngv66fn72q";
+  })
+  (pkgs.fetchFirefoxAddon {
+    name = "privacy-badger17";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3656444/privacy_badger-2020.10.7-an+fx.xpi";
+    sha256 = "17h1yy8k4l3kqbjbz84avg9jqaa0cl9x19ri76vlflz7ks54i7fs";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
