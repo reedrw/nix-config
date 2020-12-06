@@ -25,6 +25,11 @@ pkgs: [
     sha256 = "1xjfh56znkxffi4kmcrsxqhf3kaal17rc58v1a77p0xx0n8b2kfr";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "image-search-options";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3059971/image_search_options-3.0.12-fx.xpi";
+    sha256 = "0s6hdy6cbcipjqljqhzbrzni1c527gm5ia822ghinay3gxcxig8z";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "matte-black-blue";
     url = "https://addons.mozilla.org/firefox/downloads/file/3596772/matte_black_blue-2020.6.25-an+fx.xpi";
     sha256 = "0k6qrak9qvnh31sm5frhj925jqpyzcxkk494955s985x2pyg8kmv";
