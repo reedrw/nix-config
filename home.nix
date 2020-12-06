@@ -8,7 +8,6 @@ let
     bitwarden
     bitwarden-cli
     cachix
-    firefox
     git
     github-cli
     htop
@@ -62,6 +61,7 @@ in
     ./modules/base16
     ./modules/comma
     ./modules/dunst
+    ./modules/firefox
     ./modules/mpd
     ./modules/mpv
     ./modules/nvim
