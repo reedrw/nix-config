@@ -17,7 +17,7 @@ let
     nix-tree
     noisetorch
     nur.repos.reedrw.teletype
-    #nur.repos.suhr.droidcam
+    nur.repos.suhr.droidcam
     pavucontrol
     psmisc
     screen
