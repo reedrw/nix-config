@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "betterttv";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3686147/betterttv-7.2.90-fx.xpi";
-    sha256 = "1kim6wv2bbc57gyj3lxni8c6aypcwzq1sykkjw0iijg2f3ka413x";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3696386/betterttv-7.2.91-fx.xpi";
+    sha256 = "1sbl19qvb3c23zyxib0n9six3xp463kn7k0ak9ni1nm1p0ghr6vg";
   })
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
@@ -46,8 +46,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3685222/sponsorblock_skip_sponsorships_on_youtube-2.0.9-an+fx.xpi";
-    sha256 = "1m4slqpfbximmf4igvp2dfl0x55rmyal97kv1ra1j6506w6n1bjv";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3695472/sponsorblock_skip_sponsorships_on_youtube-2.0.10.1-an+fx.xpi";
+    sha256 = "176li25k0h6x3p46b019qmi5kiwz5aqqnklwy9sllsfd7s9bfm2j";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
