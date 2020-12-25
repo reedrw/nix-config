@@ -41,8 +41,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3696932/refined_github-20.12.19-an+fx.xpi";
-    sha256 = "0iq7r830ln41nfbcljsr0i0jb59p9q07albykl5yr8dys4vmg0l4";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3699493/refined_github-20.12.24-an+fx.xpi";
+    sha256 = "1h8zipf31axm0617vr5rd5bqinm5lv4j8v4fiw8v1sj5qymmq0kj";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
