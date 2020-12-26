@@ -35,6 +35,11 @@ pkgs: [
     sha256 = "0khflj40dy5fqzvcsff14f54bypplbqqzdwnd6v916ngv66fn72q";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "pay-by-privacy-com";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3596835/pay_by_privacycom-1.6.3-fx.xpi";
+    sha256 = "0kbixzkm40iqhy4i6npnmsks5nmna08cmx6chx3561brkgr7nk6h";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
     url = "https://addons.mozilla.org/firefox/downloads/file/3691765/privacy_badger-2020.12.10-an+fx.xpi";
     sha256 = "1w3zvk6v008c7grqk4kznyxz3c5w2n96i5q9pzbmjcjwkcvyspb3";
