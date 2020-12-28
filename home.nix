@@ -30,7 +30,7 @@ let
 
     # games
     multimc
-    nur.repos.reedrw.r2mod_cli
+    r2mod_cli
     steam
 
     # fonts
