@@ -66,7 +66,7 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3698525/ublock_origin-1.32.0-an+fx.xpi";
-    sha256 = "0iiycmqqdfn06mfsnyj1jy2dxdlsrvbnmgi4lmvxshz1s2scg0i1";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3699732/ublock_origin-1.32.2-an+fx.xpi";
+    sha256 = "1534iwvpawm7dv54pa9hm8liscn34891qpz7d9wjk9b10ss612gl";
   })
 ]
