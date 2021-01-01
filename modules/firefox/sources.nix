@@ -60,9 +60,9 @@ pkgs: [
     sha256 = "0nd1g3vr9vbpk6hqixsg1dqyh7pi075b7fiir4706khlapk7kcrb";
   })
   (pkgs.fetchFirefoxAddon {
-    name = "ttv-adblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3684803/ttv_ad_block-2.1.0-fx.xpi";
-    sha256 = "1896pmxl6wxh7hb1vgyyzpzh8w4hqrcc6wqypplsvycpgckms9ah";
+    name = "twitch-video-ad-blocker";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3701908/twitch_video_ad_blocker-3.0-fx.xpi";
+    sha256 = "134fwvwl3x7il8kr4krskcyzlbvccnir29kdmn94kki6s4rwbjrh";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
