@@ -69,4 +69,9 @@ pkgs: [
     url = "https://addons.mozilla.org/firefox/downloads/file/3701081/ublock_origin-1.32.4-an+fx.xpi";
     sha256 = "1k5riwz9ljb9fsmz5bv5ci237rr9bfq21pc3dpzsc6ckfizzv52v";
   })
+  (pkgs.fetchFirefoxAddon {
+    name = "FrankerFaceZ";
+    url = "https://cdn.frankerfacez.com/script/frankerfacez-4.0-an+fx.xpi";
+    sha256 = "0kx0dax1cv4h7hkbisw96sh2qxpmfgq1sbd49531kycwmnnq1z2k";
+  })
 ]
