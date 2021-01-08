@@ -57,22 +57,14 @@ in
   # }}}
   # {{{ Boot settings
   # Use the systemd-boot EFI boot loader.
-  boot =
-    let
-      kernel = pkgs.linuxPackages;
-      droidcam = pkgs.nur.repos.suhr.droidcam;
-      v4l2loopback-dc = kernel.callPackage "${pkgs.nur.repo-sources.suhr}/pkgs/v4l2loopback-dc" { inherit droidcam; };
-    in
-    {
-      kernelPackages = kernel;
-      kernelModules = [ "kvm-intel" ];
-      supportedFilesystems = [ "ntfs" ];
-      extraModulePackages = [ v4l2loopback-dc ];
-      loader = {
-        systemd-boot.enable = true;
-        efi.canTouchEfiVariables = true;
-      };
+  boot = {
+    kernelModules = [ "kvm-intel" ];
+    supportedFilesystems = [ "ntfs" ];
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
     };
+  };
   # }}}
   # {{{ Time and locale
   time.timeZone = "America/New_York";
@@ -90,6 +82,7 @@ in
     };
     opengl = {
       enable = true;
+      driSupport = true;
       driSupport32Bit = true;
       extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
     };
