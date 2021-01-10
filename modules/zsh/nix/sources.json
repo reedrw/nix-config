@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "Aloxaf",
         "repo": "fzf-tab",
-        "rev": "cb8a784343a422ba6d8bdf60acaf4714a6a6d5f7",
-        "sha256": "0255whjb3k526q1276z21w6lvalx0b2q6jsd571l69ks1bx7mr9g",
+        "rev": "6591ca16e3cbecfd0e84ff1db1d11792ed2b6f51",
+        "sha256": "1d8lsbhnl5hkw19ch4avl2z48z9n4kdlvhh7fcay3r82i1f3dmwq",
         "type": "tarball",
-        "url": "https://github.com/Aloxaf/fzf-tab/archive/cb8a784343a422ba6d8bdf60acaf4714a6a6d5f7.tar.gz",
+        "url": "https://github.com/Aloxaf/fzf-tab/archive/6591ca16e3cbecfd0e84ff1db1d11792ed2b6f51.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "zsh-autosuggestions": {
