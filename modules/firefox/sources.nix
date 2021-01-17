@@ -26,8 +26,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "matte-black-blue";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3596772/matte_black_blue-2020.6.25-an+fx.xpi";
-    sha256 = "0k6qrak9qvnh31sm5frhj925jqpyzcxkk494955s985x2pyg8kmv";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3710243/matte_black_blue-2021.1.16-an+fx.xpi";
+    sha256 = "054yf98p0vchzvrvzvmbrm1d58ri3vxs5z1fgx7js7lclydfjk9k";
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
