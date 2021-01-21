@@ -53,12 +53,15 @@ in
       keep-outputs = true
       keep-derivations = true
     '';
+    trustedUsers = [ "root" "@wheel" ];
   };
   # }}}
   # {{{ Boot settings
   # Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = [ "kvm-intel" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ "intel_pstate=active" ];
     supportedFilesystems = [ "ntfs" ];
     loader = {
       systemd-boot.enable = true;
