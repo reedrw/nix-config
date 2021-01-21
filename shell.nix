@@ -18,4 +18,4 @@ let
 
 
 in
-pkgs.mkDevShell.fromTOML ./devshell.toml
+pkgs.devshell.fromTOML ./devshell.toml
