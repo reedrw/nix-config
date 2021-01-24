@@ -6,8 +6,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3688243/bitwarden_free_password_manager-1.47.1-an+fx.xpi";
-    sha256 = "115dzqyqivbbnwzlcccxf8gf6p1w319cxyxqh5apkbhrdr4iag7q";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3713036/bitwarden_free_password_manager-1.48.0-an+fx.xpi";
+    sha256 = "1hzadz3fn05lzwxvsqdsmmyksrhv7jikn4walq440w2ywwndddf9";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
@@ -31,8 +31,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3611260/old_reddit_redirect-1.2.0-an+fx.xpi";
-    sha256 = "0khflj40dy5fqzvcsff14f54bypplbqqzdwnd6v916ngv66fn72q";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3714071/old_reddit_redirect-1.4.0-an+fx.xpi";
+    sha256 = "01nj5dbqrvj81jv7czcyijwrm96b4lmjjh8syg1d9y4h4zl3mdnf";
   })
   (pkgs.fetchFirefoxAddon {
     name = "pay-by-privacy-com";
@@ -46,8 +46,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3710316/refined_github-21.1.17-an+fx.xpi";
-    sha256 = "0p8nndfh0pnijifvbs07dm0gf8yz23299cg2nsjrhzz0d1nv0qdi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3713728/refined_github-21.1.23-an+fx.xpi";
+    sha256 = "1cd5hh5px70p4h0dc992glvlmnqdwnwh6jwv0l553906bi1q5wzn";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
