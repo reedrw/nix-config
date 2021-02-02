@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3702599/sponsorblock_skip_sponsorships_on_youtube-2.0.11.2-an+fx.xpi";
-    sha256 = "0cplm8f0jhxpbyzil9i0v6yyqzmaaqhshqkdabqphfmadqs77lyn";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3718353/sponsorblock_skip_sponsorships_on_youtube-2.0.12.2-an+fx.xpi";
+    sha256 = "0y2phra5ld2b7vpscin9l9x6zvq83irrmpym711h5p2ragqf8jyn";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3701081/ublock_origin-1.32.4-an+fx.xpi";
-    sha256 = "1k5riwz9ljb9fsmz5bv5ci237rr9bfq21pc3dpzsc6ckfizzv52v";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3719054/ublock_origin-1.33.2-an+fx.xpi";
+    sha256 = "0lg4rb4x37ga680d4hamn29nf382c1ih4f1j0namhixmypv5wfjw";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
