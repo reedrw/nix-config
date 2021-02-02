@@ -56,6 +56,8 @@
       let g:airline#extensions#tabline#formatter = 'unique_tail'
       let g:airline#extensions#tabline#show_tabs = 0
 
+      let g:airline#extensions#nvimlsp#enabled = 0
+
       let g:airline_mode_map = {
         \ '__'     : ' - ',
         \ 'c'      : ' C ',
