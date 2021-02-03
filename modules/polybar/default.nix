@@ -3,9 +3,7 @@
 {
   services.polybar = {
     enable = true;
-    package = pkgs.polybar.override {
-      i3GapsSupport = true;
-    };
+    package = pkgs.polybarFull;
     config = with config.lib.base16.theme; {
       "bar/main" = {
         background = "#${base00-hex}";
