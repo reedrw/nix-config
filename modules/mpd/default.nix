@@ -53,7 +53,7 @@
       statusbar_color = "white";
       current_item_inactive_column_prefix = "$(red)$r";
       current_item_inactive_column_suffix = "$/r$(end)";
-      lyrics_fetchers = "genius, lyricsmania, lyricwiki, metrolyrics, justsomelyrics, jahlyrics, plyrics, tekstowo, internet";
+      lyrics_fetchers = "genius, metrolyrics, justsomelyrics, jahlyrics, plyrics, tekstowo, internet";
       song_window_title_format = "{%a > }{%t}{ [%b{ Disc %d}]}|{%f}";
       search_engine_display_mode = ''"columns" (classic/columns)'';
       follow_now_playing_lyrics = "yes";
