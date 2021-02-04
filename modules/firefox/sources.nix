@@ -41,8 +41,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3691765/privacy_badger-2020.12.10-an+fx.xpi";
-    sha256 = "1w3zvk6v008c7grqk4kznyxz3c5w2n96i5q9pzbmjcjwkcvyspb3";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3719726/privacy_badger-2021.2.2-an+fx.xpi";
+    sha256 = "19ji6qvp7ka581i6bnfr5ddqa7lr6vnnina4d10p9r4ky5fldax9";
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
