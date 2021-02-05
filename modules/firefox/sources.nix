@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3718353/sponsorblock_skip_sponsorships_on_youtube-2.0.12.2-an+fx.xpi";
-    sha256 = "0y2phra5ld2b7vpscin9l9x6zvq83irrmpym711h5p2ragqf8jyn";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3720594/sponsorblock_skip_sponsorships_on_youtube-2.0.12.3-an+fx.xpi";
+    sha256 = "026dk0zr6nv1da61dn8s9c2a949l40kbs04f5b6dsp5jjncnf6qx";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
