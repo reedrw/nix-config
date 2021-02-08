@@ -1,10 +1,5 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
-    name = "betterttv";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3696386/betterttv-7.2.91-fx.xpi";
-    sha256 = "1sbl19qvb3c23zyxib0n9six3xp463kn7k0ak9ni1nm1p0ghr6vg";
-  })
-  (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
     url = "https://addons.mozilla.org/firefox/downloads/file/3714988/bitwarden_free_password_manager-1.48.1-an+fx.xpi";
     sha256 = "0ml282ajyfi329jfswzwsy0482rawpbpk3p8d9izhdicnwrq4217";
