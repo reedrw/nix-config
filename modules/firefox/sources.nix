@@ -41,8 +41,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3713728/refined_github-21.1.23-an+fx.xpi";
-    sha256 = "1cd5hh5px70p4h0dc992glvlmnqdwnwh6jwv0l553906bi1q5wzn";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3719173/refined_github-21.2.1-an+fx.xpi";
+    sha256 = "0zdk8wnnvzbk265mfx2fxaha3q41rbp2yiygck1cxlqgyiqr6nrm";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3614089/stylus-1.5.13-fx.xpi";
-    sha256 = "0nd1g3vr9vbpk6hqixsg1dqyh7pi075b7fiir4706khlapk7kcrb";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3720616/stylus-1.5.15-fx.xpi";
+    sha256 = "0g07mgw3d4ha8lwdfsjr6922fq8dqgslzf7adjfc13lqhzs8vhvy";
   })
   (pkgs.fetchFirefoxAddon {
     name = "twitch-adblock";
