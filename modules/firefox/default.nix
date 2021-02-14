@@ -26,6 +26,8 @@ let
       defaultPref("general.autoScroll", true);
       defaultPref("media.videocontrols.picture-in-picture.video-toggle.enabled", false)
       defaultPref("widget.content.allow-gtk-dark-theme", false);
+      defaultPref("browser.contentblocking.report.lockwise.enabled", false);
+      defaultPref("browser.contentblocking.report.monitor.enabled", false);
     '';
   };
 
