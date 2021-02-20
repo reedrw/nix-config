@@ -1,8 +1,15 @@
 name: "SSH Debug"
 on:
   workflow_dispatch:
+    inputs:
+      method:
+        description: 'Use ngrok or tmate?'
+        required: true
+        default: 'tmate'
 jobs:
-  run:
+  tmate:
+    if: github.event.inputs.method == 'tmate'
+    name: Start connection via tmate
     strategy:
       matrix:
         cachixName:
@@ -44,5 +51,57 @@ jobs:
     - name: Start SSH via tmate
       uses: P3TERX/ssh2actions@v1.0.0
       env:
+        TELEGRAM_BOT_TOKEN: ${{ env.NOTIFICATION_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ env.NOTIFICATION_CHAT_ID }}
+
+  ngrok:
+    if: github.event.inputs.method != 'tmate'
+    name: Start connection via ngrok
+    strategy:
+      matrix:
+        cachixName:
+          - reedrw
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Doppler CLI
+      uses: dopplerhq/cli-action@v1
+
+    - name: Pass all secrets to next steps
+      run: |
+        while read -rd $'' line; do echo "$line" >> $GITHUB_ENV; done < <( doppler secrets download --no-file --format=json | jq "." | grep -v 'DOPPLER_\(CONFIG\|ENVIRONMENT\|PROJECT\)' | jq -r 'to_entries|map("\(.key)<<EOF\n\(.value)\nEOF\u0000")[]' )
+        while read -r line; do echo "::add-mask::$line"; done < <( doppler secrets download --no-file --format=json | jq "." | grep -v 'DOPPLER_\(CONFIG\|ENVIRONMENT\|PROJECT\)' | jq -r 'to_entries|map("\(.value)\u0000")[]' )
+      env:
+        DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Install Cachix
+      uses: cachix/cachix-action@v8
+      with:
+        name: ${{ matrix.cachixName }}
+        signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
+
+    - name: Setup NIX_PATH
+      run: |
+        cat << EOF >> ~/.bash_profile
+        export NIX_PATH=nixpkgs=channel:nixos-unstable
+        source ~/.bashrc
+        EOF
+
+    - name: Checkout repository
+      uses: actions/checkout@v2.3.4
+
+    - name: Start SSH via ngrok
+      uses: P3TERX/ssh2actions@v1.0.0
+      with:
+        mode: ngrok
+      env:
+        NGROK_REGION: us
+        NGROK_TOKEN: ${{ env.NGROK_TOKEN }}
+        SSH_PASSWORD: ${{ env.SSH_PASSWORD }}
         TELEGRAM_BOT_TOKEN: ${{ env.NOTIFICATION_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ env.NOTIFICATION_CHAT_ID }}
