@@ -55,6 +55,11 @@ pkgs: [
     sha256 = "0g07mgw3d4ha8lwdfsjr6922fq8dqgslzf7adjfc13lqhzs8vhvy";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "torrent-control";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3682641/torrent_control-0.2.21-fx.xpi";
+    sha256 = "00p8mkl80bniljcw4xvdvwbgn0yqxm2h2kmgvxshnm6z75k99fp2";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "twitch-adblock";
     url = "https://addons.mozilla.org/firefox/downloads/file/3706253/twitch_adblock-2.0-fx.xpi";
     sha256 = "0kmmjdw0wc1kf29a7sx3xxwm5l4cjqmzkzlj48ib8fq83h3gg1n1";
