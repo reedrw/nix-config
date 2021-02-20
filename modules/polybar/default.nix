@@ -9,7 +9,7 @@
         background = "#${base00-hex}";
         foreground = "#${base05-hex}";
         modules-left = "i3";
-        modules-right = "battery date";
+        modules-right = "mpd battery date";
         border-left-size = 1;
         border-left-color = "#${base00-hex}";
         border-right-size = 1;
@@ -47,6 +47,14 @@
         label-unfocused-padding = 1;
         label-focused-padding = 1;
         label-urgent-padding = 1;
+      };
+      "module/mpd" = {
+        type = "internal/mpd";
+        label-song = "%{A1:${pkgs.mpc_cli}/bin/mpc toggle:}%artist% - %title%%{A}";
+        icon-play = " (paused)";
+        icon-play-foreground = "#${base03-hex}";
+        icon-pause = "";
+        format-online = "<label-song><toggle>";
       };
     };
     script = ''
