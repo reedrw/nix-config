@@ -40,6 +40,11 @@ pkgs: [
     sha256 = "19ji6qvp7ka581i6bnfr5ddqa7lr6vnnina4d10p9r4ky5fldax9";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "proxy-toggle";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3405365/proxy_toggle-1.2.1-fx.xpi";
+    sha256 = "0lpa2ch3nc4ncyf5dw1lkwkv6i51v1f9vlriz41wbjryy1kjazs6";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
     url = "https://addons.mozilla.org/firefox/downloads/file/3729872/refined_github-21.2.19-an+fx.xpi";
     sha256 = "1pxfk3zzcy98w10160b3nkj0mk6lhkc9iq5vhwhrqql24k79khaq";
