@@ -67,6 +67,9 @@ in
           "${mod}+e" = "${run} ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
           "${mod}+r" = "${run} ${record}";
           "${mod}+p" = "${run} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "${mod}+Down" = "${run} ${pkgs.mpc_cli}/bin/mpc toggle";
+          "${mod}+Left" = "${run} ${pkgs.mpc_cli}/bin/mpc prev";
+          "${mod}+Right" = "${run} ${pkgs.mpc_cli}/bin/mpc next";
         };
         colors = with config.lib.base16.theme; {
           focused = {
