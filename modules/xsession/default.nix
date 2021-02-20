@@ -4,6 +4,7 @@ let
 
   mod = "Mod1";
   sup = "Mod4";
+  run = "exec --no-startup-id";
 
   selecterm = pkgs.writeShellScript "select-term.sh" ''
     read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
@@ -53,19 +54,19 @@ in
         modifier = "${mod}";
         terminal = "${term}";
         keybindings = lib.mkOptionDefault {
-          "Print" = "exec --no-startup-id flameshot gui";
-          "${mod}+Return" = "exec --no-startup-id ${term}";
-          "${sup}+Return" = "exec --no-startup-id ${selecterm}";
+          "Print" = "${run} flameshot gui";
+          "${mod}+Return" = "${run} ${term}";
+          "${sup}+Return" = "${run} ${selecterm}";
           "${mod}+d" = "focus child";
           "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
           "${sup}+Right" = "resize grow width 5 px or 5 ppt";
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-          "${sup}+space" = "exec --no-startup-id rofi -show run -lines 10 -width 40";
-          "${mod}+e" = "exec --no-startup-id ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
-          "${mod}+r" = "exec --no-startup-id ${record}";
-          "${mod}+p" = "exec --no-startup-id ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "${sup}+space" = "${run} rofi -show run -lines 10 -width 40";
+          "${mod}+e" = "${run} ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
+          "${mod}+r" = "${run} ${record}";
+          "${mod}+p" = "${run} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
         };
         colors = with config.lib.base16.theme; {
           focused = {
