@@ -143,6 +143,20 @@ jobs:
     - name: Build nix-shell
       run: nix run nixpkgs.nix-build-uncached -c nix-build-uncached -I nixpkgs="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)" shell.nix
 
+  status:
+    name: Update commit status
+    needs: [system, home-manager, shell]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Get workflow conclusion
+      uses: technote-space/workflow-conclusion-action@v2.1
+
+    - name: Update commit status
+      uses: ouzi-dev/commit-status-updater@v1.1.0
+      with:
+        status: ${{ env.WORKFLOW_CONCLUSION }}
+
   telegram:
     name: Telegram
     needs: [system, home-manager, shell]
