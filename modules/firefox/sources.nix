@@ -56,13 +56,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3720594/sponsorblock_skip_sponsorships_on_youtube-2.0.12.3-an+fx.xpi";
-    sha256 = "026dk0zr6nv1da61dn8s9c2a949l40kbs04f5b6dsp5jjncnf6qx";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3732755/sponsorblock_skip_sponsorships_on_youtube-2.0.12.4-an+fx.xpi";
+    sha256 = "018bnfynnw7jbrfz6dapsf0fnq2pb8bjwfvg7i1kjhxz0b4sfls1";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3720616/stylus-1.5.15-fx.xpi";
-    sha256 = "0g07mgw3d4ha8lwdfsjr6922fq8dqgslzf7adjfc13lqhzs8vhvy";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3732726/stylus-1.5.17-fx.xpi";
+    sha256 = "02cgwp5fc4zmnhikly5i8wydyi885namazgc7r9ki2dzgq67f3bd";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
