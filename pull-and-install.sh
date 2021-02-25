@@ -2,6 +2,7 @@
 #! nix-shell -i bash -p jq gh git curl
 
 set -e
+set -x
 
 api="https://api.github.com"
 user="reedrw"
