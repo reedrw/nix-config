@@ -189,6 +189,7 @@ in
         ls = "${pkgs.exa}/bin/exa -lh --git";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
+        pai = "~/.config/nixpkgs/pull-and-install.sh";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
