@@ -35,6 +35,11 @@ pkgs: [
     sha256 = "0kbixzkm40iqhy4i6npnmsks5nmna08cmx6chx3561brkgr7nk6h";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "popup-window";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3609741/popup_window-0.1.0-fx.xpi";
+    sha256 = "0pm3vgk38zli72nxidgzac6i3rld9svzdl2v0zvgxgls1i0zhyk7";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
     url = "https://addons.mozilla.org/firefox/downloads/file/3719726/privacy_badger-2021.2.2-an+fx.xpi";
     sha256 = "19ji6qvp7ka581i6bnfr5ddqa7lr6vnnina4d10p9r4ky5fldax9";
