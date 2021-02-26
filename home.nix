@@ -17,6 +17,7 @@ let
     ngrok
     nix-tree
     noisetorch
+    nq
     nur.repos.reedrw.teletype
     pavucontrol
     psmisc
