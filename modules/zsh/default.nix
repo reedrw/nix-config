@@ -148,8 +148,8 @@ in
 
         bindkey '^[[A'  up-line-or-beginning-search
         bindkey '^[[B'  down-line-or-beginning-search
-        bindkey '^[[7~' beginning-of-line
-        bindkey '^[[8~' end-of-line
+        bindkey '^[[1~' beginning-of-line
+        bindkey '^[[4~' end-of-line
 
         c(){
           [[ -p /dev/stdin ]] && \
