@@ -27,7 +27,6 @@ main(){
     ./install.sh
     popd || exit
   else
-    echo 'GitHub Actions conclusion is not "success"'
     exit 1
   fi
 }
