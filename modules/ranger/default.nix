@@ -58,7 +58,7 @@ in
             EOF
 
             wrapProgram $out/bin/ranger \
-              --prefix PATH : ${pkgs.stdenv.lib.makeBinPath bins}
+              --prefix PATH : ${lib.makeBinPath bins}
           '';
         }
       );
