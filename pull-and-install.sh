@@ -31,6 +31,8 @@ main(){
   if [[ $merged == "true" ]]; then
     git pull
     ./install.sh
+  else
+    exit 1
   fi
   popd || exit
 }
