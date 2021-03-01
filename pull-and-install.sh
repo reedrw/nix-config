@@ -10,25 +10,30 @@ repo="nix-config"
 
 mainUrl="$api/repos/$user/$repo"
 
-# Get latest reedbot PR number
-prNumber="$(curl -s "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot]") | .number')"
-
-# Get PR ref
-prRef="$(curl -s "$mainUrl/pulls/$prNumber" | jq -r '.head.sha')"
-
-# Get GitHub Action workflow conclusion
-prConclusion="$(curl -s "$mainUrl/commits/$prRef/check-suites" | jq -r '.check_suites[] | select(.app.slug == "github-actions") | .conclusion')"
+# Get latest reedbot PR numbers
+PRs=$(curl -s "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot]") | .number')
 
 main(){
-  if [[ $prConclusion == "success" ]]; then
-    pushd ~/.config/nixpkgs || exit
-    gh pr merge "$prNumber" -dm
+  pushd ~/.config/nixpkgs || exit
+  for prNumber in $PRs; do
+
+    # Get PR ref
+    prRef="$(curl -s "$mainUrl/pulls/$prNumber" | jq -r '.head.sha')"
+
+    # Get GitHub Action workflow conclusion
+    prConclusion="$(curl -s "$mainUrl/commits/$prRef/check-suites" | jq -r '.check_suites[] | select(.app.slug == "github-actions") | .conclusion')"
+
+    if [[ $prConclusion == "success" ]]; then
+      gh pr merge "$prNumber" -dm
+      merged="true"
+    fi
+
+  done
+  if [[ $merged == "true" ]]; then
     git pull
     ./install.sh
-    popd || exit
-  else
-    exit 1
   fi
+  popd || exit
 }
 
 main "$@"
