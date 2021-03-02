@@ -29,10 +29,10 @@
         "homepage": "github.com/zsh-users/zsh-syntax-highlighting",
         "owner": "zsh-users",
         "repo": "zsh-syntax-highlighting",
-        "rev": "5eb494852ebb99cf5c2c2bffee6b74e6f1bf38d0",
-        "sha256": "03vszkmm09smbzpbnk6c5f5sx1y9vh0j91xvgqfv6m4gldxrj37j",
+        "rev": "205bc7ea199cfd4cded51d465baad63b3d7f3aad",
+        "sha256": "1n80s6h746k3an2i9bpmkfci6dd8kf0n6b3z39f11imzn1c0q9pg",
         "type": "tarball",
-        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/5eb494852ebb99cf5c2c2bffee6b74e6f1bf38d0.tar.gz",
+        "url": "https://github.com/zsh-users/zsh-syntax-highlighting/archive/205bc7ea199cfd4cded51d465baad63b3d7f3aad.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
