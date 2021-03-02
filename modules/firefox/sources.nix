@@ -71,8 +71,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "twitch-adblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3706253/twitch_adblock-2.0-fx.xpi";
-    sha256 = "0kmmjdw0wc1kf29a7sx3xxwm5l4cjqmzkzlj48ib8fq83h3gg1n1";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3736082/twitch_adblock-2.2-fx.xpi";
+    sha256 = "03vd8adz2kw1rpld2hnhn73shmma9qccg4zb75xs5c7rl12grr44";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
