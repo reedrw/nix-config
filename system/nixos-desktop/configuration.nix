@@ -80,7 +80,7 @@ in
       enable = true;
       support32Bit = true;
       extraConfig = ''
-        set-default-sink alsa_output.pci-0000_00_1b.0.analog-stereo
+        set-default-sink alsa_output.usb-Schiit_Audio_Schiit_Modi_3_-00.analog-stereo
       '';
     };
     opengl = {
@@ -199,7 +199,14 @@ in
   # {{{ Users
   users.users.reed = {
     isNormalUser = true;
-    extraGroups = [ "adbusers" "audio" "docker" "libvirtd" "networkmanager" "wheel" ];
+    extraGroups = [
+      "adbusers"
+      "audio"
+      "docker"
+      "libvirtd"
+      "networkmanager"
+      "wheel"
+    ];
     shell = pkgs.zsh;
   };
   # }}}
