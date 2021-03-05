@@ -21,6 +21,7 @@ let
     nur.repos.reedrw.teletype
     pavucontrol
     psmisc
+    ripgrep
     screen
     virt-manager
 
