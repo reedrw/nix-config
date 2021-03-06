@@ -1,1 +1,1 @@
-/home/reed/.config/nixpkgs/update-sources.sh
+../update-sources.sh
