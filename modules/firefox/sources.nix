@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3682641/torrent_control-0.2.21-fx.xpi";
-    sha256 = "00p8mkl80bniljcw4xvdvwbgn0yqxm2h2kmgvxshnm6z75k99fp2";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3740059/torrent_control-0.2.22-fx.xpi";
+    sha256 = "110mqd8y47adymqvz0jh7zl6wjailv1sa5pbigl97q5f30myz9k2";
   })
   (pkgs.fetchFirefoxAddon {
     name = "twitch-adblock";
