@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "tmux",
         "repo": "tmux",
-        "rev": "de4ac37baa2d32c3a3597be39eeac953c6159f77",
-        "sha256": "0zvy035ji89dhgyw09i07x113yin1jqq1hq9jfhkcgg7y46bakhi",
+        "rev": "541872bc5754a8f4daa84f23043c356f7ac4f663",
+        "sha256": "150f62prqq5xj2z6r5wp41ig4vk88l1kl05hxc03ldm9phjalpp5",
         "type": "tarball",
-        "url": "https://github.com/tmux/tmux/archive/de4ac37baa2d32c3a3597be39eeac953c6159f77.tar.gz",
+        "url": "https://github.com/tmux/tmux/archive/541872bc5754a8f4daa84f23043c356f7ac4f663.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
