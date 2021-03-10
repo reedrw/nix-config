@@ -9,10 +9,13 @@ let
     bitwarden-cli
     cachix
     droidcam
+    file
     git
     github-cli
+    gron
     htop
     ix
+    jq
     libreoffice
     ngrok
     nix-tree
@@ -27,6 +30,7 @@ let
 
     # chat
     discord
+    element-desktop
     tdesktop
     teams
 
