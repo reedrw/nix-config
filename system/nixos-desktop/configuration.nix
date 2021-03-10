@@ -193,7 +193,13 @@ in
   };
   # }}}
   # {{{ Programs
-  programs.adb.enable = true;
+  programs = {
+    adb.enable = true;
+    gnupg.agent = {
+      enable = true;
+      pinentryFlavor = "tty";
+    };
+  };
   environment.pathsToLink = [ "/share/zsh" ];
   # }}}
   # {{{ Users
