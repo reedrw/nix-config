@@ -7,7 +7,7 @@ fi
 
 host="$(hostname)"
 
-pushd ~/.config/nixpkgs || exit
+pushd ~/.config/nixpkgs > /dev/null || exit
 
 HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
 nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
@@ -53,4 +53,4 @@ home-manager switch
 echo "Updating search cache..."
 nix search -u > /dev/null
 
-popd || exit
+popd > /dev/null || exit
