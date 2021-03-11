@@ -15,12 +15,12 @@ let
   '';
 
   cachix =
-    if builtins.pathExists ./cachix.nix
-    then import ./cachix.nix else import dummy;
+    if builtins.pathExists /etc/nixos/cachix.nix
+    then import /etc/nixos/cachix.nix else import dummy;
 
   hardware-configuration =
-    if builtins.pathExists ./hardware-configuration.nix
-    then import ./hardware-configuration.nix else import dummy-hw;
+    if builtins.pathExists /etc/nixos/hardware-configuration.nix
+    then import /etc/nixos/hardware-configuration.nix else import dummy-hw;
   # }}}
 
 in

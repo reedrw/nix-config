@@ -185,6 +185,7 @@ in
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
         hms = "home-manager switch";
+        ldp = "~/.config/nixpkgs/install.sh";
         ln = "ln -v";
         ls = "${pkgs.exa}/bin/exa -lh --git";
         mkdir = "mkdir -vp";
