@@ -1,9 +1,13 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash
+#! nix-shell -i bash -p jq
 
 if [[ -n "$SUDO_ASKPASS" ]]; then
   sudo="sudo -A"
 fi
+
+host="$(hostname)"
+
+pushd ~/.config/nixpkgs || exit
 
 HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
 nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
@@ -38,9 +42,15 @@ if [[ "$installedNUR" != "$nurURL" ]]; then
   sudo nix-channel --update
 fi
 
-echo "Rebuilding NixOS..."
-sudo nixos-rebuild switch --upgrade
+if [[ -d "./system/$host" ]]; then
+  echo "Rebuilding NixOS..."
+  sudo nixos-rebuild switch -I nixos-config="$HOME"/.config/nixpkgs/system/"$host"/configuration.nix
+else
+  sudo nixos-rebuild switch
+fi
 echo "Rebuilding home-manager..."
 home-manager switch
 echo "Updating search cache..."
 nix search -u > /dev/null
+
+popd || exit
