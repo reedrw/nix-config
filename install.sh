@@ -27,6 +27,8 @@ if [[ "$installedNixpkgs" != "$nixpkgsURL" ]]; then
   echo "Installing pinned nixpkgs..."
   sudo nix-channel --add "$nixpkgsURL" nixos
   sudo nix-channel --update
+  echo "Updating search cache..."
+  nix search -u > /dev/null
 fi
 
 installedNixOShardware="$($sudo nix-channel --list | grep "nixos-hardware " | cut -d' ' -f2-)"
@@ -43,15 +45,38 @@ if [[ "$installedNUR" != "$nurURL" ]]; then
   sudo nix-channel --update
 fi
 
-if [[ -d "./system/$host" ]]; then
-  echo "Rebuilding NixOS..."
-  sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host"/configuration.nix
-else
-  sudo nixos-rebuild switch
+system(){
+  # if the hostname matches a saved configuration.nix
+  if [[ -d "./system/$host" ]]; then
+    currentSystemDrv="$(nix-store --query --deriver "$systemProfile")"
+    newSystemDrv="$(nix-instantiate ci.nix -A "$host" 2> /dev/null)"
+    # compare deriver of current and new system builds, if different, rebuild
+    if ! [[ "$currentSystemDrv" == "$newSystemDrv" ]]; then
+      echo "Rebuilding NixOS..."
+      sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host"/configuration.nix
+    else
+      echo "No changes to system. Not rebuilding."
+    fi
+  else
+    echo "Rebuilding NixOS..."
+    sudo nixos-rebuild switch
+  fi
+}
+
+systemProfile="/nix/var/nix/profiles/system"
+# if a system profile exists (NixOS check)
+if [[ -d "$systemProfile" ]]; then
+  system
 fi
-echo "Rebuilding home-manager..."
-home-manager switch
-echo "Updating search cache..."
-nix search -u > /dev/null
+
+HomeManagerProfile="/nix/var/nix/profiles/per-user/$USER/home-manager"
+currentHomeManagerDrv="$(nix-store --query --deriver "$HomeManagerProfile")"
+newHomeManagerDrv="$(nix-instantiate ci.nix -A home-manager 2> /dev/null)"
+if ! [[ "$currentHomeManagerDrv" == "$newHomeManagerDrv" ]]; then
+  echo "Rebuilding home-manager..."
+  home-manager switch
+else
+  echo "No changes to home-manager. Not rebuilding."
+fi
 
 popd > /dev/null || exit
