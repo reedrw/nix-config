@@ -6,8 +6,9 @@ if [[ -n "$SUDO_ASKPASS" ]]; then
 fi
 
 host="$(hostname)"
+dir="$(dirname "$0")"
 
-pushd ~/.config/nixpkgs > /dev/null || exit
+pushd "$dir" > /dev/null || exit
 
 HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
 nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
@@ -44,7 +45,7 @@ fi
 
 if [[ -d "./system/$host" ]]; then
   echo "Rebuilding NixOS..."
-  sudo nixos-rebuild switch -I nixos-config="$HOME"/.config/nixpkgs/system/"$host"/configuration.nix
+  sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host"/configuration.nix
 else
   sudo nixos-rebuild switch
 fi

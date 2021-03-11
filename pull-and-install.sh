@@ -3,6 +3,8 @@
 
 set -e
 
+dir="$(dirname "$0")"
+
 api="https://api.github.com"
 user="reedrw"
 repo="nix-config"
@@ -13,7 +15,6 @@ mainUrl="$api/repos/$user/$repo"
 PRs=$(curl "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot]") | .number')
 
 main(){
-  pushd ~/.config/nixpkgs > /dev/null || exit
   for prNumber in $PRs; do
 
     # Get PR ref
@@ -34,7 +35,8 @@ main(){
   else
     exit 1
   fi
-  popd > /dev/null || exit
 }
 
+pushd "$dir" > /dev/null || exit
 main "$@"
+popd >> /dev/null || exit
