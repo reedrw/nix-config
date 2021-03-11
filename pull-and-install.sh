@@ -13,7 +13,7 @@ mainUrl="$api/repos/$user/$repo"
 PRs=$(curl "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot]") | .number')
 
 main(){
-  pushd ~/.config/nixpkgs || exit
+  pushd ~/.config/nixpkgs > /dev/null || exit
   for prNumber in $PRs; do
 
     # Get PR ref
@@ -34,7 +34,7 @@ main(){
   else
     exit 1
   fi
-  popd || exit
+  popd > /dev/null || exit
 }
 
 main "$@"
