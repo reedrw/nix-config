@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p jq
+#! nix-shell -i bash
 
 if [[ -n "$SUDO_ASKPASS" ]]; then
   sudo="sudo -A"
