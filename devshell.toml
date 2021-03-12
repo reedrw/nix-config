@@ -9,6 +9,7 @@ packages = [
   "niv",
   "pre-commit",
   "shellcheck",
+  "wget",
 ]
 
 [[env]]

@@ -15,34 +15,49 @@ nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
 nurURL="$(jq -r '.["NUR"].url' ./nix/sources.json)"
 NixOShardwareURL="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)"
 
-installedHomeManager="$(nix-channel --list | grep "home-manager " | cut -d' ' -f2-)"
-if [[ "$installedHomeManager" != "$HomeManagerURL" ]]; then
+getTarballHash(){
+  tmpDir="$(mktemp -d)/"
+  wget -nv --show-progress --progress=dot:giga -c "$1" -O - | tar xz -C "$tmpDir" --strip-components=1
+  nix-hash --type sha256 "$tmpDir"
+  rm -r "$tmpDir"
+}
+
+currentHomeManager="/nix/var/nix/profiles/per-user/$USER/channels/home-manager/"
+currentHomeManagerSha="$(nix-hash --type sha256 "$currentHomeManager")"
+newHomeManagerSha="$(getTarballHash "$HomeManagerURL")"
+if [[ "$currentHomeManagerSha" != "$newHomeManagerSha" ]]; then
   echo "Installing pinned home-manager..."
   nix-channel --add "$HomeManagerURL" home-manager
   nix-channel --update
 fi
 
-installedNixpkgs="$($sudo nix-channel --list | grep "nixos " | cut -d' ' -f2-)"
-if [[ "$installedNixpkgs" != "$nixpkgsURL" ]]; then
+currentNixpkgs="/nix/var/nix/profiles/per-user/root/channels/nixos/"
+currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
+newNixpkgsSha="$(getTarballHash "$nixpkgsURL")"
+if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
   echo "Installing pinned nixpkgs..."
-  sudo nix-channel --add "$nixpkgsURL" nixos
-  sudo nix-channel --update
+  $sudo nix-channel --add "$nixpkgsURL" nixos
+  $sudo nix-channel --update
   echo "Updating search cache..."
   nix search -u > /dev/null
 fi
 
-installedNixOShardware="$($sudo nix-channel --list | grep "nixos-hardware " | cut -d' ' -f2-)"
-if [[ "$installedNixOShardware" != "$NixOShardwareURL" ]]; then
+currentNixOShardware="/nix/var/nix/profiles/per-user/root/channels/nixos-hardware/"
+currentNixOShardwareSha="$(nix-hash --type sha256 "$currentNixOShardware")"
+newNixOShardwareSha="$(getTarballHash "$NixOShardwareURL")"
+if [[ "$currentNixOShardwareSha" != "$newNixOShardwareSha" ]]; then
   echo "Installing pinned nixos-hardware..."
-  sudo nix-channel --add "$NixOShardwareURL" nixos-hardware
-  sudo nix-channel --update
+  $sudo nix-channel --add "$NixOShardwareURL" nixos-hardware
+  $sudo nix-channel --update
 fi
 
-installedNUR="$($sudo nix-channel --list | grep "nur " | cut -d' ' -f2-)"
-if [[ "$installedNUR" != "$nurURL" ]]; then
+currentNUR="/nix/var/nix/profiles/per-user/root/channels/nur/"
+currentNURSha="$(nix-hash --type sha256 "$currentNUR")"
+newNURSha="$(getTarballHash "$nurURL")"
+if [[ "$currentNURSha" != "$newNURSha" ]]; then
   echo "Installing pinned NUR..."
-  sudo nix-channel --add "$nurURL" nur
-  sudo nix-channel --update
+  $sudo nix-channel --add "$nurURL" nur
+  $sudo nix-channel --update
 fi
 
 system(){
@@ -53,13 +68,13 @@ system(){
     # compare deriver of current and new system builds, if different, rebuild
     if ! [[ "$currentSystemDrv" == "$newSystemDrv" ]]; then
       echo "Rebuilding NixOS..."
-      sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host"/configuration.nix
+      $sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host"/configuration.nix
     else
       echo "No changes to system. Not rebuilding."
     fi
   else
     echo "Rebuilding NixOS..."
-    sudo nixos-rebuild switch
+    $sudo nixos-rebuild switch
   fi
 }
 
