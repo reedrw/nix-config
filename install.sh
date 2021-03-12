@@ -17,7 +17,7 @@ NixOShardwareURL="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)"
 
 getTarballHash(){
   tmpDir="$(mktemp -d)/"
-  wget -nv --show-progress --progress=dot:giga -c "$1" -O - | tar xz -C "$tmpDir" --strip-components=1
+  wget -nv --show-progress -c "$1" -O - | tar xz -C "$tmpDir" --strip-components=1
   nix-hash --type sha256 "$tmpDir"
   rm -r "$tmpDir"
 }
