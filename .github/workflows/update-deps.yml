@@ -81,7 +81,7 @@ jobs:
 
         }
         EOF
-        go build -o "$buildDir/" "$buildDir/main/go"
+        go build -o "$buildDir/" "$buildDir/main.go"
         drvDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$oldDrv" "$newDrv" --line-oriented | $buildDir/main)"
 
         echo "$drvDiff"
