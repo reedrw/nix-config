@@ -90,18 +90,21 @@ jobs:
         go build -o "$buildDir/" "$buildDir/main.go"
 
         vars="$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq )"
-        env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq
         echo $vars
+        first_run=true
         for i in $vars; do
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
           if ! [[ "$nixDiff" == "" ]]; then
-            diffMessage="$(echo -e "$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n" )"
+            [[ "$first_run" == "true" ]] && messageFile="$(mktemp)"
+            first_run=false
+            echo -e "\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n\`\`\`" >> "$messageFile"
           fi
         done
 
-        echo "$diffMessage"
+        diffMessage="$(cat "$messageFile")"
+
         diffMessage="${diffMessage//'%'/'%25'}"
         diffMessage="${diffMessage//$'\n'/'%0A'}"
         diffMessage="${diffMessage//$'\r'/'%0D'}"
