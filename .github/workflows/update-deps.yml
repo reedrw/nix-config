@@ -91,7 +91,7 @@ jobs:
         go build -o "$buildDir/" "$buildDir/main.go"
 
         vars="$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq -c | grep 2 | cut -c 9-)"
-        env | grep "new_\|old_"
+        env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"="
         echo $vars
         for i in $vars; do
           old="$(eval echo \$old_$i)"
