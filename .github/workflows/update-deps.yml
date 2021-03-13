@@ -99,7 +99,7 @@ jobs:
           if ! [[ "$nixDiff" == "" ]]; then
             [[ "$first_run" == "true" ]] && messageFile="$(mktemp)"
             first_run=false
-            echo -e "\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n\`\`\`" >> "$messageFile"
+            echo -e "\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n\`\`\`" >> $messageFile
           fi
         done
 
