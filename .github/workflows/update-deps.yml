@@ -92,7 +92,7 @@ jobs:
         messageFile="$(mktemp)"
 
         vars="$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq )"
-        for i in "$vars"; do
+        for i in $vars; do
           echo "$i"
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
