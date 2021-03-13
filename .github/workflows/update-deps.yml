@@ -90,9 +90,9 @@ jobs:
         go build -o "$buildDir/" "$buildDir/main.go"
 
         vars="$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq )"
-        echo "$vars"
+        echo $vars
         first_run=true
-        for i in "$vars"; do
+        for i in $vars; do
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
