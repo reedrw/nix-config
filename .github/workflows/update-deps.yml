@@ -94,6 +94,7 @@ jobs:
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
+          echo $nixDiff
           if ! [[ "$nixDiff" == "" ]]; then
             diffMessage="$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n"
           fi
