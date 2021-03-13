@@ -92,7 +92,7 @@ jobs:
 
         for i in "$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq -c | grep 2 | cut -c 9-)"; do
           echo "$i"
-          nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$(eval echo \$old_$i)" "$(eval echo \$old_$i)" --line-oriented | $buildDir/main)"
+          nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff $(eval echo \$old_$i) $(eval echo \$new_$i) --line-oriented | $buildDir/main)"
           if ! [[ "$nixDiff" == "" ]]; then
             diffMessage="$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n"
           fi
