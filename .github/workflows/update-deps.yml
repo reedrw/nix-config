@@ -52,7 +52,6 @@ jobs:
     - name: Generate diff of derivations
       id: diff-drv
       run: |
-        set -x
         buildDir="$(mktemp -d)"
         cat > "$buildDir/main.go" << EOF
         package main
