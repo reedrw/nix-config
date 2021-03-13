@@ -52,6 +52,7 @@ jobs:
     - name: Generate diff of derivations
       id: diff-drv
       run: |
+        set -x
         buildDir="$(mktemp -d)"
         cat > "$buildDir/main.go" << EOF
         package main
@@ -90,11 +91,8 @@ jobs:
         go build -o "$buildDir/" "$buildDir/main.go"
 
         for i in $(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq -c | grep 2 | cut -c 9-); do
-          echo "$i"
           old="$(eval echo \$old_$i)"
-          echo "old=$old"
           new="$(eval echo \$new_$i)"
-          echo "new=$new"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
           if ! [[ "$nixDiff" == "" ]]; then
             diffMessage="$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n"
