@@ -34,14 +34,14 @@ jobs:
 
     - name: Instantiate current derivation
       run: |
-        oldDrv="$(nix-instantiate ci.nix -A home-manager)"
+        echo oldDrv="$(nix-instantiate ci.nix -A home-manager)" >> $GITHUB_ENV
 
     - name: Run all "update-sources.sh"
       run: find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do ( dir="$(dirname -- "$updatescript")"; cd "$dir" || exit; $updatescript ); done
 
     - name: Instantiate new derivation
       run: |
-        newDrv="$(nix-instantiate ci.nix -A home-manager)"
+        echo newDrv="$(nix-instantiate ci.nix -A home-manager)" >> $GITHUB_ENV
 
     - name: Generate diff of derivations
       id: diff-drv
