@@ -52,7 +52,6 @@ jobs:
     - name: Generate diff of derivations
       id: diff-drv
       run: |
-        set -x
         buildDir="$(mktemp -d)"
         cat > "$buildDir/main.go" << EOF
         package main
@@ -97,17 +96,11 @@ jobs:
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
-          echo $nixDiff
           if ! [[ "$nixDiff" == "" ]]; then
             diffMessage="$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n"
+            echo $diffMessage
           fi
         done
-
-        #hmDrvDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$oldHmDrv" "$newHmDrv" --line-oriented | $buildDir/main)"
-        #hmDrvDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$oldHmDrv" "$newHmDrv" --line-oriented | $buildDir/main)"
-        #if ! [[ "$drvDiff" == "" ]]; then
-          #drvDiff="\`\`\`diff\n$drvDiff\n\`\`\`"
-        #fi
 
         echo "$diffMessage"
         diffMessage="${diffMessage//'%'/'%25'}"
