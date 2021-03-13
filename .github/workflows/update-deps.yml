@@ -84,7 +84,7 @@ jobs:
         EOF
         go build -o "$buildDir/" "$buildDir/main.go"
 
-        for i in "$(env | grep 'old_|new_|' | cut -c 5- | cut -f1 -d"=" | uniq -c | grep 2 | cut -c 9-)"; do
+        for i in "$(env | grep 'old_|new_' | cut -c 5- | cut -f1 -d"=" | uniq -c | grep 2 | cut -c 9-)"; do
           source <(echo export nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$(eval echo \$old_$i)" "$(eval echo \$old_$i)" --line-oriented | $buildDir/main)")
           if ! [[ "$nixDiff" == "" ]]; then
             diffMessage="$diffMessage\n\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n"
