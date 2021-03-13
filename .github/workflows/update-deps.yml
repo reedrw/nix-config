@@ -91,14 +91,14 @@ jobs:
 
         messageFile="$(mktemp)"
 
+        env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq
         vars="$(env | grep "new_\|old_" | cut -c 5- | cut -f1 -d"=" | uniq )"
         for i in $vars; do
-          echo "$i"
           old="$(eval echo \$old_$i)"
           new="$(eval echo \$new_$i)"
           nixDiff="$(nix run nixpkgs.nix-diff -c nix-diff "$old" "$new" --line-oriented | $buildDir/main)"
           if ! [[ "$nixDiff" == "" ]]; then
-            echo -e "\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n\`\`\`" >> $messageFile
+            echo -e "\`nix-diff\` for \`$i\`\n\`\`\`diff\n$nixDiff\n\`\`\`"  | tee -a "$messageFile"
           fi
         done
 
