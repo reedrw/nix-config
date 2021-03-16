@@ -1,7 +1,4 @@
 { config, lib, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix;
-in
 {
   services.picom = {
     enable = true;
