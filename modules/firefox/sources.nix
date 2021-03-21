@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3741860/bitwarden_free_password_manager-1.49.0-an+fx.xpi";
-    sha256 = "18w2821s3jrm9gpd1b2dqkr9difa7rjs9i4rvqx0yi9rysyvc7g7";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3745234/bitwarden_free_password_manager-1.49.1-an+fx.xpi";
+    sha256 = "05npcy56bc1gdf35aczp33l4qhm5n3ckwvz9pm8ia5wqmlc4qlvy";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
