@@ -11,7 +11,6 @@ in
       profile = "gpu-hq";
       loop-file = "inf";
       osc = "no";
-      volume = 70;
     };
   };
   xdg.configFile =
