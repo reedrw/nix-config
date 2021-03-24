@@ -7,7 +7,7 @@ packages = [
   "home-manager",
   "jq",
   "niv",
-  #"pre-commit",
+  "pre-commit",
   "shellcheck",
   "wget",
 ]
