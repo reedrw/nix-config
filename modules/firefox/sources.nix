@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3740059/torrent_control-0.2.22-fx.xpi";
-    sha256 = "110mqd8y47adymqvz0jh7zl6wjailv1sa5pbigl97q5f30myz9k2";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3753434/torrent_control-0.2.23-fx.xpi";
+    sha256 = "161nkkv6qsv3b5968nx4ikqlaaxwr72hk752c2nr3rfxkf8xkv8b";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
