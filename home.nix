@@ -17,6 +17,7 @@ let
     ix
     jq
     libreoffice
+    neofetch
     ngrok
     nix-tree
     noisetorch
