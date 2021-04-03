@@ -1,4 +1,16 @@
 {
+    "neofetch": {
+        "branch": "master",
+        "description": "🖼️  A command-line system information tool written in bash 3.2+",
+        "homepage": "",
+        "owner": "dylanaraps",
+        "repo": "neofetch",
+        "rev": "6dd85d67fc0d4ede9248f2df31b2cd554cca6c2f",
+        "sha256": "04gkqqz26p2k51as5zp2l09mdjj7m2k1ls35ik4g6vmvy8bwb61x",
+        "type": "tarball",
+        "url": "https://github.com/dylanaraps/neofetch/archive/6dd85d67fc0d4ede9248f2df31b2cd554cca6c2f.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "tmux": {
         "branch": "master",
         "description": "tmux source code",
