@@ -154,29 +154,31 @@ in
   };
   # }}}
   # {{{ Services
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-    publish = {
+  services = {
+    avahi = {
       enable = true;
-      addresses = true;
+      nssmdns = true;
+      publish = {
+        enable = true;
+        addresses = true;
+      };
     };
-  };
 
-  services.nfs.server = {
-    enable = true;
-    exports = ''
-      /export       192.168.1.0/24(insecure,rw,sync,no_subtree_check)
-      /export/BigHD 192.168.1.0/24(insecure,rw,sync,no_subtree_check)
-    '';
-  };
+    nfs.server = {
+      enable = true;
+      exports = ''
+        /export       192.168.1.0/24(insecure,rw,sync,no_subtree_check)
+        /export/BigHD 192.168.1.0/24(insecure,rw,sync,no_subtree_check)
+      '';
+    };
 
-  services.plex = {
-    enable = true;
-    openFirewall = true;
-  };
+    plex = {
+      enable = true;
+      openFirewall = true;
+    };
 
-  services.sshd.enable = true;
+    sshd.enable = true;
+  };
   # }}}
   # {{{ Networking
   networking = {
