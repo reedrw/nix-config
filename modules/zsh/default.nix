@@ -159,6 +159,9 @@ in
 
         git(){
           case "$1" in
+            ~)
+              cd "$(command git rev-parse --show-toplevel)"
+            ;;
             clone)
               ${pkgs.gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
             ;;
