@@ -23,10 +23,6 @@ in
 
   programs = {
 
-    command-not-found = {
-      enable = true;
-    };
-
     direnv = {
       enable = true;
       enableZshIntegration = true;
@@ -75,7 +71,6 @@ in
         while read -r i; do
           setopt "$i"
         done << EOF
-          correct
           interactivecomments
           histverify
         EOF
@@ -101,8 +96,6 @@ in
         ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${config.lib.base16.theme.base02}"
         ZSH_AUTOSUGGEST_STRATEGY="completion"
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
-
-        SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 
         #  nix-shell prompt
         if [[ $IN_NIX_SHELL != "" ]] || [[ $IN_NIX_RUN != "" ]]; then
@@ -150,6 +143,27 @@ in
         bindkey '^[[B'  down-line-or-beginning-search
         bindkey '^[[1~' beginning-of-line
         bindkey '^[[4~' end-of-line
+
+        command_not_found_handler(){
+          if [ -f "$HOME/.cache/nix-index/files" ]; then
+            database="$HOME/.cache/nix-index"
+          else
+            >&2 echo 'No database.'
+            return 1
+          fi
+
+          argv0=$1; shift
+          attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
+
+          if [[ -z $attr ]]; then
+            >&2 echo "no match"
+            return 127
+          fi
+
+          attr="$(echo "$attr" | ${pkgs.fzy}/bin/fzy)" || return 130
+
+          nix run "nixpkgs.$attr" -c "$argv0" "$@"
+        }
 
         c(){
           [[ -p /dev/stdin ]] && \
