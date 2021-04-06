@@ -30,7 +30,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Install Cachix
-      uses: cachix/cachix-action@v9
+      uses: cachix/cachix-action@v10
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
