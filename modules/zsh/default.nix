@@ -156,7 +156,7 @@ in
           attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
 
           if [[ -z $attr ]]; then
-            >&2 echo "no match"
+            >&2 echo "$argv0: command not found"
             return 127
           fi
 
