@@ -3,30 +3,20 @@ let
   packages = with pkgs; [
 
     # utilities
-    acpi
     anki
     bitwarden
     bitwarden-cli
     cachix
     droidcam
-    file
     git
     github-cli
-    gron
     htop
-    ix
-    jq
     libreoffice
     neofetch
     ngrok
-    nix-tree
     noisetorch
-    nq
-    nur.repos.reedrw.teletype
     pavucontrol
-    psmisc
     ripgrep
-    screen
     virt-manager
 
     # chat
