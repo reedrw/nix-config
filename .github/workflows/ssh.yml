@@ -37,6 +37,7 @@ jobs:
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
+        pushFilter: (-source$|\.tar\.gz$|\.xpi)
 
     - name: Setup NIX_PATH
       run: |
@@ -84,6 +85,7 @@ jobs:
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
+        pushFilter: (-source$|\.tar\.gz$|\.xpi)
 
     - name: Setup NIX_PATH
       run: |
