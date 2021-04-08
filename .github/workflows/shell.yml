@@ -34,6 +34,7 @@ jobs:
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
+        pushFilter: (-source$|\.tar\.gz$|\.xpi)
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
