@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "tmux",
         "repo": "tmux",
-        "rev": "db97bef60b881ca42b0296e56d685ac67e7e7a15",
-        "sha256": "1gzqp16gvj8vhhz8aa8lzsn0nfa6f7b4zympcrvkzbp91pjz1vmx",
+        "rev": "caf7aeb3a9fbb673853d1b53990787002e813318",
+        "sha256": "0n5hqzxilf0d6028xhcj4xlys21gmlakyixmjnmqva57iz47kg93",
         "type": "tarball",
-        "url": "https://github.com/tmux/tmux/archive/db97bef60b881ca42b0296e56d685ac67e7e7a15.tar.gz",
+        "url": "https://github.com/tmux/tmux/archive/caf7aeb3a9fbb673853d1b53990787002e813318.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
