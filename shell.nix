@@ -26,10 +26,8 @@ let
       jsonFile = pkgs.runCommandNoCC "yaml-str-to-json"
         {
           nativeBuildInputs = [ pkgs.remarshal ];
-          value = builtins.readFile yamlFile;
-          passAsFile = [ "value" ];
         } ''
-        yaml2json "$valuePath" "$out"
+        yaml2json "${yamlFile}" "$out"
       '';
     in
     builtins.fromJSON (builtins.readFile "${jsonFile}");
