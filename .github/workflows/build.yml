@@ -150,7 +150,7 @@ jobs:
     - name: Build nix-shell
       run: |
         export NIXPKGS_ALLOW_UNFREE=1
-        nix run nixpkgs.nix-build-uncached -c nix-build-uncached -I nixpkgs="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)" shell.nix
+        nix-shell -I nixpkgs="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)" shell.nix --run 'exit'
 
   telegram:
     name: Telegram

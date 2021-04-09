@@ -1,8 +1,6 @@
 let
   sources = import ./nix/sources.nix;
 
-  devshell = import "${sources.devshell}/overlay.nix";
-
   hm-overlay = self: super: {
     home-manager = super.callPackage "${sources.home-manager}/home-manager" { };
   };
@@ -18,11 +16,50 @@ let
 
   pkgs = import sources.nixpkgs {
     overlays = [
-      devshell
       hm-overlay
       pre-commit
     ];
   };
 
+  fromYaml = yamlFile:
+    let
+      jsonFile = pkgs.runCommandNoCC "yaml-str-to-json"
+        {
+          nativeBuildInputs = [ pkgs.remarshal ];
+          value = builtins.readFile yamlFile;
+          passAsFile = [ "value" ];
+        } ''
+        yaml2json "$valuePath" "$out"
+      '';
+    in
+    builtins.fromJSON (builtins.readFile "${jsonFile}");
+
+  resolveKey = key:
+    let
+      attrs = builtins.filter builtins.isString (builtins.split "\\." key);
+    in
+    builtins.foldl' (sum: attr: sum.${attr}) pkgs attrs;
+
+  # transform the env vars into bash instructions
+  envToBash = with pkgs; env:
+    builtins.concatStringsSep "\n"
+      (lib.mapAttrsToList
+        (k: v: "export ${k}=${lib.escapeShellArg (toString v)}")
+        env
+      )
+  ;
+
+  shell = fromYaml ./shell.yaml;
+
 in
-pkgs.devshell.fromTOML ./devshell.toml
+pkgs.mkShell {
+  name = "${shell.name}";
+
+  buildInputs = map resolveKey (shell.packages or [ ]);
+
+  shellHook = ''
+    ${envToBash shell.env}
+    ${shell.run}
+  '';
+
+}
