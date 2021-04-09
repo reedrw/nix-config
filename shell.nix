@@ -1,4 +1,3 @@
-with import <nixpkgs> { };
 let
   sources = import ./nix/sources.nix;
 
@@ -17,15 +16,13 @@ let
       { }).gitAndTools.pre-commit;
   };
 
-  pkgs = import <nixpkgs> {
-    inherit system;
+  pkgs = import sources.nixpkgs {
     overlays = [
       devshell
       hm-overlay
       pre-commit
     ];
   };
-
 
 in
 pkgs.devshell.fromTOML ./devshell.toml
