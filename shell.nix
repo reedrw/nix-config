@@ -58,10 +58,10 @@ let
       '';
 
       out = pkgs.mkShell {
-        inherit shellHook;
+        inherit name shellHook;
         buildInputs = packages;
       };
     in
     out;
 in
-mkYamlShell ./shell.yaml
+mkYamlShell ./shell.yml
