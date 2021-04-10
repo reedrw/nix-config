@@ -1,6 +1,8 @@
 let
   sources = import ./nix/sources.nix;
 
+  nur = import sources.NUR { };
+
   hm-overlay = self: super: {
     home-manager = super.callPackage "${sources.home-manager}/home-manager" { };
   };
@@ -16,52 +18,10 @@ let
 
   pkgs = import sources.nixpkgs {
     overlays = [
+      nur.repos.reedrw.overlays.mkYamlShell
       hm-overlay
       pre-commit
     ];
   };
-
-  fromYaml = yamlFile:
-    let
-      jsonFile = pkgs.runCommandNoCC "yaml-str-to-json"
-        {
-          nativeBuildInputs = [ pkgs.remarshal ];
-        } ''
-        yaml2json "${yamlFile}" "$out"
-      '';
-    in
-    builtins.fromJSON (builtins.readFile "${jsonFile}");
-
-  resolveKey = key:
-    let
-      attrs = builtins.filter builtins.isString (builtins.split "\\." key);
-    in
-    builtins.foldl' (sum: attr: sum.${attr}) pkgs attrs;
-
-  # transform the env vars into bash instructions
-  envToBash = with pkgs; env:
-    builtins.concatStringsSep "\n"
-      (lib.mapAttrsToList
-        (k: v: "export ${k}=${lib.escapeShellArg (toString v)}")
-        env
-      )
-  ;
-
-  mkYamlShell = shellFile:
-    let
-      shell = fromYaml shellFile;
-      name = "${shell.name}";
-      packages = map resolveKey (shell.packages or [ ]);
-      shellHook = ''
-        ${envToBash shell.env}
-        ${shell.run}
-      '';
-
-      out = pkgs.mkShell {
-        inherit name shellHook;
-        buildInputs = packages;
-      };
-    in
-    out;
 in
-mkYamlShell ./shell.yml
+pkgs.mkYamlShell ./shell.yml
