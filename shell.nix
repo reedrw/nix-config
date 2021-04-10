@@ -47,17 +47,20 @@ let
       )
   ;
 
-  shell = fromYaml ./shell.yaml;
+  mkYamlShell = shellFile:
+    let
+      shell = fromYaml shellFile;
+    in
+    pkgs.mkShell {
+      name = "${shell.name}";
+
+      buildInputs = map resolveKey (shell.packages or [ ]);
+
+      shellHook = ''
+        ${envToBash shell.env}
+        ${shell.run}
+      '';
+    };
 
 in
-pkgs.mkShell {
-  name = "${shell.name}";
-
-  buildInputs = map resolveKey (shell.packages or [ ]);
-
-  shellHook = ''
-    ${envToBash shell.env}
-    ${shell.run}
-  '';
-
-}
+mkYamlShell ./shell.yaml
