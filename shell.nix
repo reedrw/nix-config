@@ -50,17 +50,18 @@ let
   mkYamlShell = shellFile:
     let
       shell = fromYaml shellFile;
-    in
-    pkgs.mkShell {
       name = "${shell.name}";
-
-      buildInputs = map resolveKey (shell.packages or [ ]);
-
+      packages = map resolveKey (shell.packages or [ ]);
       shellHook = ''
         ${envToBash shell.env}
         ${shell.run}
       '';
-    };
 
+      out = pkgs.mkShell {
+        inherit shellHook;
+        buildInputs = packages;
+      };
+    in
+    out;
 in
 mkYamlShell ./shell.yaml
