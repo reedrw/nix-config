@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3751525/duckduckgo_privacy_essentials-2021.3.26-an+fx.xpi";
-    sha256 = "10nfj1g300s7gvd558yxgr9d1z8pwcadgyavh05lba6r3078nybx";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3757752/duckduckgo_privacy_essentials-2021.4.9-an+fx.xpi";
+    sha256 = "0vm679cf5ms8k305ranim8jk23dz621k2c4j42b4k7x3df12lff7";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
