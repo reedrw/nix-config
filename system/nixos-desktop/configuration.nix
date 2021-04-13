@@ -60,7 +60,7 @@ in
   # Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = [ "kvm-intel" ];
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_lqx;
     kernelParams = [ "intel_pstate=active" ];
     supportedFilesystems = [ "ntfs" ];
     loader = {
