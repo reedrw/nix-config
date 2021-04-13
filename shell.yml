@@ -16,6 +16,7 @@ aliases:
   update-all: |
     find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do ( dir="$(dirname -- "$updatescript")"; cd "$dir" || exit; $updatescript ); done
   build: |
+    export NIXPKGS_ALLOW_UNFREE=1
     if [[ -z "$1" ]]; then
       nix run nixpkgs.expect -c unbuffer nix-build -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix |& nix run nixpkgs.nix-output-monitor -c nom
     else
