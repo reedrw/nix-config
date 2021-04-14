@@ -36,6 +36,21 @@ let
 
   ];
 
+  globalAliases = {
+    hms = "home-manager switch";
+    ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
+    pai = "~/.config/nixpkgs/pull-and-install.sh";
+  };
+
+  aliasToPackage = alias:
+    (lib.mapAttrsToList
+      (name: value: pkgs.writeShellScriptBin name value)
+      alias
+    )
+  ;
+
+  aliasPackages = aliasToPackage globalAliases;
+
   sources = import ./nix/sources.nix;
 
   config = builtins.toFile "config.nix" ''
@@ -103,7 +118,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
-    packages = packages;
+    packages = packages ++ aliasPackages;
   };
 
   systemd.user.startServices = true;

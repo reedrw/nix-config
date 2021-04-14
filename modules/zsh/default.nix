@@ -14,8 +14,6 @@ let
         --replace ' fzf ' ' ${pkgs.fzf}/bin/fzf ' \
         --replace '$commands[fzf]' '${pkgs.fzf}/bin/fzf'
     '';
-
-
   };
 
 in
@@ -201,13 +199,10 @@ in
         cat = "b --plain --paging=never";
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
-        hms = "home-manager switch";
-        ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
         ln = "ln -v";
         ls = "${pkgs.exa}/bin/exa -lh --git";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
-        pai = "~/.config/nixpkgs/pull-and-install.sh";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
