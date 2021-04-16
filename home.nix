@@ -37,9 +37,9 @@ let
   ];
 
   globalAliases = {
-    hms = "home-manager switch";
-    ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
-    pai = "~/.config/nixpkgs/pull-and-install.sh";
+    hms = "${pkgs.expect}/bin/unbuffer home-manager switch";
+    ldp = "${pkgs.expect}/bin/unbuffer sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
+    pai = "${pkgs.expect}/bin/unbuffer ~/.config/nixpkgs/pull-and-install.sh";
   };
 
   aliasToPackage = alias:
