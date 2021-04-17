@@ -1,6 +1,8 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash
 
+export NIXPKGS_ALLOW_UNFREE=1
+
 if [[ -n "$SUDO_ASKPASS" ]]; then
   sudo="sudo -A"
 else
