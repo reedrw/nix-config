@@ -3,6 +3,8 @@
 
 if [[ -n "$SUDO_ASKPASS" ]]; then
   sudo="sudo -A"
+else
+  sudo="sudo"
 fi
 
 host="$(hostname)"
