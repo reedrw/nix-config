@@ -33,6 +33,9 @@ if [[ "$currentHomeManagerSha" != "$newHomeManagerSha" ]]; then
   echo "Installing pinned home-manager..."
   nix-channel --add "$HomeManagerURL" home-manager
   nix-channel --update
+
+  # Update NIX_PATH here or else you'd need to log out
+  export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
 fi
 
 currentNixpkgs="/nix/var/nix/profiles/per-user/root/channels/nixos/"
