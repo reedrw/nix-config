@@ -32,7 +32,7 @@ let
 
     # fonts
     nur.repos.reedrw.artwiz-lemon
-    nur.repos.reedrw.scientifica
+    scientifica
 
   ];
 
