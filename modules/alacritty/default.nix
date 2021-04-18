@@ -32,7 +32,7 @@ in
 
       italic:
         family: scientifica
-        style: Medium
+        style: Italic
 
       bold_italic:
         family: scientifica
