@@ -55,6 +55,11 @@ pkgs: [
     sha256 = "0lpa2ch3nc4ncyf5dw1lkwkv6i51v1f9vlriz41wbjryy1kjazs6";
   })
   (pkgs.fetchFirefoxAddon {
+    name = "purpleadblock";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3759690/purple_adblock-1.1-fx.xpi";
+    sha256 = "1997jqr6li0m08g1habmjsmfihzk73mz1m8mnflynq5v4ahgn5r1";
+  })
+  (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
     url = "https://addons.mozilla.org/firefox/downloads/file/3759418/refined_github-21.4.13-an+fx.xpi";
     sha256 = "0ci97npr0931allf84mdlgxa4dk8ld66ai0yir1ah5ad5lr64w3d";
