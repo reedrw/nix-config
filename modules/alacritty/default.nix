@@ -47,7 +47,7 @@ in
         y: 15
 
     shell:
-      program: ${pkgs.tmuxnew}/bin/tmux
+      program: ${pkgs.tmux}/bin/tmux
       args:
         - -f
         - ${tmuxconf}

@@ -10,17 +10,5 @@
         "type": "tarball",
         "url": "https://github.com/dylanaraps/neofetch/archive/6dd85d67fc0d4ede9248f2df31b2cd554cca6c2f.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "tmux": {
-        "branch": "master",
-        "description": "tmux source code",
-        "homepage": "",
-        "owner": "tmux",
-        "repo": "tmux",
-        "rev": "cd6af4a52ef074754e25d5658f04c78f8353114e",
-        "sha256": "1q1cx14zfki0475n9a1nspanwj43bymfmq1pyliqsvs0zb7nz8qf",
-        "type": "tarball",
-        "url": "https://github.com/tmux/tmux/archive/cd6af4a52ef074754e25d5658f04c78f8353114e.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
