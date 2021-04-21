@@ -83,6 +83,12 @@ in
         set-default-sink alsa_output.usb-Schiit_Audio_Schiit_Modi_3_-00.analog-stereo
       '';
     };
+    logitech = {
+      wireless = {
+        enable = true;
+        enableGraphical = true;
+      };
+    };
     opengl = {
       enable = true;
       driSupport = true;
@@ -202,7 +208,12 @@ in
       pinentryFlavor = "tty";
     };
   };
-  environment.pathsToLink = [ "/share/zsh" ];
+  environment = {
+    pathsToLink = [ "/share/zsh" ];
+    systemPackages = with pkgs; [
+      solaar
+    ];
+  };
   # }}}
   # {{{ Users
   users.users.reed = {
