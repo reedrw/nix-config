@@ -83,6 +83,7 @@
 
       source ${base16template "vim"}
       let base16colorspace=256
+      let g:airline_theme='base16'
       syntax on
       set autochdir
       set t_Co=256
