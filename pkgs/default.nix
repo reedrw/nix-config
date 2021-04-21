@@ -4,12 +4,6 @@ let
 
 in
 self: super: {
-  tmuxnew = super.tmux.overrideAttrs (
-    old: rec {
-      version = sources.tmux.rev;
-      src = sources.tmux;
-    }
-  );
   neofetch = super.neofetch.overrideAttrs (
     old: rec {
       version = sources.neofetch.rev;
