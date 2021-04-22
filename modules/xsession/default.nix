@@ -13,7 +13,8 @@ let
     (( W /= 5 ))
     (( H /= 11 ))
     # Arithmetic operations to correct for border
-    alacritty -t float -o window.dimensions.columns=$((''${W}-5)) window.dimensions.lines=$((''${H}-3)) window.position.x=''${X} window.position.y=''${Y}
+    alacritty -t float -o window.dimensions.columns=$((''${W}-5)) window.dimensions.lines=$((''${H}-3)) window.position.x=''${X} window.position.y=''${Y} &
+    disown
   '';
 
   record = pkgs.writeShellScript "record.sh" ''
