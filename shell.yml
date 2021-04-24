@@ -18,9 +18,9 @@ aliases:
   build: |
     export NIXPKGS_ALLOW_UNFREE=1
     if [[ -z "$1" ]]; then
-      nix run nixpkgs.expect -c unbuffer nix-build -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix |& nix run nixpkgs.nix-output-monitor -c nom
+      nix run nixpkgs.nix-output-monitor -c nom-build -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix
     else
-      nix run nixpkgs.expect -c unbuffer nix-build -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix -A "$1" |& nix run nixpkgs.nix-output-monitor -c nom
+      nix run nixpkgs.nix-output-monitor -c nom-build -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix -A "$1"
     fi
 
 env:
