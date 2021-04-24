@@ -8,7 +8,7 @@ let
 
     installPhase = ''
       mkdir -p $out
-      cp -rv ./ $out
+      cp -r ./ $out
       substituteInPlace $out/lib/ftb-tmux-popup \
         --replace tmux ${pkgs.tmux}/bin/tmux \
         --replace ' fzf ' ' ${pkgs.fzf}/bin/fzf ' \
