@@ -627,7 +627,7 @@ index 939d3bc..d76c316 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..319da5a 100644
+index a3cdb43..d133386 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -1160,8 +1160,8 @@ index a3cdb43..319da5a 100644
 -    "fetchSubmodules": false
 +  "vimiv": {
 +    "fetchSubmodules": false,
-+    "rev": "9993e275869d9c5b8b54f90727d21573878d50ea",
-+    "sha256": "1xa6xnvmd6vw17r7mqgwramvra3z565v818zfpp7js3223w5080k",
++    "rev": "08ea2a53570320be45275206b82a9ed11a1c3bc0",
++    "sha256": "083q104yrhwilxbywl6ksy74ibhpcx19p0wmqxqqr51ryvch9mky",
 +    "url": "https://github.com/karlch/base16-vimiv"
    },
    "vis": {
