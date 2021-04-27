@@ -44,4 +44,4 @@ ffz(){
   main
   ffz
   echo "]"
-} > sources.nix
+} | tee sources.nix
