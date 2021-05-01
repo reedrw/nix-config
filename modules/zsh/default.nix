@@ -122,6 +122,7 @@ in
           --color=16
           --layout=reverse
           --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
+          --info=hidden
         )
 
         FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
@@ -165,7 +166,7 @@ in
             return 127
           fi
 
-          attr="$(echo "$attr" | ${pkgs.fzy}/bin/fzy)" || return 130
+          attr="$(echo "$attr" | ${pkgs.fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
 
           nix run "nixpkgs.$attr" -c "$argv0" "$@"
         }
