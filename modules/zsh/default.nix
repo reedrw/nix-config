@@ -31,6 +31,11 @@ in
       enable = true;
     };
 
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     zsh = {
       enable = true;
       plugins =
@@ -117,8 +122,10 @@ in
           --color=16
           --layout=reverse
           --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-          --print-query
         )
+
+        FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
+
         zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
         zstyle ':fzf-tab:*' fzf-flags $FZF_TAB_FLAGS
 
