@@ -100,6 +100,8 @@ in
         ZSH_AUTOSUGGEST_STRATEGY="completion"
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
+        export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
+
         #  nix-shell prompt
         if [[ $IN_NIX_SHELL != "" ]] || [[ $IN_NIX_RUN != "" ]]; then
           output=$(echo $ANY_NIX_SHELL_PKGS | xargs)
