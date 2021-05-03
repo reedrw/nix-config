@@ -6,6 +6,10 @@ on:
         description: 'Use ngrok or tmate?'
         required: true
         default: 'tmate'
+      ref:
+        description: 'Choose branch or commit to checkout.'
+        required: true
+        default: 'master'
 jobs:
   tmate:
     if: github.event.inputs.method == 'tmate'
@@ -48,6 +52,8 @@ jobs:
 
     - name: Checkout repository
       uses: actions/checkout@v2.3.4
+      with:
+        ref: ${{ github.event.inputs.ref }}
 
     - name: Start SSH via tmate
       uses: P3TERX/ssh2actions@v1.0.0
