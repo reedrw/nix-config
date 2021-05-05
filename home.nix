@@ -68,25 +68,7 @@ let
 in
 {
 
-  imports = [
-    ./modules/alacritty
-    ./modules/base16
-    ./modules/comma
-    ./modules/dunst
-    ./modules/firefox
-    ./modules/mpd
-    ./modules/mpv
-    ./modules/nvim
-    ./modules/picom
-    ./modules/polybar
-    ./modules/ranger
-    ./modules/rofi
-    ./modules/styling
-    ./modules/weechat
-    ./modules/xsession
-    ./modules/zathura
-    ./modules/zsh
-  ];
+  imports = builtins.map (x: ./modules + ("/" + x)) (builtins.attrNames (builtins.readDir ./modules));
 
   nixpkgs = {
     config = import "${config}";
