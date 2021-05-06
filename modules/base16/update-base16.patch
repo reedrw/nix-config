@@ -627,7 +627,7 @@ index 939d3bc..d76c316 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..d133386 100644
+index a3cdb43..cddee4a 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -744,8 +744,8 @@ index a3cdb43..d133386 100644
 -    "sha256": "0ag5fsr3377rz6xfa0b9j54r90zh0yiz98kpa27xzhky4f5jpdah",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "b35d21ae0d46856416b64851ccbb5e44ee9498d0",
-+    "sha256": "04vs50a5wh0ziq34hh9li5d84nv39p3akaync1i9sbmr4kxkhr1l",
++    "rev": "59692942f34b9be0447a7766ad03115d04e79874",
++    "sha256": "1la7671sz666in8zx35j517sbj2y4jyasnj0x9yxh5n4g5qdrnbp",
 +    "url": "https://github.com/belak/base16-emacs"
 +  },
 +  "everything": {
