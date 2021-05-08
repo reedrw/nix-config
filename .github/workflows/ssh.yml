@@ -5,7 +5,7 @@ on:
       method:
         description: 'Use ngrok or tmate?'
         required: true
-        default: 'tmate'
+        default: 'ngrok'
       ref:
         description: 'Choose branch or commit to checkout.'
         required: true
