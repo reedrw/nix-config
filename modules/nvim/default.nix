@@ -1,5 +1,9 @@
 { config, lib, pkgs, ... }:
+let
 
+  sources = import ./nix/sources.nix;
+
+in
 {
 
   programs.neovim = {
@@ -16,6 +20,10 @@
           rev = "da785547bb9aa8a497f0e0fce332d9f6a5ee5955";
           sha256 = "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6";
         };
+      };
+      vim-airline = pkgs.vimUtils.buildVimPlugin {
+        name = "vim-airline";
+        src = sources.vim-airline;
       };
     in
     [
