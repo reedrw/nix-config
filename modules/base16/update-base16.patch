@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..d76c316 100644
+index 939d3bc..698857f 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -470,8 +470,8 @@ index 939d3bc..d76c316 100644
 -    "sha256": "15w250dnji6r18wgqqjjbvnwy60n669zphyx86ak4iy9mcn91vij",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "44685eec5b20d973adfd8599e6e1dcb3f9c00d3e",
-+    "sha256": "1rpyghb5fgjgvr68vkcwgvmcg9hlfmswcxvmh7w872drl1vhykpv",
++    "rev": "6e64c88288270c9b6baf9cc7f9eb7496c39fbd0b",
++    "sha256": "1yycmls3mjh2zy61n09p3nq2ynimz9hs4gzwyrsl6543ycrmvwm3",
 +    "url": "https://github.com/h404bi/base16-snazzy-scheme"
    },
    "solarflare": {
@@ -627,7 +627,7 @@ index 939d3bc..d76c316 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..cddee4a 100644
+index a3cdb43..1d6fdd2 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -680,8 +680,8 @@ index a3cdb43..cddee4a 100644
 -    "sha256": "0r0il2wnim7wqs2inn3f8i2apbj2hhinfvr66wng8zibdh7j8zyf",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "748e1585547682f6df515cdb5197b8f17c580526",
-+    "sha256": "0ydxjh5p0r28ma9mf7a6l2rpkyqxqwkmpiq5ysa77klibgwychj6",
++    "rev": "6324f8a34d9149b19c26326ca51469980b47a6b2",
++    "sha256": "154ljbl062d2rc1w1ia0wkyja6lmn0izbkdd3vljcrl5s72isyh1",
 +    "url": "https://github.com/h404bi/base16-concfg"
    },
    "conemu": {
