@@ -4,12 +4,6 @@ let
 
 in
 self: super: {
-  neofetch = super.neofetch.overrideAttrs (
-    old: rec {
-      version = sources.neofetch.rev;
-      src = sources.neofetch;
-    }
-  );
   ranger = super.ranger.overrideAttrs (
     old: rec {
       postFixup = old.postFixup + ''

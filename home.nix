@@ -12,7 +12,6 @@ let
     github-cli
     htop
     libreoffice
-    neofetch
     ngrok
     noisetorch
     pavucontrol
