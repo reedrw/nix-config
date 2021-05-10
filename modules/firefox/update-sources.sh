@@ -1,6 +1,9 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p jq
 
+PS4=''
+set -x
+
 main(){
 
   api="https://addons.mozilla.org/api/v4/addons/addon"
@@ -44,4 +47,4 @@ ffz(){
   main
   ffz
   echo "]"
-} | tee sources.nix
+} > sources.nix

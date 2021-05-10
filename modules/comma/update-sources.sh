@@ -1,6 +1,7 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p coreutils curl gawk git
 
+PS4=''
 set -x
 
 tag=$(git -c 'versionsort.suffix=-' ls-remote --exit-code --refs --tags --sort='v:refname' \
@@ -16,4 +17,4 @@ sha256="$(nix-prefetch-url "$url")"
   echo "    \"url\": \"$url\","
   echo "    \"sha256\": \"$sha256\""
   echo "}"
-} | tee source.json
+} > source.json

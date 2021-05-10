@@ -1,7 +1,7 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p coreutils git gnugrep jq gron niv
 
-set -eu -o verbose
+PS4=''
 set -x
 
 niv init
@@ -11,7 +11,7 @@ here=$PWD
 version=$(jq -r '.["base16-nix"].rev' ./nix/sources.json)
 checkout=$(mktemp -d)
 git clone https://github.com/atpotts/base16-nix "$checkout"
-cd "$checkout"
+pushd "$checkout" || exit
 
 git checkout "$version"
 
@@ -26,5 +26,5 @@ rm -v schemes.old.json
 git add -f schemes.json templates.json
 git diff HEAD -- schemes.json templates.json > "$here"/update-base16.patch
 
-cd "$here"
+popd || exit
 rm -rf "$checkout"
