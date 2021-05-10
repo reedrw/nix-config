@@ -627,7 +627,7 @@ index 939d3bc..698857f 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..1d6fdd2 100644
+index a3cdb43..4641fa7 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -1260,8 +1260,8 @@ index a3cdb43..1d6fdd2 100644
 -    "sha256": "0b29npil6hsr4cld1g6cz8i9412fvqx2c25ls2v71bajirads1yl",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "322a41117f44ad059db7b5d06f936cfe0d6b1106",
-+    "sha256": "0p16fzfpcb8klrw16bamfirmzqyc8sv4613bkxfa0x5vf3sp26bj",
++    "rev": "d1c3b611f9a99d8c94c04f2a842bed52f53924d8",
++    "sha256": "1166llnss13a6f2kcrmhapy0mg1z818a2mkwdsiwg86li8rwycrg",
 +    "url": "https://github.com/nicodebo/base16-zathura"
    }
  }
