@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..698857f 100644
+index 939d3bc..e27a305 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -78,8 +78,8 @@ index 939d3bc..698857f 100644
 +  },
 +  "colors": {
 +    "fetchSubmodules": false,
-+    "rev": "ecd803faa288bf4bd5a50977d90984143a512364",
-+    "sha256": "1d05vprhrjamssly3hxyfjzmcnf743y39rr7js5y1xxn915qx7gi",
++    "rev": "79ae645d3d4b0bbf6524ebafcd6dd066d8ab7505",
++    "sha256": "00cy2rb8c9r3nwx281h082dx2nizsx29xb09asb9z5zkk5ccn699",
 +    "url": "https://github.com/hakatashi/base16-colors-scheme"
    },
    "cupertino": {
