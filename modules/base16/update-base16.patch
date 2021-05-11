@@ -627,7 +627,7 @@ index 939d3bc..e27a305 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..4641fa7 100644
+index a3cdb43..dacc391 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -1234,8 +1234,8 @@ index a3cdb43..4641fa7 100644
 -    "sha256": "1kfg0zagxz3s4ri91l6ih0bfd8vbhyy2kd6vzcfpjkj1565ik0rh",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "a16b5903dcd4bef8e64a6776481985048f32382f",
-+    "sha256": "12g0mhn5sciccnw4lhpwwfbb3909bklfrwp5dgxzp769f1qyi0zy",
++    "rev": "b796a0689bc14e2f03aa2efe54c95b151a358c67",
++    "sha256": "0jm3zjn560n9bc3slc33ayblifmhy94fmp4f7bj21cnviyq4qcgy",
 +    "url": "https://github.com/afq984/base16-xfce4-terminal"
    },
    "xresources": {
@@ -1260,8 +1260,8 @@ index a3cdb43..4641fa7 100644
 -    "sha256": "0b29npil6hsr4cld1g6cz8i9412fvqx2c25ls2v71bajirads1yl",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "d1c3b611f9a99d8c94c04f2a842bed52f53924d8",
-+    "sha256": "1166llnss13a6f2kcrmhapy0mg1z818a2mkwdsiwg86li8rwycrg",
++    "rev": "8ba73c446c3c3f69482d209466dee951fae37524",
++    "sha256": "18hlv11v0j5zylczg0cm3r07hpv65w282wazgx29bgv6q35a6iqr",
 +    "url": "https://github.com/nicodebo/base16-zathura"
    }
  }
