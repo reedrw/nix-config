@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 let
 
-  myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
+  myFirefox = pkgs.wrapFirefox pkgs.firefox-bin-unwrapped {
+    browserName = "firefox";
     nixExtensions = (import ./sources.nix pkgs);
     extraPolicies = {
       CaptivePortal = false;
