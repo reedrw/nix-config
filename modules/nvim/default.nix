@@ -123,6 +123,8 @@
       cnoremap <Down> <C-n>
       nnoremap hms :Hm switch
       nnoremap hmb :Hm build
+      " https://stackoverflow.com/questions/597687/how-to-quickly-change-variable-names-in-vim/597932#597932
+      nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
       map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}<CR>wv^deld$viwyA = sources.<esc>pA;
     '';
