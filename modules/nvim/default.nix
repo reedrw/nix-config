@@ -1,5 +1,23 @@
 { config, lib, pkgs, ... }:
+let
 
+  sources = import ./nix/sources.nix;
+
+  myVimPlugins = builtins.removeAttrs sources [ "__functor" ];
+
+  attrList = builtins.map (key: builtins.getAttr key myVimPlugins) (builtins.attrNames myVimPlugins);
+
+  pluginList = builtins.map ( x:
+    pkgs.vimUtils.buildVimPlugin {
+      name = x.repo;
+      src = builtins.fetchTarball {
+        url = x.url;
+        sha256 = x.sha256;
+      };
+    }
+  ) attrList;
+
+in
 {
 
   programs.neovim = {
@@ -30,7 +48,7 @@
       vim-airline-themes
       vim-fugitive
       vim-polyglot
-    ];
+    ] ++ pluginList;
     extraConfig = with config.lib.base16; let
       nivscript = pkgs.writeShellScript "nivscript" ''
         package=$(</dev/stdin)
