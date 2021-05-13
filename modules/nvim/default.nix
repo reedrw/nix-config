@@ -21,6 +21,7 @@
     [
       The_NERD_Commenter
       base16-vim
+      deoplete-nvim
       gitgutter
       nerdtree
       suda-vim
@@ -45,6 +46,8 @@
       '';
     in
     ''
+      let g:deoplete#enable_at_startup = 1
+
       if !exists('g:airline_symbols')
         let g:airline_symbols = {}
       endif
