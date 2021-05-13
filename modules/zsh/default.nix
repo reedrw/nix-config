@@ -205,6 +205,7 @@ in
       '';
       shellAliases = {
         ":q" = "exit";
+        "\\$" = "";
         b = "${pkgs.bat}/bin/bat --theme=base16";
         cat = "b --plain --paging=never";
         cp = "cp -riv";
