@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3745234/bitwarden_free_password_manager-1.49.1-an+fx.xpi";
-    sha256 = "05npcy56bc1gdf35aczp33l4qhm5n3ckwvz9pm8ia5wqmlc4qlvy";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3775487/bitwarden_free_password_manager-1.50.0-an+fx.xpi";
+    sha256 = "1yah42dziimdzpzfmdbfyc84a3r5vfag107s4x5kqqcw2csswq83";
   })
   (pkgs.fetchFirefoxAddon {
     name = "clearurls";
@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3774156/sponsorblock_skip_sponsorships_on_youtube-2.0.14-an+fx.xpi";
-    sha256 = "1z5y8mrf2yy3qdf6la05drv6qd0i29igxnlg6winl0pk1cmiiya8";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3775447/sponsorblock_skip_sponsorships_on_youtube-2.0.14.1-an+fx.xpi";
+    sha256 = "0cnayiab7m6dff2qrvv18cvv413s8pz159mlp4ap8f8bvg4a27h2";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
