@@ -2,19 +2,19 @@
 let
   sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
 
-  fzf-tab-new = pkgs.stdenv.mkDerivation {
-    name = "fzf-tab";
-    src = sources.fzf-tab;
+  nivMap = import ../../functions/nivMap.nix;
 
-    installPhase = ''
-      mkdir -p $out
-      cp -r ./ $out
-      substituteInPlace $out/lib/ftb-tmux-popup \
-        --replace tmux ${pkgs.tmux}/bin/tmux \
-        --replace ' fzf ' ' ${pkgs.fzf}/bin/fzf ' \
-        --replace '$commands[fzf]' '${pkgs.fzf}/bin/fzf'
-    '';
-  };
+  attrList = nivMap sources;
+
+  pluginList = builtins.map ( x:
+    {
+      name = x.repo;
+      src = builtins.fetchTarball {
+        url = x.url;
+        sha256 = x.sha256;
+      };
+    }
+  ) attrList;
 
 in
 {
@@ -36,28 +36,13 @@ in
       enableZshIntegration = true;
     };
 
+    tmux = {
+      enable = true;
+    };
+
     zsh = {
       enable = true;
-      plugins =
-        let
-          fzf-tab = {
-            name = "fzf-tab";
-            src = fzf-tab-new;
-          };
-          zsh-syntax-highlighting = {
-            name = "zsh-syntax-highlighting";
-            src = sources.zsh-syntax-highlighting;
-          };
-          zsh-autosuggestions = {
-            name = "zsh-autosuggestions";
-            src = sources.zsh-autosuggestions;
-          };
-        in
-        [
-          fzf-tab
-          zsh-autosuggestions
-          zsh-syntax-highlighting
-        ];
+      plugins = pluginList;
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''
