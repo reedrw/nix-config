@@ -627,7 +627,7 @@ index 939d3bc..e27a305 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..dacc391 100644
+index a3cdb43..4334452 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -820,8 +820,8 @@ index a3cdb43..dacc391 100644
 +  },
 +  "highlightjs": {
 +    "fetchSubmodules": false,
-+    "rev": "29ccfedea448229b87a721a2696945babcad7804",
-+    "sha256": "150q5rddk8240pgyxfvx3zbhhbimxcjsvj1j8b7gxjcj0s8acf3i",
++    "rev": "ab2fa899d3052ca9b4e673b5800b623885e6c9dc",
++    "sha256": "17iz49fjxvcpgcydmwh5blh2j8c4xvv273xngsnk9qsgq095gdc7",
 +    "url": "https://github.com/highlightjs/base16-highlightjs"
    },
    "html-preview": {
