@@ -3,9 +3,9 @@ let
 
   sources = import ./nix/sources.nix;
 
-  myVimPlugins = builtins.removeAttrs sources [ "__functor" ];
+  nivMap = import ../../functions/nivMap.nix;
 
-  attrList = builtins.map (key: builtins.getAttr key myVimPlugins) (builtins.attrNames myVimPlugins);
+  attrList = nivMap sources;
 
   pluginList = builtins.map ( x:
     pkgs.vimUtils.buildVimPlugin {
