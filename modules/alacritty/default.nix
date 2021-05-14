@@ -38,7 +38,7 @@ in
         family: scientifica
         style: Bold
 
-      size: 8.5
+      size: 8
 
     window:
       dynamic_padding: true
