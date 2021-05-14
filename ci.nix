@@ -1,6 +1,6 @@
 let
-  sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs;
+  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
+  pkgs = import sources.nixpkgs { };
 
 in
 {

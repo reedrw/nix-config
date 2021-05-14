@@ -1,5 +1,5 @@
 let
-  sources = import ./nix/sources.nix;
+  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
 
   nur = import sources.NUR { };
 

@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 let
+  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
+
   packages = with pkgs; [
 
     # utilities
@@ -49,8 +51,6 @@ let
   ;
 
   aliasPackages = aliasToPackage globalAliases;
-
-  sources = import ./nix/sources.nix;
 
   config = builtins.toFile "config.nix" ''
     {

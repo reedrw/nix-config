@@ -2,7 +2,7 @@
 let
 
   myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
-    nixExtensions = (import ./sources.nix pkgs);
+    nixExtensions = (import ./addons.nix pkgs);
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;

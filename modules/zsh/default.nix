@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix;
+  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
 
   fzf-tab-new = pkgs.stdenv.mkDerivation {
     name = "fzf-tab";

@@ -4,4 +4,6 @@
 PS4=''
 set -x
 
-niv update
+niv init --no-nixpkgs
+mv ./nix/sources.nix ./sources.nix
+rm -rf ./nix

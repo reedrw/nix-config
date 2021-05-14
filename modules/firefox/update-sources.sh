@@ -47,4 +47,4 @@ ffz(){
   main
   ffz
   echo "]"
-} > sources.nix
+} > addons.nix
