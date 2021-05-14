@@ -35,8 +35,6 @@ in
     hardware-configuration
     "${sources.nixos-hardware}/common/cpu/intel"
     "${sources.nixos-hardware}/common/pc/ssd"
-    #<nixos-hardware/common/cpu/intel>
-    #<nixos-hardware/common/pc/ssd>
   ];
   # }}}
   # {{{ Nix and nixpkgs

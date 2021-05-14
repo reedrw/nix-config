@@ -5,6 +5,7 @@
 
 { config, pkgs, ... }:
 let
+  sources = import ../../functions/sources.nix { sourcesFile = ../../sources.json; };
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''
@@ -35,7 +36,7 @@ in
     allowUnfree = true;
     allowBroken = true;
     packageOverrides = pkgs: {
-      nur = import <nur> {
+      nur = import sources.nur {
         inherit pkgs;
       };
     };

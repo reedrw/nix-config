@@ -4,6 +4,7 @@
 
 { config, pkgs, ... }:
 let
+  sources = import ../../functions/sources.nix { sourcesFile = ../../sources.json; };
   # {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
@@ -32,7 +33,7 @@ in
       cachix
       # Include the results of the hardware scan.
       hardware-configuration
-      <nixos-hardware/lenovo/thinkpad/t420>
+      "${sources.nixos-hardware}/lenovo/thinkpad/t420"
     ];
   # }}}
   # {{{ Nix and nixpkgs
@@ -40,7 +41,7 @@ in
     allowUnfree = true;
     allowBroken = true;
     packageOverrides = pkgs: {
-      nur = import <nur> {
+      nur = import sources.nur {
         inherit pkgs;
       };
     };
