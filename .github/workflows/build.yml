@@ -56,7 +56,7 @@ jobs:
     - name: Build
       run: |
         export NIXPKGS_ALLOW_UNFREE=1
-        nix run nixpkgs.nix-build-uncached -c nix-build-uncached -I nixos-hardware="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)" -I nur="$(jq -r '.["NUR"].url' ./nix/sources.json)" ci.nix -A $output
+        nix run nixpkgs.nix-build-uncached -c nix-build-uncached ci.nix -A $output
       env:
         output: ${{ matrix.outputs }}
 
@@ -105,7 +105,7 @@ jobs:
     - name: Build nix-shell
       run: |
         export NIXPKGS_ALLOW_UNFREE=1
-        nix-shell -I nixpkgs="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)" shell.nix --run 'exit'
+        nix-shell shell.nix --run 'exit'
 
   telegram:
     name: Telegram

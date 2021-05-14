@@ -14,10 +14,8 @@ dir="$(dirname "$0")"
 
 pushd "$dir" > /dev/null || exit
 
-HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
-nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
-nurURL="$(jq -r '.["NUR"].url' ./nix/sources.json)"
-NixOShardwareURL="$(jq -r '.["nixos-hardware"].url' ./nix/sources.json)"
+HomeManagerURL="$(jq -r '.["home-manager"].url' ./sources.json)"
+nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./sources.json)"
 
 getTarballHash(){
   tmpDir="$(mktemp -d)/"
@@ -47,24 +45,6 @@ if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
   $sudo nix-channel --update
   echo "Updating search cache..."
   nix search -u > /dev/null
-fi
-
-currentNixOShardware="/nix/var/nix/profiles/per-user/root/channels/nixos-hardware/"
-currentNixOShardwareSha="$(nix-hash --type sha256 "$currentNixOShardware")"
-newNixOShardwareSha="$(getTarballHash "$NixOShardwareURL")"
-if [[ "$currentNixOShardwareSha" != "$newNixOShardwareSha" ]]; then
-  echo "Installing pinned nixos-hardware..."
-  $sudo nix-channel --add "$NixOShardwareURL" nixos-hardware
-  $sudo nix-channel --update
-fi
-
-currentNUR="/nix/var/nix/profiles/per-user/root/channels/nur/"
-currentNURSha="$(nix-hash --type sha256 "$currentNUR")"
-newNURSha="$(getTarballHash "$nurURL")"
-if [[ "$currentNURSha" != "$newNURSha" ]]; then
-  echo "Installing pinned NUR..."
-  $sudo nix-channel --add "$nurURL" nur
-  $sudo nix-channel --update
 fi
 
 system(){
