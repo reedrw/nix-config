@@ -18,9 +18,7 @@ let
 
 in
 {
-
   programs = {
-
     direnv = {
       enable = true;
       enableZshIntegration = true;
@@ -46,7 +44,6 @@ in
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''
-
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
@@ -68,16 +65,15 @@ in
         source ${pkgs.oh-my-zsh.src}/lib/git.zsh
         source ${pkgs.oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
         source ${config.lib.base16.base16template "shell"}
-        source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh)
+        source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right)
         source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
         colors
         setopt promptsubst
-        PROMPT='%(!.%B%{$fg[red]%}%n@.%{$fg_bold[green]%}%n@)%m:%{$fg_bold[blue]%} %(!.%d.%~) %{$reset_color%}$(git_prompt_info)%(!.#.$) '
-        RPROMPT='%(?..%{$fg[red]%} %? %{$reset_color%})%B %{$reset_color%}%h'
+        PROMPT='%{%F{green}%}%n %{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$)) '
 
         ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
-        ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}) "
+        ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
@@ -86,22 +82,6 @@ in
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
         export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
-
-        #  nix-shell prompt
-        if [[ $IN_NIX_SHELL != "" ]] || [[ $IN_NIX_RUN != "" ]]; then
-          output=$(echo $ANY_NIX_SHELL_PKGS | xargs)
-            if [[ -n $name ]] && [[ $name != shell ]]; then
-              output+=" "$name
-            fi
-          if [[ -n $output ]]; then
-            output=$(echo $output $additional_pkgs | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
-          else
-            printf "[unknown environment]"
-          fi
-          PROMPT="%(!.%{$fg_bold[red]%}.%{$fg_bold[green]%})nix-shell:%{$reset_color%} [ %{$fg[yellow]%}$output%{$reset_color%} ] %{$fg[blue]%}%(!.%d.%~) %{$reset_color%}%(!.#.$) "
-        fi
-
-        compinit
 
         FZF_TAB_FLAGS=(
           -i
