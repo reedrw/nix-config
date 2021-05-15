@@ -56,7 +56,7 @@ jobs:
     - name: Build
       run: |
         export NIXPKGS_ALLOW_UNFREE=1
-        nix run nixpkgs.nix-build-uncached -c nix-build-uncached ci.nix -A $output
+        nix-build ci.nix -A $output
       env:
         output: ${{ matrix.outputs }}
 
