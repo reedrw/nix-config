@@ -627,7 +627,7 @@ index 939d3bc..e27a305 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..4334452 100644
+index a3cdb43..62f0ae2 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -766,8 +766,8 @@ index a3cdb43..4334452 100644
 -    "sha256": "0s8pp21007g5w7pv7a0hp72lxi5a7xpmzb70mzf8imhyz2c8bbq1",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "426a263b54b041cc6dee343528317701db7da70d",
-+    "sha256": "02pvm77mqfmzn7gsrfcvxx0lf4l0m3bs1d9yc5k0pzvq7i2a97z7",
++    "rev": "13b24513f97573537afdc3be423d1dd86b74cacc",
++    "sha256": "0m0j6v3xip6xy4wq7r1b6sbpcxrp2zcpvgq95a0wj5s1xljip2dr",
 +    "url": "https://github.com/fnune/base16-fzf"
    },
    "gnome-terminal": {
@@ -1017,8 +1017,8 @@ index a3cdb43..4334452 100644
 -    "sha256": "0rdhivsab1zvkqv66n7b7p6n1mmg9sr5ggsw1pl3rr6k3glk0pji",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "c25fb1817f57720d3d6d21e7ad3d4a7ebd58b822",
-+    "sha256": "0q2m6j00ypijdva17xbpxhv6a28by0bbq1i4g7hg14nq2c20l2l7",
++    "rev": "50131cbf2fb360f6d6054514cf3d847419f1dba8",
++    "sha256": "023rphyp56v0rr8aknpn20s0j55qalswfmcy7sszgn0wd161jdfg",
 +    "url": "https://github.com/theova/base16-qutebrowser"
    },
    "rofi": {
