@@ -113,10 +113,10 @@
         "homepage": "",
         "owner": "vim-airline",
         "repo": "vim-airline-themes",
-        "rev": "140238f65ef8168f2b046c52c6297cc596f8b347",
-        "sha256": "062c12db6dhi3dv83iff1b940idhipimk3hsjcp1i4c3mbxxr78p",
+        "rev": "531bcc9e5a4cb1b1fb4dec8face230bf3d205ac7",
+        "sha256": "05yapm3g9rj7k69dhlm7hspakbczwwlbx1lcdydvkx639ka7j09d",
         "type": "tarball",
-        "url": "https://github.com/vim-airline/vim-airline-themes/archive/140238f65ef8168f2b046c52c6297cc596f8b347.tar.gz",
+        "url": "https://github.com/vim-airline/vim-airline-themes/archive/531bcc9e5a4cb1b1fb4dec8face230bf3d205ac7.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-fugitive": {
@@ -125,10 +125,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "0868c30cc08a4cf49b5f43e08412c671b19fa3f0",
-        "sha256": "06pqam0ap0pb87gr8dvwzvnx1i62g73l81jrnwl7mzzz26p3ircj",
+        "rev": "c926aadfaf2cff0c684d305c8ff1a59378e7d7f5",
+        "sha256": "00w1vdjq7hlgdq25ylxp13zdjnlf7lcl9sa4qjar8883z15z2yif",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/0868c30cc08a4cf49b5f43e08412c671b19fa3f0.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/c926aadfaf2cff0c684d305c8ff1a59378e7d7f5.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
