@@ -48,6 +48,8 @@ in
         let g:airline_symbols = {}
       endif
 
+      let g:indentLine_char = '┊'
+
       let g:airline_symbols.colnr = 'co'
       let g:airline_symbols.branch = ''
       let g:airline_symbols.maxlinenr = ''

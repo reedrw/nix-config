@@ -35,6 +35,30 @@
         "url": "https://github.com/Shougo/deoplete.nvim/archive/55e81a95a65ed896670abdb3340888db9a57e300.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "indent-blankline.nvim": {
+        "branch": "master",
+        "description": "Indent guides  for Neovim",
+        "homepage": "",
+        "owner": "lukas-reineke",
+        "repo": "indent-blankline.nvim",
+        "rev": "47691a67b690ad6ebd9df67574691822d226a5b6",
+        "sha256": "0lkw6mslkd0gax0s280icpa5saq3320kkkmjih04mmnnf1vnwq6a",
+        "type": "tarball",
+        "url": "https://github.com/lukas-reineke/indent-blankline.nvim/archive/47691a67b690ad6ebd9df67574691822d226a5b6.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "indentLine": {
+        "branch": "master",
+        "description": "A vim plugin to display the indention levels with thin vertical lines",
+        "homepage": "",
+        "owner": "Yggdroot",
+        "repo": "indentLine",
+        "rev": "5617a1cf7d315e6e6f84d825c85e3b669d220bfa",
+        "sha256": "1ns3v4r5m6ckchmkaqkpk8dymh7hwj22d7x23hagmk4zv4hc2mhq",
+        "type": "tarball",
+        "url": "https://github.com/Yggdroot/indentLine/archive/5617a1cf7d315e6e6f84d825c85e3b669d220bfa.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nerdtree": {
         "branch": "master",
         "description": "A tree explorer plugin for vim.",
