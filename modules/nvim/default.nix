@@ -13,6 +13,8 @@ let
         url = x.url;
         sha256 = x.sha256;
       };
+      dontBuild = true;
+      dontConfigure = true;
     }
   ) attrList;
 
@@ -24,30 +26,7 @@ in
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
-    plugins = with pkgs.vimPlugins; let
-      suda-vim = pkgs.vimUtils.buildVimPlugin {
-        name = "suda-vim";
-        src = pkgs.fetchFromGitHub {
-          owner = "lambdalisue";
-          repo = "suda.vim";
-          rev = "da785547bb9aa8a497f0e0fce332d9f6a5ee5955";
-          sha256 = "06vi3splalfp04prwjhlm533n227a61yh5y9h48pgfgixqqsmyi6";
-        };
-      };
-    in
-    [
-      The_NERD_Commenter
-      base16-vim
-      deoplete-nvim
-      gitgutter
-      nerdtree
-      suda-vim
-      tabular
-      vim-airline
-      vim-airline-themes
-      vim-fugitive
-      vim-polyglot
-    ] ++ pluginList;
+    plugins = pluginList;
     extraConfig = with config.lib.base16; let
       nivscript = pkgs.writeShellScript "nivscript" ''
         package=$(</dev/stdin)
@@ -99,7 +78,6 @@ in
       \}
 
       let g:suda_smart_edit = 1
-      let g:suda#prefix = 'sudo://'
 
       source ${base16template "vim"}
       let base16colorspace=256

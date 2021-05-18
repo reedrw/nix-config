@@ -1,1 +1,134 @@
-{}
+{
+    "The-NERD-Commenter": {
+        "branch": "master",
+        "description": "A plugin that allows for easy commenting of code for many filetypes.",
+        "homepage": "http://www.vim.org/scripts/script.php?script_id=1218",
+        "owner": "vim-scripts",
+        "repo": "The-NERD-Commenter",
+        "rev": "49ad4597dd8ed8ecb210ba9cbc9f42a5f47adb35",
+        "sha256": "05cjcaba7hrv2alpd1acpack8h8gnj96aw5h5sfyq84mwnvnx2d7",
+        "type": "tarball",
+        "url": "https://github.com/vim-scripts/The-NERD-Commenter/archive/49ad4597dd8ed8ecb210ba9cbc9f42a5f47adb35.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "base16-vim": {
+        "branch": "master",
+        "description": "Base16 for Vim",
+        "homepage": "https://github.com/chriskempson/base16",
+        "owner": "chriskempson",
+        "repo": "base16-vim",
+        "rev": "6191622d5806d4448fa2285047936bdcee57a098",
+        "sha256": "1qz21jizcy533mqk9wff1wqchhixkcfkysqcqs0x35wwpbri6nz8",
+        "type": "tarball",
+        "url": "https://github.com/chriskempson/base16-vim/archive/6191622d5806d4448fa2285047936bdcee57a098.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "deoplete.nvim": {
+        "branch": "master",
+        "description": ":stars: Dark powered asynchronous completion framework for neovim/Vim8",
+        "homepage": "",
+        "owner": "Shougo",
+        "repo": "deoplete.nvim",
+        "rev": "55e81a95a65ed896670abdb3340888db9a57e300",
+        "sha256": "1666wqczwi2xg4ghzdq7jsfsdbb2zrnkdgbhq0xjb3k8rs8921d4",
+        "type": "tarball",
+        "url": "https://github.com/Shougo/deoplete.nvim/archive/55e81a95a65ed896670abdb3340888db9a57e300.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nerdtree": {
+        "branch": "master",
+        "description": "A tree explorer plugin for vim.",
+        "homepage": "",
+        "owner": "preservim",
+        "repo": "nerdtree",
+        "rev": "81f3eaba295b3fceb2d032db57e5eae99ae480f8",
+        "sha256": "0zws0b20n8ak2s3hffsb0rrwdjh8sx3sgrilmmmvr0d2ivsfqwlb",
+        "type": "tarball",
+        "url": "https://github.com/preservim/nerdtree/archive/81f3eaba295b3fceb2d032db57e5eae99ae480f8.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "suda.vim": {
+        "branch": "master",
+        "description": "🥪 An alternative sudo.vim for Vim and Neovim, limited support sudo in Windows",
+        "homepage": "",
+        "owner": "lambdalisue",
+        "repo": "suda.vim",
+        "rev": "fbb138f5090c3db4dabeba15326397a09df6b73b",
+        "sha256": "01kys8q3gycxqf760ydq1k8wq20brjvl1gxpl8j87jvnyx87kmnf",
+        "type": "tarball",
+        "url": "https://github.com/lambdalisue/suda.vim/archive/fbb138f5090c3db4dabeba15326397a09df6b73b.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "tabular": {
+        "branch": "master",
+        "description": "Vim script for text filtering and alignment",
+        "homepage": "",
+        "owner": "godlygeek",
+        "repo": "tabular",
+        "rev": "339091ac4dd1f17e225fe7d57b48aff55f99b23a",
+        "sha256": "0jq91770wsp2waw7pywxjqx59v0vg54gfzirgcd85pg61w22bfla",
+        "type": "tarball",
+        "url": "https://github.com/godlygeek/tabular/archive/339091ac4dd1f17e225fe7d57b48aff55f99b23a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-airline": {
+        "branch": "master",
+        "description": "lean & mean status/tabline for vim that's light as air",
+        "homepage": "",
+        "owner": "vim-airline",
+        "repo": "vim-airline",
+        "rev": "ab4962b83866e181b989cb550c527cbfa327942c",
+        "sha256": "14df2fk5psn27v3rhpxv1h7yhpkzl4rzld7i148lm02cj0qahnhq",
+        "type": "tarball",
+        "url": "https://github.com/vim-airline/vim-airline/archive/ab4962b83866e181b989cb550c527cbfa327942c.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-airline-themes": {
+        "branch": "master",
+        "description": "A collection of themes for vim-airline",
+        "homepage": "",
+        "owner": "vim-airline",
+        "repo": "vim-airline-themes",
+        "rev": "140238f65ef8168f2b046c52c6297cc596f8b347",
+        "sha256": "062c12db6dhi3dv83iff1b940idhipimk3hsjcp1i4c3mbxxr78p",
+        "type": "tarball",
+        "url": "https://github.com/vim-airline/vim-airline-themes/archive/140238f65ef8168f2b046c52c6297cc596f8b347.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-fugitive": {
+        "branch": "master",
+        "description": "fugitive.vim: A Git wrapper so awesome, it should be illegal",
+        "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
+        "owner": "tpope",
+        "repo": "vim-fugitive",
+        "rev": "0868c30cc08a4cf49b5f43e08412c671b19fa3f0",
+        "sha256": "06pqam0ap0pb87gr8dvwzvnx1i62g73l81jrnwl7mzzz26p3ircj",
+        "type": "tarball",
+        "url": "https://github.com/tpope/vim-fugitive/archive/0868c30cc08a4cf49b5f43e08412c671b19fa3f0.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-gitgutter": {
+        "branch": "master",
+        "description": "A Vim plugin which shows git diff markers in the sign column and stages/previews/undoes hunks and partial hunks.",
+        "homepage": "",
+        "owner": "airblade",
+        "repo": "vim-gitgutter",
+        "rev": "f4bdaa4e9cf07f62ce1161a3d0ff70c8aad25bc5",
+        "sha256": "0h00i0b8p0mnynp7hhj2vpgj9rhqmlx14y2kcskvac8i2wlyj30c",
+        "type": "tarball",
+        "url": "https://github.com/airblade/vim-gitgutter/archive/f4bdaa4e9cf07f62ce1161a3d0ff70c8aad25bc5.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-polyglot": {
+        "branch": "master",
+        "description": "A solid language pack for Vim.",
+        "homepage": "",
+        "owner": "sheerun",
+        "repo": "vim-polyglot",
+        "rev": "730dcb02caab60a6ae5d8b4bdc16d290041061ec",
+        "sha256": "1pgqw008xy3fn821zxfiwc9xpd0v33wxmk4yf9avm5jgqbkwn1ld",
+        "type": "tarball",
+        "url": "https://github.com/sheerun/vim-polyglot/archive/730dcb02caab60a6ae5d8b4bdc16d290041061ec.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
