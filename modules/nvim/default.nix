@@ -48,8 +48,9 @@ in
         let g:airline_symbols = {}
       endif
 
-      let g:airline_symbols.maxlinenr = ' ln'
-      let g:airline_symbols.branch = '⭠'
+      let g:airline_symbols.colnr = 'co'
+      let g:airline_symbols.branch = ''
+      let g:airline_symbols.maxlinenr = ''
 
       let g:airline#extensions#tabline#enabled = 1
       let g:airline#extensions#tabline#formatter = 'unique_tail'
