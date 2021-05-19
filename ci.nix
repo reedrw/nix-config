@@ -1,8 +1,8 @@
-let
-  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
-  pkgs = import sources.nixpkgs { };
+{
+  sources ? import ./functions/sources.nix { sourcesFile = ./sources.json; },
+  pkgs ? import sources.nixpkgs { }
+}:
 
-in
 {
 
   nixos = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos/configuration.nix; }).system;
