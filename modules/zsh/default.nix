@@ -70,7 +70,7 @@ in
 
         colors
         setopt promptsubst
-        PROMPT='%{%F{green}%}%n %{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$)) '
+        PROMPT='%{%F{green}%}%n %{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$))%{$reset_color%} '
 
         ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
         ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
