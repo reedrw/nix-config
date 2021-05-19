@@ -107,8 +107,6 @@ in
     '';
 
     "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);
-    "ranger/plugins/archives_utils.py".source = "${sources.ranger-archives}/archives_utils.py";
-    "ranger/plugins/compress.py".source = "${sources.ranger-archives}/compress.py";
-    "ranger/plugins/extract.py".source = "${sources.ranger-archives}/extract.py";
+    "ranger/plugins/ranger-archives".source = "${sources.ranger-archives}/ranger-archives";
   };
 }
