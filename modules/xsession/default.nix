@@ -4,7 +4,19 @@ let
 
   mod = "Mod1";
   sup = "Mod4";
-  run = "exec --no-startup-id";
+  exec = "exec --no-startup-id";
+
+  alwaysRun = [
+    "${pkgs.feh}/bin/feh --bg-fill ~/.background-image"
+    "systemctl --user restart picom"
+    "systemctl --user restary polybar"
+    "xset r rate 250 50"
+  ];
+
+  run = [
+    "i3-msg workspace number 1"
+    "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
+  ];
 
   selecterm = pkgs.writeShellScript "select-term.sh" ''
     read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
@@ -55,22 +67,22 @@ in
         modifier = "${mod}";
         terminal = "${term}";
         keybindings = lib.mkOptionDefault {
-          "Print" = "${run} flameshot gui";
-          "${mod}+Return" = "${run} ${term}";
-          "${sup}+Return" = "${run} ${selecterm}";
+          "Print" = "${exec} flameshot gui";
+          "${mod}+Return" = "${exec} ${term}";
+          "${sup}+Return" = "${exec} ${selecterm}";
           "${mod}+d" = "focus child";
           "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
           "${sup}+Right" = "resize grow width 5 px or 5 ppt";
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-          "${sup}+space" = "${run} rofi -show run -lines 10 -width 40";
-          "${mod}+e" = "${run} ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
-          "${mod}+r" = "${run} ${record}";
-          "${mod}+p" = "${run} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
-          "Ctrl+Down" = "${run} ${pkgs.mpc_cli}/bin/mpc toggle";
-          "Ctrl+Left" = "${run} ${pkgs.mpc_cli}/bin/mpc prev";
-          "Ctrl+Right" = "${run} ${pkgs.mpc_cli}/bin/mpc next";
+          "${sup}+space" = "${exec} rofi -show run -lines 10 -width 40";
+          "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
+          "${mod}+r" = "${exec} ${record}";
+          "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
+          "Ctrl+Left" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
+          "Ctrl+Right" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
         };
         colors = with config.lib.base16.theme; {
           focused = {
@@ -129,40 +141,22 @@ in
             };
           }
         ];
-        startup = [
-          {
-            command = "systemctl --user restart picom";
-            always = true;
-            notification = false;
-          }
-          {
-            command = "systemctl --user restart polybar";
-            always = true;
-            notification = false;
-          }
-          {
-            command = "xset r rate 250 50";
-            always = true;
-            notification = false;
-          }
-          {
-            command = "xrdb -load ~/.Xresources";
-            notification = false;
-          }
-          {
-            command = "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)";
-            notification = false;
-          }
-          {
-            command = "${pkgs.feh}/bin/feh --bg-fill ~/.background-image";
-            always = true;
-            notification = false;
-          }
-          {
-            command = "i3-msg workspace number 1";
-            notification = false;
-          }
-        ];
+        startup = []
+        ++
+        builtins.map ( command:
+            {
+              command = command;
+              always = true;
+              notification = false;
+            }
+          ) alwaysRun
+        ++
+          builtins.map ( command:
+            {
+              command = command;
+              notification = false;
+            }
+          ) run;
       };
     };
   };
