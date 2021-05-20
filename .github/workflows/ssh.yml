@@ -113,3 +113,10 @@ jobs:
         SSH_PASSWORD: ${{ env.SSH_PASSWORD }}
         TELEGRAM_BOT_TOKEN: ${{ env.NOTIFICATION_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ env.NOTIFICATION_CHAT_ID }}
+
+    - name: Send notification
+      uses: yanzay/notify-telegram@v0.1.0
+      with:
+        chat: ${{ env.NOTIFICATION_CHAT_ID }}
+        token: ${{ env.NOTIFICATION_TOKEN }}
+        status: ${{ env.WORKFLOW_CONCLUSION }}
