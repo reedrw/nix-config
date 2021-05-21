@@ -101,10 +101,10 @@
         "homepage": "",
         "owner": "vim-airline",
         "repo": "vim-airline",
-        "rev": "03ec880101305b41a282ab85f7184f91187392ac",
-        "sha256": "0wbjg9jxv9d5a0ykvyhs0ws4flibf6f9bc2kpkfk30xa3wy3gdym",
+        "rev": "4a64fbfc4bdb2cf91b2b50ca3f41b852061d614e",
+        "sha256": "1w2hb1dcmc7z3snj6xhqi993g9njf3l6dwdzr9m4jg669n8064ss",
         "type": "tarball",
-        "url": "https://github.com/vim-airline/vim-airline/archive/03ec880101305b41a282ab85f7184f91187392ac.tar.gz",
+        "url": "https://github.com/vim-airline/vim-airline/archive/4a64fbfc4bdb2cf91b2b50ca3f41b852061d614e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-airline-themes": {
