@@ -9,7 +9,7 @@ let
   alwaysRun = [
     "${pkgs.feh}/bin/feh --bg-fill ~/.background-image"
     "systemctl --user restart picom"
-    "systemctl --user restary polybar"
+    "systemctl --user restart polybar"
     "xset r rate 250 50"
   ];
 
