@@ -107,6 +107,6 @@ in
     '';
 
     "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);
-    "ranger/plugins/ranger-archives".source = "${sources.ranger-archives}/ranger-archives";
+    "ranger/plugins/ranger-archives".source = "${sources.ranger-archives}";
   };
 }
