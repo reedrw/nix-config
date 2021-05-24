@@ -627,7 +627,7 @@ index 939d3bc..e27a305 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..62f0ae2 100644
+index a3cdb43..7881d7f 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -756,8 +756,8 @@ index a3cdb43..62f0ae2 100644
 +  },
 +  "frescobaldi": {
 +    "fetchSubmodules": false,
-+    "rev": "11fcb63ddc785eef1233ac0a12a16031d5e01230",
-+    "sha256": "1fwvjvrrwz488nn4g2yhj77qr1l9213pag8g4grxz8wzq5mq5ryr",
++    "rev": "ab4fb5ed1076cdee88bfd67f23211844d780df8e",
++    "sha256": "0gyy2ii4mx2d641h0hpgk9nw3vxc5n3kfvprh8bza8y13riqhlh4",
 +    "url": "https://github.com/rkubosz/base16-frescobaldi"
    },
    "fzf": {

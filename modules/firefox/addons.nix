@@ -56,8 +56,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "purpleadblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3759690/purple_adblock-1.1-fx.xpi";
-    sha256 = "1997jqr6li0m08g1habmjsmfihzk73mz1m8mnflynq5v4ahgn5r1";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3780590/purple_adblock-1.5-fx.xpi";
+    sha256 = "10w2wqzwwidsjr1ihl9fxvx82vka21907r1bxrv33lz12ilrrdvp";
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3779014/sponsorblock_skip_sponsorships_on_youtube-2.0.15.1-an+fx.xpi";
-    sha256 = "0yyqkn8arjzr5yky94kr5jmp6191sml1l5z93lkz417ixgnqjlk7";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3780797/sponsorblock_skip_sponsorships_on_youtube-2.0.16.2-an+fx.xpi";
+    sha256 = "0smwk3xanh9w3qa1w9355f0fhr64i9n2q0z6vh5v1i90vx8mvh8p";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";

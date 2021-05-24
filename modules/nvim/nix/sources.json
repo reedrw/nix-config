@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "Shougo",
         "repo": "deoplete.nvim",
-        "rev": "27be5ec45cf52223b225b25517bc088cfcf3c959",
-        "sha256": "0ixzly9pbgkwxghwqvpfl4smpk7875d0vwhkwcrnm1z8bhq9rypx",
+        "rev": "35e27c325ecf0afa28ca42bbda4793eb7ca5f383",
+        "sha256": "0an2282ykdsb5v25dhd9r2f2s13pcma0i219nvfaf0qdprip57id",
         "type": "tarball",
-        "url": "https://github.com/Shougo/deoplete.nvim/archive/27be5ec45cf52223b225b25517bc088cfcf3c959.tar.gz",
+        "url": "https://github.com/Shougo/deoplete.nvim/archive/35e27c325ecf0afa28ca42bbda4793eb7ca5f383.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "indent-blankline.nvim": {
@@ -137,10 +137,10 @@
         "homepage": "",
         "owner": "airblade",
         "repo": "vim-gitgutter",
-        "rev": "f4bdaa4e9cf07f62ce1161a3d0ff70c8aad25bc5",
-        "sha256": "0h00i0b8p0mnynp7hhj2vpgj9rhqmlx14y2kcskvac8i2wlyj30c",
+        "rev": "10998f303cd85405e51380f6dc406dd756c105e8",
+        "sha256": "0520sqya9i2ry5yfryqi1q7h6yg2vgqw1qa042f1b2r8ddgvxibk",
         "type": "tarball",
-        "url": "https://github.com/airblade/vim-gitgutter/archive/f4bdaa4e9cf07f62ce1161a3d0ff70c8aad25bc5.tar.gz",
+        "url": "https://github.com/airblade/vim-gitgutter/archive/10998f303cd85405e51380f6dc406dd756c105e8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-polyglot": {
