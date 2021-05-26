@@ -1,6 +1,5 @@
 ,*
 .direnv/
 .secrets
-config.nix
 result
 result-*

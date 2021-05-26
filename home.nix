@@ -52,25 +52,12 @@ let
 
   aliasPackages = aliasToPackage globalAliases;
 
-  config = builtins.toFile "config.nix" ''
-    {
-      allowUnfree = true;
-      allowBroken = true;
-      packageOverrides = pkgs: {
-        nur = import ${sources.NUR} {
-          inherit pkgs;
-        };
-      };
-    }
-  '';
-
 in
 {
 
   imports = builtins.map (x: ./modules + ("/" + x)) (builtins.attrNames (builtins.readDir ./modules));
 
   nixpkgs = {
-    config = import "${config}";
     overlays = [ (import ./pkgs) ];
   };
 
@@ -83,9 +70,6 @@ in
       music = "\$HOME/music";
       pictures = "\$HOME/images";
       videos = "\$HOME/videos";
-    };
-    configFile = {
-      "nixpkgs/config.nix".source = "${config}";
     };
   };
 
