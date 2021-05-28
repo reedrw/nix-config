@@ -93,6 +93,7 @@ in
 
       let g:suda_smart_edit = 1
 
+      set termguicolors
       source ${base16template "vim"}
       let base16colorspace=256
       let g:airline_theme='base16'
