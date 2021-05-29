@@ -166,5 +166,17 @@
         "type": "tarball",
         "url": "https://github.com/sheerun/vim-polyglot/archive/730dcb02caab60a6ae5d8b4bdc16d290041061ec.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vim-sayonara": {
+        "branch": "master",
+        "description": ":japanese_goblin: Sane buffer/window deletion.",
+        "homepage": "",
+        "owner": "mhinz",
+        "repo": "vim-sayonara",
+        "rev": "357135ce127581fab2c0caf45d4b3fec4603aa77",
+        "sha256": "0m4pbpqq7m4rbqj1sxzx3r25znm9m5df6z6kndc6x5c1p27a63pi",
+        "type": "tarball",
+        "url": "https://github.com/mhinz/vim-sayonara/archive/357135ce127581fab2c0caf45d4b3fec4603aa77.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

@@ -126,6 +126,8 @@ in
       nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
       map <Leader>niv :s/$/ /<CR>^v$:w !${nivscript}<CR>wv^deld$viwyA = sources.<esc>pA;
+      map tn :tabnew<Return>
+      map tq :Sayonara<Return>
     '';
   };
 }
