@@ -1,7 +1,7 @@
 {
     "owner": "neovim",
     "repo": "neovim",
-    "rev": "192ea01eddbc7508055f855f2afc4dd397d992b1",
-    "sha256": "1h5c47frmnnqd9v3ydq5pxmqlrg3dwpn8fkz7932jrmi6h9r70jy",
+    "rev": "43956dea55a49a847a0f2e5d9e0f48384cb34635",
+    "sha256": "0z5v3ahjbikjk9bj2jy83nacvyhs2n5pmmj3pdm3njd1kbwnzk8s",
     "fetchSubmodules": true
 }
