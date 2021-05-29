@@ -70,7 +70,7 @@ gls.left[4] = {
 
       filename = string.gsub(filename, '^%s*(.-)%s*$', '%1')
 
-      return filename .. ' '
+      return ' ' .. filename .. ' '
     end,
     'FileSize' },
     condition = buffer_not_empty,

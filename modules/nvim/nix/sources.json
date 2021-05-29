@@ -83,6 +83,18 @@
         "url": "https://github.com/preservim/nerdtree/archive/81f3eaba295b3fceb2d032db57e5eae99ae480f8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "nvim-bufferline.lua": {
+        "branch": "master",
+        "description": "A snazzy bufferline for Neovim",
+        "homepage": "",
+        "owner": "akinsho",
+        "repo": "nvim-bufferline.lua",
+        "rev": "026c12d7e4f85c570acf8be4c69c282acbe18953",
+        "sha256": "0l4y15rzhjjgqkdryj399xgnmz1c3ga8li9j8m4qf98isbmqhsws",
+        "type": "tarball",
+        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/026c12d7e4f85c570acf8be4c69c282acbe18953.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "suda.vim": {
         "branch": "master",
         "description": "🥪 An alternative sudo.vim for Vim and Neovim, limited support sudo in Windows",
