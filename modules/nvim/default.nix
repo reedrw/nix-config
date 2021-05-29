@@ -72,6 +72,7 @@ in
 
       lua << EOF
       local colors = {
+        blank = '#${theme.base00-hex}',
         bg = '#${theme.base01-hex}',
         section_bg = '#${theme.base02-hex}',
         gray = '#${theme.base03-hex}',
@@ -85,6 +86,8 @@ in
         magenta = '#${theme.base0E-hex}',
         brown = '#${theme.base0F-hex}'
       }
+
+      ${builtins.readFile ./lua/bufferline.lua}
       ${builtins.readFile ./lua/galaxyline.lua}
       EOF
 
