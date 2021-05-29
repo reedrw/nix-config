@@ -35,6 +35,18 @@
         "url": "https://github.com/Shougo/deoplete.nvim/archive/35e27c325ecf0afa28ca42bbda4793eb7ca5f383.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "galaxyline.nvim": {
+        "branch": "main",
+        "description": "neovim statusline plugin written in lua ",
+        "homepage": null,
+        "owner": "glepnir",
+        "repo": "galaxyline.nvim",
+        "rev": "d544cb9d0b56f6ef271db3b4c3cf19ef665940d5",
+        "sha256": "1390lqsqdcj1q89zn6y5qrm1id7p8fnpy07vlz6mm4cki47211mb",
+        "type": "tarball",
+        "url": "https://github.com/glepnir/galaxyline.nvim/archive/d544cb9d0b56f6ef271db3b4c3cf19ef665940d5.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "indent-blankline.nvim": {
         "branch": "master",
         "description": "Indent guides  for Neovim",
@@ -93,18 +105,6 @@
         "sha256": "0jq91770wsp2waw7pywxjqx59v0vg54gfzirgcd85pg61w22bfla",
         "type": "tarball",
         "url": "https://github.com/godlygeek/tabular/archive/339091ac4dd1f17e225fe7d57b48aff55f99b23a.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "vim-airline": {
-        "branch": "master",
-        "description": "lean & mean status/tabline for vim that's light as air",
-        "homepage": "",
-        "owner": "vim-airline",
-        "repo": "vim-airline",
-        "rev": "a8b3c254d0e5c43be24298ce16cd01f740fe8d42",
-        "sha256": "1rbdmwah7zxjah5c3rx71h1d6skda0y6pyz7ysasyjj1dnb2kcsi",
-        "type": "tarball",
-        "url": "https://github.com/vim-airline/vim-airline/archive/a8b3c254d0e5c43be24298ce16cd01f740fe8d42.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-airline-themes": {

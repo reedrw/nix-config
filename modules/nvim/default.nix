@@ -54,49 +54,13 @@ in
     in
     ''
       let g:deoplete#enable_at_startup = 1
-
-      if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
-      endif
-
       let g:indentLine_char = '┊'
-
-      let g:airline_symbols.colnr = 'co'
-      let g:airline_symbols.branch = ''
-      let g:airline_symbols.maxlinenr = ''
-
-      let g:airline#extensions#tabline#enabled = 1
-      let g:airline#extensions#tabline#formatter = 'unique_tail'
-      let g:airline#extensions#tabline#show_tabs = 0
-
-      let g:airline#extensions#nvimlsp#enabled = 0
-
-      let g:airline_mode_map = {
-        \ '__'     : ' - ',
-        \ 'c'      : ' C ',
-        \ 'i'      : ' I ',
-        \ 'ic'     : ' I ',
-        \ 'ix'     : ' I ',
-        \ 'n'      : ' N ',
-        \ 'multi'  : ' M ',
-        \ 'ni'     : ' N ',
-        \ 'no'     : ' N ',
-        \ 'R'      : ' R ',
-        \ 'Rv'     : ' R ',
-        \ 's'      : ' S ',
-        \ 'S'      : ' S ',
-        \ ''     : ' S ',
-        \ 'v'      : ' V ',
-        \ 'V'      : 'V-L',
-        \ ''     : 'V-B',
-      \}
-
       let g:suda_smart_edit = 1
 
       set termguicolors
       source ${base16template "vim"}
       let base16colorspace=256
-      let g:airline_theme='base16'
+
       syntax on
       set autochdir
       set t_Co=256
@@ -104,6 +68,25 @@ in
       set number
       set numberwidth=5
       set cursorline
+      set inccommand=nosplit
+
+      lua << EOF
+      local colors = {
+        bg = '#${theme.base01-hex}',
+        section_bg = '#${theme.base02-hex}',
+        gray = '#${theme.base03-hex}',
+        fg = '#${theme.base05-hex}',
+        red = '#${theme.base08-hex}',
+        orange = '#${theme.base09-hex}',
+        yellow = '#${theme.base0A-hex}',
+        green = '#${theme.base0B-hex}',
+        cyan = '#${theme.base0C-hex}',
+        blue = '#${theme.base0D-hex}',
+        magenta = '#${theme.base0E-hex}',
+        brown = '#${theme.base0F-hex}'
+      }
+      ${builtins.readFile ./lua/galaxyline.lua}
+      EOF
 
       function! s:ModeCheck(id)
         let vmode = mode() =~# '[vV�]'
