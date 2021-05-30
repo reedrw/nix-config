@@ -112,7 +112,6 @@ in
       set noshowmode
       set nohlsearch
       set foldmethod=marker
-      command -nargs=* Hm !home-manager <args>
       autocmd VimEnter * hi Comment cterm=italic gui=italic
       autocmd VimEnter * hi Folded cterm=bold ctermfg=DarkBlue ctermbg=none
       autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
@@ -120,8 +119,8 @@ in
       vnoremap <C-x> "*d
       cnoremap <Up> <C-p>
       cnoremap <Down> <C-n>
-      nnoremap hms :Hm switch
-      nnoremap hmb :Hm build
+      nnoremap hms :!home-manager switch
+      nnoremap hmb :!home-manager build
       " https://stackoverflow.com/questions/597687/how-to-quickly-change-variable-names-in-vim/597932#597932
       nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
