@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "10ed70a9c23cdd1748444e89e4928282e510451d",
-        "sha256": "13qlg81kvxclb7jfv2x2x7jrslprpchinb0a74cxm0z9n752ib1b",
+        "rev": "f7f1413ed9b69eb80c8af07d38ebcc889ed64d96",
+        "sha256": "16az604z245bw64dhkgmszifg1ajnf0i9binllixwaifnh6vfnhh",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/10ed70a9c23cdd1748444e89e4928282e510451d.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/f7f1413ed9b69eb80c8af07d38ebcc889ed64d96.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
@@ -149,10 +149,10 @@
         "homepage": "",
         "owner": "airblade",
         "repo": "vim-gitgutter",
-        "rev": "2571c8f52077ada85bf4b0bdefc724e6a5d4c4a8",
-        "sha256": "1lfscvp7ddcc5zc3xzn7l3gjhj72wn264wzg6v1r87i4vlc2klhq",
+        "rev": "68a8cb300c75eb1cd2173b2aac70515e99904ef3",
+        "sha256": "0s4c1vb2z3manl2i768f48i2pww2d4dj41plx4mvvi7sczlma30n",
         "type": "tarball",
-        "url": "https://github.com/airblade/vim-gitgutter/archive/2571c8f52077ada85bf4b0bdefc724e6a5d4c4a8.tar.gz",
+        "url": "https://github.com/airblade/vim-gitgutter/archive/68a8cb300c75eb1cd2173b2aac70515e99904ef3.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-polyglot": {
