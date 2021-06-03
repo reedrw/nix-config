@@ -55,11 +55,6 @@ pkgs: [
     sha256 = "0lpa2ch3nc4ncyf5dw1lkwkv6i51v1f9vlriz41wbjryy1kjazs6";
   })
   (pkgs.fetchFirefoxAddon {
-    name = "purpleadblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3780590/purple_adblock-1.5-fx.xpi";
-    sha256 = "10w2wqzwwidsjr1ihl9fxvx82vka21907r1bxrv33lz12ilrrdvp";
-  })
-  (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
     url = "https://addons.mozilla.org/firefox/downloads/file/3785396/refined_github-21.6.1-an+fx.xpi";
     sha256 = "1p0qh9aaw7yf06f6vs854l7m1az3g2586qhxd5fwzrm6dvs2lhhf";
@@ -78,6 +73,11 @@ pkgs: [
     name = "torrent-control";
     url = "https://addons.mozilla.org/firefox/downloads/file/3753434/torrent_control-0.2.23-fx.xpi";
     sha256 = "161nkkv6qsv3b5968nx4ikqlaaxwr72hk752c2nr3rfxkf8xkv8b";
+  })
+  (pkgs.fetchFirefoxAddon {
+    name = "ttv-lol";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3764747/ttv_lol-0.0.0.5-fx.xpi";
+    sha256 = "1y2fklck6qlcq3islwgg254hff93524msxvxmncsgkjydz4wbrrn";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
