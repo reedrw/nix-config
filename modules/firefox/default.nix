@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 let
-
   myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
     nixExtensions = (import ./addons.nix pkgs);
     extraPolicies = {
@@ -29,6 +28,11 @@ let
       defaultPref("gfx.webrender.all", true);
       defaultPref("media.videocontrols.picture-in-picture.video-toggle.enabled", false)
       defaultPref("widget.content.allow-gtk-dark-theme", false);
+      defaultPref("browser.proton.contextmenus.enabled", false);
+      defaultPref("browser.proton.doorhangers.enabled", false);
+      defaultPref("browser.proton.enabled", false);
+      defaultPref("browser.proton.modals.enabled", false);
+      defaultPref("browser.proton.places-tooltip.enabled", false);
     '';
   };
 
