@@ -161,10 +161,10 @@
         "homepage": "",
         "owner": "sheerun",
         "repo": "vim-polyglot",
-        "rev": "b99ce6173fd8f17af57a9f60bd998a9d648ca238",
-        "sha256": "1ff2pv0vlzxqcyk2m3v0nmrpkc284wz80yyh17nzdpq4xlbncndb",
+        "rev": "c312d30231f136d2fbb32a2cfea554af5066e6b0",
+        "sha256": "1apd860v2xfi3fjgl15j7mgn6nczx10vj324w1vf1ic5nyy4b594",
         "type": "tarball",
-        "url": "https://github.com/sheerun/vim-polyglot/archive/b99ce6173fd8f17af57a9f60bd998a9d648ca238.tar.gz",
+        "url": "https://github.com/sheerun/vim-polyglot/archive/c312d30231f136d2fbb32a2cfea554af5066e6b0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-sayonara": {

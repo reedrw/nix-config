@@ -627,7 +627,7 @@ index 939d3bc..e27a305 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..7881d7f 100644
+index a3cdb43..8bb2e25 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -877,10 +877,12 @@ index a3cdb43..7881d7f 100644
    },
    "jetbrains": {
 -    "url": "https://github.com/adilosa/base16-jetbrains",
-+    "fetchSubmodules": false,
-     "rev": "816c329c77310ef10c326164b88a46ca08417fdd",
-     "sha256": "1gdb42r81avyavmgg5nlx0yhc1vbx05yhv0m4b28wwh2gq09kfba",
+-    "rev": "816c329c77310ef10c326164b88a46ca08417fdd",
+-    "sha256": "1gdb42r81avyavmgg5nlx0yhc1vbx05yhv0m4b28wwh2gq09kfba",
 -    "fetchSubmodules": false
++    "fetchSubmodules": false,
++    "rev": "86aa5b81baad25ed1a68c17ecd2cc57fa26902c5",
++    "sha256": "101vnbpmlv72g3mj9ysbmpyw5xin9s1x5lg09s6nf28fwbxd1823",
 +    "url": "https://github.com/adilosa/base16-jetbrains"
    },
    "joe": {
