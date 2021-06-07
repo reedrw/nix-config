@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "Shougo",
         "repo": "deoplete.nvim",
-        "rev": "2a23e9238bd4dea9dc5e4b69ff4411e57d9db010",
-        "sha256": "0jayh6n5chcrdzyqkvvha8x7nxbsak1xgx4chbgshvfglq9c838p",
+        "rev": "218229c593de9ca3b526605c50da7cb7e6ffb47c",
+        "sha256": "13xhzhpdwq680imvm7208wyhb2l5hppnflhbzyl1w3i7bzpczaxc",
         "type": "tarball",
-        "url": "https://github.com/Shougo/deoplete.nvim/archive/2a23e9238bd4dea9dc5e4b69ff4411e57d9db010.tar.gz",
+        "url": "https://github.com/Shougo/deoplete.nvim/archive/218229c593de9ca3b526605c50da7cb7e6ffb47c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "galaxyline.nvim": {
@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "f7f1413ed9b69eb80c8af07d38ebcc889ed64d96",
-        "sha256": "16az604z245bw64dhkgmszifg1ajnf0i9binllixwaifnh6vfnhh",
+        "rev": "41960996e0c532069533072b3fd820fafe9ce0b3",
+        "sha256": "0lzjwjbdq90b39561yp7qs1l69iw4jlxcjrsi5yvh1rbhv7gpy1i",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/f7f1413ed9b69eb80c8af07d38ebcc889ed64d96.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/41960996e0c532069533072b3fd820fafe9ce0b3.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
