@@ -4,7 +4,7 @@
 
 { config, pkgs, ... }:
 let
-  sources = import ../../functions/sources.nix { sourcesFile = ../../sources.json; };
+  sources = import ../functions/sources.nix { sourcesFile = ../sources.json; };
   # {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
