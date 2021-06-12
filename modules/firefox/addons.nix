@@ -16,8 +16,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3773951/duckduckgo_privacy_essentials-2021.5.10-an+fx.xpi";
-    sha256 = "1c26h8g9034gm6lrczrryb69bsrjkyq902apjm5zfp8dqlk6an96";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3788189/duckduckgo_privacy_essentials-2021.6.2-an+fx.xpi";
+    sha256 = "18kghxvm66bsddqb1f1rb4m02p7fim4qrizfw1gcn33jgrxlw32i";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -46,8 +46,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3719726/privacy_badger-2021.2.2-an+fx.xpi";
-    sha256 = "19ji6qvp7ka581i6bnfr5ddqa7lr6vnnina4d10p9r4ky5fldax9";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3792149/privacy_badger-2021.6.8-an+fx.xpi";
+    sha256 = "1a3jafkdq95b7hwb3mc4fb54ify6cf0a4f9f6fvlclas0dvrymvj";
   })
   (pkgs.fetchFirefoxAddon {
     name = "proxy-toggle";
@@ -56,8 +56,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3785396/refined_github-21.6.1-an+fx.xpi";
-    sha256 = "1p0qh9aaw7yf06f6vs854l7m1az3g2586qhxd5fwzrm6dvs2lhhf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3791699/refined_github-21.6.8-an+fx.xpi";
+    sha256 = "1pkmqrxq4k9amy5jnfalrfzr37i7z89y8im5q8xblpiw12k0ah7i";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";

@@ -53,10 +53,10 @@
         "homepage": "",
         "owner": "lukas-reineke",
         "repo": "indent-blankline.nvim",
-        "rev": "47691a67b690ad6ebd9df67574691822d226a5b6",
-        "sha256": "0lkw6mslkd0gax0s280icpa5saq3320kkkmjih04mmnnf1vnwq6a",
+        "rev": "5d5d2f80ec48e3f5fe7237ec17cd1587f39d3be7",
+        "sha256": "005nv99jw9ricgy1xyxixl1ssyh7jai9kv7cx95g5igfvvpblz7k",
         "type": "tarball",
-        "url": "https://github.com/lukas-reineke/indent-blankline.nvim/archive/47691a67b690ad6ebd9df67574691822d226a5b6.tar.gz",
+        "url": "https://github.com/lukas-reineke/indent-blankline.nvim/archive/5d5d2f80ec48e3f5fe7237ec17cd1587f39d3be7.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "indentLine": {
@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "akinsho",
         "repo": "nvim-bufferline.lua",
-        "rev": "883cd1b0d8029c97bb6c3358b8e55c040b0c7bcb",
-        "sha256": "06mcl11jx56wym2jfinpbklpfn55d6j35yy80dv9dy8072mb5f9f",
+        "rev": "7b510d5241fb29f5a5e985e02c4cfa046ec4ee3e",
+        "sha256": "1ahy4v7z08l0z6c7v19dik8icw943kc243vlzhs1bfa4aj13nncs",
         "type": "tarball",
-        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/883cd1b0d8029c97bb6c3358b8e55c040b0c7bcb.tar.gz",
+        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/7b510d5241fb29f5a5e985e02c4cfa046ec4ee3e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "suda.vim": {
@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "41960996e0c532069533072b3fd820fafe9ce0b3",
-        "sha256": "0lzjwjbdq90b39561yp7qs1l69iw4jlxcjrsi5yvh1rbhv7gpy1i",
+        "rev": "be9ff95f27d12b7bd46ab5d36f7149cb0864c329",
+        "sha256": "1j8lgf5ppp28qqqvvw2isbg4cb00l83np5y7vkqfy9346awwhwq7",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/41960996e0c532069533072b3fd820fafe9ce0b3.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/be9ff95f27d12b7bd46ab5d36f7149cb0864c329.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
@@ -149,10 +149,10 @@
         "homepage": "",
         "owner": "airblade",
         "repo": "vim-gitgutter",
-        "rev": "68a8cb300c75eb1cd2173b2aac70515e99904ef3",
-        "sha256": "0s4c1vb2z3manl2i768f48i2pww2d4dj41plx4mvvi7sczlma30n",
+        "rev": "0f98634b92da9a35580b618c11a6d2adc42d9f90",
+        "sha256": "0l1f98zfmxq8xi2ii31ih0mbq5yilpc0l61qbprs1g5h5p4azjy8",
         "type": "tarball",
-        "url": "https://github.com/airblade/vim-gitgutter/archive/68a8cb300c75eb1cd2173b2aac70515e99904ef3.tar.gz",
+        "url": "https://github.com/airblade/vim-gitgutter/archive/0f98634b92da9a35580b618c11a6d2adc42d9f90.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-polyglot": {
@@ -161,10 +161,10 @@
         "homepage": "",
         "owner": "sheerun",
         "repo": "vim-polyglot",
-        "rev": "c312d30231f136d2fbb32a2cfea554af5066e6b0",
-        "sha256": "1apd860v2xfi3fjgl15j7mgn6nczx10vj324w1vf1ic5nyy4b594",
+        "rev": "4899585281beab51e5dff1d9ae4d3159244a8275",
+        "sha256": "1518dvxf99nvky0mrvgv65if0wjhpiv3021rddhn52j04vri4pdd",
         "type": "tarball",
-        "url": "https://github.com/sheerun/vim-polyglot/archive/c312d30231f136d2fbb32a2cfea554af5066e6b0.tar.gz",
+        "url": "https://github.com/sheerun/vim-polyglot/archive/4899585281beab51e5dff1d9ae4d3159244a8275.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-sayonara": {
