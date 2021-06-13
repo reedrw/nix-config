@@ -77,7 +77,8 @@ in
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "${exec} rofi -show run -lines 10 -width 40";
-          "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji --insert-with-clipboard";
+          "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji";
+          "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
           "${mod}+r" = "${exec} ${record}";
           "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
           "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
