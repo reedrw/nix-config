@@ -31,8 +31,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3714071/old_reddit_redirect-1.4.0-an+fx.xpi";
-    sha256 = "01nj5dbqrvj81jv7czcyijwrm96b4lmjjh8syg1d9y4h4zl3mdnf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3794978/old_reddit_redirect-1.5.0-an+fx.xpi";
+    sha256 = "1lzdyj37gn33cifx6x0ygfd65sdh3nk9psdyb31zs82z2ym8h8z4";
   })
   (pkgs.fetchFirefoxAddon {
     name = "pay-by-privacy-com";

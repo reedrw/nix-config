@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "akinsho",
         "repo": "nvim-bufferline.lua",
-        "rev": "d57256480dcb9e789b0bdeb143d407cf2d4e2618",
-        "sha256": "1whw9l5qf0dxr1lnl9v7c6x74qw2hp1qm3rjr0hf0mwn7mxaqd7q",
+        "rev": "2db4a3c2c42816a31db391f30a708d976a8c679c",
+        "sha256": "0az2hn4h6cjrr55l56jm3la78lip4c6frz82d731pxqypnynqg84",
         "type": "tarball",
-        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/d57256480dcb9e789b0bdeb143d407cf2d4e2618.tar.gz",
+        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/2db4a3c2c42816a31db391f30a708d976a8c679c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "suda.vim": {
