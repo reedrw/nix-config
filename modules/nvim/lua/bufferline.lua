@@ -35,5 +35,13 @@ require('bufferline').setup {
       guibg = colors.blank,
       guifg = colors.green
     },
+    close_button_visible = {
+      guifg = colors.blank,
+      guifg = colors.fg
+    },
+    close_button_selected = {
+      guibg = colors.section_bg,
+      guifg = colors.fg
+    },
   }
 }
