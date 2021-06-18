@@ -24,8 +24,8 @@ require('bufferline').setup {
       guibg = colors.section_bg
     },
     indicator_selected = {
-      guibg = colors.magenta,
-      guifg = colors.magenta
+      guibg = colors.blue,
+      guifg = colors.blue
     },
     modified_selected = {
       guibg = colors.section_bg,

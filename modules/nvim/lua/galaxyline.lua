@@ -41,7 +41,7 @@ local mode_color = function()
 end
 
 -- Left side
-gls.left[2] = {
+gls.left[1] = {
   ViMode = {
     provider = function()
       local alias = {
@@ -61,7 +61,7 @@ gls.left[2] = {
   },
 }
 
-gls.left[4] = {
+gls.left[2] = {
   FileName = {
     provider = { function() return '  ' end,
     function()
@@ -78,21 +78,21 @@ gls.left[4] = {
     separator_highlight = {colors.section_bg, colors.bg},
   }
 }
-gls.left[5] = {
+gls.left[3] = {
   GitIcon = {
     provider =  function() return '   ' end,
     condition = condition.check_git_workspace,
     highlight = {colors.red,colors.bg},
   }
 }
-gls.left[6] = {
+gls.left[4] = {
   GitBranch = {
     provider = { 'GitBranch', function() return ' ' end },
     condition = condition.check_git_workspace,
     highlight = {colors.fg,colors.bg},
   }
 }
-gls.left[7] = {
+gls.left[5] = {
   DiffAdd = {
     provider = 'DiffAdd',
     condition = checkwidth,
@@ -100,7 +100,7 @@ gls.left[7] = {
     highlight = { colors.green, colors.bg },
   }
 }
-gls.left[8] = {
+gls.left[6] = {
   DiffModified = {
     provider = 'DiffModified',
     condition = checkwidth,
@@ -108,7 +108,7 @@ gls.left[8] = {
     highlight = { colors.orange, colors.bg },
   }
 }
-gls.left[9] = {
+gls.left[7] = {
   DiffRemove = {
     provider = 'DiffRemove',
     condition = checkwidth,
@@ -117,14 +117,14 @@ gls.left[9] = {
   }
 }
 
-gls.left[11] = {
+gls.left[8] = {
   EndGit = {
     provider = function () return '▏' end,
     condition = condition.check_git_workspace,
     highlight = { colors.section_bg,colors.bg },
   }
 }
-gls.left[12] = {
+gls.left[9] = {
   EndLeft = {
     provider = function () return ' ' end,
     highlight = { colors.bg,colors.bg },
