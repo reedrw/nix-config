@@ -49,7 +49,7 @@ fi
 
 system(){
   # if the hostname matches a saved configuration.nix
-  if [[ -d "./system/$host" ]]; then
+  if [[ -f "./system/$host.nix" ]]; then
     currentSystemDrv="$(nix-store --query --deriver "$systemProfile")"
     newSystemDrv="$(nix-instantiate ci.nix -A "$host" 2> /dev/null)"
     # compare deriver of current and new system builds, if different, rebuild
