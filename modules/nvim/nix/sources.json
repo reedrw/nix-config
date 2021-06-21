@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "akinsho",
         "repo": "nvim-bufferline.lua",
-        "rev": "2db4a3c2c42816a31db391f30a708d976a8c679c",
-        "sha256": "0az2hn4h6cjrr55l56jm3la78lip4c6frz82d731pxqypnynqg84",
+        "rev": "fad981fd11b68b1a7a48b9283bc04ea5b48e55ff",
+        "sha256": "1i2zm5rrx65dzrmxlc89szr7dghjgd7cwcdd4wm1b0hdv0if89p8",
         "type": "tarball",
-        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/2db4a3c2c42816a31db391f30a708d976a8c679c.tar.gz",
+        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/fad981fd11b68b1a7a48b9283bc04ea5b48e55ff.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "suda.vim": {
@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "be9ff95f27d12b7bd46ab5d36f7149cb0864c329",
-        "sha256": "1j8lgf5ppp28qqqvvw2isbg4cb00l83np5y7vkqfy9346awwhwq7",
+        "rev": "79e2bd381ad6e7f3d70ce4a8ec9f3f107b40f053",
+        "sha256": "0blgivpm1zbbm1pj77c1ks1w3aa9vid77h08146npa4xi6nnyzwf",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/be9ff95f27d12b7bd46ab5d36f7149cb0864c329.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/79e2bd381ad6e7f3d70ce4a8ec9f3f107b40f053.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
