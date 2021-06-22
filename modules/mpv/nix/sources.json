@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "ekisu",
         "repo": "mpv-webm",
-        "rev": "d33bfb626a4500416bae4ba665ff5720ab0240f8",
-        "sha256": "1sv9qm8qsddgfrlpn9rvmgcsb83hnc2hf2z9fkz4iiyqxq53i3s8",
+        "rev": "ae8b65225e6c803c4d818f992d2c443c9aedd573",
+        "sha256": "04261bk9qqs7cdpg1vwzbh75h97v7ys3ykc7afgy7iifyncck270",
         "type": "tarball",
-        "url": "https://github.com/ekisu/mpv-webm/archive/d33bfb626a4500416bae4ba665ff5720ab0240f8.tar.gz",
+        "url": "https://github.com/ekisu/mpv-webm/archive/ae8b65225e6c803c4d818f992d2c443c9aedd573.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mpv_thumbnail_script": {
@@ -17,10 +17,10 @@
         "homepage": null,
         "owner": "blankname",
         "repo": "mpv_thumbnail_script",
-        "rev": "a4372adbdca2c105a63e6dce8fd8a7c9eeeeefb8",
-        "sha256": "0igidy097iazcvmmfp98sn12wkqnm0gp2njawxr0b8pg24j2yvzv",
+        "rev": "97701913433cf9c0b17d8fcd43f91adea03f931c",
+        "sha256": "067sbvfsz92jfxjxqx2z749dn4z3bxp4a9m8bgdwpvyw7zlkaafn",
         "type": "tarball",
-        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/a4372adbdca2c105a63e6dce8fd8a7c9eeeeefb8.tar.gz",
+        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/97701913433cf9c0b17d8fcd43f91adea03f931c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
