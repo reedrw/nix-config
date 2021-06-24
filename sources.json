@@ -23,6 +23,18 @@
         "url": "https://github.com/nix-community/home-manager/archive/21ac4c499b181b9171770f79105241e235046a7c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "nix": {
+        "branch": "master",
+        "description": "Nix, the purely functional package manager",
+        "homepage": "https://nixos.org/nix/",
+        "owner": "NixOS",
+        "repo": "nix",
+        "rev": "08270af7fec1ca9954274a747e39c0d45bdb963e",
+        "sha256": "1dcnd7jc31jg5licwplmsriqzvrgpnsly52gl6fabn3i2lm6b3qc",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nix/archive/08270af7fec1ca9954274a747e39c0d45bdb963e.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nixos-hardware": {
         "branch": "master",
         "description": "A collection of NixOS modules covering hardware quirks.",
