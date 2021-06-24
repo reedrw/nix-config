@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "Shougo",
         "repo": "deoplete.nvim",
-        "rev": "b148aac088a43799c55ebff4369c5ab546bed5c7",
-        "sha256": "0a4qs2bgjkqzgp0myl48amw53f5s2jnf44s9dn5k5h1s0nx1wl7l",
+        "rev": "a25b3262f7b5ec7e7188560202b680b2763a8359",
+        "sha256": "0q9cc641x0jwdvd51dwm3grmgj9y9lhlgz5zpgnwwwbx894i55sn",
         "type": "tarball",
-        "url": "https://github.com/Shougo/deoplete.nvim/archive/b148aac088a43799c55ebff4369c5ab546bed5c7.tar.gz",
+        "url": "https://github.com/Shougo/deoplete.nvim/archive/a25b3262f7b5ec7e7188560202b680b2763a8359.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "galaxyline.nvim": {
