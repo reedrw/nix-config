@@ -5,11 +5,6 @@ pkgs: [
     sha256 = "1yah42dziimdzpzfmdbfyc84a3r5vfag107s4x5kqqcw2csswq83";
   })
   (pkgs.fetchFirefoxAddon {
-    name = "clearurls";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3748919/clearurls-1.21.0-an+fx.xpi";
-    sha256 = "0x6r8701hkf4has4xakh813x2iirc0kyd6xmzb0ipckqsjf1j2zb";
-  })
-  (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
     url = "https://addons.mozilla.org/firefox/downloads/file/3672658/decentraleyes-2.0.15-an+fx.xpi";
     sha256 = "1pvdb0fz7jqbzwlrhdkjxhafai70bncywdsx3qsw3325d28hcm15";
