@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "Shougo",
         "repo": "deoplete.nvim",
-        "rev": "a25b3262f7b5ec7e7188560202b680b2763a8359",
-        "sha256": "0q9cc641x0jwdvd51dwm3grmgj9y9lhlgz5zpgnwwwbx894i55sn",
+        "rev": "6fc33bed8f5c75a08b14af285d7775d893037cc4",
+        "sha256": "1cg4lvb1py6q838rvd2z3kvcr3xa9cziz0wgsjlg7392ivkss8hd",
         "type": "tarball",
-        "url": "https://github.com/Shougo/deoplete.nvim/archive/a25b3262f7b5ec7e7188560202b680b2763a8359.tar.gz",
+        "url": "https://github.com/Shougo/deoplete.nvim/archive/6fc33bed8f5c75a08b14af285d7775d893037cc4.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "galaxyline.nvim": {
@@ -89,10 +89,10 @@
         "homepage": "",
         "owner": "akinsho",
         "repo": "nvim-bufferline.lua",
-        "rev": "fad981fd11b68b1a7a48b9283bc04ea5b48e55ff",
-        "sha256": "1i2zm5rrx65dzrmxlc89szr7dghjgd7cwcdd4wm1b0hdv0if89p8",
+        "rev": "c88b4dccc9e5023160d99fa807c88423e75e8498",
+        "sha256": "1ai2s328f5q7y4y84acfyckg0i87vgdbra4a4p468vrnqk833w21",
         "type": "tarball",
-        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/fad981fd11b68b1a7a48b9283bc04ea5b48e55ff.tar.gz",
+        "url": "https://github.com/akinsho/nvim-bufferline.lua/archive/c88b4dccc9e5023160d99fa807c88423e75e8498.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "suda.vim": {
@@ -161,10 +161,10 @@
         "homepage": "",
         "owner": "sheerun",
         "repo": "vim-polyglot",
-        "rev": "4899585281beab51e5dff1d9ae4d3159244a8275",
-        "sha256": "1518dvxf99nvky0mrvgv65if0wjhpiv3021rddhn52j04vri4pdd",
+        "rev": "4f5388350be1052f610b830c8fce8fbc17370ec6",
+        "sha256": "04cljqrywz3y3r336ahri2b2jig9a6pvxljkkjnlssgjlx0azvv9",
         "type": "tarball",
-        "url": "https://github.com/sheerun/vim-polyglot/archive/4899585281beab51e5dff1d9ae4d3159244a8275.tar.gz",
+        "url": "https://github.com/sheerun/vim-polyglot/archive/4f5388350be1052f610b830c8fce8fbc17370ec6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-sayonara": {
