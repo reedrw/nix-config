@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "79e2bd381ad6e7f3d70ce4a8ec9f3f107b40f053",
-        "sha256": "0blgivpm1zbbm1pj77c1ks1w3aa9vid77h08146npa4xi6nnyzwf",
+        "rev": "24d1c60364933fd0ed62758d0c456b5e136b76a0",
+        "sha256": "0nzxm00aq5i0vvqygyl9afd34bqv3dv4i449na8j870yap0q3r6p",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/79e2bd381ad6e7f3d70ce4a8ec9f3f107b40f053.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/24d1c60364933fd0ed62758d0c456b5e136b76a0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
