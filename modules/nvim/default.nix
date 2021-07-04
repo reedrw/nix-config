@@ -1,22 +1,7 @@
 { config, lib, pkgs, ... }:
-let
-
-  nvimNightly = pkgs.neovim-unwrapped.overrideAttrs (
-    old: rec {
-      version = "nightly";
-      src = pkgs.fetchFromGitHub (lib.importJSON ./nightly.json);
-
-      buildInputs = old.buildInputs ++ [ pkgs.tree-sitter ];
-      cmakeFlags = old.cmakeFlags ++ [ "-DUSE_BUNDLED=OFF" ];
-    }
-  );
-
-in
 {
-
   programs.neovim = {
     enable = true;
-    package = nvimNightly;
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
