@@ -14,8 +14,8 @@ dir="$(dirname "$0")"
 
 pushd "$dir" > /dev/null || exit
 
-HomeManagerURL="$(jq -r '.["home-manager"].url' ./sources.json)"
-nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./sources.json)"
+HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
+nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
 
 getTarballHash(){
   tmpDir="$(mktemp -d)/"

@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
+  sources = import ./nix/sources.nix { };
 
   packages = with pkgs; [
 

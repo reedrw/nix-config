@@ -1,5 +1,5 @@
 let
-  sources = import ./functions/sources.nix { sourcesFile = ./sources.json; };
+  sources = import ./nix/sources.nix { };
 in
 {
   allowUnfree = true;

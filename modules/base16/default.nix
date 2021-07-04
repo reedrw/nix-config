@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
+  sources = import ./nix/sources.nix { };
 
   base16 = pkgs.stdenvNoCC.mkDerivation rec {
     name = "base16-nix";

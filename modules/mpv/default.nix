@@ -1,6 +1,6 @@
 { cfg, lib, pkgs, ... }:
 let
-  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
+  sources = import ./nix/sources.nix { };
 
   mpv-webm = pkgs.stdenv.mkDerivation {
     name = "mpv-webm";

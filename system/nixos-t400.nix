@@ -5,7 +5,7 @@
 
 { config, pkgs, ... }:
 let
-  sources = import ../functions/sources.nix { sourcesFile = ../sources.json; };
+  sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
   # dummy files for ci to work
   dummy = builtins.toFile "dummy.nix" "{}";
   dummy-hw = builtins.toFile "dummy.nix" ''

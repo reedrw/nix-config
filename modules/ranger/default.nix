@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
+  sources = import ./nix/sources.nix { };
 
   ccat = pkgs.writeShellScriptBin "bat" ''
     ${pkgs.bat}/bin/bat --theme=base16 "$@"

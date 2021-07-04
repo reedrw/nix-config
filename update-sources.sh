@@ -4,4 +4,5 @@
 PS4=''
 set -x
 
-niv -s ./sources.json update
+niv init
+niv update

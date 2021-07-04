@@ -4,6 +4,7 @@
 PS4=''
 set -x
 
+niv init
 niv update
 
 here=$PWD
