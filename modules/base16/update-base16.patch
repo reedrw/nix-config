@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..e27a305 100644
+index 939d3bc..e83158a 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -564,8 +564,8 @@ index 939d3bc..e27a305 100644
 +  },
 +  "vice": {
 +    "fetchSubmodules": false,
-+    "rev": "16014e37e97bc558fac549c5129922d46e991391",
-+    "sha256": "1fdy7x66s3aznid1cxrivi9nz76qb0j2zkxb55bznsnz1ba423i2",
++    "rev": "0b537c89fbe0f2dfed0397a44312082902c48462",
++    "sha256": "0y0m1h6x8q9qm7akislripibgsm2jzy0rv307frmwq4sf505dsj6",
 +    "url": "https://github.com/Thomashighbaugh/base16-vice-scheme"
 +  },
 +  "vulcan": {
