@@ -53,10 +53,10 @@
         "homepage": "",
         "owner": "lukas-reineke",
         "repo": "indent-blankline.nvim",
-        "rev": "5d5d2f80ec48e3f5fe7237ec17cd1587f39d3be7",
-        "sha256": "005nv99jw9ricgy1xyxixl1ssyh7jai9kv7cx95g5igfvvpblz7k",
+        "rev": "17a83ea765831cb0cc64f768b8c3f43479b90bbe",
+        "sha256": "155da638i4ff1wsy5600jgrqicykb27lxq9liag174nga6xazbn6",
         "type": "tarball",
-        "url": "https://github.com/lukas-reineke/indent-blankline.nvim/archive/5d5d2f80ec48e3f5fe7237ec17cd1587f39d3be7.tar.gz",
+        "url": "https://github.com/lukas-reineke/indent-blankline.nvim/archive/17a83ea765831cb0cc64f768b8c3f43479b90bbe.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "indentLine": {
@@ -137,10 +137,10 @@
         "homepage": "https://www.vim.org/scripts/script.php?script_id=2975",
         "owner": "tpope",
         "repo": "vim-fugitive",
-        "rev": "24d1c60364933fd0ed62758d0c456b5e136b76a0",
-        "sha256": "0nzxm00aq5i0vvqygyl9afd34bqv3dv4i449na8j870yap0q3r6p",
+        "rev": "8e0a8abf08318f91f63da510087b3110f20e58bf",
+        "sha256": "0c0rld9r9d77lzbzv6hk83icbv2xvwcjkmqg2iyricbyhfpmbs5k",
         "type": "tarball",
-        "url": "https://github.com/tpope/vim-fugitive/archive/24d1c60364933fd0ed62758d0c456b5e136b76a0.tar.gz",
+        "url": "https://github.com/tpope/vim-fugitive/archive/8e0a8abf08318f91f63da510087b3110f20e58bf.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vim-gitgutter": {
