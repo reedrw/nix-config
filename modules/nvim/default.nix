@@ -1,22 +1,5 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
-
-  nivMap = import ../../functions/nivMap.nix;
-
-  attrList = nivMap sources;
-
-  pluginList = builtins.map ( x:
-    pkgs.vimUtils.buildVimPlugin {
-      name = x.repo;
-      src = builtins.fetchTarball {
-        url = x.url;
-        sha256 = x.sha256;
-      };
-      dontBuild = true;
-      dontConfigure = true;
-    }
-  ) attrList;
 
   nvimNightly = pkgs.neovim-unwrapped.overrideAttrs (
     old: rec {
@@ -37,7 +20,22 @@ in
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
-    plugins = pluginList;
+    plugins = with pkgs.vimPlugins; [
+      base16-vim
+      deoplete-nvim
+      fugitive
+      galaxyline-nvim
+      indent-blankline-nvim
+      indentLine
+      nerdcommenter
+      nerdtree
+      nvim-bufferline-lua
+      polyglot
+      suda-vim
+      tabular
+      vim-gitgutter
+      vim-sayonara
+    ];
     extraConfig = with config.lib.base16; let
       nivscript = pkgs.writeShellScript "nivscript" ''
         package=$(</dev/stdin)

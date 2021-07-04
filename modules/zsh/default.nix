@@ -1,22 +1,4 @@
 { config, lib, pkgs, ... }:
-let
-  sources = import ../../functions/sources.nix { sourcesFile = ./nix/sources.json; };
-
-  nivMap = import ../../functions/nivMap.nix;
-
-  attrList = nivMap sources;
-
-  pluginList = builtins.map ( x:
-    {
-      name = x.repo;
-      src = builtins.fetchTarball {
-        url = x.url;
-        sha256 = x.sha256;
-      };
-    }
-  ) attrList;
-
-in
 {
   programs = {
     direnv = {
@@ -41,9 +23,23 @@ in
       enable = true;
     };
 
-    zsh = {
+    zsh = let
+      mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: rec {
+        name = pkg.pname;
+        src = pkg.src;
+        inherit file;
+      };
+    in
+    {
       enable = true;
-      plugins = pluginList;
+      plugins = with pkgs; [
+        (mkZshPlugin { pkg = zsh-autosuggestions; })
+        (mkZshPlugin {
+          pkg = zsh-fzf-tab;
+          file = "fzf-tab.plugin.zsh";
+        })
+        (mkZshPlugin { pkg = zsh-syntax-highlighting; })
+      ];
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''

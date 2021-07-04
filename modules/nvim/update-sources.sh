@@ -4,8 +4,6 @@
 PS4=''
 set -x
 
-niv update
-
 {
   nix-prefetch-github neovim neovim --rev nightly
   echo
