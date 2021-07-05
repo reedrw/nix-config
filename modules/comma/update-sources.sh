@@ -12,9 +12,9 @@ url="https://github.com/Mic92/nix-index-database/releases/download/$tag/files"
 
 sha256="$(nix-prefetch-url "$url")"
 
+cat > source.json << EOF
 {
-  echo "{"
-  echo "    \"url\": \"$url\","
-  echo "    \"sha256\": \"$sha256\""
-  echo "}"
-} > source.json
+    "url": "$url",
+    "sha256": "$sha256"
+}
+EOF
