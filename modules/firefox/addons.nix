@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3788189/duckduckgo_privacy_essentials-2021.6.2-an+fx.xpi";
-    sha256 = "18kghxvm66bsddqb1f1rb4m02p7fim4qrizfw1gcn33jgrxlw32i";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3806273/duckduckgo_privacy_essentials-2021.7.5-an+fx.xpi";
+    sha256 = "1gzlp15kbvlrijjajc6vi0mcii3znvgnm4szsy4pffqv0l0pzkl0";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3798731/ublock_origin-1.36.0-an+fx.xpi";
-    sha256 = "0rkxx8cz22dyvavvhm6mxqzp81725j268sgvfv1r0zpq8593wkrq";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3806442/ublock_origin-1.36.2-an+fx.xpi";
+    sha256 = "058lzw8rpwn2fyimlvhwxiqz1m558aw50dgn7vz3qkizd89c5y1i";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
