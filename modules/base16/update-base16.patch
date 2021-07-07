@@ -627,7 +627,7 @@ index 939d3bc..e83158a 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..8bb2e25 100644
+index a3cdb43..111b6ef 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -1019,8 +1019,8 @@ index a3cdb43..8bb2e25 100644
 -    "sha256": "0rdhivsab1zvkqv66n7b7p6n1mmg9sr5ggsw1pl3rr6k3glk0pji",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "50131cbf2fb360f6d6054514cf3d847419f1dba8",
-+    "sha256": "023rphyp56v0rr8aknpn20s0j55qalswfmcy7sszgn0wd161jdfg",
++    "rev": "e47e7e03ccb8909a4751d3507cc3c3ad243f13c0",
++    "sha256": "0284jp3y9i70yk0ic828qva47cqg95jqwzdhfb3zdznqxz2sj3mv",
 +    "url": "https://github.com/theova/base16-qutebrowser"
    },
    "rofi": {
