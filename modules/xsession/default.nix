@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  term = "alacritty";
+  term = "WINIT_X11_SCALE_FACTOR=1.0 alacritty";
 
   mod = "Mod1";
   sup = "Mod4";
@@ -25,7 +25,7 @@ let
     (( W /= 5 ))
     (( H /= 11 ))
     # Arithmetic operations to correct for border
-    alacritty -t float -o window.dimensions.columns=$((''${W}-5)) window.dimensions.lines=$((''${H}-3)) window.position.x=''${X} window.position.y=''${Y} &
+    ${term} -t float -o window.dimensions.columns=$((''${W}-5)) window.dimensions.lines=$((''${H}-3)) window.position.x=''${X} window.position.y=''${Y} &
     disown
   '';
 
