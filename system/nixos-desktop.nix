@@ -139,9 +139,10 @@ in
       dejavu_fonts
       ipafont
       kochi-substitute
+      noto-fonts-emoji
+      open-sans
       source-code-pro
       ttf_bitstream_vera
-      noto-fonts-emoji
     ];
     enableDefaultFonts = true;
     fontconfig = {
