@@ -26,8 +26,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3794978/old_reddit_redirect-1.5.0-an+fx.xpi";
-    sha256 = "1lzdyj37gn33cifx6x0ygfd65sdh3nk9psdyb31zs82z2ym8h8z4";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3808545/old_reddit_redirect-1.5.1-an+fx.xpi";
+    sha256 = "1szwjv4rwpwjb772z6qxpy3m98jbsz6j3gx5wb0akcy4ci6d6mfv";
   })
   (pkgs.fetchFirefoxAddon {
     name = "pay-by-privacy-com";
@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3804541/refined_github-21.7.1-an+fx.xpi";
-    sha256 = "07pyd16r8agnhyyahnz3kxx28r180lidpsp91rvqlyqq4g77nych";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3808553/refined_github-21.7.12-an+fx.xpi";
+    sha256 = "0a4mpaah9vhsgyjl5wi4ra7plgs666dxmr852ahnr2jcwagrxy5y";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3801441/sponsorblock_skip_sponsorships_on_youtube-2.1.1-an+fx.xpi";
-    sha256 = "1pkr9v459jbs5480bgbsdixhsjfcwrr31xj540hhr4cd3kfkbz02";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3808409/sponsorblock_skip_sponsorships_on_youtube-2.1.2.1-an+fx.xpi";
+    sha256 = "1rg959x04mydmzfvfsaraidxaxqkj10acz72rlixb6fchf3l4sxh";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
