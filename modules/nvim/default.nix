@@ -11,7 +11,6 @@
       fugitive
       galaxyline-nvim
       indent-blankline-nvim
-      indentLine
       nerdcommenter
       nerdtree
       nvim-bufferline-lua
@@ -52,6 +51,7 @@
       set numberwidth=5
       set cursorline
       set inccommand=nosplit
+      set colorcolumn=99999
 
       lua << EOF
       local colors = {
