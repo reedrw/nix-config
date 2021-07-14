@@ -17,6 +17,7 @@ jobs:
           - home-manager
           - nixos-desktop
           - nixos-t400
+          - nixos-t480
           - nixos-t520
 
     runs-on: ubuntu-latest
