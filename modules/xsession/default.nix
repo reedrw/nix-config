@@ -16,6 +16,7 @@ let
   run = [
     "i3-msg workspace number 1"
     "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
+    "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
   ];
 
   selecterm = pkgs.writeShellScript "select-term.sh" ''
@@ -81,6 +82,8 @@ in
           "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
           "${mod}+r" = "${exec} ${record}";
           "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
+          "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
           "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
           "Ctrl+Left" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
           "Ctrl+Right" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";

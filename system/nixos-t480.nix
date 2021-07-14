@@ -86,12 +86,32 @@ in
       driSupport = true;
       driSupport32Bit = true;
       extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+      extraPackages = with pkgs; [
+        intel-media-driver
+        vaapiIntel
+        vaapiVdpau
+        libvdpau-va-gl
+      ];
     };
+    trackpoint = {
+      enable = true;
+      sensitivity = 255;
+      speed = 255;
+    };
+    acpilight.enable = true;
+    bluetooth.enable = true;
   };
   # }}}
   # {{{ X server
   services.xserver = {
     enable = true;
+    libinput = {
+      enable = true;
+      mouse = {
+        accelProfile = "flat";
+        accelSpeed = "10";
+      };
+    };
     displayManager = {
       autoLogin = {
         enable = true;
@@ -158,6 +178,7 @@ in
       };
     };
 
+    blueman.enable = true;
     sshd.enable = true;
   };
   # }}}
@@ -192,6 +213,7 @@ in
       "docker"
       "libvirtd"
       "networkmanager"
+      "video"
       "wheel"
     ];
     shell = pkgs.zsh;
