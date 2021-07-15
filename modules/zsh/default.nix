@@ -73,9 +73,9 @@
 
         # show hostname if in ssh session
         if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-          PROMPT="%{%F{green}%}%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
+          PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
         else
-          PROMPT="%{%F{green}%}%n%{$reset_color%} $PROMPT"
+          PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
         fi
 
         ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
