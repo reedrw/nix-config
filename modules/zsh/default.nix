@@ -69,7 +69,14 @@
 
         colors
         setopt promptsubst
-        PROMPT='%{%F{green}%}%n %{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$))%{$reset_color%} '
+        PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$))%{$reset_color%} '
+
+        # show hostname if in ssh session
+        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+          PROMPT="%{%F{green}%}%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
+        else
+          PROMPT="%{%F{green}%}%n%{$reset_color%} $PROMPT"
+        fi
 
         ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
         ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
