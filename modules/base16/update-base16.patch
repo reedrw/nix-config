@@ -627,7 +627,7 @@ index 939d3bc..e83158a 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..3f16d2b 100644
+index a3cdb43..0db6915 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -766,8 +766,8 @@ index a3cdb43..3f16d2b 100644
 -    "sha256": "0s8pp21007g5w7pv7a0hp72lxi5a7xpmzb70mzf8imhyz2c8bbq1",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "13b24513f97573537afdc3be423d1dd86b74cacc",
-+    "sha256": "0m0j6v3xip6xy4wq7r1b6sbpcxrp2zcpvgq95a0wj5s1xljip2dr",
++    "rev": "a316af58c3d296d1b154c86d8e160337db56871b",
++    "sha256": "1vsgq7fm1dq4n4isn79kcxwsg6cpl6xcl3nj3k9zv2668wh7pwn9",
 +    "url": "https://github.com/fnune/base16-fzf"
    },
    "gnome-terminal": {
