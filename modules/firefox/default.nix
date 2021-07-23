@@ -1,13 +1,13 @@
 { config, lib, pkgs, ... }:
 let
   myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
-    nixExtensions = (import ./addons.nix pkgs);
+    #nixExtensions = (import ./addons.nix pkgs);
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;
       DisablePocket = true;
       DisableTelemetry = true;
-      DisableFirefoxAccounts = true;
+      #DisableFirefoxAccounts = true;
       FirefoxHome = {
         Pocket = false;
         Snippets = false;
