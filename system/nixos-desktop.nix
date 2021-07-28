@@ -186,11 +186,6 @@ in
       '';
     };
 
-    plex = {
-      enable = true;
-      openFirewall = true;
-    };
-
     sshd.enable = true;
   };
   # }}}
