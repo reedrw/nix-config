@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3814538/ublock_origin-1.37.0-an+fx.xpi";
-    sha256 = "0fy5x9csrc7kcwr0sl6pm52gdci6hq1b8zqzv0z84p697ycjah28";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3816867/ublock_origin-1.37.2-an+fx.xpi";
+    sha256 = "17jmd90d0ix9nm1n2jh4friq5bas6x88nm6x6c765d5cj4cci8xk";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
