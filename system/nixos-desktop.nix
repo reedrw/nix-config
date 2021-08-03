@@ -222,6 +222,7 @@ in
       enable = true;
       pinentryFlavor = "tty";
     };
+    noisetorch.enable = true;
   };
   environment = {
     pathsToLink = [ "/share/zsh" ];

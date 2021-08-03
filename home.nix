@@ -15,7 +15,6 @@ let
     htop
     libreoffice
     ngrok
-    noisetorch
     pavucontrol
     ripgrep
     virt-manager
