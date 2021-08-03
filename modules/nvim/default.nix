@@ -98,6 +98,9 @@
       autocmd VimEnter * hi Comment cterm=italic gui=italic
       autocmd VimEnter * hi Folded cterm=bold ctermfg=DarkBlue ctermbg=none
       autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
+      " https://stackoverflow.com/questions/1327978/sorting-words-not-lines-in-vim/1328421#1328421
+      " sort words in line with SortLine
+      command -nargs=0 -range SortLine <line1>,<line2>call setline('.',join(sort(split(getline('.'),' ')),' '))
       vnoremap <C-c> "*y
       vnoremap <C-x> "*d
       cnoremap <Up> <C-p>
