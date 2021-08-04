@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3814563/duckduckgo_privacy_essentials-2021.7.22.1-an+fx.xpi";
-    sha256 = "08jr3jynjrbsr0j55i1af06b0iy5cx0215lrva9hynw841s3h7m0";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3817734/duckduckgo_privacy_essentials-2021.7.30-an+fx.xpi";
+    sha256 = "0sbqg3rslsrcq5sym2fi8gm790kixcw5ip626jspd1v4lad52dpp";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3811850/refined_github-21.7.18-an+fx.xpi";
-    sha256 = "0nrbslxayhxvg100vyhz8np3lwcc8gc62263v1dp85aqvw5i7svf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3818382/refined_github-21.8.1-an+fx.xpi";
+    sha256 = "0456y91937liq3m39d79yy8fhyh6b1kj7g0326y3sw49pcpwc6rn";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3816654/sponsorblock_skip_sponsorships_on_youtube-2.1.3-an+fx.xpi";
-    sha256 = "0lr4ymscfav95izxmpbja7d8fyq2z138jcxf9p5cfgmdliyvgavy";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3817821/sponsorblock_skip_sponsorships_on_youtube-2.1.4-an+fx.xpi";
+    sha256 = "06xaz3jh24n934bsqbpgn7x5sv3p8457big8sih31gvpkrzsw3dd";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";

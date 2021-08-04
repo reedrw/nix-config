@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..e83158a 100644
+index 939d3bc..7c1c454 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -528,8 +528,8 @@ index 939d3bc..e83158a 100644
 +  },
 +  "tender": {
 +    "fetchSubmodules": false,
-+    "rev": "c385fc0b7ce90de20de8f9128a30363ad8f90b3a",
-+    "sha256": "1p78syc5ism8llcyqzxs5ni12v74f3d78hzklik4xlgz2m77lj7y",
++    "rev": "04275d828834e26e75ab187747b73badbada0d32",
++    "sha256": "1ax2c0fgf6vj83ka9naskx02v6xbv1xdvc4g75apg2zv6fs939mj",
 +    "url": "https://github.com/DanManN/base16-tender-scheme"
    },
    "tomorrow": {
@@ -627,7 +627,7 @@ index 939d3bc..e83158a 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..0db6915 100644
+index a3cdb43..8d3df84 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -1236,8 +1236,8 @@ index a3cdb43..0db6915 100644
 -    "sha256": "1kfg0zagxz3s4ri91l6ih0bfd8vbhyy2kd6vzcfpjkj1565ik0rh",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "b796a0689bc14e2f03aa2efe54c95b151a358c67",
-+    "sha256": "0jm3zjn560n9bc3slc33ayblifmhy94fmp4f7bj21cnviyq4qcgy",
++    "rev": "3a7eb9478f1afa964332f1b79ab4aa718e28ba2c",
++    "sha256": "141s330bhqvlfnh6z7y9xhs4n4zjj2s62b93rvk5pxvr4k9fq9ac",
 +    "url": "https://github.com/afq984/base16-xfce4-terminal"
    },
    "xresources": {
@@ -1262,8 +1262,8 @@ index a3cdb43..0db6915 100644
 -    "sha256": "0b29npil6hsr4cld1g6cz8i9412fvqx2c25ls2v71bajirads1yl",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "8ba73c446c3c3f69482d209466dee951fae37524",
-+    "sha256": "18hlv11v0j5zylczg0cm3r07hpv65w282wazgx29bgv6q35a6iqr",
++    "rev": "d97b110bf6d576cd2c09e45cdf27d44f4e0af87b",
++    "sha256": "1q0x2y0dzshrghd5f5b2gzc5bd538v60b1wd2xn8gfs71vx1v6wc",
 +    "url": "https://github.com/nicodebo/base16-zathura"
    }
  }
