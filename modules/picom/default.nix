@@ -1,8 +1,15 @@
 { config, lib, pkgs, ... }:
+let
+sources = import ./nix/sources.nix;
+in
 {
   services.picom = {
     enable = true;
-    package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
+    package = pkgs.picom.overrideAttrs(
+      old: rec {
+        src = sources.picom;
+      }
+    );
     shadow = true;
     shadowOpacity = "0.3";
     shadowExclude = [

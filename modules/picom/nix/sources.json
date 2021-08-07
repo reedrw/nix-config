@@ -1,0 +1,14 @@
+{
+    "picom": {
+        "branch": "next",
+        "description": "A lightweight compositor for X11",
+        "homepage": "",
+        "owner": "yshui",
+        "repo": "picom",
+        "rev": "78e8666498490ae25349a44f156d0811b30abb70",
+        "sha256": "0lx30w9ccrivnm05i1m67wvhkiw166i8v0gdj6ql6jganrwnwzwk",
+        "type": "tarball",
+        "url": "https://github.com/yshui/picom/archive/78e8666498490ae25349a44f156d0811b30abb70.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
