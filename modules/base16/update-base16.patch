@@ -627,7 +627,7 @@ index 939d3bc..7c1c454 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..8d3df84 100644
+index a3cdb43..23a81f4 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,461 @@
@@ -744,8 +744,8 @@ index a3cdb43..8d3df84 100644
 -    "sha256": "0ag5fsr3377rz6xfa0b9j54r90zh0yiz98kpa27xzhky4f5jpdah",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "7f1db3df9bb6f4a3c9f4d3c10b9a6cf231752547",
-+    "sha256": "0ycxj4lmmkbpmb8yizys25rdh0zrmw4sbgj19wb6zp2d30xk32qf",
++    "rev": "9836cc26c2f8ed9d809feee2bfd8c082cfdbd033",
++    "sha256": "146fmjkib6d05xyz88yc903w8wla19f0vy3f91yr4qj7ab74frxf",
 +    "url": "https://github.com/belak/base16-emacs"
 +  },
 +  "everything": {
@@ -766,8 +766,8 @@ index a3cdb43..8d3df84 100644
 -    "sha256": "0s8pp21007g5w7pv7a0hp72lxi5a7xpmzb70mzf8imhyz2c8bbq1",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "a316af58c3d296d1b154c86d8e160337db56871b",
-+    "sha256": "1vsgq7fm1dq4n4isn79kcxwsg6cpl6xcl3nj3k9zv2668wh7pwn9",
++    "rev": "180b00dd49ba3238ea53b1c0a47ed25a7322ea2f",
++    "sha256": "1aws7hqisr5ph1p6l23jf4wgrs7anivpj55i86xc9p85hh1a8jsv",
 +    "url": "https://github.com/fnune/base16-fzf"
    },
    "gnome-terminal": {
@@ -1019,8 +1019,8 @@ index a3cdb43..8d3df84 100644
 -    "sha256": "0rdhivsab1zvkqv66n7b7p6n1mmg9sr5ggsw1pl3rr6k3glk0pji",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "e47e7e03ccb8909a4751d3507cc3c3ad243f13c0",
-+    "sha256": "0284jp3y9i70yk0ic828qva47cqg95jqwzdhfb3zdznqxz2sj3mv",
++    "rev": "67453c938c2c47633c652172b27b5b8abf218142",
++    "sha256": "0rwsphq77l6v15gz4pzyv2zzwg5wnm80qzcccn0nwwnhm6nrv4ak",
 +    "url": "https://github.com/theova/base16-qutebrowser"
    },
    "rofi": {
