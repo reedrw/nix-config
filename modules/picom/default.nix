@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 let
-sources = import ./nix/sources.nix;
+  sources = import ./nix/sources.nix { };
 in
 {
   services.picom = {
     enable = true;
-    package = pkgs.picom.overrideAttrs(
+    package = pkgs.picom.overrideAttrs (
       old: rec {
         src = sources.picom;
       }
