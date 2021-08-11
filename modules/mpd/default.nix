@@ -1,5 +1,26 @@
 { config, lib, pkgs, ... }:
+let
+  sources = import ./nix/sources.nix { };
 
+  # use https://github.com/ncmpcpp/ncmpcpp master until new release
+  # this fixes the genius lyric fetcher
+  ncmpcpp = pkgs.ncmpcpp.overrideAttrs (
+    old: {
+      src = sources.ncmpcpp;
+      version = sources.ncmpcpp.rev;
+
+      nativeBuildInputs = with pkgs; [
+        autoconf
+        automake
+        libtool
+      ] ++ old.nativeBuildInputs;
+
+      preConfigure = ''
+        ./autogen.sh
+      '';
+    }
+  );
+in
 {
   services.mpd = {
     enable = true;
@@ -19,13 +40,12 @@
 
   programs.ncmpcpp = {
     enable = true;
-    package = pkgs.ncmpcpp.override {
+    package = ncmpcpp.override {
       visualizerSupport = true;
     };
     settings = {
-      visualizer_fifo_path = "/tmp/mpd.fifo";
+      visualizer_data_source = "/tmp/mpd.fifo";
       visualizer_output_name = "fifo";
-      visualizer_sync_interval = "30";
       visualizer_in_stereo = "yes";
       visualizer_look = "xx";
       song_columns_list_format = "(6f)[blue]{l} (25)[red]{a} (40)[green]{t|f} (30)[yellow]{b}";
