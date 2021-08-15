@@ -3,12 +3,6 @@
 
 export NIXPKGS_ALLOW_UNFREE=1
 
-if [[ -n "$SUDO_ASKPASS" ]]; then
-  sudo="sudo -A"
-else
-  sudo="sudo"
-fi
-
 host="$(hostname)"
 dir="$(dirname "$0")"
 
@@ -41,8 +35,8 @@ currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
 newNixpkgsSha="$(getTarballHash "$nixpkgsURL")"
 if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
   echo "Installing pinned nixpkgs..."
-  $sudo nix-channel --add "$nixpkgsURL" nixos
-  $sudo nix-channel --update
+  sudo nix-channel --add "$nixpkgsURL" nixos
+  sudo nix-channel --update
   echo "Updating search cache..."
   nix search -u > /dev/null
 fi
@@ -55,13 +49,13 @@ system(){
     # compare deriver of current and new system builds, if different, rebuild
     if ! [[ "$currentSystemDrv" == "$newSystemDrv" ]]; then
       echo "Rebuilding NixOS..."
-      $sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix
+      sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix
     else
       echo "No changes to system. Not rebuilding."
     fi
   else
     echo "Rebuilding NixOS..."
-    $sudo nixos-rebuild switch
+    sudo nixos-rebuild switch
   fi
 }
 
