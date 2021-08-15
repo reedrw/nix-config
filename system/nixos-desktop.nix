@@ -49,14 +49,8 @@ in
   };
 
   nix = {
-    package = pkgs.nixUnstable.overrideAttrs (
-      old: {
-        src = sources.nix;
-      }
-    );
     autoOptimiseStore = true;
     extraOptions = ''
-      experimental-features = nix-command flakes
       keep-outputs = true
       keep-derivations = true
     '';
