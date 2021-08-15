@@ -83,6 +83,7 @@ in
   sound.enable = true;
 
   hardware = {
+    bluetooth.enable = true;
     pulseaudio = {
       enable = true;
       support32Bit = true;
@@ -177,6 +178,8 @@ in
         addresses = true;
       };
     };
+
+    blueman.enable = true;
 
     nfs.server = {
       enable = true;
