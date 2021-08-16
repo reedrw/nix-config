@@ -196,7 +196,12 @@ in
       pinentryFlavor = "tty";
     };
   };
-  environment.pathsToLink = [ "/share/zsh" ];
+  environment = {
+    pathsToLink = [ "/share/zsh" ];
+    systemPackages = with pkgs; [
+      acpi
+    ];
+  };
   # }}}
   # {{{ Users
   users.users.reed = {
