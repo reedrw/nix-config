@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3817734/duckduckgo_privacy_essentials-2021.7.30-an+fx.xpi";
-    sha256 = "0sbqg3rslsrcq5sym2fi8gm790kixcw5ip626jspd1v4lad52dpp";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3824380/duckduckgo_privacy_essentials-2021.8.13.36133-an+fx.xpi";
+    sha256 = "1wa60ig7adklg13bi4jr4m4nvarvvlfz5ls2z158g3s7mcfpvrkh";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -61,8 +61,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3810495/stylus-1.5.19-fx.xpi";
-    sha256 = "0kmwgcwa4wzx5caflhmsfnshwa8daiv0xbkk7bnqs8zvmrl0r0aq";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3825193/stylus-1.5.20-fx.xpi";
+    sha256 = "0mrdf9k9vq60qq1lc6j51pwd6r3m521h166z4fra518cf9bnd9xh";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
