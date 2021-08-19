@@ -41,8 +41,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3823352/privacy_badger-2021.8.11-an+fx.xpi";
-    sha256 = "08pa95x207ly0gwbbyb735v7bx59d6z6xiaxgn0d9hd4f6ac6a22";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3826636/privacy_badger-2021.8.17-an+fx.xpi";
+    sha256 = "1nk9yw5n98f2a6252vvbdq1p9fr9w3rnfv98vphs392n92bsv95p";
   })
   (pkgs.fetchFirefoxAddon {
     name = "proxy-toggle";
