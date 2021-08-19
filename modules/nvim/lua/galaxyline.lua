@@ -14,7 +14,7 @@ local fileinfo = require('galaxyline.provider_fileinfo')
 local vcs = require('galaxyline.provider_vcs')
 
 local gls = gl.section
-gl.short_line_list = { 'NvimTree', 'defx', 'packager', 'vista', 'zsh', 'TERMINAL' }
+gl.short_line_list = { {} }
 
 -- Local helper functions
 local buffer_not_empty = function()
@@ -78,13 +78,19 @@ gls.left[2] = {
     separator_highlight = {colors.section_bg, colors.bg},
   }
 }
+
+gls.short_line_left[1] = gls.left[2]
+
 gls.left[3] = {
   GitIcon = {
     provider =  function() return '   ' end,
     condition = condition.check_git_workspace,
     highlight = {colors.red,colors.bg},
   }
+
 }
+gls.short_line_left[2] = gls.left[3]
+
 gls.left[4] = {
   GitBranch = {
     provider = { 'GitBranch', function() return ' ' end },
@@ -92,6 +98,8 @@ gls.left[4] = {
     highlight = {colors.fg,colors.bg},
   }
 }
+gls.short_line_left[3] = gls.left[4]
+
 gls.left[5] = {
   DiffAdd = {
     provider = 'DiffAdd',
@@ -100,6 +108,8 @@ gls.left[5] = {
     highlight = { colors.green, colors.bg },
   }
 }
+gls.short_line_left[4] = gls.left[5]
+
 gls.left[6] = {
   DiffModified = {
     provider = 'DiffModified',
@@ -108,6 +118,8 @@ gls.left[6] = {
     highlight = { colors.orange, colors.bg },
   }
 }
+gls.short_line_left[5] = gls.left[6]
+
 gls.left[7] = {
   DiffRemove = {
     provider = 'DiffRemove',
@@ -116,6 +128,7 @@ gls.left[7] = {
     highlight = { colors.red,colors.bg },
   }
 }
+gls.short_line_left[6] = gls.left[7]
 
 gls.left[8] = {
   EndGit = {
@@ -124,12 +137,16 @@ gls.left[8] = {
     highlight = { colors.section_bg,colors.bg },
   }
 }
+gls.short_line_left[7] = gls.left[8]
+
 gls.left[9] = {
   EndLeft = {
     provider = function () return ' ' end,
     highlight = { colors.bg,colors.bg },
   }
 }
+gls.short_line_left[8] = gls.left[9]
+
 
 -- Right side
 gls.right[1]= {
@@ -138,6 +155,8 @@ gls.right[1]= {
     highlight = { colors.fg,colors.bg },
   }
 }
+gls.short_line_right[1] = gls.right[1]
+
 gls.right[2] = {
   FileEncode = {
     provider = { 'FileEncode', function() return '  ' end },
@@ -146,6 +165,8 @@ gls.right[2] = {
     separator_highlight = { colors.fg, colors.section_bg},
   }
 }
+gls.short_line_right[2] = gls.right[2]
+
 gls.right[3] = {
   LineInfo = {
     provider = function()
@@ -159,6 +180,7 @@ gls.right[3] = {
     highlight = { colors.bg, colors.bg },
   }
 }
+gls.short_line_right[3] = gls.right[3]
 
 -- Force manual load so that nvim boots with a status line
 gl.load_galaxyline()
