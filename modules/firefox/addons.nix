@@ -51,18 +51,18 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3824822/refined_github-21.8.14-an+fx.xpi";
-    sha256 = "02i2sqqjsjm40p98z869vwmfx0r6s40w8j4rm84kcgyyrfdxf4ih";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3828517/refined_github-21.8.22-an+fx.xpi";
+    sha256 = "07nc1q1pwjqvzjih3c7bfgnqvl40zjc4w1m5dmlff04d76bmrbd1";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3820687/sponsorblock_skip_sponsorships_on_youtube-2.1.4.1-an+fx.xpi";
-    sha256 = "0i5gs4mjcljimxjgqf6w1s4j9jvl91vv7sfdprm5ifd5964315d7";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3829095/sponsorblock_skip_sponsorships_on_youtube-3.0.2-an+fx.xpi";
+    sha256 = "0nhrrbivsdl59cvnwlz4alj503dxyfscgq569kc7iaxl826yzz43";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3825193/stylus-1.5.20-fx.xpi";
-    sha256 = "0mrdf9k9vq60qq1lc6j51pwd6r3m521h166z4fra518cf9bnd9xh";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3828033/stylus-1.5.21-fx.xpi";
+    sha256 = "0kk3c6v2xl712n6hdicibl2bpiqrwlwmhw70br0klja8hxyhlcyb";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
