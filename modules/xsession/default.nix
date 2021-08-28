@@ -61,7 +61,7 @@ in
       config = {
         bars = [ ];
         gaps = {
-          inner = 10;
+          inner = 5;
         };
         window.border = 5;
         floating.border = 5;
