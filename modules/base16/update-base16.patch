@@ -627,10 +627,10 @@ index 939d3bc..7c1c454 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..23a81f4 100644
+index a3cdb43..b5aefc1 100644
 --- a/templates.json
 +++ b/templates.json
-@@ -1,386 +1,461 @@
+@@ -1,386 +1,462 @@
  {
    "alacritty": {
 -    "url": "https://github.com/aaron-williamson/base16-alacritty",
@@ -827,6 +827,7 @@ index a3cdb43..23a81f4 100644
    "html-preview": {
 -    "url": "https://github.com/chriskempson/base16-html-preview",
 +    "deepClone": false,
++    "fetchLFS": false,
 +    "fetchSubmodules": false,
 +    "leaveDotGit": false,
 +    "path": "/nix/store/w04cibz94dv0n0hqyhj7938ayz0ph4fl-base16-html-preview",
