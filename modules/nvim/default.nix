@@ -12,7 +12,6 @@
       caw-vim
       context_filetype-vim
       deoplete-nvim
-      direnv-vim
       editorconfig-vim
       galaxyline-nvim
       indent-blankline-nvim
