@@ -1,18 +1,18 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3827516/bitwarden_free_password_manager-1.52.0-an+fx.xpi";
-    sha256 = "03k406bcw8ya1xhba346sfh9pw80v5naz5cc2l3vna8hd18hq41y";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3831245/bitwarden_free_password_manager-1.52.1-an+fx.xpi";
+    sha256 = "1fjbkqb19c733xg4mar31a923zkcpiyk62hs3llwiasd7dfyvmlm";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3672658/decentraleyes-2.0.15-an+fx.xpi";
-    sha256 = "1pvdb0fz7jqbzwlrhdkjxhafai70bncywdsx3qsw3325d28hcm15";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3833987/decentraleyes-2.0.16-an+fx.xpi";
+    sha256 = "1jb5civ29jcc4j1iyp7vdz6y5i0rsmibwcbyq106mhj22ancx1zs";
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3824380/duckduckgo_privacy_essentials-2021.8.13.36133-an+fx.xpi";
-    sha256 = "1wa60ig7adklg13bi4jr4m4nvarvvlfz5ls2z158g3s7mcfpvrkh";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3834290/duckduckgo_privacy_essentials-2021.9.2-an+fx.xpi";
+    sha256 = "1zh8kdjcma7vk8qgfir8cvhl2gybx0wpldm3bsvgsqylycg7gkz9";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -56,8 +56,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3829610/sponsorblock_skip_sponsorships_on_youtube-3.0.3-an+fx.xpi";
-    sha256 = "13grqfzf78cvzqb9x34dy8fjkc3icz4q28sy130f3zzfyhzaskkc";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3834324/sponsorblock_skip_sponsorships_on_youtube-3.0.5-an+fx.xpi";
+    sha256 = "19928ym85vswwkiz8hqrhc3fv977s0xjh6g7ppbhmdjj783lfy46";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
