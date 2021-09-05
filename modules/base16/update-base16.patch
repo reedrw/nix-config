@@ -627,7 +627,7 @@ index 939d3bc..7c1c454 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..b5aefc1 100644
+index a3cdb43..6506729 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,462 @@
@@ -756,8 +756,8 @@ index a3cdb43..b5aefc1 100644
 +  },
 +  "frescobaldi": {
 +    "fetchSubmodules": false,
-+    "rev": "ab4fb5ed1076cdee88bfd67f23211844d780df8e",
-+    "sha256": "0gyy2ii4mx2d641h0hpgk9nw3vxc5n3kfvprh8bza8y13riqhlh4",
++    "rev": "736ac29514fe3c304306f524b9ce7920130ba5f8",
++    "sha256": "1yjgvprdlfdb5f3yrxxss51dkp2pljfyr1ayz4cap177dz232m0l",
 +    "url": "https://github.com/rkubosz/base16-frescobaldi"
    },
    "fzf": {
@@ -1076,10 +1076,12 @@ index a3cdb43..b5aefc1 100644
    },
    "sway": {
 -    "url": "https://github.com/rkubosz/base16-sway",
-+    "fetchSubmodules": false,
-     "rev": "e653c5f0817c07ba147ea0b8096b026344d7486c",
-     "sha256": "03ip0addja34ln47hd3mc8s7h2qn29jslxwzp3nf52z1bvb4fi1n",
+-    "rev": "e653c5f0817c07ba147ea0b8096b026344d7486c",
+-    "sha256": "03ip0addja34ln47hd3mc8s7h2qn29jslxwzp3nf52z1bvb4fi1n",
 -    "fetchSubmodules": false
++    "fetchSubmodules": false,
++    "rev": "f8edbb746fe2962cfe73feca7023b9c1ae1e59eb",
++    "sha256": "109sp3c909ypjs63iw0hmj4vfcxg1pvrgbi574bj6xghgfq930nz",
 +    "url": "https://github.com/rkubosz/base16-sway"
    },
    "terminator": {
