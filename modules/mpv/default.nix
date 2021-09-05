@@ -6,7 +6,10 @@ let
     name = "mpv-webm";
     src = sources.mpv-webm;
 
-    nativeBuildInputs = [ pkgs.luaPackages.moonscript ];
+    nativeBuildInputs = with pkgs.luaPackages; [
+      argparse
+      moonscript
+    ];
 
     installPhase = ''
       mkdir -p $out/build
