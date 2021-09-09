@@ -151,6 +151,11 @@
           spacing: 0;
           text-color: @normal-foreground;
       }
+
+      element-text {
+          background-color: inherit;
+          text-color:       inherit;
+      }
     '';
   };
 
