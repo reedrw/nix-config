@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..7c1c454 100644
+index 939d3bc..c28808b 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -140,10 +140,12 @@ index 939d3bc..7c1c454 100644
    },
    "dracula": {
 -    "url": "https://github.com/dracula/base16-dracula-scheme",
-+    "fetchSubmodules": false,
-     "rev": "970c1b5bbb99cd99595ab4ace1a0ba4af9695774",
-     "sha256": "18arxaws313q4l32w0y8bqsl1x5n7m0djams0nphnw1pkc3bfkbm",
+-    "rev": "970c1b5bbb99cd99595ab4ace1a0ba4af9695774",
+-    "sha256": "18arxaws313q4l32w0y8bqsl1x5n7m0djams0nphnw1pkc3bfkbm",
 -    "fetchSubmodules": false
++    "fetchSubmodules": false,
++    "rev": "04c8c0880e63ec697735b59530c2e425d618991c",
++    "sha256": "16df3ksqzhllkabr6m88vn3jhsp1cbx79kfg7hjw1zlkva1bkch0",
 +    "url": "https://github.com/dracula/base16-dracula-scheme"
    },
    "edge": {
