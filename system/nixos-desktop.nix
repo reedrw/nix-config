@@ -164,6 +164,13 @@ in
   # }}}
   # {{{ Services
   services = {
+    autossh.sessions = [
+      {
+        extraArguments = "-N -T -R 5000:localhost:22 142.4.208.215";
+        name = "ssh-port-forward";
+        user = "reed";
+      }
+    ];
     avahi = {
       enable = true;
       nssmdns = true;
@@ -183,7 +190,11 @@ in
       '';
     };
 
-    sshd.enable = true;
+    openssh = {
+      enable = true;
+      passwordAuthentication = false;
+      permitRootLogin = "no";
+    };
   };
   # }}}
   # {{{ Networking
