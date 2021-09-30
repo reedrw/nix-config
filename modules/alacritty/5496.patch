@@ -1,0 +1,28 @@
+From 5bdf242877336b6f28b4d7e92f01b48943598a7a Mon Sep 17 00:00:00 2001
+From: Illia Bobyr <illia.bobyr@gmail.com>
+Date: Fri, 17 Sep 2021 21:49:48 -0700
+Subject: [PATCH] Unix: Hide TTY close EIO in Rust 1.55+
+
+`ErrorKind::Other` no longer includes `EIO` since Rust 1.55:
+
+    https://blog.rust-lang.org/2021/09/09/Rust-1.55.0.html#stdioerrorkind-variants-updated
+
+It was not precise enough from the very beginning, as the comment says
+that only EIO should be hidden, while the code was any uncategorised
+errors.
+---
+ alacritty_terminal/src/event_loop.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/alacritty_terminal/src/event_loop.rs b/alacritty_terminal/src/event_loop.rs
+index b0676e4d03..b4c0a5e458 100644
+--- a/alacritty_terminal/src/event_loop.rs
++++ b/alacritty_terminal/src/event_loop.rs
+@@ -394,7 +394,7 @@ where
+                                     // This sucks, but checking the process is either racy or
+                                     // blocking.
+                                     #[cfg(target_os = "linux")]
+-                                    if err.kind() == ErrorKind::Other {
++                                    if err.raw_os_error() == Some(libc::EIO) {
+                                         continue;
+                                     }
