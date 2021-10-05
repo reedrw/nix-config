@@ -42,7 +42,7 @@ in
     allowUnfree = true;
     allowBroken = true;
     packageOverrides = pkgs: {
-      nur = import sources.nur {
+      nur = import sources.NUR {
         inherit pkgs;
       };
     };
