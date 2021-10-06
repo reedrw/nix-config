@@ -188,6 +188,7 @@
         ranger = "ranger_cd";
         rm = "rm -v";
         tree = "ls --tree";
+        watch = "${pkgs.nur.repos.reedrw.viddy}/bin/viddy";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
         x = "exit";
       };
