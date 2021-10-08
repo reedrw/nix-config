@@ -78,19 +78,13 @@ in
 
   hardware = {
     bluetooth.enable = true;
-    pulseaudio = {
-      enable = true;
-      support32Bit = true;
-      extraConfig = ''
-        set-default-sink alsa_output.usb-Schiit_Audio_Schiit_Modi_3_-00.analog-stereo
-      '';
-    };
     logitech = {
       wireless = {
         enable = true;
         enableGraphical = true;
       };
     };
+
     opengl = {
       enable = true;
       driSupport = true;
@@ -98,6 +92,20 @@ in
       extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
     };
   };
+
+  security.rtkit.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+
+    pulse.enable = true;
+    jack.enable = true;
+  };
+
   # }}}
   # {{{ X server
   services.xserver = {
@@ -238,6 +246,7 @@ in
   environment = {
     pathsToLink = [ "/share/zsh" ];
     systemPackages = with pkgs; [
+      helvum
       solaar
     ];
   };
