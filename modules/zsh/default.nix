@@ -100,7 +100,10 @@
 
         FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
 
-        zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+        if [ -n "$TMUX" ]; then
+          zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+        fi
+
         zstyle ':fzf-tab:*' fzf-flags $FZF_TAB_FLAGS
 
         zstyle ':completion:*' sort false
