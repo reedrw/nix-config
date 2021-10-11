@@ -10,13 +10,13 @@ let
     "${pkgs.feh}/bin/feh --bg-fill ~/.background-image"
     "systemctl --user restart picom"
     "systemctl --user restart polybar"
+    "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
+    "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
     "xset r rate 250 50"
   ];
 
   run = [
     "i3-msg workspace number 1"
-    "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
-    "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
   ];
 
   selecterm = pkgs.writeShellScript "select-term.sh" ''
