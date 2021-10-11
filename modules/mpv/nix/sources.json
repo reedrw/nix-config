@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "ekisu",
         "repo": "mpv-webm",
-        "rev": "ae8b65225e6c803c4d818f992d2c443c9aedd573",
-        "sha256": "04261bk9qqs7cdpg1vwzbh75h97v7ys3ykc7afgy7iifyncck270",
+        "rev": "7041c07f973fee287fda22d7fdb01d33113ed456",
+        "sha256": "0v2q7k4d16a5rnazsv5g1xmjnvk2c7zhf0kqndghgybbki203zdw",
         "type": "tarball",
-        "url": "https://github.com/ekisu/mpv-webm/archive/ae8b65225e6c803c4d818f992d2c443c9aedd573.tar.gz",
+        "url": "https://github.com/ekisu/mpv-webm/archive/7041c07f973fee287fda22d7fdb01d33113ed456.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mpv_thumbnail_script": {
