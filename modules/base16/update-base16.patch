@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..a4587aa 100644
+index 939d3bc..a94d661 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -252,10 +252,12 @@ index 939d3bc..a4587aa 100644
    },
    "horizon": {
 -    "url": "https://github.com/michael-ball/base16-horizon-scheme",
-+    "fetchSubmodules": false,
-     "rev": "644d073863ba9f863eef3b88a8f8607d0ace0063",
-     "sha256": "1c88z0zv5wwc5p6ddvqv9h6681cayvkj5qxyxsig47lndx5zvjq3",
+-    "rev": "644d073863ba9f863eef3b88a8f8607d0ace0063",
+-    "sha256": "1c88z0zv5wwc5p6ddvqv9h6681cayvkj5qxyxsig47lndx5zvjq3",
 -    "fetchSubmodules": false
++    "fetchSubmodules": false,
++    "rev": "4eabc3a5f7fc823cf3ceecda99dbef4e54c52574",
++    "sha256": "1hkwbifmgq6gydfmp3wxrsb9nflxdryahqs6jn07yzivaiyv1g6d",
 +    "url": "https://github.com/michael-ball/base16-horizon-scheme"
    },
    "humanoid": {
@@ -516,8 +518,8 @@ index 939d3bc..a4587aa 100644
 -    "sha256": "1vggy2jpf35zv2m8z40gqh9f83jm8hs9zps9vi4z2c5ic9047xrs",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "bbb9d8300ab33c490038752f2e235f2467f7c6d8",
-+    "sha256": "0xs02n792vq4gwz7qw80qf74d68i3x47zgsrrf35jl9mghn1csda",
++    "rev": "ad5722d10a1b7a720a2a9b75429858348c08fa55",
++    "sha256": "181alzx3jwgq7kix0mlcxzm4zy6vwv1z36r4f9pl7gkxsf2lyaiq",
 +    "url": "https://github.com/michael-ball/base16-synth-midnight-scheme"
    },
    "tango": {
