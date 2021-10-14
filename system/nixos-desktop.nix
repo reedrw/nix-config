@@ -237,6 +237,7 @@ in
   # {{{ Programs
   programs = {
     adb.enable = true;
+    firejail.enable = true;
     gnupg.agent = {
       enable = true;
       pinentryFlavor = "tty";
