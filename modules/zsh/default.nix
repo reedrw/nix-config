@@ -156,7 +156,7 @@
         contain(){
           container_home="$HOME/.cache/container_homes/$1-home"
 
-          if command="$(readlink -f "$(command which "$1")")" &> /dev/null; then
+          if command="$(readlink "$(command which "$1")")" &> /dev/null; then
             if [[ ! -d "$container_home" ]]; then
               mkdir -p "$container_home"
             fi
