@@ -251,6 +251,13 @@ in
       solaar
     ];
   };
+
+  fileSystems."/mnt/home/reed" = {
+    device = "/home/reed";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
   # }}}
   # {{{ Users
   users.users.reed = {
