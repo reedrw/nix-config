@@ -63,7 +63,7 @@
 
         source ${pkgs.oh-my-zsh.src}/lib/git.zsh
         source ${pkgs.oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-        source ${config.lib.base16.base16template "shell"}
+        source ${config.lib.base16.templateFile { name = "shell"; } }
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right)
         source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 

@@ -39,7 +39,7 @@
       let g:suda_smart_edit = 1
 
       set termguicolors
-      source ${base16template "vim"}
+      source ${templateFile { name = "vim"; }}
       let base16colorspace=256
 
       " disable language packs

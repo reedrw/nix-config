@@ -25,7 +25,7 @@ in
 
   xdg.configFile."alacritty/alacritty.yml".text = ''
     import:
-      - ${config.lib.base16.base16template "alacritty"}
+      - ${config.lib.base16.templateFile { name = "alacritty"; } }
 
     live_config_reload: true
 
