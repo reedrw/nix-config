@@ -188,6 +188,7 @@ in
       publish = {
         enable = true;
         addresses = true;
+        userServices = true;
       };
     };
 
@@ -224,8 +225,9 @@ in
     '';
     networkmanager.enable = true;
     hostName = "nixos-desktop";
-    firewall.allowedTCPPorts = [ 2049 ];
+    firewall.allowedTCPPorts = [ 5000 2049 ];
     firewall.allowedUDPPorts = [ 5353 ];
+    firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
   };
   # }}}
   # {{{ Virtualization
