@@ -30,7 +30,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Checkout repository
-      uses: actions/checkout@v2.3.5
+      uses: actions/checkout@v2.4.0
 
     - name: Run all "update-sources.sh"
       run: find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do ( dir="$(dirname -- "$updatescript")"; cd "$dir" || exit; $updatescript ); done
