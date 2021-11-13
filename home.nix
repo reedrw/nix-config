@@ -18,6 +18,7 @@ let
     pavucontrol
     ripgrep
     virt-manager
+    xclip
 
     # chat
     discord
