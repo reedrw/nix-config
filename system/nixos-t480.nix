@@ -51,6 +51,7 @@ in
     extraOptions = ''
       keep-outputs = true
       keep-derivations = true
+      experimental-features = nix-command flakes
     '';
     trustedUsers = [ "root" "@wheel" ];
   };
@@ -163,6 +164,16 @@ in
   # }}}
   # {{{ Services
   services = {
+    autossh.sessions = [
+      {
+        extraArguments = ''
+          -o ServerAliveInterval=30 \
+          -N -T -R 5555:localhost:22 142.4.208.215
+        '';
+        name = "ssh-port-forward";
+        user = "reed";
+      }
+    ];
     avahi = {
       enable = true;
       nssmdns = true;
@@ -173,7 +184,12 @@ in
     };
 
     blueman.enable = true;
-    sshd.enable = true;
+
+    openssh = {
+      enable = true;
+      passwordAuthentication = false;
+      permitRootLogin = "no";
+    };
   };
   # }}}
   # {{{ Networking
