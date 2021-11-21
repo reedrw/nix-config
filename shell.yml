@@ -19,9 +19,9 @@ aliases:
     export NIXPKGS_ALLOW_UNFREE=1
     ci="$(git rev-parse --show-toplevel)/ci.nix"
     if [[ -z "$1" ]]; then
-      nix run nixpkgs.nix-output-monitor -c nom-build "$ci"
+      nix shell nixpkgs#nix-output-monitor -c nom-build "$ci"
     else
-      nix run nixpkgs.nix-output-monitor -c nom-build "$ci" -A "$1"
+      nix shell nixpkgs#nix-output-monitor -c nom-build "$ci" -A "$1"
     fi
 
 env:
