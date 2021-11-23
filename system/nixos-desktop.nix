@@ -240,6 +240,7 @@ in
   # {{{ Programs
   programs = {
     adb.enable = true;
+    dconf.enable = true;
     firejail.enable = true;
     gnupg.agent = {
       enable = true;
