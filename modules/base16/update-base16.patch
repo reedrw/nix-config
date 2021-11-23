@@ -631,7 +631,7 @@ index 939d3bc..a94d661 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..7f08ae4 100644
+index a3cdb43..b9fd481 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,462 @@
@@ -1030,10 +1030,12 @@ index a3cdb43..7f08ae4 100644
    },
    "rofi": {
 -    "url": "https://gitlab.com/0xdec/base16-rofi",
-+    "fetchSubmodules": false,
-     "rev": "afbc4b22d8f415dc89f36ee509ac35fb161c6df4",
-     "sha256": "1f9gkfc4icdgdj0fkkgg1fw3n6imlr1sbi42qm9hbkjxy5fmzay2",
+-    "rev": "afbc4b22d8f415dc89f36ee509ac35fb161c6df4",
+-    "sha256": "1f9gkfc4icdgdj0fkkgg1fw3n6imlr1sbi42qm9hbkjxy5fmzay2",
 -    "fetchSubmodules": false
++    "fetchSubmodules": false,
++    "rev": "a7e7be0cb5812243f23cd4607eab11ce4cca7774",
++    "sha256": "11yr704xq0hf3mwmayg5wgh6l0g31y38fa38l2x72z4ahx8035av",
 +    "url": "https://gitlab.com/0xdec/base16-rofi"
    },
    "scide": {
