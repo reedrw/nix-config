@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "yshui",
         "repo": "picom",
-        "rev": "6555703b03fed197f6ff7fe6ddbd5a249c253ac3",
-        "sha256": "07yl4asj3izbypcv4276vwviakbd7swjs250rnn43ma34dc7jg2q",
+        "rev": "1c7a4ff5a3cd5f3e25abcac0196896eea5939dce",
+        "sha256": "1b7dfhznpzlq7nnr2z3sdd83kkz96njm5i796fp644g1ynhvdv6s",
         "type": "tarball",
-        "url": "https://github.com/yshui/picom/archive/6555703b03fed197f6ff7fe6ddbd5a249c253ac3.tar.gz",
+        "url": "https://github.com/yshui/picom/archive/1c7a4ff5a3cd5f3e25abcac0196896eea5939dce.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
