@@ -180,6 +180,7 @@ in
       publish = {
         enable = true;
         addresses = true;
+        userServices = true;
       };
     };
 
@@ -196,6 +197,8 @@ in
   networking = {
     networkmanager.enable = true;
     hostName = "nixos-t480";
+    firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
+    firewall.allowedTCPPorts = [ 5000 2049 ];
   };
   # }}}
   # {{{ Virtualization
