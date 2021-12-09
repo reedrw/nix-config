@@ -72,9 +72,11 @@ in
   # }}}
   # {{{ Sound and hardware
   hardware = {
-    pulseaudio = {
-      enable = true;
-      support32Bit = true;
+    logitech = {
+      wireless = {
+        enable = true;
+        enableGraphical = true;
+      };
     };
     opengl = {
       enable = true;
@@ -96,6 +98,20 @@ in
     acpilight.enable = true;
     bluetooth.enable = true;
   };
+
+  security.rtkit.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+
+    pulse.enable = true;
+    jack.enable = true;
+  };
+
   # }}}
   # {{{ X server
   services.xserver = {
@@ -210,16 +226,19 @@ in
   # {{{ Programs
   programs = {
     adb.enable = true;
+    dconf.enable = true;
     firejail.enable = true;
     gnupg.agent = {
       enable = true;
       pinentryFlavor = "tty";
     };
+    noisetorch.enable = true;
   };
   environment = {
     pathsToLink = [ "/share/zsh" ];
     systemPackages = with pkgs; [
       acpi
+      solaar
     ];
   };
   # }}}
