@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3859577/bitwarden_free_password_manager-1.54.0-an+fx.xpi";
-    sha256 = "1myrf213vn1gik2jggrrnmz25vx5ijfylbq21j6bj2d3gqj50ar3";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3878893/bitwarden_free_password_manager-1.55.0-an+fx.xpi";
+    sha256 = "1p9k77d0dq2krmrq3m23vrlsxwd3khhzar02g8s9xih39mn34dh2";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3872165/refined_github-21.11.23-an+fx.xpi";
-    sha256 = "0sq90qx4lhy976mqqlsz34zn9vvdrnsn2kjvcqqc2nnayar4s5n0";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3880260/refined_github-21.12.12-an+fx.xpi";
+    sha256 = "1vg6srzf39h8vcy991hcz6mf591xd5yrpslraca188hdq5lwjrnq";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
