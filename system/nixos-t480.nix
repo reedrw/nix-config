@@ -219,16 +219,8 @@ in
 
         [mpd]
         enabled = true
-
-        [spotify]
-        enabled = true
-        username = ${builtins.readFile config.age.secrets.spotify_username.path}
-        password = ${builtins.readFile config.age.secrets.spotify_password.path}
-        client_id = ${builtins.readFile config.age.secrets.spotify_client_id.path}
-        client_secret = ${builtins.readFile config.age.secrets.spotify_client_secret.path}
-        bitrate = 320
-
       '';
+      extraConfigFiles = [ config.age.secrets.spotify.path ];
     };
 
     openssh = {
@@ -289,10 +281,10 @@ in
   # }}}
   # {{{ Secrets
   age.secrets = {
-    spotify_client_id.file = ./secrets/spotify_client_id.age;
-    spotify_client_secret.file = ./secrets/spotify_client_secret.age;
-    spotify_username.file = ./secrets/spotify_username.age;
-    spotify_password.file = ./secrets/spotify_password.age;
+    spotify = {
+      file = ./secrets/spotify.age;
+      owner = "mopidy";
+    };
   };
   # }}}
   # {{{
