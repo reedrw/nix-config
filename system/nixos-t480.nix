@@ -33,6 +33,7 @@ in
     # Include the results of the hardware scan.
     hardware-configuration
     "${sources.nixos-hardware}/lenovo/thinkpad/t480"
+    "${sources.agenix}/modules/age.nix"
   ];
   # }}}
   # {{{ Nix and nixpkgs
@@ -109,6 +110,7 @@ in
     };
 
     pulse.enable = true;
+    config.pipewire-pulse = builtins.fromJSON (builtins.readFile ./pipewire-pulse.conf.json);
     jack.enable = true;
   };
 
@@ -202,6 +204,33 @@ in
 
     blueman.enable = true;
 
+    mopidy = {
+      enable = true;
+      extensionPackages = with pkgs; [
+        mopidy-mpd
+        mopidy-spotify
+      ];
+      configuration = ''
+        [core]
+        restore_state = true
+
+        [audio]
+        output = pulsesink server=127.0.0.1:4713
+
+        [mpd]
+        enabled = true
+
+        [spotify]
+        enabled = true
+        username = ${builtins.readFile config.age.secrets.spotify_username.path}
+        password = ${builtins.readFile config.age.secrets.spotify_password.path}
+        client_id = ${builtins.readFile config.age.secrets.spotify_client_id.path}
+        client_secret = ${builtins.readFile config.age.secrets.spotify_client_secret.path}
+        bitrate = 320
+
+      '';
+    };
+
     openssh = {
       enable = true;
       passwordAuthentication = false;
@@ -239,6 +268,7 @@ in
     systemPackages = with pkgs; [
       acpi
       solaar
+      (import sources.agenix {}).agenix
     ];
   };
   # }}}
@@ -255,6 +285,14 @@ in
       "wheel"
     ];
     shell = pkgs.zsh;
+  };
+  # }}}
+  # {{{ Secrets
+  age.secrets = {
+    spotify_client_id.file = ./secrets/spotify_client_id.age;
+    spotify_client_secret.file = ./secrets/spotify_client_secret.age;
+    spotify_username.file = ./secrets/spotify_username.age;
+    spotify_password.file = ./secrets/spotify_password.age;
   };
   # }}}
   # {{{

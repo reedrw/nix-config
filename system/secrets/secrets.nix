@@ -8,4 +8,8 @@ let
   systems = [ t480 ];
 in
 {
+  "spotify_client_id.age".publicKeys = systems ++ users;
+  "spotify_client_secret.age".publicKeys = systems ++ users;
+  "spotify_username.age".publicKeys = systems ++ users;
+  "spotify_password.age".publicKeys = systems ++ users;
 }
