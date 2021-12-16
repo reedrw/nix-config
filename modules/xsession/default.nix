@@ -87,6 +87,10 @@ in
           "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
           "Ctrl+Left" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
           "Ctrl+Right" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
+          "XF86AudioPause" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
+          "XF86AudioPlay" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
+          "XF86AudioPrev" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
+          "XF86AudioNext" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
         };
         colors = with config.lib.base16.theme; {
           focused = {
