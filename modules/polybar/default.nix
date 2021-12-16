@@ -9,7 +9,8 @@
         background = "#${base00-hex}";
         foreground = "#${base05-hex}";
         modules-left = "i3";
-        modules-right = "mpd battery date";
+        modules-center = "mpd";
+        modules-right = "battery date";
         border-left-size = 1;
         border-left-color = "#${base00-hex}";
         border-right-size = 1;
@@ -50,7 +51,7 @@
       };
       "module/mpd" = {
         type = "internal/mpd";
-        label-song = "%{A1:${pkgs.mpc_cli}/bin/mpc toggle:}%artist% - %title%%{A}";
+        label-song = "%{A1:${pkgs.mpc_cli}/bin/mpc toggle:}%artist% - %title% %{A}";
         icon-play = " (paused)";
         icon-play-foreground = "#${base03-hex}";
         icon-pause = "";
