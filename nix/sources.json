@@ -11,6 +11,18 @@
         "url": "https://github.com/nix-community/NUR/archive/1210c70f3f9b374d0463d5dd83e397af9ba9118d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "agenix": {
+        "branch": "main",
+        "description": "age-encrypted secrets for NixOS",
+        "homepage": "",
+        "owner": "ryantm",
+        "repo": "agenix",
+        "rev": "57806bf7e340f4cae705c91748d4fdf8519293a9",
+        "sha256": "1pn2k3f0qx462pgpbdhhlypyck8lwnpm3l0dbzq1y6s0v33cwwjq",
+        "type": "tarball",
+        "url": "https://github.com/ryantm/agenix/archive/57806bf7e340f4cae705c91748d4fdf8519293a9.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "home-manager": {
         "branch": "master",
         "description": "Manage a user environment using Nix  [maintainer=@rycee] ",
