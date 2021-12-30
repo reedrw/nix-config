@@ -1,5 +1,5 @@
 diff --git a/schemes.json b/schemes.json
-index 939d3bc..a94d661 100644
+index 939d3bc..cadc1f9 100644
 --- a/schemes.json
 +++ b/schemes.json
 @@ -1,356 +1,464 @@
@@ -568,8 +568,8 @@ index 939d3bc..a94d661 100644
 +  },
 +  "vice": {
 +    "fetchSubmodules": false,
-+    "rev": "040254cd0ebf5f9ad64621b653c85e549aceadc7",
-+    "sha256": "0hxs7wpjjkbg57vxxinxh54cgx1c1hsk5h61k498kccn4knlxf23",
++    "rev": "e8b3839f812dd752172f061572cbe5beefc861c5",
++    "sha256": "0rm05d4xkfa7kjcdgiq0w56hc43midw2rdhnznp8man955xn7r20",
 +    "url": "https://github.com/Thomashighbaugh/base16-vice-scheme"
 +  },
 +  "vulcan": {
@@ -631,7 +631,7 @@ index 939d3bc..a94d661 100644
    }
  }
 diff --git a/templates.json b/templates.json
-index a3cdb43..b9fd481 100644
+index a3cdb43..79029c4 100644
 --- a/templates.json
 +++ b/templates.json
 @@ -1,386 +1,462 @@
@@ -748,8 +748,8 @@ index a3cdb43..b9fd481 100644
 -    "sha256": "0ag5fsr3377rz6xfa0b9j54r90zh0yiz98kpa27xzhky4f5jpdah",
 -    "fetchSubmodules": false
 +    "fetchSubmodules": false,
-+    "rev": "9836cc26c2f8ed9d809feee2bfd8c082cfdbd033",
-+    "sha256": "146fmjkib6d05xyz88yc903w8wla19f0vy3f91yr4qj7ab74frxf",
++    "rev": "ad2fd1137d6ec144f87b26dce15ce5c5d42bde39",
++    "sha256": "009k9j7bi7x8pmp5d12bdzng3ampqwy8l1jf1dxxf9989wv27hrc",
 +    "url": "https://github.com/belak/base16-emacs"
 +  },
 +  "everything": {
