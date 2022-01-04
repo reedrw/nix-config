@@ -6,8 +6,4 @@
     enable = true;
   };
 
-  home.packages = with pkgs; [
-    syncthing-gtk
-  ];
-
 }
