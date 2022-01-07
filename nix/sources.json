@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "4ac6c479a4a315d2cf50ddb7722d8bc393d8d90b",
-        "sha256": "1ri93wlkp45aiqq73l0c5qkq0w79fqp93aih1cl7m4wxadl763zs",
+        "rev": "68d73650ddbbb06b9d480e76a9d23625da083429",
+        "sha256": "0gq33vsccjzxypsgynyh7xir76mkgdc3gzx456yhgd6jblz2c5si",
         "type": "tarball",
-        "url": "https://github.com/nix-community/NUR/archive/4ac6c479a4a315d2cf50ddb7722d8bc393d8d90b.tar.gz",
+        "url": "https://github.com/nix-community/NUR/archive/68d73650ddbbb06b9d480e76a9d23625da083429.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "agenix": {
@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "ryantm",
         "repo": "agenix",
-        "rev": "c5558c88b2941bf94886dfdede6926b1ba5f5629",
-        "sha256": "03vidbxrmi87iv03njgx945d99s2bbasx2psw6x0a8pzkghks8k6",
+        "rev": "08b9c96878b2f9974fc8bde048273265ad632357",
+        "sha256": "14iryh8na513xzn6mbiv194b4cy9c7s8psax9fjfsxk19vvbg18v",
         "type": "tarball",
-        "url": "https://github.com/ryantm/agenix/archive/c5558c88b2941bf94886dfdede6926b1ba5f5629.tar.gz",
+        "url": "https://github.com/ryantm/agenix/archive/08b9c96878b2f9974fc8bde048273265ad632357.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "home-manager": {
