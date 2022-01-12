@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3880260/refined_github-21.12.12-an+fx.xpi";
-    sha256 = "1vg6srzf39h8vcy991hcz6mf591xd5yrpslraca188hdq5lwjrnq";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3891913/refined_github-22.1.11-an+fx.xpi";
+    sha256 = "0zl2066h9ap0x4x4y33q1b3srr9nnik89jmmn8jk03cqmvdkfxwc";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3886236/ublock_origin-1.40.2-an+fx.xpi";
-    sha256 = "0rd0pqlg7b9fk8v78pkiwwv43n5fkym31k6mdvj521lmkj91ayc3";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3892224/ublock_origin-1.40.8-an+fx.xpi";
+    sha256 = "1ylwzjpb59s0d45j5asvia98pvsj6pzl3arp1dpxfj59xynaha8r";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
