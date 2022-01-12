@@ -1,30 +1,9 @@
 { config, lib, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-
-  base16 = pkgs.stdenvNoCC.mkDerivation rec {
-    name = "base16-nix";
-
-    src = sources.base16-nix;
-
-    patches = [ ./update-base16.patch ];
-
-    dontBuild = true;
-    dontConfigure = true;
-
-    installPhase = ''
-      mkdir -p $out
-      cp -rv ./ $out
-    '';
-
-  };
-
-in
 {
-  imports = [ "${sources.base16-nix}/base16.nix" ];
+  imports = [ ./base16-nix/base16.nix ];
 
   # Base16 colorschemes
-  # https://github.com/atpotts/base16-nix/blob/master/schemes.json
+  # ./base16-nix/schemes.json
   themes.base16 = {
     enable = true;
     scheme = "materialtheme";

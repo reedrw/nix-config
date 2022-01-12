@@ -1,0 +1,695 @@
+{
+  "apprentice": {
+    "url": "https://github.com/casonadams/base16-apprentice-scheme",
+    "rev": "2b9bda01fe573c5cb04775841e7fa41340fca674",
+    "path": "/nix/store/9fv6k9ijx8cdbb3kdhmpc2b0hlkn4wy8-base16-apprentice-scheme",
+    "sha256": "0h8072dr4nmhkxgpp5zkvlz8w1x499rcd98gwr954cww5mkkyyjx",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "atelier": {
+    "url": "https://github.com/atelierbram/base16-atelier-schemes",
+    "rev": "212179fded98ecfa7d88ad7a756d81297a3371c2",
+    "path": "/nix/store/85sfwqacfx010q6p48k6wv1y4x4swdq1-base16-atelier-schemes",
+    "sha256": "0r7m6iwgpv96jy5li47j5yk69nif1rxznnhhxc6g3dcjidbqz8xl",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "atlas": {
+    "url": "https://github.com/ajlende/base16-atlas-scheme",
+    "rev": "55fe308a8d93a31c1bd55e80ff573b11511b6cf3",
+    "path": "/nix/store/rknyj6if4lxmwpjmk8gm5qpa93fyvpab-base16-atlas-scheme",
+    "sha256": "09ghwai272lvjc4vyaigaiyng0jy6g9q2p2cz05hnbmg8i6v6icp",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "black-metal": {
+    "url": "https://github.com/metalelf0/base16-black-metal-scheme",
+    "rev": "c7a32bec8105a1ceddb9fcc90b713dabde5e7e5e",
+    "path": "/nix/store/10ipyk9ppvcnrsnndlabrzimzhp0z32n-base16-black-metal-scheme",
+    "sha256": "04n24lnv449699qsm8a7ljsrm07242kaaf6qm9gmda99ymshrnvj",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "brogrammer": {
+    "url": "https://github.com/piggyslasher/base16-brogrammer-scheme",
+    "rev": "e2f190582e8bb70e507ae710ac1d74a0776643f8",
+    "path": "/nix/store/jmfhp7adaqnzfkwn33qz178ab23jj6gy-base16-brogrammer-scheme",
+    "sha256": "0ihd3pymd9z9yyw6v6zry2v6hh9xmlzpjkp31pj3f59kf6r1rk2x",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "brushtrees": {
+    "url": "https://github.com/WhiteAbeLincoln/base16-brushtrees-scheme",
+    "rev": "0b8ae8c74aaffb2f521e494f4d72dd461c1aa836",
+    "path": "/nix/store/qhg3wfd32q9bz4brlwkhpwval5flxnhj-base16-brushtrees-scheme",
+    "sha256": "0xn9faj5pnalfdjrzgsm0hj6h6d7g2k4ri7pmbl20s74c4kh38m6",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "circus": {
+    "url": "https://github.com/stepchowfun/base16-circus-scheme",
+    "rev": "74329093c521844e1737e055845598dec85d48cf",
+    "path": "/nix/store/bf3zk1dh011b117q2bccp7bbhjdvi48j-base16-circus-scheme",
+    "sha256": "04sdpzqfdgwsmgqwqqvybkn6m9jrc6d223y829pvmhnbbrc9qrnz",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "classic": {
+    "url": "https://github.com/detly/base16-classic-scheme",
+    "rev": "532c8b4eb1e9507c51ed467a158f91f11c6b52cb",
+    "path": "/nix/store/6844npwfh1sj82nh5akhrgkl54yp93w9-base16-classic-scheme",
+    "sha256": "1k7nb9p6vym1dk6fgbis9q88hs9filj4437rh7w126ymppjpd0si",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "codeschool": {
+    "url": "https://github.com/blockloop/base16-codeschool-scheme",
+    "rev": "766cd0fdb564191152c90872b143a14e8a43b78c",
+    "path": "/nix/store/83lllmn0zszw7lnpxdn7hd11y06nzihc-base16-codeschool-scheme",
+    "sha256": "0vlr9sxn8xx0n41fflaw1xw5s4hd6cfn7mdvlbs1hldlrd86ysir",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "colors": {
+    "url": "https://github.com/hakatashi/base16-colors-scheme",
+    "rev": "79ae645d3d4b0bbf6524ebafcd6dd066d8ab7505",
+    "path": "/nix/store/nj7244dl9hiqfd3zlk9b53q9dcisi3sf-base16-colors-scheme",
+    "sha256": "00cy2rb8c9r3nwx281h082dx2nizsx29xb09asb9z5zkk5ccn699",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "cupertino": {
+    "url": "https://github.com/Defman21/base16-cupertino",
+    "rev": "16d202574c695c8c7b5bcb37277e7d8bda465604",
+    "path": "/nix/store/5hxfgij8lpjgxw00d6nn9q2m8ba5n70h-base16-cupertino",
+    "sha256": "12n82p4dp9d939710hvsn6g0jga3b3s05c16f7h6a4gcg14vnqkj",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "darcula": {
+    "url": "https://github.com/casonadams/base16-darcula-scheme",
+    "rev": "55f0dca58266c8fdc5a014fad14f07e35e3a500a",
+    "path": "/nix/store/n3lafjyyx4vd89hdsqgjj1xm69ww7ryq-base16-darcula-scheme",
+    "sha256": "06ynwpi00i3m4072x3fxd4p8m5m9x8vm9x4v7nc83bvdy9cb42i1",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "darkmoss": {
+    "url": "https://github.com/avanzzzi/base16-darkmoss-scheme",
+    "rev": "1412e87370d9c835df4cf7eeba2b92a7761c33f9",
+    "path": "/nix/store/w7dr0cw6xch1y9y000p6hhbpnwis3dbw-base16-darkmoss-scheme",
+    "sha256": "03gzbwnkgyc7b1f76r6d50k8vp9s1iqx47zkrfp74j4c1g4bi6sb",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "darkviolet": {
+    "url": "https://github.com/ruler501/base16-darkviolet-scheme",
+    "rev": "2e852c8c21b991c0360d788e7561e465cbb594cf",
+    "path": "/nix/store/mvsw8sgygrw80k2i6v7gmpa7z6ms6lj5-base16-darkviolet-scheme",
+    "sha256": "1rwlrbh4fxmghyfz6ckziyd90pa2gfpx776ri0z3h7wjrg4r3r17",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "danqing": {
+    "url": "https://github.com/CosmosAtlas/base16-danqing-scheme",
+    "rev": "ea230cb59112df0b9c735ed20a618cc0e4fcba57",
+    "path": "/nix/store/f5jr1wshpzpp9gfwvw8mmh3j9wvbmbw0-base16-danqing-scheme",
+    "sha256": "06391c8zf249jh0pzpmb40d2j18ccr55rcvnj7600mcrz9b6y90z",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "default": {
+    "url": "https://github.com/chriskempson/base16-default-schemes",
+    "rev": "daf674291964321cd8c92644f9bbdbf3e7c0e8b3",
+    "path": "/nix/store/fzjajq81fdqssvx5p4bikzjcj8sw25ip-base16-default-schemes",
+    "sha256": "1hdhvl7xr068z5pcib2jja6kjl7l4v2q8l4cihjgk1l7yqf440m7",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "dirtysea": {
+    "url": "https://github.com/tartansandal/base16-dirtysea-scheme",
+    "rev": "6785ce5ec20f89cf2d305bd974320519895915ef",
+    "path": "/nix/store/yxqp5lw82jb22bfgqcg4az6fhfmacdmc-base16-dirtysea-scheme",
+    "sha256": "1dh6msmk7pnw60c925lyqivvh8zpgadvp3g1rxscy66x75dz6ijk",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "dracula": {
+    "url": "https://github.com/dracula/base16-dracula-scheme",
+    "rev": "04c8c0880e63ec697735b59530c2e425d618991c",
+    "path": "/nix/store/nl1jc41lpdkzhl6jaqxi1cab19jci6n1-base16-dracula-scheme",
+    "sha256": "16df3ksqzhllkabr6m88vn3jhsp1cbx79kfg7hjw1zlkva1bkch0",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "edge": {
+    "url": "https://github.com/cjayross/base16-edge-schemes",
+    "rev": "d2c54a43623f0b1b8441130e6cecb2cd12521711",
+    "path": "/nix/store/8klg394mqg0glkm4awjgbahl8850b7mr-base16-edge-schemes",
+    "sha256": "0b2jh4v7g7wvdasc5mjpf98icl132ak537achfsb6q89v1w9n5gx",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "equilibrium": {
+    "url": "https://github.com/carloabelli/base16-equilibrium-scheme",
+    "rev": "87d0bd37e7eb682a33b1c5170e9a44e2af2301bd",
+    "path": "/nix/store/8h27gyqik0m4ghmfpcw22217l2zjffl5-base16-equilibrium-scheme",
+    "sha256": "0pakiz34kd1n4l5nldl6y3hzxcl5q0pdvk3cdp20f8f7fz9rak3y",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "espresso": {
+    "url": "https://github.com/alexmirrington/base16-espresso-scheme",
+    "rev": "fbb61a845ca799986e6ac0c45f06050b8544e935",
+    "path": "/nix/store/f8rkn7mm36yzy2vnl562cgr37is503jd-base16-espresso-scheme",
+    "sha256": "0ayl4laplnn94naarnyg2hn6rm5ar8kf88yxvax2w43glig01f50",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "eva": {
+    "url": "https://github.com/kjakapat/base16-eva-scheme",
+    "rev": "595ea6eff814ae462709f222e7af3492ee804e88",
+    "path": "/nix/store/4p0qz94rqm9akjsvf9k2wr40ir306l5c-base16-eva-scheme",
+    "sha256": "1f788kr3nxdclg12n1g44g871zy9n5sfsxza3gm8nzzpzwz837gv",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "framer": {
+    "url": "https://github.com/jssee/base16-framer-scheme",
+    "rev": "f4e15f3182132c57e8294ba235862404e419256f",
+    "path": "/nix/store/0k3chyyy2bckndig4636q6riprr3b03p-base16-framer-scheme",
+    "sha256": "0icy44k79wl2wqvrcbfn4f7nkgi2npvvv8nz0fad8khnncf07k0q",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "fruit-soda": {
+    "url": "https://github.com/jozip/base16-fruit-soda-scheme",
+    "rev": "38144b1a06466c341ddffc45f8b592f211fdcc06",
+    "path": "/nix/store/fir35lm3h8pkxrwrvld52dybb38ifa9w-base16-fruit-soda-scheme",
+    "sha256": "09vrayyg82fjja0wkmlfaz7h4j28sibz4nc2hzyinaks5b9ja0wi",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "gigavolt": {
+    "url": "https://github.com/Whillikers/base16-gigavolt-scheme",
+    "rev": "55c75e2c2b98ac142fda506d7d83203b4426df64",
+    "path": "/nix/store/v18knz7s98cc7bzc38i3c00aklps9rmy-base16-gigavolt-scheme",
+    "sha256": "1av684azijkflyqr6hg2r786wq3w93i12v88mrx7lslmd4lqbrly",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "github": {
+    "url": "https://github.com/Defman21/base16-github-scheme",
+    "rev": "2daf39a4a02185637fbcc0d2cb239517c2ac6800",
+    "path": "/nix/store/vnhkc26qxnz99bpmhisk4bnkyqyw6als-base16-github-scheme",
+    "sha256": "0bq42yqhg5hrjdpbfx1f3pips2y97a4knhlzgclfvdps71k8maph",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "gruvbox": {
+    "url": "https://github.com/dawikur/base16-gruvbox-scheme",
+    "rev": "2def6ef77c1f562ff298d61da6845289bfd9f569",
+    "path": "/nix/store/4mpvz5likc62lsis009ixqmxrpxdsjk8-base16-gruvbox-scheme",
+    "sha256": "01pgi0w571kk0x3qgr9zwb400xvjgvk9pvm34631vdvh751wf6mp",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "hardcore": {
+    "url": "https://github.com/callerc1/base16-hardcore-scheme",
+    "rev": "37dfee7c299332d4a2921827504340647dcb71d1",
+    "path": "/nix/store/jpdrswkskcn2mg4rja5pia0cls3rpmzn-base16-hardcore-scheme",
+    "sha256": "1pnk669fwa7gh5rs9lb3ki6fkj42a53s0i2nx0bmjgnp5qpyzfy7",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "heetch": {
+    "url": "https://github.com/tealeg/base16-heetch-scheme",
+    "rev": "b93f17adf1f35cfd17d730788311db5f84c0b3ce",
+    "path": "/nix/store/0adgw6gdgnprvv3f2y0j4qviirap28m9-base16-heetch-scheme",
+    "sha256": "1gjlyk1nm87p5wz2gqavxcq6v78mp6q6b7p45rs2ky5c545lawi3",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "helios": {
+    "url": "https://github.com/reyemxela/base16-helios-scheme",
+    "rev": "92a70341f710d7377327e792020a926e7822ec7a",
+    "path": "/nix/store/23ivj9yw2yca4inpf7kqd3b2r2alr64n-base16-helios-scheme",
+    "sha256": "02vqvhq3whb4av6lpm04s3g2affvdlgfl9zh418nq6a3b4l904ba",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "horizon": {
+    "url": "https://github.com/michael-ball/base16-horizon-scheme",
+    "rev": "644d073863ba9f863eef3b88a8f8607d0ace0063",
+    "path": "/nix/store/73pknkn1g07khb6039jsnx9zpfdf9iy5-base16-horizon-scheme",
+    "sha256": "1c88z0zv5wwc5p6ddvqv9h6681cayvkj5qxyxsig47lndx5zvjq3",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "humanoid": {
+    "url": "https://github.com/humanoid-colors/base16-humanoid-schemes",
+    "rev": "2b20767c78694885b347eff6cabccd8c080803e2",
+    "path": "/nix/store/8dvjlx7v8c3viiw36416b147j7pq96z5-base16-humanoid-schemes",
+    "sha256": "07v3gsqb7c17xzx77p6yixzbvqxpad451hdl3fwb5f9w82q5qbdd",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "ia": {
+    "url": "https://github.com/aramisgithub/base16-ia-scheme",
+    "rev": "f7dc5c3244a1207f1bc23d402fdf86ace1c9abcd",
+    "path": "/nix/store/1c66x2jcxx6hg44274lmmnpcihm7yb19-base16-ia-scheme",
+    "sha256": "05zsdafnxpaq6yzc75x4wyy6617vn6hfjyjwcq2q9845nans0iw4",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "icy": {
+    "url": "https://github.com/icyphox/base16-icy-scheme",
+    "rev": "26ab637eab7a9ef1c697bb81f8dbf376f3a0f99b",
+    "path": "/nix/store/qk7jxlgidn4805a1ry3ilcryv4x64k32-base16-icy-scheme",
+    "sha256": "0s3cr9mwyf12z7hk4p7vahrvrpcjfhw04k6gi3f8i3ircpcbys0f",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "kimber": {
+    "url": "https://github.com/akhsiM/base16-kimber-scheme",
+    "rev": "5b1963918405bbb28479fb7b14872887080d8083",
+    "path": "/nix/store/jxl3zjlbfa7j97izkajj7rr4h5qlxxb6-base16-kimber-scheme",
+    "sha256": "1x3ghd1917pkykjwlqhz1z7f6gsmdsgzibw8vgyhpfysvap0l3j4",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "materia": {
+    "url": "https://github.com/Defman21/base16-materia",
+    "rev": "9c0952eda648246e9b9725e45e2f15b5065bcb61",
+    "path": "/nix/store/mn9laavfgpf1kv5ixb74hkc78jgawf94-base16-materia",
+    "sha256": "17rppka5svypl6s7q6hwwpfzxh84bxamvy2qyamxc89qy5czpsgp",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "materialtheme": {
+    "url": "https://github.com/ntpeters/base16-materialtheme-scheme",
+    "rev": "cbbc47444208fb8f28dbc48ea986c9dc81843e9a",
+    "path": "/nix/store/dj4zdkpak26qfnv4mixc0mrwc72krp04-base16-materialtheme-scheme",
+    "sha256": "0ic2wcr08s3bpz0adrqfdpzjyccy8b9lkcar55n8hd2d6iy0ba8a",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "material-vivid": {
+    "url": "https://github.com/joshyrobot/base16-material-vivid-scheme",
+    "rev": "1e8f5962f19d7b76a9f6d807868096cb41c442ea",
+    "path": "/nix/store/md1dhzh1k5nd07bvjskd4s839aypi2hx-base16-material-vivid-scheme",
+    "sha256": "10s3a50bx8m22d0zlisxnznvrcq57y9vqcbk86446q76gpf1bisk",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "mellow": {
+    "url": "https://github.com/gidsi/base16-mellow-scheme",
+    "rev": "3822819f1621a8de385bbdef5d2d9c2d6ae73212",
+    "path": "/nix/store/5kll4h8m4qbdyx1a7gaff4djymxglb38-base16-mellow-scheme",
+    "sha256": "1wl93yq0d865j78fhwl9xym1vj05yz75k3gwp0pc7ms289jaa3j6",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "mexico-light": {
+    "url": "https://github.com/drzel/base16-mexico-light-scheme",
+    "rev": "b287a29afc299d16667cf497325981068f89f749",
+    "path": "/nix/store/d5c2zd4sm6qwix6k1cx8llhvplmqlsi0-base16-mexico-light-scheme",
+    "sha256": "0qsmixipxb12lalfpxxp2ni5k3byy67gnrdr2frryny9iwglw742",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "nebula": {
+    "url": "https://github.com/Misterio77/base16-nebula-scheme",
+    "rev": "cc6010630c5a7a7ec1f5928b37da9721f7988f9a",
+    "path": "/nix/store/cc0wx1d83d72jz2aa4djhpgw47c4shyy-base16-nebula-scheme",
+    "sha256": "0b7y8j038dqhdgqvhxsix6p3miih9h426sfwdvg010fpdid3ynwy",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "nova": {
+    "url": "https://github.com/gessig/base16-nova-scheme",
+    "rev": "d0bc7162c69d61b62784e8fe5a9e60b3e6c4af3c",
+    "path": "/nix/store/5d1lm2w5m13vj83cb8warj2pr2x9f36g-base16-nova-scheme",
+    "sha256": "1pfyyni5v8m309y8s3vlz8al4jcirx40gx0wy2vbncg9557s4kdl",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "onedark": {
+    "url": "https://github.com/tilal6991/base16-onedark-scheme",
+    "rev": "2e863b1e18d5b67495506dde493d416d45caf823",
+    "path": "/nix/store/5gyf9cgmxk0j5f8i9d22ilv5kxnrls3a-base16-onedark-scheme",
+    "sha256": "17cgimrpfb27vbj0qh146j60pqanc2dc496pp67rxgjjqf8il973",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "one-light": {
+    "url": "https://github.com/purpleKarrot/base16-one-light-scheme",
+    "rev": "be2ca48d1abc87f9d9eb61f48f64891469ce9f0f",
+    "path": "/nix/store/mwmaw8axgi6y08p6ipgg6znlwcmb32kq-base16-one-light-scheme",
+    "sha256": "199zjydr082krdpidqadidddpy2j8w8qiacl427sdf2w5zv0s33v",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "outrun": {
+    "url": "https://github.com/hugodelahousse/base16-outrun-schemes",
+    "rev": "fc9a4fdc95e7775c72765848d6a9a69b0f6e9999",
+    "path": "/nix/store/0nmkf1c09k5dxjymbw2ndl3jvxzssvzd-base16-outrun-schemes",
+    "sha256": "0g1vj34fm0z9afrfrvfirmmic9bs697qhi76lx4y2b2yik376d79",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "papercolor": {
+    "url": "https://github.com/jonleopard/base16-papercolor-scheme",
+    "rev": "f4d3eb4e7168c7e90d9599492d0ce73f695c721b",
+    "path": "/nix/store/payjglxffqd01nj172wwf56h3skmn8x3-base16-papercolor-scheme",
+    "sha256": "0r09f7n75xbzb65avbamfqv25jpla79x8n0nv7wig43n39b0vlch",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "pasque": {
+    "url": "https://github.com/Misterio77/base16-pasque-scheme",
+    "rev": "41dccec87745e7e73a8feaa899803b0c3ecd12f5",
+    "path": "/nix/store/sxam2p24ks805yhhddskpm0dc0kqlpif-base16-pasque-scheme",
+    "sha256": "0fyvnb2zyil0x4vz0b58d9hr30z0vlwl60kx3jl38rfn21ax6whj",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "pinky": {
+    "url": "https://github.com/b3nj5m1n/base16-pinky-scheme",
+    "rev": "8505127aa9428b1f7d8beedf0195fc542cb9a3ed",
+    "path": "/nix/store/25sqhy410qhy0wfvly4690iszf2jxk44-base16-pinky-scheme",
+    "sha256": "1fdhljb41iqw7bk2gkbwlxns67j2ybg7bkhxf2fmp9lxxhaff9w8",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "porple": {
+    "url": "https://github.com/AuditeMarlow/base16-porple-scheme",
+    "rev": "d4dadc2a500a657b4e8e16fb9baf159e4311f3dc",
+    "path": "/nix/store/2m57vkla69n4h9vqxwfpzv2sf9ma85fl-base16-porple-scheme",
+    "sha256": "0xbmvdj8r18vkavd4rrcp82k4pgjgx688jrkdbb28wcw57b2fwar",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "purpledream": {
+    "url": "https://github.com/archmalet/base16-purpledream-scheme",
+    "rev": "5a324665fb2425bedab38cdb5b63d38d13e71d78",
+    "path": "/nix/store/yi2m2q9v01ahjf1gb919ag7yc55bvifz-base16-purpledream-scheme",
+    "sha256": "0mwz4am21gg965h2h8a4bb2chi31gcjznycga1r6mkn9hv0x74cd",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "qualia": {
+    "url": "https://github.com/isaacwhanson/base16-qualia-scheme",
+    "rev": "f07677c15add392980426634dad2619c3e9294d5",
+    "path": "/nix/store/rxc1szwnpld8sxmmzdxz2qf6n67i8gj5-base16-qualia-scheme",
+    "sha256": "0ymlalk7i02nsnpyc6b446xprj45aifigazkymylkgp2wjnnl34a",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "rebecca": {
+    "url": "https://github.com/vic/base16-rebecca",
+    "rev": "001830703bb361317585c9c97a53b25230173915",
+    "path": "/nix/store/39dkz14vm417jhfc07fw0d4115nnpkv2-base16-rebecca",
+    "sha256": "1ngkrdr4z5j8swb4z3dnkghn3q4sc5a3dhfs00g7idc4jl1n7z4i",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "rose-pine": {
+    "url": "https://github.com/edunfelt/base16-rose-pine-scheme",
+    "rev": "1d5a4baa511d6e046592311cf9c7c777a1ebc643",
+    "path": "/nix/store/pbwzmkblp5d88xa32m8hq4r7yvp71fbl-base16-rose-pine-scheme",
+    "sha256": "1690i8aaf596prwxs2xs55b6644jrlfvbn02pyy7qb5c984swk2j",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "sagelight": {
+    "url": "https://github.com/cveldy/base16-sagelight-scheme",
+    "rev": "51b88f7903ae1ce6a51851929010f9858c3ee5bd",
+    "path": "/nix/store/zjmwhq9jcqd80jx8j6b82l2gkjsl44qz-base16-sagelight-scheme",
+    "sha256": "0m8k5zic3vjil5xrsgrx0n4ib51fvjvwszbzr7nvilbhs5qa00h6",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "sakura": {
+    "url": "https://github.com/Misterio77/base16-sakura-scheme",
+    "rev": "1448240ec789bfeb9e579445854e147f09132d03",
+    "path": "/nix/store/hyxmrmgcjcr7g951p6s64k7pdfaf8bgp-base16-sakura-scheme",
+    "sha256": "0k71l3pyxnl8dlwccfyqzdfa2x5iklqbgb1fbmbljgkyjb57di4q",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "sandcastle": {
+    "url": "https://github.com/gessig/base16-sandcastle-scheme",
+    "rev": "bd11adf690714ac74d82865776e05845f2ab3481",
+    "path": "/nix/store/gv40qwllwxmnagd2ds1522gv4gsd76z7-base16-sandcastle-scheme",
+    "sha256": "182ny7wgpidhci7g01rvvaxhm00iw07sn32ibb2lgdhir1rkf977",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "shades-of-purple": {
+    "url": "https://github.com/ahmadawais/base16-shades-of-purple",
+    "rev": "5a69be274688d41eef3ec8f924d15d44d1557ea6",
+    "path": "/nix/store/x6g6l06kzbiykh4lmv4r5hk15zrwrnig-base16-shades-of-purple",
+    "sha256": "1if5a91541hcj15fmnla8k9g8bihhw009pifxpnbj3hpxnv74icq",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "silk": {
+    "url": "https://github.com/misterio77/base16-silk-scheme",
+    "rev": "4ef846a1a70e32eae8d09749b87d4db6f123ce17",
+    "path": "/nix/store/lrf3kmqfrxhzkx4bifrnqhm8xfimzip2-base16-silk-scheme",
+    "sha256": "0csvrph1lvr0zgh8s279vnz5sgixaklnk67b8gjsb0grp7xcgrib",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "snazzy": {
+    "url": "https://github.com/h404bi/base16-snazzy-scheme",
+    "rev": "6e64c88288270c9b6baf9cc7f9eb7496c39fbd0b",
+    "path": "/nix/store/lap9zbqklfkkdrw84jbif0hf51b9q27x-base16-snazzy-scheme",
+    "sha256": "1yycmls3mjh2zy61n09p3nq2ynimz9hs4gzwyrsl6543ycrmvwm3",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "solarflare": {
+    "url": "https://github.com/mnussbaum/base16-solarflare-scheme",
+    "rev": "95d85867ff6b83348def2b7221d693b2f13c8388",
+    "path": "/nix/store/k4dg8mwiglaml9zjlbx13wmp2pr5qny1-base16-solarflare-scheme",
+    "sha256": "1gx4g22qk0h1iybzpbr3k1hacid3fdmx312r1cgxavj7bs1g0z0f",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "solarized": {
+    "url": "https://github.com/aramisgithub/base16-solarized-scheme",
+    "rev": "02d992b6638cab4f96b441d3bcf7b6354ec28799",
+    "path": "/nix/store/xrypr7d6j47091ch5rpcs649cfd6cvfx-base16-solarized-scheme",
+    "sha256": "0kp95dcrxbq96cwyla04vca0cb4cnzv3v8cv9n4f0k76z0z0ygcw",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "summercamp": {
+    "url": "https://github.com/zoefiri/base16-summercamp",
+    "rev": "46415a7da548fbe411e8659ee4b2febb73b255cd",
+    "path": "/nix/store/1ryihrds6k44d5asyfjsv45j64bnnjpv-base16-summercamp",
+    "sha256": "1j78h63h4jni9q4jimi215jfdmdzb4lxg3na15rzhk0f0vs3bsch",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "summerfruit": {
+    "url": "https://github.com/cscorley/base16-summerfruit-scheme",
+    "rev": "f90e53358fd0d6ba1526bd790f26b0195b6debf7",
+    "path": "/nix/store/fpcdqgx0059mnb3bkcdxygjl61344ggy-base16-summerfruit-scheme",
+    "sha256": "0jdshmrhciq2jldpi3fvq1rsccidqh60jdv7f515l8rqdl4rciy0",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "synth-midnight": {
+    "url": "https://github.com/michael-ball/base16-synth-midnight-scheme",
+    "rev": "bbb9d8300ab33c490038752f2e235f2467f7c6d8",
+    "path": "/nix/store/8w1js6zw7q1fvr9rnhsr5cnqj3sh94lp-base16-synth-midnight-scheme",
+    "sha256": "0xs02n792vq4gwz7qw80qf74d68i3x47zgsrrf35jl9mghn1csda",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "tango": {
+    "url": "https://github.com/Schnouki/base16-tango-scheme",
+    "rev": "c341298a1203fdd376cf5a9ad9c4abcae8b194d2",
+    "path": "/nix/store/6qk8hsbmkw5wz0fy339zv0gl8fmyz7rn-base16-tango-scheme",
+    "sha256": "1p1vyp8plsmmjndhiqx7q0gxkwr7ngfg0czj9yr9azc8rjg0d31l",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "tender": {
+    "url": "https://github.com/DanManN/base16-tender-scheme",
+    "rev": "04275d828834e26e75ab187747b73badbada0d32",
+    "path": "/nix/store/bgi7vxwhdzdsbgqbg60iy9fv8p22znfv-base16-tender-scheme",
+    "sha256": "1ax2c0fgf6vj83ka9naskx02v6xbv1xdvc4g75apg2zv6fs939mj",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "tomorrow": {
+    "url": "https://github.com/chriskempson/base16-tomorrow-scheme",
+    "rev": "af9622bd6a041561837a865df5e15802d99d156a",
+    "path": "/nix/store/lgkzl8qqjgskr8zfwdmzrjg9gxf0xrhj-base16-tomorrow-scheme",
+    "sha256": "04288y9zlhisv46bd4h8q09rpw42ah3jc1rbrylgqs2i5d1z69q9",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "twilight": {
+    "url": "https://github.com/hartbit/base16-twilight-scheme",
+    "rev": "c3ea75b94fd1be21af7b222c41a96f38b31032aa",
+    "path": "/nix/store/2i428hcr4fnbk1gfizjrh4xl6h3xh2p2-base16-twilight-scheme",
+    "sha256": "00xy00d50h8fm8dkx6l2ada29njl9vkyh2m0bmrrp54ikvnpiz41",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "unikitty": {
+    "url": "https://github.com/joshwlewis/base16-unikitty",
+    "rev": "28362f3a37a0e81b04d844aa5b2923ad63140734",
+    "path": "/nix/store/q48k0cpr4m0135qzp38iv5y6zqf4cz9q-base16-unikitty",
+    "sha256": "09mg23rni68plamizmdhwq05k6w64l77m2h4sc65xjpcqaap74x5",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "vice": {
+    "url": "https://github.com/Thomashighbaugh/base16-vice-scheme",
+    "rev": "040254cd0ebf5f9ad64621b653c85e549aceadc7",
+    "path": "/nix/store/84kszhd43ikqc5w3r84cw5j1f5p364y0-base16-vice-scheme",
+    "sha256": "0hxs7wpjjkbg57vxxinxh54cgx1c1hsk5h61k498kccn4knlxf23",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "vulcan": {
+    "url": "https://github.com/andreyvpng/base16-vulcan-scheme",
+    "rev": "83c528cd48b5f03384493b0ed3de0c1c8caef40a",
+    "path": "/nix/store/0w0w33zf3f99i0ixavfnr83p9n87jjns-base16-vulcan-scheme",
+    "sha256": "1184fialkfrpvfk2ca73wvx352vhnm2vnsa71cdf999p6wg931k3",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "windows": {
+    "url": "https://github.com/C-Fergus/base16-windows-scheme",
+    "rev": "2ee677efa6373dd1cbb1652d1823a616dc4ff03a",
+    "path": "/nix/store/x6pvfqrv157cndisrjsfd17a2pm9g2qg-base16-windows-scheme",
+    "sha256": "1p2yn0n7lg4l8y3a5g5wnn10xml3cww3m2nry0czdnc4566yzcjz",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "woodland": {
+    "url": "https://github.com/jcornwall/base16-woodland-scheme",
+    "rev": "0278e12a49f4cf38ecf3026a1e35f4307e928d33",
+    "path": "/nix/store/cdhaq55ss0qbsanpaf2i8h1n17gflgkp-base16-woodland-scheme",
+    "sha256": "171l9x4varqh1q99fvabvqfdaczn862wqq675rhxhjmzqni9d1gf",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "xcode-dusk": {
+    "url": "https://github.com/gonsie/base16-xcode-dusk-scheme",
+    "rev": "921bdb002bb8f529c7a1bc8e847c73e188ed9682",
+    "path": "/nix/store/pxrxz61mdm6c85yab6pzq5v0yl1k74d1-base16-xcode-dusk-scheme",
+    "sha256": "1lypfck3wjl2j3470mm39vvsiycwkmi2572fvksd6qwk5rp7kfgg",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "zenburn": {
+    "url": "https://github.com/elnawe/base16-zenburn-scheme",
+    "rev": "e0b00a2675feed5f50ba7c07a09fc3d4ac68982d",
+    "path": "/nix/store/i1m7ri6d0mz13g6f0fmyzy3hkrgk9695-base16-zenburn-scheme",
+    "sha256": "1hnlixvq0czf1day80jzf0hs1h1wbzkjhg3s1p5aacbgk71y2gyb",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "unclaimed": {
+    "url": "https://github.com/chriskempson/base16-unclaimed-schemes",
+    "rev": "d6b93456dc1012628faec572387814f59e0b854a",
+    "path": "/nix/store/b8fc7lwxjrk9i84j4zxkh94mjmyj3j5y-base16-unclaimed-schemes",
+    "sha256": "043ny56snl4w2ri1i0zzfh00zm2gf2h5jz57kgmf5jb9xj0sspb1",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  },
+  "nord": {
+    "url": "https://github.com/spejamchr/base16-nord-scheme",
+    "rev": "6e83e1d56216762b4f250443af277a000f9d3c0b",
+    "path": "/nix/store/rwjga01yh5z9y8djksmwwxa14bakrh6g-base16-nord-scheme",
+    "sha256": "059cs61qaq6pg5lcvrbww894wnv0v4i1164vavyh0bqpy4zi41f9",
+    "fetchSubmodules": false,
+    "deepClone": false,
+    "leaveDotGit": false
+  }
+}
