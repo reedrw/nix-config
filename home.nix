@@ -27,7 +27,6 @@ let
 
     # games
     multimc
-    r2mod_cli
     steam
 
     # fonts
