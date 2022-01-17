@@ -6,7 +6,7 @@ let
 in
 {
 
-  home.packages = [ pkgs.nur.repos.reedrw.comma ];
+  home.packages = with pkgs; [ comma ];
 
   home.file.".cache/nix-index/files".source = indexCache;
 
