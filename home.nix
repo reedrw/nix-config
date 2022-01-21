@@ -26,7 +26,7 @@ let
     teams
 
     # games
-    multimc
+    polymc
     steam
 
     # fonts
