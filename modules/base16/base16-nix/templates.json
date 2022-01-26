@@ -455,8 +455,8 @@
   },
   "zathura": {
     "fetchSubmodules": false,
-    "rev": "d97b110bf6d576cd2c09e45cdf27d44f4e0af87b",
-    "sha256": "1q0x2y0dzshrghd5f5b2gzc5bd538v60b1wd2xn8gfs71vx1v6wc",
+    "rev": "9f148b4001dc67d399e645919225943d47e50125",
+    "sha256": "1rjaan757k4fwy8xgjcjnrayxfivf00s9msis5w87dgj1756hllx",
     "url": "https://github.com/nicodebo/base16-zathura"
   }
 }
