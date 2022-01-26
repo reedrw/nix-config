@@ -10,18 +10,7 @@ let
 in
 {
 
-  programs.alacritty = {
-    enable = true;
-    # This part can be removed after the next alacritty release
-    # https://github.com/alacritty/alacritty/pull/5496
-    package = pkgs.alacritty.overrideAttrs (
-      old: {
-        patches = [
-          ./5496.patch
-        ];
-      }
-    );
-  };
+  programs.alacritty.enable = true;
 
   xdg.configFile."alacritty/alacritty.yml".text = ''
     import:
