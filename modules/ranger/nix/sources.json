@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "maximtrp",
         "repo": "ranger-archives",
-        "rev": "f19bdd4190997f29bad52a5584d6490a988fbfda",
-        "sha256": "1xsfjfryv25bknc52h3jh88ci2xhkh85l3xzgfqrz72i9r3mlzgi",
+        "rev": "34ad12701b7b3ca208a60b8a3f57cfa742871f94",
+        "sha256": "1bqpqm2qb72p170f2miza4f0vlhybhhkv5wg6c5f7kb7c9ziw716",
         "type": "tarball",
-        "url": "https://github.com/maximtrp/ranger-archives/archive/f19bdd4190997f29bad52a5584d6490a988fbfda.tar.gz",
+        "url": "https://github.com/maximtrp/ranger-archives/archive/34ad12701b7b3ca208a60b8a3f57cfa742871f94.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
