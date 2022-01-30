@@ -37,8 +37,8 @@
   },
   "circus": {
     "fetchSubmodules": false,
-    "rev": "03653a54ac6e4a775bbe331733cf1269f7baf8a9",
-    "sha256": "09ishgpgqb90w4ywilx1rwvvccxpjga3bfm8y55vmxq63any118g",
+    "rev": "63b8f03274f1c2075c88bef28544876b2f690c0d",
+    "sha256": "1hx5gxbz87jbxs6xzad4mdpp7r931dmp4fnjba9c9fq65il2w2nh",
     "url": "https://github.com/stepchowfun/base16-circus-scheme"
   },
   "classic": {
