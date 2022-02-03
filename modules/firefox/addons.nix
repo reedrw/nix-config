@@ -6,13 +6,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3833987/decentraleyes-2.0.16-an+fx.xpi";
-    sha256 = "1jb5civ29jcc4j1iyp7vdz6y5i0rsmibwcbyq106mhj22ancx1zs";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3902154/decentraleyes-2.0.17-an+fx.xpi";
+    sha256 = "1wdgxlh9cpbxs3qvcr957jjzqlsmi42j70vmx9dvrclf8pf6vwg7";
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3847643/duckduckgo_privacy_essentials-2021.9.30-fx.xpi";
-    sha256 = "0vwp3d75md25ql0ccvy8pxkn0ws1zmjzx7yz8h1h01vk3jpdzb5a";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3899601/duckduckgo_privacy_essentials-2022.1.24-fx.xpi";
+    sha256 = "1jrvb7m58bi3d1rnhmscyl485aimv497l88s6vxwm575wj18zf93";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3895957/refined_github-22.1.18-an+fx.xpi";
-    sha256 = "0jrwa0cibiabm9rai5ccxja926xqxcr5jf733k7r8fzmqnw7zbmf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3903094/refined_github-22.2.1-an+fx.xpi";
+    sha256 = "0yvr93hrl5v38gnqchd8plxrqz42nykzn656ihcsb8l7alsp56yq";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
