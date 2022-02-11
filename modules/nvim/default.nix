@@ -13,7 +13,28 @@
       context_filetype-vim
       deoplete-nvim
       editorconfig-vim
-      galaxyline-nvim
+      #galaxyline-nvim
+      {
+        plugin = galaxyline-nvim;
+        type = "lua";
+        config = with config.lib.base16; ''
+          local colors = {
+            blank = '#${theme.base00-hex}',
+            bg = '#${theme.base01-hex}',
+            section_bg = '#${theme.base02-hex}',
+            gray = '#${theme.base03-hex}',
+            fg = '#${theme.base05-hex}',
+            red = '#${theme.base08-hex}',
+            orange = '#${theme.base09-hex}',
+            yellow = '#${theme.base0A-hex}',
+            green = '#${theme.base0B-hex}',
+            cyan = '#${theme.base0C-hex}',
+            blue = '#${theme.base0D-hex}',
+            magenta = '#${theme.base0E-hex}',
+            brown = '#${theme.base0F-hex}'
+          }
+        '' + builtins.readFile ./lua/galaxyline.lua;
+      }
       indent-blankline-nvim
       suda-vim
       targets-vim
@@ -54,29 +75,6 @@
       set numberwidth=5
       set cursorline
       set inccommand=nosplit
-
-      " until neovim/neovim/issues/14209 is fixed
-      set colorcolumn=99999
-
-      lua << EOF
-      local colors = {
-        blank = '#${theme.base00-hex}',
-        bg = '#${theme.base01-hex}',
-        section_bg = '#${theme.base02-hex}',
-        gray = '#${theme.base03-hex}',
-        fg = '#${theme.base05-hex}',
-        red = '#${theme.base08-hex}',
-        orange = '#${theme.base09-hex}',
-        yellow = '#${theme.base0A-hex}',
-        green = '#${theme.base0B-hex}',
-        cyan = '#${theme.base0C-hex}',
-        blue = '#${theme.base0D-hex}',
-        magenta = '#${theme.base0E-hex}',
-        brown = '#${theme.base0F-hex}'
-      }
-
-      ${builtins.readFile ./lua/galaxyline.lua}
-      EOF
 
       function! s:ModeCheck(id)
         let vmode = mode() =~# '[vV�]'
@@ -119,6 +117,8 @@
       " https://stackoverflow.com/questions/597687/how-to-quickly-change-variable-names-in-vim/597932#597932
       nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
+
+      luafile ${pkgs.writeText "generatedConfig.lua" config.programs.neovim.generatedConfigs.lua}
     '';
   };
 }

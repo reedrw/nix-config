@@ -10,8 +10,8 @@ end
 
 local gl = require('galaxyline')
 local condition = require('galaxyline.condition')
-local fileinfo = require('galaxyline.provider_fileinfo')
-local vcs = require('galaxyline.provider_vcs')
+local fileinfo = require('galaxyline.providers.fileinfo')
+local vcs = require('galaxyline.providers.vcs')
 
 local gls = gl.section
 gl.short_line_list = { {} }
