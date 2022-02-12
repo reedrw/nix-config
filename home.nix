@@ -19,6 +19,7 @@ let
     ripgrep
     virt-manager
     xclip
+    xsel
 
     # chat
     discord
