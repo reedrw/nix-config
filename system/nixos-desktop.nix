@@ -208,6 +208,8 @@ in
       passwordAuthentication = false;
       permitRootLogin = "no";
     };
+
+    ratbagd.enable = true;
   };
   # }}}
   # {{{ Networking
@@ -251,7 +253,7 @@ in
     pathsToLink = [ "/share/zsh" ];
     systemPackages = with pkgs; [
       helvum
-      solaar
+      piper
     ];
   };
 
