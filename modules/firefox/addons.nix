@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3903094/refined_github-22.2.1-an+fx.xpi";
-    sha256 = "0yvr93hrl5v38gnqchd8plxrqz42nykzn656ihcsb8l7alsp56yq";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3908195/refined_github-22.2.13-an+fx.xpi";
+    sha256 = "0q7r6a1xnvhzvw5b6f1y7yzjj4kk5z1gsc4lf0ws8ssnkjvc66q6";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3898029/sponsorblock_skip_sponsorships_on_youtube-4.0.5-an+fx.xpi";
-    sha256 = "0kcy61n6hsl7fhvj5b666an632wnrqiicqfbkdr83pkvhrwj7gv5";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3907999/sponsorblock_skip_sponsorships_on_youtube-4.1.3-an+fx.xpi";
+    sha256 = "09vm302wjyr7rjwr9fzfzvi6hijmb0n8ahjsl7a9q0gszr43i96b";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3892224/ublock_origin-1.40.8-an+fx.xpi";
-    sha256 = "1ylwzjpb59s0d45j5asvia98pvsj6pzl3arp1dpxfj59xynaha8r";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3911165/ublock_origin-1.41.6-an+fx.xpi";
+    sha256 = "19x5lkwpnl6gcfxg78mqmp3g5yifwzjib82yxiz3gk0scmsswb20";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
