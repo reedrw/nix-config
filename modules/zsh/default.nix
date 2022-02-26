@@ -152,34 +152,6 @@
             ${pkgs.xclip}/bin/xclip -o -selection clipboard
         }
 
-        contain(){
-          container_home="$HOME/.cache/container_homes/$1-home"
-
-          if command="$(readlink "$(command which "$1")")" &> /dev/null; then
-            if [[ ! -d "$container_home" ]]; then
-              mkdir -p "$container_home"
-            fi
-          else
-            if [ -f "$HOME/.cache/nix-index/files" ]; then
-              database="$HOME/.cache/nix-index"
-            else
-              >&2 echo 'No database.'
-              return 1
-            fi
-            attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$1")"
-            if [[ -z $attr ]]; then
-              >&2 echo "$1: command not found"
-              return 127
-            fi
-            attr="$(echo "$attr" | ${pkgs.fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
-            command="$(nix-build '<nixpkgs>' -A $attr --no-out-link)/bin/$1"
-            if [[ ! -d "$container_home" ]]; then
-              mkdir -p "$container_home"
-            fi
-          fi
-          firejail --noprofile --private="$container_home" "$command" ''${@:2}
-        }
-
         git(){
           case "$1" in
             ~)
