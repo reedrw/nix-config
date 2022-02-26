@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3878893/bitwarden_free_password_manager-1.55.0-an+fx.xpi";
-    sha256 = "1p9k77d0dq2krmrq3m23vrlsxwd3khhzar02g8s9xih39mn34dh2";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3910071/bitwarden_free_password_manager-1.56.6-an+fx.xpi";
+    sha256 = "0zk4196d0kld1lyzj871wny5l7zizlhvg1cmsg0b6vxdys5hm0p2";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
@@ -21,8 +21,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "matte-black-blue";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3710243/matte_black_blue-2021.1.16-an+fx.xpi";
-    sha256 = "054yf98p0vchzvrvzvmbrm1d58ri3vxs5z1fgx7js7lclydfjk9k";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3913613/matte_black_blue-2022.2.23-an+fx.xpi";
+    sha256 = "060pkffdsmvw8xhkqzga2l6ri4xcy7nd6npsprv5ni9sfcd56akq";
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3908195/refined_github-22.2.13-an+fx.xpi";
-    sha256 = "0q7r6a1xnvhzvw5b6f1y7yzjj4kk5z1gsc4lf0ws8ssnkjvc66q6";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3912729/refined_github-22.2.22-an+fx.xpi";
+    sha256 = "1w9ag2v71pa2fff12hq4naj5amsfxjrmvyvxma0mgb3alwmgpkdd";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3907999/sponsorblock_skip_sponsorships_on_youtube-4.1.3-an+fx.xpi";
-    sha256 = "09vm302wjyr7rjwr9fzfzvi6hijmb0n8ahjsl7a9q0gszr43i96b";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3913892/sponsorblock_skip_sponsorships_on_youtube-4.1.5-an+fx.xpi";
+    sha256 = "05fvyq36rxzhvdd16mqz2c2lbcrvy08q1hfqhw8rj6ymh5q81yir";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3911165/ublock_origin-1.41.6-an+fx.xpi";
-    sha256 = "19x5lkwpnl6gcfxg78mqmp3g5yifwzjib82yxiz3gk0scmsswb20";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3913320/ublock_origin-1.41.8-an+fx.xpi";
+    sha256 = "0pcg9sr1cadkxbv25jfg4kv5d3ai06wxyg4nvgynyv3a24kpaz2j";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
