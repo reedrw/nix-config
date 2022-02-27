@@ -15,8 +15,14 @@ let
     "xset r rate 250 50"
   ];
 
+  load-layouts = pkgs.writeShellApplication {
+    name = "load-layouts.sh";
+    runtimeInputs = [ pkgs.wmctrl ];
+    text = (builtins.readFile ./load-layouts.sh);
+  };
+
   run = [
-    "i3-msg workspace number 1"
+    "${load-layouts}/bin/load-layouts.sh"
   ];
 
   selecterm = pkgs.writeShellScript "select-term.sh" ''
@@ -172,4 +178,11 @@ in
     flameshot.enable = true;
   };
   home.file.".background-image".source = ./wallpaper.jpg;
+
+  xdg.configFile = {
+    "i3/workspace-1.json".source = ./workspace-1.json;
+    "i3/workspace-2.json".source = ./workspace-2.json;
+    "i3/workspace-4.json".source = ./workspace-4.json;
+  };
+
 }

@@ -1,0 +1,21 @@
+// vim:ts=4:sw=4:et
+{
+    "border": "none",
+    "current_border_width": 0,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 1044,
+       "width": 1912,
+       "x": 0,
+       "y": 0
+    },
+    "marks": [],
+    "percent": 1,
+    "swallows": [
+        {
+            "class": "^Firefox$"
+        }
+    ],
+    "type": "con"
+}
+
