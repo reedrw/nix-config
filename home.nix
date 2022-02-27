@@ -9,7 +9,6 @@ let
     bitwarden
     bitwarden-cli
     cachix
-    droidcam
     git
     github-cli
     htop
