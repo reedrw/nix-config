@@ -37,8 +37,8 @@
   },
   "circus": {
     "fetchSubmodules": false,
-    "rev": "63b8f03274f1c2075c88bef28544876b2f690c0d",
-    "sha256": "1hx5gxbz87jbxs6xzad4mdpp7r931dmp4fnjba9c9fq65il2w2nh",
+    "rev": "868cfcfe94ce1ff1d9f3b29b4fc383c4b1dea140",
+    "sha256": "09kz1pzk6xclzng8b63wzjqyy4sxgrb8899s4apzghiicwz6pxkm",
     "url": "https://github.com/stepchowfun/base16-circus-scheme"
   },
   "classic": {
@@ -103,8 +103,8 @@
   },
   "dracula": {
     "fetchSubmodules": false,
-    "rev": "04c8c0880e63ec697735b59530c2e425d618991c",
-    "sha256": "16df3ksqzhllkabr6m88vn3jhsp1cbx79kfg7hjw1zlkva1bkch0",
+    "rev": "9494b73c343dde092edb05db51f1fd238395f10a",
+    "sha256": "1wki4whq4m83i7x5c0j6plhjp7n1z9k33q0xgbnbbfdj9xivyxw8",
     "url": "https://github.com/dracula/base16-dracula-scheme"
   },
   "edge": {
