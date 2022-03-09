@@ -248,6 +248,7 @@ in
   programs = {
     adb.enable = true;
     dconf.enable = true;
+    droidcam.enable = true;
     firejail.enable = true;
     gnupg.agent = {
       enable = true;
