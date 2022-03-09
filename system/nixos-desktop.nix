@@ -241,7 +241,6 @@ in
   # }}}
   # {{{ Programs
   programs = {
-    adb.enable = true;
     dconf.enable = true;
     droidcam.enable = true;
     firejail.enable = true;
@@ -263,7 +262,6 @@ in
   users.users.reed = {
     isNormalUser = true;
     extraGroups = [
-      "adbusers"
       "audio"
       "docker"
       "libvirtd"
