@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 
+set -x
+set -e
+
 loadLayout(){
   i3-msg "workspace $1; append_layout ~/.config/i3/workspace-$1.json"
 }
 
 windowExists(){
-  wmctrl -lx | grep -q "$1"
+  if (( "$#" == 1 )); then
+    wmctrl -lx | grep -q "$1"
+  else
+    for window in "$@"; do
+      windowExists "$window"
+    done
+  fi
 }
 
 main(){
@@ -24,9 +33,10 @@ main(){
   (pavucontrol &)
   (easyeffects &)
 
-  until windowExists .blueman-manager-wrapped \
-    && windowExists Pavucontrol \
-    && windowExists easyeffects
+  until windowExists \
+    .blueman-manager-wrapped \
+    Pavucontrol \
+    easyeffects
   do
     sleep 1
   done
