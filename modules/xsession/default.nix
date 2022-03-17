@@ -56,7 +56,6 @@ let
       startrec
 
   '';
-
 in
 {
   xsession = {
@@ -83,7 +82,7 @@ in
           "${sup}+Right" = "resize grow width 5 px or 5 ppt";
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-          "${sup}+space" = "${exec} rofi -show run -lines 10 -width 40";
+          "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji";
           "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
           "${mod}+r" = "${exec} ${record}";

@@ -1,5 +1,11 @@
 { config, lib, pkgs, ... }:
-
+let
+  roficomma = pkgs.writeShellApplication {
+    name = "roficomma";
+    runtimeInputs = with pkgs; [ nix-index ];
+    text = builtins.readFile ./roficomma.sh;
+  };
+in
 {
   programs.rofi = {
     enable = true;
@@ -11,6 +17,8 @@
     );
   };
 
+  xdg.configFile = {
+    "rofi/roficomma.sh".source = "${roficomma}/bin/roficomma";
   };
 
   programs.zsh.initExtra =
