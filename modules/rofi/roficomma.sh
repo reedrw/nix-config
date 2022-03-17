@@ -31,7 +31,7 @@ else
 
   attr="$(nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$cmd")"
 
-  if [[ -z $attr ]]; then
+  if [ -z "$attr" ]; then
     rofi -e "$cmd: command not found"
     return 127
   fi
