@@ -7,14 +7,16 @@ cmd="$(rofi -show run -run-command 'echo {cmd}' "${@}" )"
 
 # Count the number of words in input,
 # if number of word > 1, get arguments
-
 # shellcheck disable=2086
 set -- $cmd
-[[ $# -gt 1 ]] \
+[ $# -gt 1 ] \
   && args="${cmd#* }" \
-  && read -ra args <<<"${args}"
+  && read -ra args <<< "${args}"
 
-cmd="$(echo "$cmd" | head -n1 | awk '{print $1;}' )"
+# Set input to array and get first item,
+# which is the command
+read -ra cmda <<< "${cmd}"
+cmd="${cmda[*]:0:1}"
 
 if [ -x "$(command -v "$cmd")" ]; then
   ("$cmd" "${args[@]}" &)
