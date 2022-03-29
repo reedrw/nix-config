@@ -131,7 +131,7 @@ in
           {
             command = "border none";
             criteria = {
-              class = "Firefox";
+              class = "firefox";
             };
           }
           {
