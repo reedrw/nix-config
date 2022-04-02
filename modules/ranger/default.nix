@@ -16,10 +16,17 @@ let
     alacritty -e ${rangercommand} $@
   '';
 
+  etouch = pkgs.writeShellScriptBin "etouch" ''
+    file="$*"
+    touch "$file"
+    [[ "''$file*: -3}" == *".sh"* ]] && chmod +x "$file"
+  '';
+
   bins = with pkgs; [
     atool
     ccat
     dragon-drop
+    etouch
     ffmpegthumbnailer
     fontforge
     imagemagick
@@ -75,7 +82,7 @@ in
     "ranger/rc.conf".text = ''
       map D shell dragon -a -x %p
       map S q
-      map e console touch%space
+      map e console shell etouch%space
       map xc compress
       map xx extract
       set preview_images true
