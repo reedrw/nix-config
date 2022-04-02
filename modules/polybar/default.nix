@@ -34,13 +34,13 @@
             ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
           '';
         in
-        {
-          type = "internal/date";
-          date = "%I:%M %p    %a %b %d";
-          label = "%{A1:${calnotify}:}%date%%{A}";
-          format = "<label>";
-          label-padding = 5;
-        };
+      {
+        type = "internal/date";
+        date = "%I:%M %p    %a %b %d";
+        label = "%{A1:${calnotify}:}%date%%{A}";
+        format = "<label>";
+        label-padding = 5;
+      };
       "module/i3" = {
         type = "internal/i3";
         label-unfocused-foreground = "#${base03-hex}";
