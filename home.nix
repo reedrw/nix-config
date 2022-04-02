@@ -28,7 +28,11 @@ let
 
     # games
     polymc
-    steam
+    (
+      steamPackages.steam-fhsenv.override {
+        extraPkgs = pkgs: [ mangohud ];
+      }
+    )
 
     # fonts
     nur.repos.reedrw.artwiz-lemon
