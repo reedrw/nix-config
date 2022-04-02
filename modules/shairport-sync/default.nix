@@ -1,5 +1,11 @@
 { config, lib, pkgs, ... }:
-
+let
+  shairport-sync = pkgs.shairport-sync.overrideAttrs (
+    old: {
+      configureFlags = old.configureFlags ++ [ "--with-metadata" ];
+    }
+  );
+in
 {
   systemd.user.services.shairport-sync = {
     Unit = {
@@ -11,7 +17,7 @@
     };
     Service = {
       Environment = "PATH=${config.home.profileDirectory}/bin";
-      ExecStart = "${pkgs.shairport-sync}/bin/shairport-sync -v -o pa";
+      ExecStart = "${shairport-sync}/bin/shairport-sync -v -o pa";
       ExecStop = "${pkgs.procps}/bin/pkill shairport-sync";
       Type = "simple";
     };
