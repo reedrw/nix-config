@@ -19,6 +19,7 @@ in
       Environment = "PATH=${config.home.profileDirectory}/bin";
       ExecStart = "${shairport-sync}/bin/shairport-sync -v -o pa";
       ExecStop = "${pkgs.procps}/bin/pkill shairport-sync";
+      Restart= "on-failure";
       Type = "simple";
     };
   };
