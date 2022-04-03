@@ -33,7 +33,6 @@ in
     # Include the results of the hardware scan.
     hardware-configuration
     "${sources.nixos-hardware}/lenovo/thinkpad/t480"
-    "${sources.agenix}/modules/age.nix"
   ];
   # }}}
   # {{{ Nix and nixpkgs
@@ -204,25 +203,6 @@ in
 
     blueman.enable = true;
 
-    mopidy = {
-      enable = true;
-      extensionPackages = with pkgs; [
-        mopidy-mpd
-        mopidy-spotify
-      ];
-      configuration = ''
-        [core]
-        restore_state = true
-
-        [audio]
-        output = pulsesink server=127.0.0.1:4713
-
-        [mpd]
-        enabled = true
-      '';
-      extraConfigFiles = [ config.age.secrets.spotify.path ];
-    };
-
     openssh = {
       enable = true;
       passwordAuthentication = false;
@@ -260,7 +240,6 @@ in
     systemPackages = with pkgs; [
       acpi
       solaar
-      (import sources.agenix {}).agenix
     ];
   };
   # }}}
@@ -276,14 +255,6 @@ in
       "wheel"
     ];
     shell = pkgs.zsh;
-  };
-  # }}}
-  # {{{ Secrets
-  age.secrets = {
-    spotify = {
-      file = ./secrets/spotify.age;
-      owner = "mopidy";
-    };
   };
   # }}}
   # {{{
