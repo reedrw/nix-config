@@ -6,6 +6,7 @@ let
     set -g mouse on
     set -g default-terminal 'tmux-256color'
     set -ga terminal-overrides ',alacritty:RGB'
+    set -s escape-time 0
   '';
 in
 {
