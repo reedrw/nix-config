@@ -35,8 +35,7 @@
         (mkZshPlugin { pkg = zsh-autosuggestions; })
         (mkZshPlugin {
           pkg = zsh-fzf-tab;
-          file = "fzf-tab.plugin.zsh";
-        })
+          file = "fzf-tab.plugin.zsh"; })
         (mkZshPlugin { pkg = zsh-syntax-highlighting; })
       ];
       autocd = true;

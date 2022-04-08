@@ -5,9 +5,7 @@ let
   packages = with pkgs; [
 
     # utilities
-    anki
     bitwarden
-    bitwarden-cli
     cachix
     git
     github-cli
@@ -16,15 +14,12 @@ let
     ngrok
     pavucontrol
     ripgrep
-    virt-manager
     xclip
     xsel
 
     # chat
     discord
-    element-desktop
     tdesktop
-    teams
 
     # games
     polymc
@@ -34,12 +29,9 @@ let
       }
     )
 
-    # fonts
-    nur.repos.reedrw.artwiz-lemon
-    scientifica
-
   ];
 
+  # `pai` anywhere to update computer
   globalAliases = {
     hms = "home-manager switch";
     ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";

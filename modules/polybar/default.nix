@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
+  home.packages = [ pkgs.nur.repos.reedrw.artwiz-lemon ]; # font
   services.polybar = {
     enable = true;
     package = pkgs.polybarFull;

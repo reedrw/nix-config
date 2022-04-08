@@ -11,8 +11,9 @@ let
 in
 {
 
-  programs.alacritty.enable = true;
+  home.packages = [ pkgs.scientifica ]; # font
 
+  programs.alacritty.enable = true;
   xdg.configFile."alacritty/alacritty.yml".text = ''
     import:
       - ${config.lib.base16.templateFile { name = "alacritty"; } }
@@ -53,5 +54,4 @@ in
         - -f
         - ${tmuxconf}
   '';
-
 }
