@@ -25,7 +25,7 @@ let
   bins = with pkgs; [
     atool
     ccat
-    dragon-drop
+    xdragon
     etouch
     ffmpegthumbnailer
     fontforge
