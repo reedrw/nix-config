@@ -91,6 +91,12 @@
       set updatetime=1000
       set shiftwidth=2
       set tabstop=8
+
+      " Yank to system clipboard
+      if has('clipboard')
+        set clipboard=unnamedplus
+      end
+
       set expandtab
       set mouse=a
       set noshowmode
@@ -101,8 +107,6 @@
       " https://stackoverflow.com/questions/1327978/sorting-words-not-lines-in-vim/1328421#1328421
       " sort words in line with SortLine
       command -nargs=0 -range SortLine <line1>,<line2>call setline('.',join(sort(split(getline('.'),' ')),' '))
-      vnoremap <C-c> "+y
-      vnoremap <C-x> "+d
 
       " command mode completion navigation
       cnoremap <Up> <C-p>
