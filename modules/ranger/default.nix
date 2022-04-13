@@ -103,6 +103,7 @@ in
       ext jpg, flag f = mpv -- "$@"
       ext jpeg, flag f = mpv -- "$@"
       ext mkv, flag f = mpv -- "$@"
+      ext mov, flag f = mpv -- "$@"
       ext mp4, flag f = mpv -- "$@"
       ext pdf, flag f = zathura -- "$@"
       ext webm, flag f = mpv -- "$@"
