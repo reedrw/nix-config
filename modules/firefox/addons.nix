@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3899601/duckduckgo_privacy_essentials-2022.1.24-fx.xpi";
-    sha256 = "1jrvb7m58bi3d1rnhmscyl485aimv497l88s6vxwm575wj18zf93";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3929453/duckduckgo_privacy_essentials-2022.3.30-fx.xpi";
+    sha256 = "0hn1mmgcfjs4yja1rm39ksvjg5skf6jsjpg22k0nc92q5rgh02dq";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3930506/refined_github-22.4.1-an+fx.xpi";
-    sha256 = "1i81jjqyp1bwx5c78sy86kn8j8fbw6fanfmm1banw9pxs06bnfxw";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3934975/refined_github-22.4.11-an+fx.xpi";
+    sha256 = "1b1qjclbj5fmc6azr6fvnbrqydzzan1s5pr26vsd2cza4yan9jdc";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3929378/ublock_origin-1.42.0-an+fx.xpi";
-    sha256 = "01lvnwp570c283bb86kk946kxbb6246zqgcsvfy75d2rv380vq50";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3933192/ublock_origin-1.42.4-an+fx.xpi";
+    sha256 = "1kirlfp5x10rdkgzpj6drbpllryqs241fm8ivm0cns8jjrf36g5w";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
