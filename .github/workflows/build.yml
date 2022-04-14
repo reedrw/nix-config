@@ -70,28 +70,28 @@ jobs:
         export NIXPKGS_ALLOW_UNFREE=1
         nix-build ci.nix -A ${{ matrix.output }}
 
-    - name: Calculate diff between closures
-      if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' }}
-      run: |
-        nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
-        git checkout "$(git rev-parse @~)"
-        nix-build ./ci.nix -A ${{ matrix.output }} -o result-old
-        echo "diff_closure<<EOF" >> $GITHUB_ENV
-        # TODO remove pipe to sed when NixOS/nix#4626 is fixed
-        nix run nixpkgs.nixUnstable -c nix store --experimental-features 'nix-command' diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-
-    - name: Post diff to PR comment
-      if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' && env.diff_closure != '' }}
-      uses: phulsechinmay/rewritable-pr-comment@v0.3.0
-      with:
-        message: |
-          ### Closure diff for `${{ matrix.output }}`
-          ```
-          ${{ env.diff_closure }}
-          ```
-        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        COMMENT_IDENTIFIER: closure-diff-${{ matrix.output }}
+    # - name: Calculate diff between closures
+    #   if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' }}
+    #   run: |
+    #     nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
+    #     git checkout "$(git rev-parse @~)"
+    #     nix-build ./ci.nix -A ${{ matrix.output }} -o result-old
+    #     echo "diff_closure<<EOF" >> $GITHUB_ENV
+    #     # TODO remove pipe to sed when NixOS/nix#4626 is fixed
+    #     nix run nixpkgs.nixUnstable -c nix store --experimental-features 'nix-command' diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
+    #     echo "EOF" >> $GITHUB_ENV
+    #
+    # - name: Post diff to PR comment
+    #   if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' && env.diff_closure != '' }}
+    #   uses: phulsechinmay/rewritable-pr-comment@v0.3.0
+    #   with:
+    #     message: |
+    #       ### Closure diff for `${{ matrix.output }}`
+    #       ```
+    #       ${{ env.diff_closure }}
+    #       ```
+    #     GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+    #     COMMENT_IDENTIFIER: closure-diff-${{ matrix.output }}
 
   shell:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
