@@ -24,8 +24,20 @@ main(){
     prConclusion="$(curl -s "$mainUrl/commits/$prRef/check-suites" | jq -r '.check_suites[] | select(.app.slug == "github-actions") | .conclusion')"
 
     if [[ $prConclusion == "success" ]]; then
-      gh pr merge "$prNumber" -dm
-      merged="true"
+      gh pr view "$prNumber" --comments
+      read -rp "Merge and install PR? (Y/n) " yn
+      case $yn in
+        [nN] )
+          exit 2;;
+        [yY] )
+          gh pr merge "$prNumber" -dm
+          merged="true"
+          break;;
+        * )
+          gh pr merge "$prNumber" -dm
+          merged="true"
+          break;;
+      esac
     fi
 
   done

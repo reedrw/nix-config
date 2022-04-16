@@ -37,8 +37,6 @@ if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
   echo "Installing pinned nixpkgs..."
   sudo nix-channel --add "$nixpkgsURL" nixos
   sudo nix-channel --update
-  echo "Updating search cache..."
-  nix search -u > /dev/null
 fi
 
 system(){
