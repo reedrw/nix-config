@@ -7,6 +7,7 @@ let
     set -g default-terminal 'tmux-256color'
     set -ga terminal-overrides ',alacritty:RGB'
     set -s escape-time 0
+    set -g history-limit 10000
   '';
 in
 {
