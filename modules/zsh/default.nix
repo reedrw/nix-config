@@ -182,7 +182,7 @@
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
         ln = "ln -v";
-        ls = "${pkgs.exa}/bin/exa -lh --git";
+        ls = "${pkgs.exa}/bin/exa -lh --git -s type";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
