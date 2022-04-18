@@ -26,63 +26,20 @@ let
 
 in
 {
-  # {{{ Imports
-  imports = [
-    # Use cachix
-    cachix
-    # Include the results of the hardware scan.
-    hardware-configuration
-    "${sources.nixos-hardware}/lenovo/thinkpad/t480"
-  ];
-  # }}}
-  # {{{ Nix and nixpkgs
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowBroken = true;
-    packageOverrides = pkgs: {
-      nur = import sources.NUR {
-        inherit pkgs;
-      };
-    };
-  };
 
-  nix = {
-    autoOptimiseStore = true;
-    extraOptions = ''
-      keep-outputs = true
-      keep-derivations = true
-      experimental-features = nix-command flakes
-    '';
-    trustedUsers = [ "root" "@wheel" ];
-  };
-  # }}}
-  # {{{ Boot settings
-  # Use the systemd-boot EFI boot loader.
-  boot = {
-    kernelPackages = pkgs.linuxPackages_lqx;
-    supportedFilesystems = [ "ntfs" ];
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
-  # }}}
-  # {{{ Time and locale
+  imports = [
+    ./boot/efi.nix
+    ./users/reed.nix
+    "${sources.nixos-hardware}/lenovo/thinkpad/t480"
+  ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
+
+  boot.kernelPackages = pkgs.linuxPackages_lqx;
+
+  networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
-  # }}}
-  # {{{ Sound and hardware
+
   hardware = {
-    logitech = {
-      wireless = {
-        enable = true;
-        enableGraphical = true;
-      };
-    };
     opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
-      extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
       extraPackages = with pkgs; [
         intel-media-driver
         vaapiIntel
@@ -96,27 +53,9 @@ in
       speed = 255;
     };
     acpilight.enable = true;
-    bluetooth.enable = true;
   };
 
-  security.rtkit.enable = true;
-
-  services.pipewire = {
-    enable = true;
-    alsa = {
-      enable = true;
-      support32Bit = true;
-    };
-
-    pulse.enable = true;
-    config.pipewire-pulse = builtins.fromJSON (builtins.readFile ./pipewire-pulse.conf.json);
-    jack.enable = true;
-  };
-
-  # }}}
-  # {{{ X server
   services.xserver = {
-    enable = true;
     libinput = {
       enable = true;
       mouse = {
@@ -124,147 +63,20 @@ in
         accelSpeed = "10";
       };
     };
-    displayManager = {
-      autoLogin = {
-        enable = true;
-        user = "reed";
-      };
-      lightdm = {
-        enable = true;
-        greeter.enable = false;
-      };
-      session = [
-        {
-          manage = "desktop";
-          name = "xsession";
-          start = ''exec $HOME/.xsession'';
-        }
-      ];
-    };
   };
-  # }}}
-  # {{{ Fonts
-  fonts = {
-    fonts = with pkgs; [
-      carlito
-      corefonts
-      dejavu_fonts
-      ipafont
-      kochi-substitute
-      noto-fonts-emoji
-      open-sans
-      source-code-pro
-      ttf_bitstream_vera
-    ];
-    enableDefaultFonts = true;
-    fontconfig = {
-      enable = true;
-      defaultFonts = {
-        monospace = [
-          "Bitstream Vera Sans Mono"
-          "DejaVu Sans Mono"
-          "IPAGothic"
-        ];
-        sansSerif = [
-          "Bitstream Vera Sans"
-          "DejaVu Sans Serif"
-          "IPAPGothic"
-        ];
-        serif = [
-          "Bitstream Vera Serif"
-          "DejaVu Serif"
-          "IPAPMincho"
-        ];
-      };
-    };
-  };
-  # }}}
-  # {{{ Services
-  services = {
-    autossh.sessions = [
-      {
-        extraArguments = ''
-          -o ServerAliveInterval=30 \
-          -N -T -R 5555:localhost:22 142.4.208.215
-        '';
-        name = "ssh-port-forward";
-        user = "reed";
-      }
-    ];
-    avahi = {
-      enable = true;
-      nssmdns = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        userServices = true;
-      };
-    };
 
-    blueman.enable = true;
+  services.autossh.sessions = [{
+    extraArguments = ''
+      -o ServerAliveInterval=30 \
+      -N -T -R 5555:localhost:22 142.4.208.215
+    '';
+    name = "ssh-port-forward";
+    user = "reed";
+  }];
 
-    openssh = {
-      enable = true;
-      passwordAuthentication = false;
-      permitRootLogin = "no";
-    };
-  };
-  # }}}
-  # {{{ Networking
-  networking = {
-    networkmanager.enable = true;
-    hostName = "nixos-t480";
-    firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
-    firewall.allowedTCPPorts = [ 5000 2049 ];
-  };
-  # }}}
-  # {{{ Virtualization
-  virtualisation = {
-    docker.enable = true;
-    libvirtd.enable = true;
-  };
-  # }}}
-  # {{{ Programs
-  programs = {
-    dconf.enable = true;
-    droidcam.enable = true;
-    firejail.enable = true;
-    gnupg.agent = {
-      enable = true;
-      pinentryFlavor = "tty";
-    };
-    noisetorch.enable = true;
-  };
-  environment = {
-    pathsToLink = [ "/share/zsh" ];
-    systemPackages = with pkgs; [
-      acpi
-      solaar
-    ];
-  };
-  # }}}
-  # {{{ Users
-  users.users.reed = {
-    isNormalUser = true;
-    extraGroups = [
-      "audio"
-      "docker"
-      "libvirtd"
-      "networkmanager"
-      "video"
-      "wheel"
-    ];
-    shell = pkgs.zsh;
-  };
-  # }}}
-  # {{{
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.05"; # Did you read the comment?
-  # }}}
+  programs.droidcam.enable = true;
 
+  environment.systemPackages = with pkgs; [ acpi ];
+
+  system.stateVersion = "21.05";
 }
