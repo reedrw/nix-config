@@ -23,11 +23,6 @@ let
 
     # games
     polymc
-    (
-      steamPackages.steam-fhsenv.override {
-        extraPkgs = pkgs: [ mangohud ];
-      }
-    )
 
   ];
 

@@ -151,6 +151,7 @@ in
     enableDefaultFonts = true;
     fontconfig = {
       enable = true;
+      cache32Bit = true;
       defaultFonts = {
         monospace = [
           "Bitstream Vera Sans Mono"
@@ -248,6 +249,7 @@ in
       enable = true;
       pinentryFlavor = "tty";
     };
+    steam.enable = true;
   };
   environment = {
     pathsToLink = [ "/share/zsh" ];
