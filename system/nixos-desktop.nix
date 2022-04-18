@@ -244,7 +244,6 @@ in
   programs = {
     dconf.enable = true;
     droidcam.enable = true;
-    firejail.enable = true;
     gnupg.agent = {
       enable = true;
       pinentryFlavor = "tty";
