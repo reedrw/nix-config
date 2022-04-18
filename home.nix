@@ -38,14 +38,14 @@ let
     pai = "~/.config/nixpkgs/pull-and-install.sh";
   };
 
-  aliasToPackage = alias:
-    (lib.mapAttrsToList
-      (name: value: pkgs.writeShellScriptBin name value)
-      alias
-    )
-  ;
-
-  aliasPackages = aliasToPackage globalAliases;
+  aliasPackages = let
+    aliasToPackage = alias:
+      (lib.mapAttrsToList
+        (name: value: pkgs.writeShellScriptBin name value)
+        alias
+      )
+    ;
+  in aliasToPackage globalAliases;
 
 in
 {
