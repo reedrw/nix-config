@@ -23,6 +23,18 @@
         "url": "https://github.com/nix-community/home-manager/archive/5ac84ebeef5d2566ea458b81375cc6eafa19c225.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "nix-alien": {
+        "branch": "master",
+        "description": "Run unpatched binaries on Nix/NixOS",
+        "homepage": "",
+        "owner": "thiagokokada",
+        "repo": "nix-alien",
+        "rev": "2820f11c5a3e0ccae4fa705cc9898084ec1f523c",
+        "sha256": "141da8c4zqp52imwyffs0hnx1b71qfic8nah6djqdh154693fw7z",
+        "type": "tarball",
+        "url": "https://github.com/thiagokokada/nix-alien/archive/2820f11c5a3e0ccae4fa705cc9898084ec1f523c.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nixos-hardware": {
         "branch": "master",
         "description": "A collection of NixOS modules covering hardware quirks.",

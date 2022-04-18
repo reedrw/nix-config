@@ -16,6 +16,7 @@ let
     ripgrep
     xclip
     xsel
+    (import sources.nix-alien {}).nix-alien
 
     # chat
     discord

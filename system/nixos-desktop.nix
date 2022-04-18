@@ -248,6 +248,7 @@ in
       enable = true;
       pinentryFlavor = "tty";
     };
+    nix-ld.enable = true;
     steam.enable = true;
   };
   environment = {
