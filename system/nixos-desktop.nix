@@ -7,7 +7,6 @@ let
   sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
 in
 {
-
   imports = [
     ./boot/efi.nix
     ./users/reed.nix
@@ -47,5 +46,4 @@ in
   };
 
   system.stateVersion = "20.03";
-
 }

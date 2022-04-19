@@ -5,28 +5,8 @@
 { config, pkgs, ... }:
 let
   sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
-  # {{{ Import cachix and hardware-configuration if they exist (for Github Actions)
-  # dummy files for ci to work
-  dummy = builtins.toFile "dummy.nix" "{}";
-  dummy-hw = builtins.toFile "dummy.nix" ''
-    {
-      fileSystems."/".device = "/dev/sda1";
-      fileSystems."/".fsType = "ext4";
-    }
-  '';
-
-  cachix =
-    if builtins.pathExists /etc/nixos/cachix.nix
-    then import /etc/nixos/cachix.nix else import dummy;
-
-  hardware-configuration =
-    if builtins.pathExists /etc/nixos/hardware-configuration.nix
-    then import /etc/nixos/hardware-configuration.nix else import dummy-hw;
-  # }}}
-
 in
 {
-
   imports = [
     ./boot/efi.nix
     ./users/reed.nix
