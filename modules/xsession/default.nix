@@ -25,16 +25,11 @@ let
     "${load-layouts}/bin/load-layouts.sh"
   ];
 
-  selecterm = pkgs.writeShellScript "select-term.sh" ''
-    read -r X Y W H < <(${pkgs.slop}/bin/slop -f "%x %y %w %h" -b 1 -t 0 -q)
-    # Width and Height in px need to be converted to columns/rows
-    # To get these magic values, make a fullscreen st, and divide your screen width by ''${tput cols}, height by ''${tput lines}
-    (( W /= 5 ))
-    (( H /= 11 ))
-    # Arithmetic operations to correct for border
-    ${term} -t float -o window.dimensions.columns=$((''${W}-5)) window.dimensions.lines=$((''${H}-3)) window.position.x=''${X} window.position.y=''${Y} &
-    disown
-  '';
+  selecterm = pkgs.writeShellApplication {
+    name = "select-term.sh";
+    runtimeInputs = [ pkgs.slop ];
+    text = (builtins.readFile ./select-term.sh);
+  };
 
   record = pkgs.writeShellScript "record.sh" ''
     startrec(){
@@ -75,7 +70,7 @@ in
         keybindings = lib.mkOptionDefault {
           "Print" = "${exec} flameshot gui";
           "${mod}+Return" = "${exec} ${term}";
-          "${sup}+Return" = "${exec} ${selecterm}";
+          "${sup}+Return" = "${exec} ${selecterm}/bin/select-term.sh";
           "${mod}+d" = "focus child";
           "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
