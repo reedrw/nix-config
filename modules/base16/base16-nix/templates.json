@@ -431,8 +431,8 @@
   },
   "xcode": {
     "fetchSubmodules": false,
-    "rev": "b45d22997e28449fece26f66b40d414637d7b4be",
-    "sha256": "1b0ihzmc4m4brkd6l92g379w11zrssc2shwgsvgf4502v0836w9r",
+    "rev": "cea39392e45deed6073ea288bb216b66153f9b4a",
+    "sha256": "0aypnrlz0b5znnmgylyjq95xfv7lz9binjpqjj7611dc1w1q9h0i",
     "url": "https://github.com/kreeger/base16-xcode"
   },
   "xfce4-terminal": {
