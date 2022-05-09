@@ -54,7 +54,10 @@ in
     user = "reed";
   }];
 
-  programs.droidcam.enable = true;
+  programs = {
+    droidcam.enable = true;
+    steam.enable = true;
+  };
 
   environment.systemPackages = with pkgs; [ acpi ];
 
