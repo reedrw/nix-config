@@ -73,8 +73,8 @@
   },
   "emacs": {
     "fetchSubmodules": false,
-    "rev": "ad2fd1137d6ec144f87b26dce15ce5c5d42bde39",
-    "sha256": "009k9j7bi7x8pmp5d12bdzng3ampqwy8l1jf1dxxf9989wv27hrc",
+    "rev": "43f3257aaf53e9c50f5db11b81fd66ec41ab2883",
+    "sha256": "07k73bgjb6ixfgbiwf8zswf6n0kb3bf1ka1pcv88h3a9hhndvgv5",
     "url": "https://github.com/belak/base16-emacs"
   },
   "everything": {
@@ -431,8 +431,8 @@
   },
   "xcode": {
     "fetchSubmodules": false,
-    "rev": "cea39392e45deed6073ea288bb216b66153f9b4a",
-    "sha256": "0aypnrlz0b5znnmgylyjq95xfv7lz9binjpqjj7611dc1w1q9h0i",
+    "rev": "b45d22997e28449fece26f66b40d414637d7b4be",
+    "sha256": "1b0ihzmc4m4brkd6l92g379w11zrssc2shwgsvgf4502v0836w9r",
     "url": "https://github.com/kreeger/base16-xcode"
   },
   "xfce4-terminal": {
