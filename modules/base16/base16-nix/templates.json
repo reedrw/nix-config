@@ -61,8 +61,8 @@
   },
   "dunst": {
     "fetchSubmodules": false,
-    "rev": "5b70a3c0177a0ad8531bb0a027f57cffd4697ec9",
-    "sha256": "0v453dlywf0xbdssvnxq66c6pah6d6n4biyrx4b6v2d4552n9lzh",
+    "rev": "0742b410274aebf069ff107dcc58ed48fb425d08",
+    "sha256": "006id9mvxsipx6jhvys0ry1jix37ffx0hgf2ah4hgpyvaizablwc",
     "url": "https://github.com/khamer/base16-dunst"
   },
   "dwm": {
