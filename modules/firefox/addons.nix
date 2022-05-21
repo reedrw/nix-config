@@ -1,27 +1,27 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3940986/bitwarden_free_password_manager-1.58.0-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3940986/bitwarden_password_manager-1.58.0.xpi";
     sha256 = "062v695pmy1nvhav13750dqav69mw6i9yfdfspkxz9lv4j21fram";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3902154/decentraleyes-2.0.17-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3902154/decentraleyes-2.0.17.xpi";
     sha256 = "1wdgxlh9cpbxs3qvcr957jjzqlsmi42j70vmx9dvrclf8pf6vwg7";
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3941249/duckduckgo_privacy_essentials-2022.4.26-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3941249/duckduckgo_for_firefox-2022.4.26.xpi";
     sha256 = "0yhvzqk61ci8sdvcbj2vnkaykqak0df0lxs0qq6hggmxwqz6ij68";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3059971/image_search_options-3.0.12-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3059971/image_search_options-3.0.12.xpi";
     sha256 = "0s6hdy6cbcipjqljqhzbrzni1c527gm5ia822ghinay3gxcxig8z";
   })
   (pkgs.fetchFirefoxAddon {
     name = "matte-black-blue";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3913613/matte_black_blue-2022.2.23-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3913613/matte_black_blue-2022.2.23.xpi";
     sha256 = "060pkffdsmvw8xhkqzga2l6ri4xcy7nd6npsprv5ni9sfcd56akq";
   })
   (pkgs.fetchFirefoxAddon {
@@ -36,7 +36,7 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "popup-window";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3609741/popup_window-0.1.0-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3609741/popup_window-0.1.0.xpi";
     sha256 = "0pm3vgk38zli72nxidgzac6i3rld9svzdl2v0zvgxgls1i0zhyk7";
   })
   (pkgs.fetchFirefoxAddon {
@@ -46,7 +46,7 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "proxy-toggle";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3405365/proxy_toggle-1.2.1-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3405365/proxy_toggle-1.2.1.xpi";
     sha256 = "0lpa2ch3nc4ncyf5dw1lkwkv6i51v1f9vlriz41wbjryy1kjazs6";
   })
   (pkgs.fetchFirefoxAddon {
@@ -56,27 +56,27 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3945665/sponsorblock_skip_sponsorships_on_youtube-4.3.3-an+fx.xpi";
-    sha256 = "0p4y21zpvdv7s5wn9jkvsdwnwl5myf5k903289rbsqjyd3izhcnf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3951009/sponsorblock-4.4.1.xpi";
+    sha256 = "0skxk97xgm2f1wplzz8xrnj0zrmlxjn24873arq2ndf48dvsqy09";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3828033/stylus-1.5.21-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3828033/styl_us-1.5.21.xpi";
     sha256 = "0kk3c6v2xl712n6hdicibl2bpiqrwlwmhw70br0klja8hxyhlcyb";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3918030/torrent_control-0.2.26-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3918030/torrent_control-0.2.26.xpi";
     sha256 = "1sl8yh66vvv62jbnypv3fs0ca2cv4b7m3z3wm3jcf7x06bp9hx0r";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ttv-lol";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3764747/ttv_lol-0.0.0.5-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3764747/ttv_lol-0.0.0.5.xpi";
     sha256 = "1y2fklck6qlcq3islwgg254hff93524msxvxmncsgkjydz4wbrrn";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3933192/ublock_origin-1.42.4-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3933192/ublock_origin-1.42.4.xpi";
     sha256 = "1kirlfp5x10rdkgzpj6drbpllryqs241fm8ivm0cns8jjrf36g5w";
   })
   (pkgs.fetchFirefoxAddon {
