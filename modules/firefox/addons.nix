@@ -26,12 +26,12 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "old-reddit-redirect";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3864522/old_reddit_redirect-1.6.0-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3864522/old_reddit_redirect-1.6.0.xpi";
     sha256 = "1hj8zqp2lis8lp22hd4nxr0kg0d0bdj5mf8ssw17iv9g7pqj052r";
   })
   (pkgs.fetchFirefoxAddon {
     name = "pay-by-privacy-com";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3596835/pay_by_privacycom-1.6.3-fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3596835/pay_by_privacy_com-1.6.3.xpi";
     sha256 = "0kbixzkm40iqhy4i6npnmsks5nmna08cmx6chx3561brkgr7nk6h";
   })
   (pkgs.fetchFirefoxAddon {
@@ -41,7 +41,7 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "privacy-badger17";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3872283/privacy_badger-2021.11.23.1-an+fx.xpi";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3872283/privacy_badger17-2021.11.23.1.xpi";
     sha256 = "0gpnwxd2k3r4dpnnyfd72k7a7xhrs3rjwgdmqkkx0fs1h394q9sh";
   })
   (pkgs.fetchFirefoxAddon {
@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3939373/refined_github-22.4.21-an+fx.xpi";
-    sha256 = "15h87dyw1l1pwn4dhhd29lgywrvgwyh3h4pmf199j4sy2c3ksb6b";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3952576/refined_github-22.5.22.xpi";
+    sha256 = "08p6ybz7j2sgbcf265zf4k5ljk7ppiqx48s07xzqd0pzhviqkmnk";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3951009/sponsorblock-4.4.1.xpi";
-    sha256 = "0skxk97xgm2f1wplzz8xrnj0zrmlxjn24873arq2ndf48dvsqy09";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3951917/sponsorblock-4.4.2.xpi";
+    sha256 = "1adr8fr32hcakh90iz7zq4jp919znh6pganaidink6ija8ggrwha";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
