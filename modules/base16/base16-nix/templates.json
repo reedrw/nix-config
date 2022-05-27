@@ -73,8 +73,8 @@
   },
   "emacs": {
     "fetchSubmodules": false,
-    "rev": "43f3257aaf53e9c50f5db11b81fd66ec41ab2883",
-    "sha256": "07k73bgjb6ixfgbiwf8zswf6n0kb3bf1ka1pcv88h3a9hhndvgv5",
+    "rev": "26b84fc93505219517a512eb01e6370365174989",
+    "sha256": "0qp71j77zg8gippcn277s0j5a9n6dbwv3kdp2nya6li4b412vgba",
     "url": "https://github.com/belak/base16-emacs"
   },
   "everything": {
