@@ -61,8 +61,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3828033/styl_us-1.5.21.xpi";
-    sha256 = "0kk3c6v2xl712n6hdicibl2bpiqrwlwmhw70br0klja8hxyhlcyb";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3955677/styl_us-1.5.24.xpi";
+    sha256 = "0b1w75256mbhf66mfvchqz2d8lhn7mwfqzqkairrapmv60qbvd3g";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
