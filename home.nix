@@ -29,6 +29,7 @@ let
 
   # `pai` anywhere to update computer
   globalAliases = {
+    gc = "nix-collect-garbage";
     hms = "home-manager switch";
     ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
     pai = "~/.config/nixpkgs/pull-and-install.sh";
