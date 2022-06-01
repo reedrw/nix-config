@@ -39,6 +39,8 @@ in
     user = "reed";
   }];
 
+  services.gnome.gnome-keyring.enable = true;
+
   programs = {
     droidcam.enable = true;
     nix-ld.enable = true;
