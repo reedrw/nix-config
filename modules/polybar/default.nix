@@ -10,7 +10,7 @@
         background = "#${base00-hex}";
         foreground = "#${base05-hex}";
         modules-left = "i3";
-        modules-center = "airplay";
+        modules-center = "mpris";
         modules-right = "battery date";
         border-left-size = 1;
         border-left-color = "#${base00-hex}";
@@ -50,24 +50,11 @@
         label-focused-padding = 1;
         label-urgent-padding = 1;
       };
-      "module/airplay" =
-        let
-          getmetadata = pkgs.writeShellApplication {
-            name = "get-airplay-metadata.sh";
-            runtimeInputs = with pkgs; [
-              coreutils-full
-              gawk
-              gnugrep
-              nur.repos.reedrw.shairport-sync-metadata-reader
-              pipewire
-            ];
-            text = (builtins.readFile ./get-airplay-metadata.sh);
-          };
-        in
-      {
+      "module/mpris" = {
         type = "custom/script";
-        exec = "${getmetadata}/bin/get-airplay-metadata.sh";
-        interval = 1;
+        exec = "${pkgs.playerctl}/bin/playerctl metadata -F --format '{{ artist }} - {{ title }}'";
+        click-left = "${pkgs.playerctl}/bin/playerctl play-pause";
+        tail = true;
       };
     };
     script = ''
