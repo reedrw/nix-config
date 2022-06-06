@@ -164,7 +164,7 @@ jobs:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
     - name: Get workflow conclusion
-      uses: technote-space/workflow-conclusion-action@v2.2
+      uses: technote-space/workflow-conclusion-action@v3.0
 
     - name: Send notification
       uses: yanzay/notify-telegram@v0.1.0
