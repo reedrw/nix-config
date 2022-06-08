@@ -427,8 +427,8 @@
   },
   "vice": {
     "fetchSubmodules": false,
-    "rev": "e8b3839f812dd752172f061572cbe5beefc861c5",
-    "sha256": "0rm05d4xkfa7kjcdgiq0w56hc43midw2rdhnznp8man955xn7r20",
+    "rev": "9aa32bd828efcba88e985c59f4a8509c04afb468",
+    "sha256": "1634zqxc7y0ms5jw7g2gldriyjzr3149nrwv1d4m6bx19m0b94wv",
     "url": "https://github.com/Thomashighbaugh/base16-vice-scheme"
   },
   "vulcan": {
