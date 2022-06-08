@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3941249/duckduckgo_for_firefox-2022.4.26.xpi";
-    sha256 = "0yhvzqk61ci8sdvcbj2vnkaykqak0df0lxs0qq6hggmxwqz6ij68";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3956871/duckduckgo_for_firefox-2022.6.1.xpi";
+    sha256 = "1i7n2vrhnj4da0g5y3b6zc4dhz3zms0i77z6lz439iyqkmx9pzgr";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -56,13 +56,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3954023/sponsorblock-4.4.5.xpi";
-    sha256 = "1v82knqdygh2lk90xkrjphx5az3h7yffzb6y4c53bv4pg4xkjgc1";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3958238/sponsorblock-4.5.1.xpi";
+    sha256 = "017lqljl18i7qhpd1q1qix6cb9s2x9k4zzaighfdmr3d0rhwfqwc";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3955677/styl_us-1.5.24.xpi";
-    sha256 = "0b1w75256mbhf66mfvchqz2d8lhn7mwfqzqkairrapmv60qbvd3g";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3956290/styl_us-1.5.25.xpi";
+    sha256 = "0xqjldhd66ykhx1wb97p5dd9ph395czyl2243iblpaxpgvlp5a34";
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";

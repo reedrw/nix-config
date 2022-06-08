@@ -437,8 +437,8 @@
   },
   "xfce4-terminal": {
     "fetchSubmodules": false,
-    "rev": "3a7eb9478f1afa964332f1b79ab4aa718e28ba2c",
-    "sha256": "141s330bhqvlfnh6z7y9xhs4n4zjj2s62b93rvk5pxvr4k9fq9ac",
+    "rev": "d35cf7944483f3744c8a55dae4bc43d133f40746",
+    "sha256": "0699la4spzy0svr922ljplcp09h3gg4vcawd7ygyvrvxqd1bn8js",
     "url": "https://github.com/afq984/base16-xfce4-terminal"
   },
   "xresources": {
