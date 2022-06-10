@@ -31,26 +31,15 @@ let
     text = (builtins.readFile ./select-term.sh);
   };
 
-  record = pkgs.writeShellScript "record.sh" ''
-    startrec(){
-      set $(${pkgs.slop}/bin/slop -q -o -f '%x %y %w %h')
-
-      ${pkgs.ffmpeg}/bin/ffmpeg -loglevel error \
-        -show_region 1 \
-        -s ''${3}x''${4} \
-        -framerate 60 \
-        -f x11grab \
-        -i :0.0+''${1},''${2} \
-        -crf 16 \
-        -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
-        ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
-    }
-
-    pid="$(pgrep -f x11grab)" && \
-      ( kill -SIGINT "$pid"; sleep .3; ${pkgs.libnotify}/bin/notify-send "recording stopped" ) || \
-      startrec
-
-  '';
+  record = pkgs.writeShellApplication {
+    name = "record.sh";
+    runtimeInputs = with pkgs; [
+      slop
+      ffmpeg
+      libnotify
+    ];
+    text = (builtins.readFile ./record.sh);
+  };
 in
 {
   xsession = {
@@ -80,7 +69,7 @@ in
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji";
           "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
-          "${mod}+r" = "${exec} ${record}";
+          "${mod}+r" = "${exec} ${record}/bin/record.sh";
           "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
           "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
           "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
