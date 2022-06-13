@@ -6,4 +6,9 @@ self: super: {
       '';
     }
   );
+  discord = super.discord.overrideAttrs (
+    old: rec {
+      src = builtins.fetchTarball https://discord.com/api/download/stable?platform=linux&format=tar.gz;
+    }
+  );
 }
