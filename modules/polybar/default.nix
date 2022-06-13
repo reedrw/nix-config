@@ -5,21 +5,21 @@
   services.polybar = {
     enable = true;
     package = pkgs.polybarFull;
-    config = with config.lib.base16.theme; {
+    config = with config.colorScheme.colors; {
       "bar/main" = {
-        background = "#${base00-hex}";
-        foreground = "#${base05-hex}";
+        background = "#${base00}";
+        foreground = "#${base05}";
         modules-left = "i3";
         modules-center = "mpris";
         modules-right = "battery date";
         border-left-size = 1;
-        border-left-color = "#${base00-hex}";
+        border-left-color = "#${base00}";
         border-right-size = 1;
-        border-right-color = "#${base00-hex}";
+        border-right-color = "#${base00}";
         border-top-size = 2;
-        border-top-color = "#${base00-hex}";
+        border-top-color = "#${base00}";
         border-bottom-size = 2;
-        border-bottom-color = "#${base00-hex}";
+        border-bottom-color = "#${base00}";
         font-0 = "lemon:pixelsize=10;1";
       };
       "module/battery" = {
@@ -29,7 +29,7 @@
         let
           calnotify = pkgs.writeShellScript "calnotify.sh" ''
             day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
-            cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed -e 's/^/ /g' -e 's/$/ /g' -e "s/$day/\<span color=\'#${base0B-hex}\'\>\<b\>$day\<\/b\>\<\/span\>/" -e '1d')"
+            cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed -e 's/^/ /g' -e 's/$/ /g' -e "s/$day/\<span color=\'#${base0B}\'\>\<b\>$day\<\/b\>\<\/span\>/" -e '1d')"
             top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
 
             ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
@@ -44,8 +44,8 @@
       };
       "module/i3" = {
         type = "internal/i3";
-        label-unfocused-foreground = "#${base03-hex}";
-        label-urgent-foreground = "#${base09-hex}";
+        label-unfocused-foreground = "#${base03}";
+        label-urgent-foreground = "#${base09}";
         label-unfocused-padding = 1;
         label-focused-padding = 1;
         label-urgent-padding = 1;

@@ -3,10 +3,10 @@
 {
   programs.zsh.initExtra =
     let
-      askpass-rasi = with config.lib.base16.theme; builtins.toFile "askpass.rasi" ''
+      askpass-rasi = with config.colorScheme.colors; builtins.toFile "askpass.rasi" ''
         * {
-            background-color: #${base00-hex};
-            text-color:       #${base07-hex};
+            background-color: #${base00};
+            text-color:       #${base07};
         }
 
         #window {

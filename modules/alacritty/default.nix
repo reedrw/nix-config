@@ -17,7 +17,7 @@ in
   programs.alacritty.enable = true;
   xdg.configFile."alacritty/alacritty.yml".text = ''
     import:
-      - ${config.lib.base16.templateFile { name = "alacritty"; } }
+      - ${import ./theme.nix { inherit config; } }
 
     live_config_reload: true
 

@@ -17,21 +17,21 @@
       {
         plugin = galaxyline-nvim;
         type = "lua";
-        config = with config.lib.base16; ''
+        config = with config.colorScheme.colors; ''
           local colors = {
-            blank = '#${theme.base00-hex}',
-            bg = '#${theme.base01-hex}',
-            section_bg = '#${theme.base02-hex}',
-            gray = '#${theme.base03-hex}',
-            fg = '#${theme.base05-hex}',
-            red = '#${theme.base08-hex}',
-            orange = '#${theme.base09-hex}',
-            yellow = '#${theme.base0A-hex}',
-            green = '#${theme.base0B-hex}',
-            cyan = '#${theme.base0C-hex}',
-            blue = '#${theme.base0D-hex}',
-            magenta = '#${theme.base0E-hex}',
-            brown = '#${theme.base0F-hex}'
+            blank = '#${base00}',
+            bg = '#${base01}',
+            section_bg = '#${base02}',
+            gray = '#${base03}',
+            fg = '#${base05}',
+            red = '#${base08}',
+            orange = '#${base09}',
+            yellow = '#${base0A}',
+            green = '#${base0B}',
+            cyan = '#${base0C}',
+            blue = '#${base0D}',
+            magenta = '#${base0E}',
+            brown = '#${base0F}'
           }
         '' + builtins.readFile ./lua/galaxyline.lua;
       }
@@ -54,13 +54,13 @@
       vim-table-mode
       vim-unimpaired
     ];
-    extraConfig = with config.lib.base16; ''
+    extraConfig = with config.colorScheme.colors; ''
       let g:deoplete#enable_at_startup = 1
       let g:indentLine_char = '┊'
       let g:suda_smart_edit = 1
 
       set termguicolors
-      source ${templateFile { name = "vim"; }}
+      source ${import ./theme.nix { inherit config; } }
       let base16colorspace=256
 
       " disable language packs

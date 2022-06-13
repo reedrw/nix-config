@@ -1,12 +1,12 @@
 { config,  ... }:
 
-with config.lib.base16.theme; builtins.toFile "theme.rasi" ''
+with config.colorScheme.colors; builtins.toFile "theme.rasi" ''
   * {
-    active-background: #${base00-hex};
+    active-background: #${base00};
     active-foreground: @foreground;
     normal-background: @background;
     normal-foreground: @foreground;
-    urgent-background: #${base08-hex};
+    urgent-background: #${base08};
     urgent-foreground: @foreground;
 
     alternate-active-background: @background;
@@ -16,16 +16,16 @@ with config.lib.base16.theme; builtins.toFile "theme.rasi" ''
     alternate-urgent-background: @background;
     alternate-urgent-foreground: @foreground;
 
-    selected-active-background: #${base00-hex};
+    selected-active-background: #${base00};
     selected-active-foreground: @foreground;
-    selected-normal-background: #${base01-hex};
+    selected-normal-background: #${base01};
     selected-normal-foreground: @foreground;
-    selected-urgent-background: #${base03-hex};
+    selected-urgent-background: #${base03};
     selected-urgent-foreground: @foreground;
 
     background-color: @background;
-    background: #${base00-hex};
-    foreground: #${base07-hex};
+    background: #${base00};
+    foreground: #${base07};
     border-color: @background;
     spacing: 4;
   }

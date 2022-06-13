@@ -61,7 +61,7 @@
 
         source ${pkgs.oh-my-zsh.src}/lib/git.zsh
         source ${pkgs.oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-        source ${config.lib.base16.templateFile { name = "shell"; } }
+        #source ''${config.lib.base16.templateFile { name = "shell"; } }
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right)
         source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
@@ -81,7 +81,7 @@
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${config.lib.base16.theme.base02}"
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${config.colorScheme.colors.base02}"
         ZSH_AUTOSUGGEST_STRATEGY="completion"
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 

@@ -3,7 +3,7 @@
 {
   services.dunst = {
     enable = true;
-    settings = with config.lib.base16.theme; {
+    settings = with config.colorScheme.colors; {
       global = {
         monitor = 0;
         geometry = "250x50-50+55";
@@ -11,7 +11,7 @@
         padding = 16;
         horizontal_padding = 16;
         frame_width = 0;
-        frame_color = "${base00-hex}";
+        frame_color = "${base00}";
         separator_color = "frame";
         font = "scientifica 8";
         line_height = 4;
@@ -25,19 +25,19 @@
         hide_duplicate_count = true;
       };
       urgency_low = {
-        background = "#${base00-hex}";
-        forefround = "#${base05-hex}";
+        background = "#${base00}";
+        forefround = "#${base05}";
         timeout = 4;
       };
       urgency_normal = {
-        background = "#${base00-hex}";
-        forefround = "#${base05-hex}";
+        background = "#${base00}";
+        forefround = "#${base05}";
         timeout = 4;
       };
       urgency_critical = {
-        background = "#${base00-hex}";
-        forefrond = "#${base05-hex}";
-        frame_color = "#${base08-hex}";
+        background = "#${base00}";
+        forefrond = "#${base05}";
+        frame_color = "#${base08}";
         timeout = 4;
       };
     };

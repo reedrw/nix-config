@@ -81,34 +81,34 @@ in
           "XF86AudioPrev" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
           "XF86AudioNext" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
         };
-        colors = with config.lib.base16.theme; {
+        colors = with config.colorScheme.colors; {
           focused = {
-            border = "#${base07-hex}";
-            childBorder = "#${base07-hex}";
-            background = "#${base07-hex}";
-            text = "#${base07-hex}";
-            indicator = "#${base07-hex}";
+            border = "#${base07}";
+            childBorder = "#${base07}";
+            background = "#${base07}";
+            text = "#${base07}";
+            indicator = "#${base07}";
           };
           focusedInactive = {
-            border = "#${base03-hex}";
-            childBorder = "#${base03-hex}";
-            background = "#${base03-hex}";
-            text = "#${base03-hex}";
-            indicator = "#${base03-hex}";
+            border = "#${base03}";
+            childBorder = "#${base03}";
+            background = "#${base03}";
+            text = "#${base03}";
+            indicator = "#${base03}";
           };
           unfocused = {
-            border = "#${base03-hex}";
-            childBorder = "#${base03-hex}";
-            background = "#${base03-hex}";
-            text = "#${base03-hex}";
-            indicator = "#${base03-hex}";
+            border = "#${base03}";
+            childBorder = "#${base03}";
+            background = "#${base03}";
+            text = "#${base03}";
+            indicator = "#${base03}";
           };
           urgent = {
-            border = "#${base03-hex}";
-            childBorder = "#${base03-hex}";
-            background = "#${base00-hex}";
-            text = "#${base05-hex}";
-            indicator = "#${base00-hex}";
+            border = "#${base03}";
+            childBorder = "#${base03}";
+            background = "#${base00}";
+            text = "#${base05}";
+            indicator = "#${base00}";
           };
         };
         window.commands = [
