@@ -1,4 +1,16 @@
 {
+    "mpv-scripts": {
+        "branch": "master",
+        "description": "My personal mpv scripts",
+        "homepage": "https://observeroftime.github.io/mpv-scripts",
+        "owner": "ObserverOfTime",
+        "repo": "mpv-scripts",
+        "rev": "081e5a721be053245c37168535b230ee9edce045",
+        "sha256": "1mdb3kygdj44mr5vzk0ifs5jfqqfbd7dqcsvl3n6kjr1mjbnskv7",
+        "type": "tarball",
+        "url": "https://github.com/ObserverOfTime/mpv-scripts/archive/081e5a721be053245c37168535b230ee9edce045.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "mpv-webm": {
         "branch": "master",
         "description": "Simple WebM maker for mpv, with no external dependencies.",

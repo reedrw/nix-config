@@ -44,6 +44,7 @@ in
     };
   };
   xdg.configFile = {
+    "mpv/scripts/clipshot.lua".source = "${sources.mpv-scripts}/clipshot.lua";
     "mpv/scripts/webm.lua".source = "${mpv-webm}/build/webm.lua";
     "mpv/scripts/mpv_thumbnail_script_client_osc.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_client_osc.lua";
     "mpv/scripts/mpv_thumbnail_script_server.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_server.lua";
