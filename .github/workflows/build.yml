@@ -19,6 +19,7 @@ jobs:
           - nixos-t400
           - nixos-t480
           - nixos-t520
+          - nix-shell
 
     runs-on: ubuntu-latest
     steps:
@@ -67,11 +68,19 @@ jobs:
 
     - name: Build
       run: |
-        export NIXPKGS_ALLOW_UNFREE=1
-        nix-build ci.nix -A ${{ matrix.output }}
+        if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
+          nix-shell shell.nix --run 'exit'
+        else
+          nix-build ci.nix -A ${{ matrix.output }}
+        fi
+      env:
+        NIXPKGS_ALLOW_UNFREE: 1
 
     - name: Calculate diff between closures
-      if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' }}
+      id: diff
+      if: ${{ github.event_name == 'pull_request'
+        && github.head_ref == 'update-dependencies'
+        && matrix.output != 'nix-shell' }}
       run: |
         nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
         git checkout "$(git rev-parse @~)"
@@ -82,7 +91,7 @@ jobs:
         echo "EOF" >> $GITHUB_ENV
 
     - name: Post diff to PR comment
-      if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' && env.diff_closure != '' }}
+      if: ${{ steps.diff.outcome == 'success' && env.diff_closure != '' }}
       uses: phulsechinmay/rewritable-pr-comment@v0.3.0
       with:
         message: |
@@ -93,63 +102,9 @@ jobs:
         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         COMMENT_IDENTIFIER: closure-diff-${{ matrix.output }}
 
-  shell:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    name: Build nix-shell
-    strategy:
-      matrix:
-        cachixName:
-          - reedrw
-
-    runs-on: ubuntu-latest
-    steps:
-    - name: Cleanup Disk
-      uses: curoky/cleanup-disk-action@v2.0
-
-    - name: Install Doppler CLI
-      uses: dopplerhq/cli-action@v1
-
-    - name: Pass all secrets to next steps
-      run: |
-        while read -rd $'' line; do echo "$line" >> $GITHUB_ENV; done < <( doppler secrets download --no-file --format=json | jq "." | grep -v 'DOPPLER_\(CONFIG\|ENVIRONMENT\|PROJECT\)' | jq -r 'to_entries|map("\(.key)<<EOF\n\(.value)\nEOF\u0000")[]' )
-        while read -r line; do echo "::add-mask::$line"; done < <( doppler secrets download --no-file --format=json | jq "." | grep -v 'DOPPLER_\(CONFIG\|ENVIRONMENT\|PROJECT\)' | jq -r 'to_entries|map("\(.value)\u0000")[]' )
-      env:
-        DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Get nixpkgs commit
-      id: nixpkgs-commit
-      run: |
-        commit="$(jq -r '.nixpkgs.url' ./nix/sources.json)"
-        echo "::set-output name=commit::$commit"
-
-    - name: Install Nix
-      uses: cachix/install-nix-action@v17
-      with:
-        nix_path: nixpkgs=${{ steps.nixpkgs-commit.outputs.commit }}
-
-    - name: Install Cachix
-      uses: cachix/cachix-action@v10
-      with:
-        name: ${{ matrix.cachixName }}
-        signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
-        pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
-
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Build nix-shell
-      run: |
-        export NIXPKGS_ALLOW_UNFREE=1
-        nix-shell shell.nix --run 'exit'
-
   telegram:
     name: Telegram
-    needs: [build, shell]
+    needs: build
     runs-on: ubuntu-latest
     if: always()
     steps:
