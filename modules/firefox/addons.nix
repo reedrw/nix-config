@@ -56,8 +56,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3958238/sponsorblock-4.5.1.xpi";
-    sha256 = "017lqljl18i7qhpd1q1qix6cb9s2x9k4zzaighfdmr3d0rhwfqwc";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3964892/sponsorblock-4.6.xpi";
+    sha256 = "1krxl9xn80kgnvdcv73jhm216sjbh1v2cv71kfcqnz9fsd6y6ql7";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
