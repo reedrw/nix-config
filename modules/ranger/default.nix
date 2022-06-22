@@ -37,7 +37,6 @@ let
     poppler_utils
     python38Packages.pdf2image
     tmux
-    ueberzug
     unrar
     unzip
     zip
@@ -76,7 +75,7 @@ in
       # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
       ranger = myranger.override { imagePreviewSupport = false; };
     in
-    [ ranger ];
+    [ ranger pkgs.ueberzug ];
 
   xdg.configFile = {
     "ranger/rc.conf".text = ''
