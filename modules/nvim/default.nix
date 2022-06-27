@@ -5,15 +5,33 @@
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
+    withPython3 = true;
+    extraPackages = with pkgs; [
+      rnix-lsp
+    ];
+    extraPython3Packages = (ps: with ps; [
+      black
+      flake8
+      jedi
+    ]);
+    coc = {
+      enable = true;
+      settings = {
+        "languageserver" = {
+          "nix" = {
+            "command" = "rnix-lsp";
+            "filetypes" = [ "nix" ];
+          };
+        };
+      };
+    };
     plugins = with pkgs.vimPlugins; [
-      #nvim-bufferline-lua
       ale
       base16-vim
       caw-vim
+      coc-pyright
       context_filetype-vim
-      deoplete-nvim
       editorconfig-vim
-      #galaxyline-nvim
       {
         plugin = galaxyline-nvim;
         type = "lua";
@@ -45,7 +63,6 @@
       vim-fugitive
       vim-gitgutter
       tabular
-      # vim-lion
       vim-operator-user
       vim-polyglot
       vim-projectionist
@@ -55,7 +72,6 @@
       vim-unimpaired
     ];
     extraConfig = with config.colorScheme.colors; ''
-      let g:deoplete#enable_at_startup = 1
       let g:indentLine_char = '┊'
       let g:suda_smart_edit = 1
 
