@@ -3,6 +3,8 @@
   services.picom = {
     enable = true;
     shadow = true;
+    fade = true;
+    fadeDelta = 2;
     shadowOpacity = "0.3";
     shadowExclude = [
       "! name   ~= ''"
