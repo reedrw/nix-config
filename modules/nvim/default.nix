@@ -44,8 +44,8 @@
       vim-exchange
       vim-fugitive
       vim-gitgutter
-      #tabular
-      vim-lion
+      tabular
+      # vim-lion
       vim-operator-user
       vim-polyglot
       vim-projectionist
