@@ -107,6 +107,8 @@ in
       ext pdf, flag f = zathura -- "$@"
       ext webm, flag f = mpv -- "$@"
       ext js = ''${VISUAL:-$EDITOR} -- "$@"
+      ext yaml = ''${VISUAL:-$EDITOR} -- "$@"
+      ext yml = ''${VISUAL:-$EDITOR} -- "$@"
       ext json = ''${VISUAL:-$EDITOR} -- "$@"
       ext nix = ''${VISUAL:-$EDITOR} -- "$@"
       ext sh = ''${VISUAL:-$EDITOR} -- "$@"
