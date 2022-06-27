@@ -71,6 +71,7 @@ in
           "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
           "${mod}+r" = "${exec} ${record}/bin/record.sh";
           "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi-patched}/bin/bwmenu --auto-lock 0";
+          "${mod}+Shift+s" = "sticky toggle";
           "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
           "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
           "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
