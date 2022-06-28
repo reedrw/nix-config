@@ -16,10 +16,31 @@ in
 
   boot = {
     kernelPackages = pkgs.linuxPackages_lqx;
-    kernelParams = [ "intel_pstate=active" ];
+    kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
+  };
+
+  # Remote decrypt via phone shortcut
+  boot.initrd = {
+    availableKernelModules = [ "alx" ];
+    network = {
+      enable = true;
+      ssh = {
+        enable = true;
+        port = 2222;
+        authorizedKeys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjDgwhUiKpmpjx/yAz8SMC1bo7bS7LiZ+9LumJfHufv Shortcuts on iPhone 13 mini"
+        ];
+        hostKeys = [ "/etc/secrets/initrd/ssh_host_rsa_key" "/etc/secrets/initrd/ssh_host_ed25519_key" ];
+      };
+    };
   };
 
   networking.hostName = "nixos-desktop";
+  networking.networkmanager.insertNameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
+
   time.timeZone = "America/New_York";
 
   services.xserver = {
