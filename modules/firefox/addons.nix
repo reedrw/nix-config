@@ -1,8 +1,8 @@
 pkgs: [
   (pkgs.fetchFirefoxAddon {
     name = "bitwarden-password-manager";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3960137/bitwarden_password_manager-2022.5.0.xpi";
-    sha256 = "0yk31lj18m4si82vz9waw2djfnmwwa1vljfwbzv49iv6648mijr0";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3971762/bitwarden_password_manager-2022.6.0.xpi";
+    sha256 = "0nmxg6q47givg42gf42hxs4wzgm93mq2gmqqf4nk6n7az0s2y87x";
   })
   (pkgs.fetchFirefoxAddon {
     name = "decentraleyes";
@@ -11,8 +11,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "duckduckgo-for-firefox";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3956871/duckduckgo_for_firefox-2022.6.1.xpi";
-    sha256 = "1i7n2vrhnj4da0g5y3b6zc4dhz3zms0i77z6lz439iyqkmx9pzgr";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3968598/duckduckgo_for_firefox-2022.6.27.xpi";
+    sha256 = "0c4yxh0gvv76dmpjm5ypaj3748xl89y9zvs6kzxkf7144m4n8k10";
   })
   (pkgs.fetchFirefoxAddon {
     name = "image-search-options";
@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3967537/refined_github-22.6.25.xpi";
-    sha256 = "0myiyzpfmdjs1ib7xnq47g1ffacqxc87g34hhkfk88mhp3mrvz5f";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3970145/refined_github-22.7.1.xpi";
+    sha256 = "1q4n96cilkrv70ri40ci88rvc050lzjf7xdylwiv0h2wqxc8r49m";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3964892/sponsorblock-4.6.xpi";
-    sha256 = "1krxl9xn80kgnvdcv73jhm216sjbh1v2cv71kfcqnz9fsd6y6ql7";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3971009/sponsorblock-4.6.2.xpi";
+    sha256 = "1wgi9fka3dlxl6n6kbk1wlsgm8f88zcvxnfdy8cz91bmgmch5zwy";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";
@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3918030/torrent_control-0.2.26.xpi";
-    sha256 = "1sl8yh66vvv62jbnypv3fs0ca2cv4b7m3z3wm3jcf7x06bp9hx0r";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3971546/torrent_control-0.2.27.xpi";
+    sha256 = "1qs3fcvq5kxzxlwd27x3sa1dn2isia71swa23rcgn4zrxk3dp7p1";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ttv-lol";
