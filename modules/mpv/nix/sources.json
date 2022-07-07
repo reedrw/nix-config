@@ -29,10 +29,10 @@
         "homepage": null,
         "owner": "blankname",
         "repo": "mpv_thumbnail_script",
-        "rev": "2839f16e1973a33ee4211e306a3cebcbf8efec48",
-        "sha256": "0qqjfpr8y2akm258l79n43f1glbxpab1vnn7a9vi27aa364zbqim",
+        "rev": "6ca6c0efe56fefd7857d89530094519360439d66",
+        "sha256": "0h6gb225qd30i6vq68d64hij8msm87qnfcqvfv42mi2dxx9p8zsb",
         "type": "tarball",
-        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/2839f16e1973a33ee4211e306a3cebcbf8efec48.tar.gz",
+        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/6ca6c0efe56fefd7857d89530094519360439d66.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
