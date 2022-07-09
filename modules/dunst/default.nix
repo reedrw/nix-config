@@ -6,7 +6,9 @@
     settings = with config.colorScheme.colors; {
       global = {
         monitor = 0;
-        geometry = "250x50-50+55";
+        width = "(0, 250)";
+        height = "(0, 50)";
+        offset = "50x55";
         shrink = "yes";
         padding = 16;
         horizontal_padding = 16;
