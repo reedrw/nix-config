@@ -14,8 +14,8 @@ in
   };
 
   nix = {
-    autoOptimiseStore = true;
     settings = {
+      auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
       substituters = [ "https://reedrw.cachix.org" ];
       trusted-public-keys = [
