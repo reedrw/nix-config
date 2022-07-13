@@ -51,13 +51,13 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3972672/refined_github-22.7.7.xpi";
-    sha256 = "1mf2xi8lhzg0r7kv9hhvm4wsr1s9yjcc2gjm8wvq7a5s1556333i";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3974356/refined_github-22.7.11.xpi";
+    sha256 = "10c5b8grh0pcamzx6hfqqxrlj389505b6c0mqq5l8gwfyjw3i15j";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3971009/sponsorblock-4.6.2.xpi";
-    sha256 = "1wgi9fka3dlxl6n6kbk1wlsgm8f88zcvxnfdy8cz91bmgmch5zwy";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3974900/sponsorblock-4.6.3.xpi";
+    sha256 = "1a97s4hxqc8fjxw0l89sav0k6y56kphkbyrf0g382s8mw28jgmv8";
   })
   (pkgs.fetchFirefoxAddon {
     name = "styl-us";

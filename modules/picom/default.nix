@@ -5,7 +5,7 @@
     shadow = true;
     fade = true;
     fadeDelta = 2;
-    shadowOpacity = "0.3";
+    shadowOpacity = 0.3;
     shadowExclude = [
       "! name   ~= ''"
       "name      = '[i3 con] workspace 1'"
@@ -25,12 +25,12 @@
       "class_g   = 'slop'"
       "_GTK_FRAME_EXTENTS@:c"
     ];
-    extraOptions = ''
+    settings = {
       corner-radius = 10;
       shadow-radius = 20;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
       ];
-    '';
+    };
   };
 }
