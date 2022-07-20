@@ -19,6 +19,11 @@ in
     kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
   };
 
+  boot.loader.grub = {
+    gfxmodeEfi = "1920x1080";
+    gfxpayloadEfi = "keep";
+  };
+
   # Remote decrypt via phone shortcut
   boot.initrd = {
     availableKernelModules = [ "alx" ];
