@@ -1,5 +1,15 @@
 { config, lib, pkgs, ... }:
-
+let
+  calnotify = pkgs.writeShellApplication {
+    name = "calnotify";
+    runtimeInputs = with pkgs; [
+      utillinux
+      gnused
+      libnotify
+    ];
+    text = (builtins.readFile ./calnotify.sh);
+  };
+in
 {
   home.packages = [ pkgs.nur.repos.reedrw.artwiz-lemon ]; # font
   services.polybar = {
@@ -25,20 +35,10 @@
       "module/battery" = {
         type = "internal/battery";
       };
-      "module/date" =
-        let
-          calnotify = pkgs.writeShellScript "calnotify.sh" ''
-            day="$(${pkgs.coreutils}/bin/date +'%-d ' | ${pkgs.gnused}/bin/sed 's/\b[0-9]\b/ &/g')"
-            cal="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed -e 's/^/ /g' -e 's/$/ /g' -e "s/$day/\<span color=\'#${base0B}\'\>\<b\>$day\<\/b\>\<\/span\>/" -e '1d')"
-            top="$(${pkgs.utillinux}/bin/cal | ${pkgs.gnused}/bin/sed '1!d')"
-
-            ${pkgs.libnotify}/bin/notify-send "$top" "$cal"
-          '';
-        in
-      {
+      "module/date" = {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
-        label = "%{A1:${calnotify}:}%date%%{A}";
+        label = "%{A1:${calnotify}/bin/calnotify ${base0B}:}%date%%{A}";
         format = "<label>";
         label-padding = 5;
       };
@@ -57,9 +57,14 @@
         tail = true;
       };
     };
-    script = ''
-      polybar main &
-    '';
+    script = "";
   };
-
+  # Calendar script doesn't work when polybar is run as service
+  # for some reason
+  # https://github.com/nix-community/home-manager/issues/1616
+  xsession.windowManager.i3.config.startup = [{
+    command = "polybar main &";
+    always = true;
+    notification = false;
+  }];
 }
