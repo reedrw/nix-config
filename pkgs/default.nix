@@ -13,4 +13,11 @@ self: super: {
   )).override {
     nss = super.nss_latest;
   };
+  # libSM dependecy broke.
+  # remove below when https://github.com/nixos/nixpkgs/pull/182506 is merged
+  slop = super.slop.overrideAttrs (
+    old: rec {
+      buildInputs = old.buildInputs ++ [ super.xorg.libSM ];
+    }
+  );
 }
