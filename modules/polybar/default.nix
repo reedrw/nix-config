@@ -62,9 +62,16 @@ in
   # Calendar script doesn't work when polybar is run as service
   # for some reason
   # https://github.com/nix-community/home-manager/issues/1616
-  xsession.windowManager.i3.config.startup = [{
-    command = "polybar main &";
-    always = true;
-    notification = false;
-  }];
+  xsession.windowManager.i3.config.startup = [
+    {
+      command = "pkill polybar";
+      always = true;
+      notification = false;
+    }
+    {
+      command = "sh -c 'sleep 0.5; polybar main &'";
+      always = true;
+      notification = false;
+    }
+  ];
 }
