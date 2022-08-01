@@ -74,6 +74,16 @@ in
     user = "reed";
   }];
 
+  programs.gamemode = {
+    enable = true;
+    settings = {
+      general = {
+        desiredgov = "performance";
+        softrealtime = "on";
+      };
+    };
+  };
+
   services.gnome.gnome-keyring.enable = true;
 
   programs = {
