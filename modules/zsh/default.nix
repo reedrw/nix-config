@@ -190,6 +190,8 @@
         rm = "rm -v";
         rr = "ranger";
         rsync = "rsync --old-args";
+        tb = "termbin";
+        termbin = "nc termbin.com 9999";
         tree = "ls --tree";
         watch = "${pkgs.nur.repos.reedrw.viddy}/bin/viddy";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
