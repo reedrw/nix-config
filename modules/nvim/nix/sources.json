@@ -1,0 +1,14 @@
+{
+    "neovim": {
+        "branch": "nightly",
+        "description": "Vim-fork focused on extensibility and usability",
+        "homepage": "https://neovim.io",
+        "owner": "neovim",
+        "repo": "neovim",
+        "rev": "27ce21ac852cb520740210ba68062e981657b6f4",
+        "sha256": "0fx1qnarrp4pwnj8h63vhlpkgp0b8jb83hfgknyfiarchsyay3bv",
+        "type": "tarball",
+        "url": "https://github.com/neovim/neovim/archive/27ce21ac852cb520740210ba68062e981657b6f4.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
