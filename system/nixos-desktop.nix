@@ -16,14 +16,6 @@ in
 
   boot = {
     kernelPackages = pkgs.linuxPackages_lqx;
-    kernelPatches = [{
-      name = "muqss-scheduler";
-      patch = null;
-      extraConfig = ''
-        SCHED_MUQSS y
-        RQ_SMT y
-      '';
-    }];
     kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
