@@ -187,8 +187,9 @@
         mv = "mv -iv";
         ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
-        rsync = "rsync --old-args";
         rm = "rm -v";
+        rr = "ranger";
+        rsync = "rsync --old-args";
         tree = "ls --tree";
         watch = "${pkgs.nur.repos.reedrw.viddy}/bin/viddy";
         wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
