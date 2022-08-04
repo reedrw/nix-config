@@ -3,7 +3,6 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-{ config, lib, pkgs, ... }:
 let
   sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
 in
@@ -16,14 +15,15 @@ in
   ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
 
   boot = {
-    kernelPackages = pkgs.linuxPackagesFor (pkgs.linuxPackages_lqx.kernel.override {
-      structuredExtraConfig = with lib.kernel; {
-        SCHED_MUQSS = yes;
-         # RQ_MC is better for 6 or less cores, apparently, as a rule of thumb
-        RQ_SMT = yes;
-      };
-      ignoreConfigErrors = true;
-    });
+    kernelPackages = pkgs.linuxPackages_lqx;
+    kernelPatches = [{
+      name = "muqss-scheduler";
+      patch = null;
+      extraConfig = ''
+        SCHED_MUQSS y
+        RQ_SMT y
+      '';
+    }];
     kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
