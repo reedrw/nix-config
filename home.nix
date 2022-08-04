@@ -24,6 +24,7 @@ let
 
     # games
     polymc
+    nur.repos.reedrw.an-anime-game-launcher-gtk
 
   ];
 
