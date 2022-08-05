@@ -137,6 +137,12 @@ in
               title = "float";
             };
           }
+          {
+            command = "floating enable";
+            criteria = {
+              class = "An Anime Game Launcher";
+            };
+          }
         ];
         startup = []
         ++
