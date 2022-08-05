@@ -24,7 +24,14 @@ let
 
     # games
     polymc
-    nur.repos.reedrw.an-anime-game-launcher-gtk
+    (nur.repos.reedrw.an-anime-game-launcher-gtk.override {
+      an-anime-game-launcher-gtk-unwrapped = nur.repos.reedrw.an-anime-game-launcher-gtk-unwrapped.overrideAttrs (
+        old: rec {
+          version = sources.an-anime-game-launcher-gtk.rev;
+          src = sources.an-anime-game-launcher-gtk;
+        }
+      );
+    })
 
   ];
 
