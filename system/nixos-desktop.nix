@@ -15,8 +15,8 @@ in
   ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
 
   boot = {
-    kernelPackages = let
-      customKernelPackages = pkgs.linuxPackagesFor (pkgs.linuxPackages_lqx.kernel.override {
+    kernelPackages = with pkgs; let
+      customKernelPackages = linuxPackagesFor (linuxPackages_lqx.kernel.override {
       structuredExtraConfig = with lib.kernel; {
         SCHED_MUQSS = yes;
          # RQ_MC is better for 6 or less cores, apparently, as a rule of thumb
