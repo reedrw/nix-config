@@ -5,16 +5,16 @@
         "homepage": "",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "c9444c0495d43d89fd2f14b4c0474d04e7810e0a",
-        "sha256": "0zfrb8xpja5qxlmpqfj95bvaipc9ady7s0wv39xychrxkvzzqkdl",
+        "rev": "0ad63cf18c521b5935900ec388ab2c0f59581be7",
+        "sha256": "0np5whw5b7yrbmw78cpikchd7cl8pkw34ips7x46s7gxrbznx8jb",
         "type": "tarball",
-        "url": "https://github.com/nix-community/NUR/archive/c9444c0495d43d89fd2f14b4c0474d04e7810e0a.tar.gz",
+        "url": "https://github.com/nix-community/NUR/archive/0ad63cf18c521b5935900ec388ab2c0f59581be7.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "an-anime-game-launcher-gtk": {
         "branch": "main",
         "repo": "https://gitlab.com/an-anime-team/alternatives/an-anime-game-launcher-gtk.git",
-        "rev": "a1cdf81eca5bd2e9da84e1beb1f6b2fad854cc5f",
+        "rev": "59b50afa63029e9fc96730afaf595eeefc5fe127",
         "submodules": true,
         "type": "git"
     },
