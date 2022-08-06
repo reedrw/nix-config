@@ -26,9 +26,13 @@ let
     polymc
     (nur.repos.reedrw.an-anime-game-launcher-gtk.override {
       an-anime-game-launcher-gtk-unwrapped = nur.repos.reedrw.an-anime-game-launcher-gtk-unwrapped.overrideAttrs (
-        old: rec {
-          version = sources.an-anime-game-launcher-gtk.rev;
+        old: with sources.an-anime-game-launcher-gtk; rec {
+          version = rev;
           src = sources.an-anime-game-launcher-gtk;
+          cargoDeps = old.cargoDeps.overrideAttrs (old: {
+            inherit src;
+            outputHash = cargoSha256;
+          });
         }
       );
     })
