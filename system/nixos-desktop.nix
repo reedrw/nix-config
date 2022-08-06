@@ -98,6 +98,13 @@ in
     '';
     name = "ssh-port-forward";
     user = "reed";
+  }
+  {
+    extraArguments = ''
+      -D 1337 -nNT 142.4.208.215
+    '';
+    name = "ssh-socks-proxy";
+    user = "reed";
   }];
 
   programs.gamemode = {
