@@ -146,13 +146,6 @@ in
   };
 
   services.sshd.enable = true;
-
-  # NFS mount
-  fileSystems."/mnt/BigHD" = {
-    device = "nixos-desktop.local:/export/BigHD";
-    fsType = "nfs4";
-    options = [ "x-systemd.automount" "x-systemd.idle-timeout=600" "noauto" ];
-  };
   # }}}
   # {{{ Networking
   networking = {
