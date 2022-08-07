@@ -1,58 +1,58 @@
 {
-  "NUR": {
-    "branch": "master",
-    "description": "Nix User Repository: User contributed nix packages [maintainer=@Mic92]",
-    "homepage": "",
-    "owner": "nix-community",
-    "repo": "NUR",
-    "rev": "9bbd8c3c689e076ef17eca0c3b2208068756fcb7",
-    "sha256": "04xvil7gpxpiri9j865rxir2w14g5zf7rnvjvsa5chjis80sn0pm",
-    "type": "tarball",
-    "url": "https://github.com/nix-community/NUR/archive/9bbd8c3c689e076ef17eca0c3b2208068756fcb7.tar.gz",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-  },
-  "an-anime-game-launcher-gtk": {
-    "branch": "main",
-    "cargoSha256": "sha256-2ixJ/DVK/UfN6wjl1cdoirUQnwgWTFrRai6c5ih8jwI=",
-    "repo": "https://gitlab.com/an-anime-team/alternatives/an-anime-game-launcher-gtk.git",
-    "rev": "43b09f295d4dd68513cab6270eb5162f637cb9b6",
-    "submodules": true,
-    "type": "git"
-  },
-  "home-manager": {
-    "branch": "master",
-    "description": "Manage a user environment using Nix  [maintainer=@rycee] ",
-    "homepage": "https://rycee.gitlab.io/home-manager/",
-    "owner": "nix-community",
-    "repo": "home-manager",
-    "rev": "f5e9879e74e6202e2dbb3628fad2d20eac0d8be4",
-    "sha256": "159asp3274lk1myfnr2kffcvjian20bmd9w56x3c03393qrvsmpk",
-    "type": "tarball",
-    "url": "https://github.com/nix-community/home-manager/archive/f5e9879e74e6202e2dbb3628fad2d20eac0d8be4.tar.gz",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-  },
-  "nixos-hardware": {
-    "branch": "master",
-    "description": "A collection of NixOS modules covering hardware quirks.",
-    "homepage": "",
-    "owner": "NixOS",
-    "repo": "nixos-hardware",
-    "rev": "ea3efc80f8ab83cb73aec39f4e76fe87afb15a08",
-    "sha256": "0h87y6z42ch128j6yslydvdzajqcrqzhihi4nrpwida4js2pl1ak",
-    "type": "tarball",
-    "url": "https://github.com/NixOS/nixos-hardware/archive/ea3efc80f8ab83cb73aec39f4e76fe87afb15a08.tar.gz",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-  },
-  "nixpkgs": {
-    "branch": "nixos-unstable",
-    "description": "Nix Packages collection",
-    "homepage": null,
-    "owner": "NixOS",
-    "repo": "nixpkgs",
-    "rev": "f44884060cb94240efbe55620f38a8ec8d9af601",
-    "sha256": "1mmgidcvqx22n6g10bqpbhgnk7q1a7nvinzxwn6mqv6waqgf977v",
-    "type": "tarball",
-    "url": "https://github.com/NixOS/nixpkgs/archive/f44884060cb94240efbe55620f38a8ec8d9af601.tar.gz",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-  }
+    "NUR": {
+        "branch": "master",
+        "description": "Nix  User  Repository:  User  contributed  nix  packages  [maintainer=@Mic92]",
+        "homepage": "",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "9bbd8c3c689e076ef17eca0c3b2208068756fcb7",
+        "sha256": "04xvil7gpxpiri9j865rxir2w14g5zf7rnvjvsa5chjis80sn0pm",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/NUR/archive/9bbd8c3c689e076ef17eca0c3b2208068756fcb7.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "an-anime-game-launcher-gtk": {
+        "branch": "main",
+        "cargoSha256": "sha256-2ixJ/DVK/UfN6wjl1cdoirUQnwgWTFrRai6c5ih8jwI=",
+        "repo": "https://gitlab.com/an-anime-team/alternatives/an-anime-game-launcher-gtk.git",
+        "rev": "43b09f295d4dd68513cab6270eb5162f637cb9b6",
+        "submodules": true,
+        "type": "git"
+    },
+    "home-manager": {
+        "branch": "master",
+        "description": "Manage  a  user  environment  using  Nix    [maintainer=@rycee]  ",
+        "homepage": "https://rycee.gitlab.io/home-manager/",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "f5e9879e74e6202e2dbb3628fad2d20eac0d8be4",
+        "sha256": "159asp3274lk1myfnr2kffcvjian20bmd9w56x3c03393qrvsmpk",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/home-manager/archive/f5e9879e74e6202e2dbb3628fad2d20eac0d8be4.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixos-hardware": {
+        "branch": "master",
+        "description": "A  collection  of  NixOS  modules  covering  hardware  quirks.",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixos-hardware",
+        "rev": "ea3efc80f8ab83cb73aec39f4e76fe87afb15a08",
+        "sha256": "0h87y6z42ch128j6yslydvdzajqcrqzhihi4nrpwida4js2pl1ak",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixos-hardware/archive/ea3efc80f8ab83cb73aec39f4e76fe87afb15a08.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "nixos-unstable",
+        "description": "Nix  Packages  collection",
+        "homepage": null,
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f44884060cb94240efbe55620f38a8ec8d9af601",
+        "sha256": "1mmgidcvqx22n6g10bqpbhgnk7q1a7nvinzxwn6mqv6waqgf977v",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/f44884060cb94240efbe55620f38a8ec8d9af601.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
 }

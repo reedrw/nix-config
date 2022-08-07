@@ -23,3 +23,4 @@ aaglCargoSha="$(nix-prefetch '
 ')"
 gronnedJson="$gronnedJson"$'\n'"json[\"an-anime-game-launcher-gtk\"].cargoSha256 = \"$aaglCargoSha\";"
 gron -u <<< "$gronnedJson" > ./nix/sources.json
+sed -i 's/ /  /g' ./nix/sources.json
