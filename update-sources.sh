@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p niv nix-prefetch gron
+#! nix-shell -i bash -p niv nix-prefetch gron jq
 
 PS4=''
 set -x
@@ -22,4 +22,4 @@ aaglCargoSha="$(nix-prefetch '
   })
 ')"
 gronnedJson="$gronnedJson"$'\n'"json[\"an-anime-game-launcher-gtk\"].cargoSha256 = \"$aaglCargoSha\";"
-gron -u <<< "$gronnedJson" > ./nix/sources.json
+gron -u <<< "$gronnedJson" | jq -r '.' --indent 4 > ./nix/sources.json
