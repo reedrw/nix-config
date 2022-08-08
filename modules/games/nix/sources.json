@@ -1,0 +1,22 @@
+{
+    "aagl-gtk-on-nix": {
+        "branch": "main",
+        "description": "Run an-anime-game-launcher GTK version on Nix/NixOS!",
+        "homepage": null,
+        "owner": "ezKEa",
+        "repo": "aagl-gtk-on-nix",
+        "rev": "270305c550e7c051f8ad9c1cd8c2a8560b6e2dcf",
+        "sha256": "0m9kayzz7i5aiyprnbbvgvzc8acpsymn9xpf8qy0qxjvx9xvxbhk",
+        "type": "tarball",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/270305c550e7c051f8ad9c1cd8c2a8560b6e2dcf.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "an-anime-game-launcher-gtk": {
+        "branch": "main",
+        "cargoSha256": "sha256-p9R/C7yeDX/OmsFgq6QAanN/gcPhQqp6aAnnLylhEzo=",
+        "repo": "https://gitlab.com/an-anime-team/alternatives/an-anime-game-launcher-gtk.git",
+        "rev": "43b09f295d4dd68513cab6270eb5162f637cb9b6",
+        "submodules": true,
+        "type": "git"
+    }
+}

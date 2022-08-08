@@ -20,22 +20,6 @@ let
     # chat
     discord
     tdesktop
-
-    # games
-    polymc
-    (with nur.repos.reedrw; an-anime-game-launcher-gtk.override {
-      an-anime-game-launcher-gtk-unwrapped = an-anime-game-launcher-gtk-unwrapped.overrideAttrs (
-        old: with sources.an-anime-game-launcher-gtk; rec {
-          version = rev;
-          src = sources.an-anime-game-launcher-gtk;
-          cargoDeps = old.cargoDeps.overrideAttrs (old: {
-            inherit src;
-            outputHash = cargoSha256;
-          });
-        }
-      );
-    })
-
   ];
 
   # `pai` anywhere to update computer

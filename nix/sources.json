@@ -11,14 +11,6 @@
         "url": "https://github.com/nix-community/NUR/archive/d023e5cc92e746c130891b6110f5cf28d9734fb4.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "an-anime-game-launcher-gtk": {
-        "branch": "main",
-        "cargoSha256": "sha256-2ixJ/DVK/UfN6wjl1cdoirUQnwgWTFrRai6c5ih8jwI=",
-        "repo": "https://gitlab.com/an-anime-team/alternatives/an-anime-game-launcher-gtk.git",
-        "rev": "43b09f295d4dd68513cab6270eb5162f637cb9b6",
-        "submodules": true,
-        "type": "git"
-    },
     "home-manager": {
         "branch": "master",
         "description": "Manage a user environment using Nix  [maintainer=@rycee] ",
