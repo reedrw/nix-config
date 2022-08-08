@@ -3,8 +3,9 @@ let
   sources = import ./nix/sources.nix { };
   nix-colors = import sources.nix-colors { };
 in
+with nix-colors;
 {
-  imports = [ nix-colors.homeManagerModule ];
+  imports = [ homeManagerModule ];
 
-  colorScheme = nix-colors.colorSchemes.material-darker;
+  colorScheme = colorSchemes.material-darker;
 }
