@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "0929bb3683ebcecd25a524f5793a7e07d6cab32f",
-        "sha256": "1dwgzcc2m0wbhkksaan3vniqb70l7rscfb5wbly6x7lq09g3nmmx",
+        "rev": "3127789e7017df1e1f4d95881d7fec109326037c",
+        "sha256": "1w80lxhhag4m7248dd7vwbmk4930kwf9xs2a966s1cjjzv50vrnf",
         "type": "tarball",
-        "url": "https://github.com/nix-community/NUR/archive/0929bb3683ebcecd25a524f5793a7e07d6cab32f.tar.gz",
+        "url": "https://github.com/nix-community/NUR/archive/3127789e7017df1e1f4d95881d7fec109326037c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "home-manager": {
@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "ea3efc80f8ab83cb73aec39f4e76fe87afb15a08",
-        "sha256": "0h87y6z42ch128j6yslydvdzajqcrqzhihi4nrpwida4js2pl1ak",
+        "rev": "3975d5158f00accda15a11180b2c08654cfb2807",
+        "sha256": "0z9gpv54ixd5hq3g5hcsyy39d8xzff4lj6p5wsy09g7s4jcm7r99",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixos-hardware/archive/ea3efc80f8ab83cb73aec39f4e76fe87afb15a08.tar.gz",
+        "url": "https://github.com/NixOS/nixos-hardware/archive/3975d5158f00accda15a11180b2c08654cfb2807.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
@@ -41,10 +41,10 @@
         "homepage": null,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4bdf4169ad2896236895ca607a843f30c9680345",
-        "sha256": "0rfgifys7plzv5d9p6rhzfjapl96vdazk89v8aiqlh3kfsq8bkrv",
+        "rev": "39d7f929fbcb1446ad7aa7441b04fb30625a4190",
+        "sha256": "0ra6g8hqqlbjmv15jv9mr5a6sb3drjklqyhkrsb76dbzy0zn48dq",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/4bdf4169ad2896236895ca607a843f30c9680345.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/39d7f929fbcb1446ad7aa7441b04fb30625a4190.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
