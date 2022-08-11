@@ -13,4 +13,7 @@ self: super: {
   )).override {
     nss = super.nss_latest;
   };
+  discord-canary = super.discord-canary.override {
+    nss = super.nss_latest;
+  };
 }

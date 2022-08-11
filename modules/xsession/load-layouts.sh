@@ -45,7 +45,7 @@ main(){
   # Should always be last since Discord's updater is problematic otherwise
   loadLayout 2
 
-  (Discord &)
+  (DiscordCanary &)
   (telegram-desktop &)
 }
 

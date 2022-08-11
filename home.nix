@@ -18,7 +18,7 @@ let
     xsel
 
     # chat
-    discord
+    discord-canary
     tdesktop
   ];
 
