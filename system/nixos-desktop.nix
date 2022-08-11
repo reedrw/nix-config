@@ -127,5 +127,5 @@ in
     steam.enable = true;
   };
 
-  system.stateVersion = "20.03";
+  system.stateVersion = "22.05";
 }
