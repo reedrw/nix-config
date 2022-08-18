@@ -93,7 +93,8 @@ in
     '';
   };
 
-  services.autossh.sessions = [{
+  services.autossh.sessions = [
+  {
     extraArguments = ''
       -o ServerAliveInterval=30 \
       -N -T -R 5000:localhost:22 142.4.208.215
@@ -107,7 +108,8 @@ in
     '';
     name = "ssh-socks-proxy";
     user = "reed";
-  }];
+  }
+];
 
   programs.gamemode = {
     enable = true;
