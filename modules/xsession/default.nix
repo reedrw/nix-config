@@ -14,15 +14,46 @@ let
     "xset r rate 250 50"
   ];
 
+  run = [
+    "${load-layouts}/bin/load-layouts.sh"
+  ];
+
+  sources = import ./nix/sources.nix { };
+
+  mach-nix = import (builtins.fetchGit {
+    url = "https://github.com/DavHau/mach-nix";
+    ref = "refs/tags/3.5.0";
+  }) { };
+
+  unalix = mach-nix.buildPythonPackage {
+    src = sources.Unalix.url;
+    patches = [
+      ./update.patch
+    ];
+  };
+
+  clipboard-clean = pkgs.writeShellApplication {
+    name = "clipboard-clean";
+    runtimeInputs = with pkgs; [
+      coreutils
+      xclip
+      (mach-nix.mkPython [
+        (mach-nix.buildPythonPackage {
+          src = sources.Unalix.url;
+          patches = [
+            ./update.patch
+          ];
+        })
+      ])
+    ];
+    text = (builtins.readFile ./clipboard-clean.sh);
+  };
+
   load-layouts = pkgs.writeShellApplication {
     name = "load-layouts.sh";
     runtimeInputs = [ pkgs.wmctrl ];
     text = (builtins.readFile ./load-layouts.sh);
   };
-
-  run = [
-    "${load-layouts}/bin/load-layouts.sh"
-  ];
 
   selecterm = pkgs.writeShellApplication {
     name = "select-term.sh";
@@ -174,4 +205,18 @@ in
     "i3/workspace-4.json".source = ./workspace-4.json;
   };
 
+  # systemd.user.services.clipboard-clean = {
+  #   Unit = {
+  #     After = [ "graphical.target" ];
+  #     Description = "Clean URLS on clipboard using ClearURL rules.";
+  #   };
+  #   Install = {
+  #     WantedBy = [ "default.target" ];
+  #   };
+  #   Service = {
+  #     #Environment = "PATH=${config.home.profileDirectory}/bin";
+  #     ExecStart = "${clipboard-clean}/bin/clipboard-clean";
+  #     Type = "simple";
+  #   };
+  # };
 }
