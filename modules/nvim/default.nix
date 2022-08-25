@@ -1,16 +1,7 @@
 { config, lib, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-in
 {
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim-unwrapped.overrideAttrs (
-      old: rec {
-        version = sources.neovim.rev;
-        src = sources.neovim;
-      }
-    );
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
@@ -123,7 +114,7 @@ in
       end
 
       set expandtab
-      set mouse=nvi
+      set mouse=a
       set noshowmode
       set foldmethod=marker
       autocmd VimEnter * hi Comment cterm=italic gui=italic
