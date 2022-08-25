@@ -20,12 +20,12 @@ index 632fc24..6b70ee0 100644
 +## Conversion done with mk-ca-bundle.pl version 1.29.
 +## SHA256: 9bf3799611fb58197f61d45e71ce3dc19f30e7dd73731915872ce5108a7bb066
  ##
-
-
+ 
+ 
 @@ -993,60 +993,6 @@ tnRGEmyR7jTV7JqR50S+kDFy1UkC9gLl9B/rfNmWVan/7Ir5mUf/NVoCqgTLiluHcSmRvaS0eg29
  mvVXIwAHIRc/SjnRBUkLp7Y3gaVdjKozXoEofKd9J+sAro03
  -----END CERTIFICATE-----
-
+ 
 -EC-ACC
 -======
 ------BEGIN CERTIFICATE-----
