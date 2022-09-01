@@ -14,7 +14,7 @@ self: super: {
     nss = super.nss_latest;
   };
   # https://github.com/NixOS/nixpkgs/pull/189044
-  discord-canary = (import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/5f190380aed4f4394c1d30972a52b6a2cdd63d9e.tar.gz) {}).discord-canary.override {
+  discord-canary = super.discord-canary.override {
     nss = super.nss_latest;
   };
 }
