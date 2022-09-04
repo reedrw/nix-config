@@ -70,6 +70,22 @@ let
     ];
     text = (builtins.readFile ./record.sh);
   };
+
+  bwmenu-patched = pkgs.nur.repos.reedrw.bitwarden-rofi.overrideAttrs (
+    old: rec {
+      src = pkgs.fetchFromGitHub {
+        owner = "mattydebie";
+        repo = "bitwarden-rofi";
+        rev = "a5f6348fae6a96499a27a25a79f83ed37da81716";
+        sha256 = "sha256-QggtjWrt27obx8Igjj2DVtIZ5XLAf/iJSPsUmZkY4Yk=";
+      };
+      patches = [
+        ./copy-totp.patch
+        ./fix-quotes.patch
+      ];
+    }
+  );
+
 in
 {
   xsession = {
@@ -100,7 +116,7 @@ in
           "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji";
           "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
           "${mod}+r" = "${exec} ${record}/bin/record.sh";
-          "${mod}+p" = "${exec} ${pkgs.nur.repos.reedrw.bitwarden-rofi}/bin/bwmenu";
+          "${mod}+p" = "${exec} ${bwmenu-patched}/bin/bwmenu";
           "${mod}+Shift+s" = "sticky toggle";
           "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
           "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
