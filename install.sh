@@ -18,27 +18,6 @@ getTarballHash(){
   rm -r "$tmpDir"
 }
 
-currentHomeManager="/nix/var/nix/profiles/per-user/$USER/channels/home-manager/"
-currentHomeManagerSha="$(nix-hash --type sha256 "$currentHomeManager")"
-newHomeManagerSha="$(getTarballHash "$HomeManagerURL")"
-if [[ "$currentHomeManagerSha" != "$newHomeManagerSha" ]]; then
-  echo "Installing pinned home-manager..."
-  nix-channel --add "$HomeManagerURL" home-manager
-  nix-channel --update
-
-  # Update NIX_PATH here or else you'd need to log out
-  export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
-fi
-
-currentNixpkgs="/nix/var/nix/profiles/per-user/root/channels/nixos/"
-currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
-newNixpkgsSha="$(getTarballHash "$nixpkgsURL")"
-if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
-  echo "Installing pinned nixpkgs..."
-  sudo nix-channel --add "$nixpkgsURL" nixos
-  sudo nix-channel --update
-fi
-
 system(){
   # if the hostname matches a saved configuration.nix
   if [[ -f "./system/$host.nix" ]]; then
@@ -57,11 +36,45 @@ system(){
   fi
 }
 
+updateNixpkgs(){
+  channelName="nixpkgs"
+  currentNixpkgs="/nix/var/nix/profiles/per-user/$USER/channels/$channelName/"
+  nixChannel="nix-channel"
+  if [[ "$onNixOS" == "yes" ]]; then
+    channelName="nixos"
+    currentNixpkgs="/nix/var/nix/profiles/per-user/root/channels/$channelName/"
+    nixChannel="sudo $nixChannel"
+  fi
+  currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
+  newNixpkgsSha="$(getTarballHash "$nixpkgsURL")"
+  if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
+    echo "Installing pinned nixpkgs..."
+    $nixChannel --add "$nixpkgsURL" "$channelName"
+    $nixChannel --update
+  fi
+}
+
+currentHomeManager="/nix/var/nix/profiles/per-user/$USER/channels/home-manager/"
+currentHomeManagerSha="$(nix-hash --type sha256 "$currentHomeManager")"
+newHomeManagerSha="$(getTarballHash "$HomeManagerURL")"
+if [[ "$currentHomeManagerSha" != "$newHomeManagerSha" ]]; then
+  echo "Installing pinned home-manager..."
+  nix-channel --add "$HomeManagerURL" home-manager
+  nix-channel --update
+fi
+
 systemProfile="/nix/var/nix/profiles/system"
 # if a system profile exists (NixOS check)
 if [[ -d "$systemProfile" ]]; then
-  system
+  onNixOS="yes"
 fi
+
+updateNixpkgs
+
+# Update NIX_PATH here or else you'd need to log out
+export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
+
+[[ "$onNixOS" == "yes" ]] && system
 
 HomeManagerProfile="/nix/var/nix/profiles/per-user/$USER/home-manager"
 currentHomeManagerDrv="$(nix-store --query --deriver "$HomeManagerProfile")"
