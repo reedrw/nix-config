@@ -197,7 +197,7 @@ in
   services = {
     flameshot.enable = true;
   };
-  home.file.".background-image".source = ./wallpaper.jpg;
+  home.file.".background-image".source = ./wallpaper.png;
 
   xdg.configFile = {
     "i3/workspace-1.json".source = ./workspace-1.json;
