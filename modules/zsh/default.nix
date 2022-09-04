@@ -144,6 +144,12 @@
           nix shell "nixpkgs#$attr" -c "$argv0" "$@"
         }
 
+        bw-rofi-login(){
+          ${pkgs.keyutils}/bin/keyctl purge user bw_session
+          ${pkgs.bitwarden-cli}/bin/bw login
+          ${pkgs.keyutils}/bin/keyctl link @u @s
+        }
+
         c(){
           [[ -p /dev/stdin ]] && \
             ${pkgs.xclip}/bin/xclip -i -selection clipboard || \
@@ -178,7 +184,6 @@
         ":q" = "exit";
         "\\$" = "";
         bmount = "${pkgs.bashmount}/bin/bashmount";
-        bw-rofi-login = "sh -c '${pkgs.bitwarden-cli}/bin/bw login; ${pkgs.keyutils}/bin/keyctl link @u @s'";
         cat = "${pkgs.bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
