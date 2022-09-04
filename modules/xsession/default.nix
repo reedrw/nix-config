@@ -104,13 +104,13 @@ in
           "${mod}+Shift+s" = "sticky toggle";
           "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
           "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
-          "Ctrl+Down" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
-          "Ctrl+Left" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
-          "Ctrl+Right" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
-          "XF86AudioPause" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
-          "XF86AudioPlay" = "${exec} ${pkgs.mpc_cli}/bin/mpc toggle";
-          "XF86AudioPrev" = "${exec} ${pkgs.mpc_cli}/bin/mpc prev";
-          "XF86AudioNext" = "${exec} ${pkgs.mpc_cli}/bin/mpc next";
+          "Ctrl+Down" = "${exec} ${pkgs.playerctl}/bin/playerctl play-pause";
+          "Ctrl+Left" = "${exec} ${pkgs.playerctl}/bin/playerctl previous";
+          "Ctrl+Right" = "${exec} ${pkgs.playerctl}/bin/playerctl next";
+          "XF86AudioPause" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
+          "XF86AudioPlay" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
+          "XF86AudioPrev" = "${exec} ${pkgs.playerctl}/bin/platerctl previous";
+          "XF86AudioNext" = "${exec} ${pkgs.playerctl}/bin/platerctl next";
         };
         colors = with config.colorScheme.colors; {
           focused = {
