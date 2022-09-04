@@ -178,6 +178,7 @@
         ":q" = "exit";
         "\\$" = "";
         bmount = "${pkgs.bashmount}/bin/bashmount";
+        bw-rofi-login = "sh -c '${pkgs.bitwarden-cli}/bin/bw login; ${pkgs.keyutils}/bin/keyctl link @u @s'";
         cat = "${pkgs.bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
