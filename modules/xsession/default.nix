@@ -18,37 +18,6 @@ let
     "${load-layouts}/bin/load-layouts.sh"
   ];
 
-  sources = import ./nix/sources.nix { };
-
-  mach-nix = import (builtins.fetchGit {
-    url = "https://github.com/DavHau/mach-nix";
-    ref = "refs/tags/3.5.0";
-  }) { };
-
-  unalix = mach-nix.buildPythonPackage {
-    src = sources.Unalix.url;
-    patches = [
-      ./update.patch
-    ];
-  };
-
-  clipboard-clean = pkgs.writeShellApplication {
-    name = "clipboard-clean";
-    runtimeInputs = with pkgs; [
-      coreutils
-      xclip
-      (mach-nix.mkPython [
-        (mach-nix.buildPythonPackage {
-          src = sources.Unalix.url;
-          patches = [
-            ./update.patch
-          ];
-        })
-      ])
-    ];
-    text = (builtins.readFile ./clipboard-clean.sh);
-  };
-
   load-layouts = pkgs.writeShellApplication {
     name = "load-layouts.sh";
     runtimeInputs = [ pkgs.wmctrl ];
