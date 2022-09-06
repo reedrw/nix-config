@@ -1,4 +1,7 @@
 { config, lib, pkgs, ... }:
+let
+  sources = import ./nix/sources.nix { };
+in
 {
   programs.neovim = {
     enable = true;
@@ -70,7 +73,11 @@
       vim-sandwich
       vim-table-mode
       vim-unimpaired
-    ];
+    ] ++ lib.attrsets.mapAttrsToList (name: src:
+      pkgs.vimUtils.buildVimPlugin {
+        inherit name src;
+      }
+    ) sources;
     extraConfig = with config.colorScheme.colors; ''
       let g:indentLine_char = '┊'
       let g:suda_smart_edit = 1
