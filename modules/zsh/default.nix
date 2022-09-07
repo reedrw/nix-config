@@ -1,4 +1,7 @@
 { config, lib, pkgs, ... }:
+let
+  sources = import ./nix/sources.nix { };
+in
 {
   programs = {
     direnv = {
@@ -37,7 +40,9 @@
           pkg = zsh-fzf-tab;
           file = "fzf-tab.plugin.zsh"; })
         (mkZshPlugin { pkg = zsh-syntax-highlighting; })
-      ];
+      ] ++ lib.attrsets.mapAttrsToList (name: src: {
+        inherit name src;
+      }) sources;
       autocd = true;
       defaultKeymap = "emacs";
       initExtra = ''
