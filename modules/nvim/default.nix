@@ -86,6 +86,8 @@ in
       source ${import ./theme.nix { inherit config; } }
       let base16colorspace=256
 
+      let g:fugitive_dynamic_colors = 0
+
       " disable language packs
       let g:polyglot_disabled = [
       \ "sensible",
