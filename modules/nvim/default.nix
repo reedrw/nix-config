@@ -26,6 +26,9 @@ in
             "filetypes" = [ "nix" ];
           };
         };
+        "pyright" = {
+          "inlayHints"."enable" = false;
+        };
       };
     };
     plugins = with pkgs.vimPlugins; [
