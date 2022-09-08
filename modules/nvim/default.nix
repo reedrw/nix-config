@@ -113,9 +113,11 @@ in
 
       " Don't unload abandoned buffers
       set hidden
-      set updatetime=1000
       set shiftwidth=2
       set tabstop=8
+
+      " auto-update gitgutter
+      set updatetime=40
 
       " Yank to system clipboard
       if has('clipboard')
