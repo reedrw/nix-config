@@ -11,6 +11,7 @@ let
     github-cli
     htop
     libreoffice
+    moreutils
     ngrok
     pavucontrol
     ripgrep
