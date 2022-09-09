@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3971546/torrent_control-0.2.27.xpi";
-    sha256 = "1qs3fcvq5kxzxlwd27x3sa1dn2isia71swa23rcgn4zrxk3dp7p1";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3999710/torrent_control-0.2.28.xpi";
+    sha256 = "0lx0m5ai1rxz0mp8h0m5kksrf5dflbr1qjjypbkc89n07b9zzxnf";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ttv-lol";
@@ -76,8 +76,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "ublock-origin";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3989793/ublock_origin-1.44.0.xpi";
-    sha256 = "1akhiqgpqypdy3nww30lp0n4510cqd1ivf1qz3g8ycjf07j1yxmf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3998742/ublock_origin-1.44.2.xpi";
+    sha256 = "0zvsjsjlp0r1glqf0qpv425zshrwmimk1in1v339acwy1ysxkx00";
   })
   (pkgs.fetchFirefoxAddon {
     name = "FrankerFaceZ";
