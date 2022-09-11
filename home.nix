@@ -3,7 +3,6 @@ let
   sources = import ./nix/sources.nix { };
 
   packages = with pkgs; [
-
     # utilities
     bitwarden
     cachix
@@ -17,10 +16,6 @@ let
     ripgrep
     xclip
     xsel
-
-    # chat
-    discord-canary
-    tdesktop
   ];
 
   # `pai` anywhere to update computer

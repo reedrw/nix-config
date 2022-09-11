@@ -1,4 +1,4 @@
-{ cfg, lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
   aagl-gtk-on-nix = import sources.aagl-gtk-on-nix { };
