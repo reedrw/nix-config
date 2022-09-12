@@ -3,6 +3,8 @@
 
 export NIXPKGS_ALLOW_UNFREE=1
 
+set -x
+
 host="$(hostname)"
 dir="$(dirname "$0")"
 
@@ -37,12 +39,11 @@ system(){
 }
 
 updateNixpkgs(){
-  channelName="nixpkgs"
-  currentNixpkgs="/nix/var/nix/profiles/per-user/$USER/channels/$channelName/"
+  user="${1:-$USER}"
+  channelName="${2:-nixpkgs}"
+  currentNixpkgs="/nix/var/nix/profiles/per-user/$user/channels/$channelName/"
   nixChannel="nix-channel"
-  if [[ "$onNixOS" == "yes" ]]; then
-    channelName="nixos"
-    currentNixpkgs="/nix/var/nix/profiles/per-user/root/channels/$channelName/"
+  if [[ "$user" == "root" ]]; then
     nixChannel="sudo $nixChannel"
   fi
   currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
@@ -69,6 +70,9 @@ if [[ -d "$systemProfile" ]]; then
   onNixOS="yes"
 fi
 
+if [[ "$onNixOS" == "yes" ]]; then
+  updateNixpkgs root nixos
+fi
 updateNixpkgs
 
 # Update NIX_PATH here or else you'd need to log out
