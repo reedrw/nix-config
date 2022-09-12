@@ -2,31 +2,28 @@
 #! nix-shell -i bash
 
 export NIXPKGS_ALLOW_UNFREE=1
+systemProfile="/nix/var/nix/profiles/system"
 
-set -x
+getChannelURL(){
+  nix-channel --list | grep "$1 " | cut -d' ' -f2
+}
 
-host="$(hostname)"
-dir="$(dirname "$0")"
-
-pushd "$dir" > /dev/null || exit
-
-HomeManagerURL="$(jq -r '.["home-manager"].url' ./nix/sources.json)"
-nixpkgsURL="$(jq -r '.["nixpkgs"].url' ./nix/sources.json)"
-
-getTarballHash(){
-  tmpDir="$(mktemp -d)/"
-  wget -nv --show-progress -c "$1" -O - | tar xz -C "$tmpDir" --strip-components=1
-  nix-hash --type sha256 "$tmpDir"
-  rm -r "$tmpDir"
+getPinnedURL(){
+  jq -r ".[\"$1\"].url" ./nix/sources.json
 }
 
 system(){
+  local host
+  local currentSystemDrv
+  local newSystemDrv
+
+  host="$(hostname)"
   # if the hostname matches a saved configuration.nix
   if [[ -f "./system/$host.nix" ]]; then
     currentSystemDrv="$(nix-store --query --deriver "$systemProfile")"
     newSystemDrv="$(nix-instantiate ci.nix -A "$host" 2> /dev/null)"
     # compare deriver of current and new system builds, if different, rebuild
-    if ! [[ "$currentSystemDrv" == "$newSystemDrv" ]]; then
+    if [[ "$currentSystemDrv" != "$newSystemDrv" ]]; then
       echo "Rebuilding NixOS..."
       sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix
     else
@@ -38,56 +35,83 @@ system(){
   fi
 }
 
+hm(){
+  local HomeManagerProfile
+  local currentHomeManagerDrv
+  local newHomeManagerDrv
+
+  HomeManagerProfile="/nix/var/nix/profiles/per-user/$USER/home-manager"
+  currentHomeManagerDrv="$(nix-store --query --deriver "$HomeManagerProfile")"
+  newHomeManagerDrv="$(nix-instantiate ci.nix -A home-manager 2> /dev/null)"
+  if [[ "$currentHomeManagerDrv" != "$newHomeManagerDrv" ]]; then
+    echo "Rebuilding home-manager..."
+    home-manager switch
+  else
+    echo "No changes to home-manager. Not rebuilding."
+  fi
+}
+
 updateNixpkgs(){
+  local channelName
+  local nixChannel
+  local user
+
   user="${1:-$USER}"
   channelName="${2:-nixpkgs}"
-  currentNixpkgs="/nix/var/nix/profiles/per-user/$user/channels/$channelName/"
   nixChannel="nix-channel"
   if [[ "$user" == "root" ]]; then
     nixChannel="sudo $nixChannel"
   fi
-  currentNixpkgsSha="$(nix-hash --type sha256 "$currentNixpkgs")"
-  newNixpkgsSha="$(getTarballHash "$nixpkgsURL")"
-  if [[ "$currentNixpkgsSha" != "$newNixpkgsSha" ]]; then
-    echo "Installing pinned nixpkgs..."
-    $nixChannel --add "$nixpkgsURL" "$channelName"
-    $nixChannel --update
-  fi
+  echo "Installing pinned nixpkgs as $user..."
+  $nixChannel --add "$nixpkgsURL" "$channelName"
+  $nixChannel --update
 }
 
-currentHomeManager="/nix/var/nix/profiles/per-user/$USER/channels/home-manager/"
-currentHomeManagerSha="$(nix-hash --type sha256 "$currentHomeManager")"
-newHomeManagerSha="$(getTarballHash "$HomeManagerURL")"
-if [[ "$currentHomeManagerSha" != "$newHomeManagerSha" ]]; then
+updateHomeManager(){
   echo "Installing pinned home-manager..."
   nix-channel --add "$HomeManagerURL" home-manager
   nix-channel --update
-fi
+}
 
-systemProfile="/nix/var/nix/profiles/system"
+checkForUpdates(){
+  local currentHomeManagerURL
+  local currentNixpkgsURL
+
+  currentHomeManagerURL="$(getChannelURL home-manager)"
+  currentNixpkgsURL="$(getChannelURL nixpkgs)"
+
+  [[ "$currentHomeManagerURL" != "$HomeManagerURL" ]] \
+    && hmUpdateNeeded="true"
+
+  [[ "$currentNixpkgsURL" != "$nixpkgsURL" ]] \
+    && nixpkgsUpdateNeeded="true"
+}
+
+dir="$(dirname "$0")"
+pushd "$dir" > /dev/null || exit
+
+HomeManagerURL="$(getPinnedURL home-manager)"
+nixpkgsURL="$(getPinnedURL nixpkgs)"
+
 # if a system profile exists (NixOS check)
 if [[ -d "$systemProfile" ]]; then
   onNixOS="yes"
 fi
 
-if [[ "$onNixOS" == "yes" ]]; then
-  updateNixpkgs root nixos
+checkForUpdates
+
+[[ -n "$hmUpdateNeeded" ]] && updateHomeManager
+
+if [[ -n "$nixpkgsUpdateNeeded" ]]; then
+  updateNixpkgs
+  # TODO: add check for non-NixOS multi-user install
+  [[ "$onNixOS" == "yes" ]] && updateNixpkgs root nixos
 fi
-updateNixpkgs
 
 # Update NIX_PATH here or else you'd need to log out
 export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
 
 [[ "$onNixOS" == "yes" ]] && system
-
-HomeManagerProfile="/nix/var/nix/profiles/per-user/$USER/home-manager"
-currentHomeManagerDrv="$(nix-store --query --deriver "$HomeManagerProfile")"
-newHomeManagerDrv="$(nix-instantiate ci.nix -A home-manager 2> /dev/null)"
-if ! [[ "$currentHomeManagerDrv" == "$newHomeManagerDrv" ]]; then
-  echo "Rebuilding home-manager..."
-  home-manager switch
-else
-  echo "No changes to home-manager. Not rebuilding."
-fi
+hm
 
 popd > /dev/null || exit
