@@ -68,14 +68,14 @@ jobs:
 
     - name: Build
       run: |
-        git checkout --detach "$(git rev-parse @~)"
-        oldDrv="$(nix-instantiate ./ci.nix -A ${{ matrix.output }})"
-        git switch -
-        newDrv="$(nix-instantiate ./ci.nix -A ${{ matrix.output }})"
-        if [[ "$newDrv" != "$oldDrv" ]]; then
-          if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
-            nix-shell shell.nix --run 'exit'
-          else
+        if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
+          nix-shell shell.nix --run 'exit'
+        else
+          git checkout "$(git rev-parse @~)"
+          oldDrv="$(nix-instantiate ./ci.nix -A ${{ matrix.output }})"
+          git switch -
+          newDrv="$(nix-instantiate ./ci.nix -A ${{ matrix.output }})"
+          if [[ "$newDrv" != "$oldDrv" ]]; then
             nix-build ci.nix -A ${{ matrix.output }}
           fi
         fi
