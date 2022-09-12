@@ -41,12 +41,15 @@ cargoUpdateNeeded() {
 }
 
 aaglOldRev="$(getAttribute an-anime-game-launcher-gtk rev)"
+aaglNixOldRev="$(getAttribute aagl-gtk-on-nix rev)"
 
 niv init
 niv update
 
 aaglNewRev="$(getAttribute an-anime-game-launcher-gtk rev)"
+aaglNixNewRev="$(getAttribute aagl-gtk-on-nix rev)"
 
-if [[ "$aaglNewRev" != "$aaglOldRev" ]] && cargoUpdateNeeded; then
+if ( [[ "$aaglNewRev" != "$aaglOldRev" ]] && cargoUpdateNeeded ) \
+  || [[ "$aaglNixNewRev" != "$aaglNixOldRev" ]]; then
     updateCargoSha
 fi
