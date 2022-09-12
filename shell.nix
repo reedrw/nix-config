@@ -11,6 +11,7 @@ let
     overlays = [
       nur.repos.reedrw.overlays.mkYamlShell
       hm-overlay
+      (import ./pkgs)
     ];
   };
 in

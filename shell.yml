@@ -11,6 +11,7 @@ packages:
   - pre-commit
   - shellcheck
   - wget
+  - nix-prefetch
 
 aliases:
   update-all: |
