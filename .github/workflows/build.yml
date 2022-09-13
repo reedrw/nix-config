@@ -67,6 +67,7 @@ jobs:
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
 
     - name: Build
+      id: build
       run: |
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
           instantiateCommand="nix-instantiate ./shell.nix"
@@ -82,6 +83,7 @@ jobs:
         newDrv="$($instantiateCommand)"
         if [[ "$newDrv" != "$oldDrv" ]]; then
           $buildCommand
+          echo "::set-output name=skipped::true"
         fi
       env:
         NIXPKGS_ALLOW_UNFREE: 1
@@ -90,7 +92,8 @@ jobs:
       id: diff
       if: ${{ github.event_name == 'pull_request'
         && github.head_ref == 'update-dependencies'
-        && matrix.output != 'nix-shell' }}
+        && matrix.output != 'nix-shell'
+        && steps.build.outputs.skipped != 'true' }}
       run: |
         nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
         git checkout "$(git rev-parse @~)"
