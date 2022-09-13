@@ -78,7 +78,7 @@ jobs:
 
         git switch --detach "HEAD^"
         oldDrv="$($instantiateCommand)"
-        git switch -
+        git checkout ${{ github.head_ref }}
         newDrv="$($instantiateCommand)"
         if [[ "$newDrv" != "$oldDrv" ]]; then
           $buildCommand
