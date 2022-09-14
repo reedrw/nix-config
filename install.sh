@@ -95,7 +95,7 @@ nixpkgsURL="$(getPinnedURL nixpkgs)"
 
 # if a system profile exists (NixOS check)
 if [[ -d "$systemProfile" ]]; then
-  onNixOS="yes"
+  onNixOS="true"
 fi
 
 checkForUpdates
@@ -105,13 +105,13 @@ checkForUpdates
 if [[ -n "$nixpkgsUpdateNeeded" ]]; then
   updateNixpkgs
   # TODO: add check for non-NixOS multi-user install
-  [[ "$onNixOS" == "yes" ]] && updateNixpkgs root nixos
+  [[ -n "$onNixOS" ]] && updateNixpkgs root nixos
 fi
 
 # Update NIX_PATH here or else you'd need to log out
 export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
 
-[[ "$onNixOS" == "yes" ]] && system
+[[ -n "$onNixOS" ]] && system
 hm
 
 popd > /dev/null || exit
