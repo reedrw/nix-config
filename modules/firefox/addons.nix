@@ -51,8 +51,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "refined-github-";
-    url = "https://addons.mozilla.org/firefox/downloads/file/4000641/refined_github-22.9.9.xpi";
-    sha256 = "0pclkziyshx7mmwfry7jwmdjgyqmfnaphqwzf06kai09haqqpfk8";
+    url = "https://addons.mozilla.org/firefox/downloads/file/4002791/refined_github-22.9.15.xpi";
+    sha256 = "0lr4nmfmdmrp272w9gcfxrd2d7v3wplpfln4fkhqa55kkm6bxvwp";
   })
   (pkgs.fetchFirefoxAddon {
     name = "sponsorblock";
@@ -66,8 +66,8 @@ pkgs: [
   })
   (pkgs.fetchFirefoxAddon {
     name = "torrent-control";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3999710/torrent_control-0.2.28.xpi";
-    sha256 = "0lx0m5ai1rxz0mp8h0m5kksrf5dflbr1qjjypbkc89n07b9zzxnf";
+    url = "https://addons.mozilla.org/firefox/downloads/file/4002927/torrent_control-0.2.29.xpi";
+    sha256 = "0nf7hzpq1n5n6f1v0zsqxdplaya6h3pjh7raca2v48lwcldmbfsm";
   })
   (pkgs.fetchFirefoxAddon {
     name = "ttv-lol";
