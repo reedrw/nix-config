@@ -3,12 +3,15 @@ let
   sources = import ../../nix/sources.nix { sourcesFile = ../../nix/sources.json; };
 in
 {
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowBroken = true;
-    packageOverrides = pkgs: {
-      nur = import sources.NUR {
-        inherit pkgs;
+  nixpkgs = {
+    overlays = [ (import ../../pkgs) ];
+    config = {
+      allowUnfree = true;
+      allowBroken = true;
+      packageOverrides = pkgs: {
+        nur = import sources.NUR {
+          inherit pkgs;
+        };
       };
     };
   };
