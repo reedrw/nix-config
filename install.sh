@@ -31,7 +31,7 @@ system(){
     fi
   else
     echo "Rebuilding NixOS..."
-    sudo nixos-rebuild switch
+    sudo nixos-rebuild switch || exit 1
   fi
 }
 
@@ -45,7 +45,7 @@ hm(){
   newHomeManagerDrv="$(nix-instantiate ci.nix -A home-manager 2> /dev/null)"
   if [[ "$currentHomeManagerDrv" != "$newHomeManagerDrv" ]]; then
     echo "Rebuilding home-manager..."
-    home-manager switch
+    home-manager switch || exit 1
   else
     echo "No changes to home-manager. Not rebuilding."
   fi
@@ -111,7 +111,7 @@ fi
 # Update NIX_PATH here or else you'd need to log out
 export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
 
-[[ -n "$onNixOS" ]] && system
-hm
+[[ -n "$onNixOS" ]] && system || exit 1
+hm || exit 1
 
 popd > /dev/null || exit
