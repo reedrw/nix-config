@@ -15,7 +15,7 @@ let
   ];
 
   run = [
-    "${load-layouts}/bin/load-layouts.sh"
+    "i3-msg workspace 1"
   ];
 
   load-layouts = pkgs.writeShellApplication {
@@ -71,32 +71,36 @@ in
         floating.border = 5;
         modifier = "${mod}";
         terminal = "${term}";
-        keybindings = lib.mkOptionDefault {
-          "Print" = "${exec} flameshot gui";
-          "${mod}+Return" = "${exec} ${term}";
-          "${sup}+Return" = "${exec} ${selecterm}/bin/select-term.sh";
-          "${mod}+d" = "focus child";
-          "${mod}+o" = "open";
-          "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
-          "${sup}+Right" = "resize grow width 5 px or 5 ppt";
-          "${sup}+Down" = "resize grow height 5 px or 5 ppt";
-          "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-          "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
-          "${mod}+e" = "${exec} ${pkgs.rofimoji}/bin/rofimoji";
-          "${mod}+w" = "${exec} echo This line is just here to unbind mod+w";
-          "${mod}+r" = "${exec} ${record}/bin/record.sh";
-          "${mod}+p" = "${exec} ${bwmenu-patched}/bin/bwmenu";
-          "${mod}+Shift+s" = "sticky toggle";
-          "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
-          "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
-          "Ctrl+Down" = "${exec} ${pkgs.playerctl}/bin/playerctl play-pause";
-          "Ctrl+Left" = "${exec} ${pkgs.playerctl}/bin/playerctl previous";
-          "Ctrl+Right" = "${exec} ${pkgs.playerctl}/bin/playerctl next";
-          "XF86AudioPause" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
-          "XF86AudioPlay" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
-          "XF86AudioPrev" = "${exec} ${pkgs.playerctl}/bin/platerctl previous";
-          "XF86AudioNext" = "${exec} ${pkgs.playerctl}/bin/platerctl next";
-        };
+        keybindings = lib.mkOptionDefault (
+          {
+            "Print" = "${exec} flameshot gui";
+            "${mod}+Return" = "${exec} ${term}";
+            "${sup}+Return" = "${exec} ${selecterm}/bin/select-term.sh";
+            "${mod}+d" = "focus child";
+            "${mod}+o" = "open";
+            "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
+            "${sup}+Right" = "resize grow width 5 px or 5 ppt";
+            "${sup}+Down" = "resize grow height 5 px or 5 ppt";
+            "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
+            "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
+            "${mod}+r" = "${exec} ${record}/bin/record.sh";
+            "${mod}+p" = "${exec} ${bwmenu-patched}/bin/bwmenu";
+            "${mod}+Shift+s" = "sticky toggle";
+            "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
+            "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
+            "Ctrl+Down" = "${exec} ${pkgs.playerctl}/bin/playerctl play-pause";
+            "Ctrl+Left" = "${exec} ${pkgs.playerctl}/bin/playerctl previous";
+            "Ctrl+Right" = "${exec} ${pkgs.playerctl}/bin/playerctl next";
+            "XF86AudioPause" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
+            "XF86AudioPlay" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
+            "XF86AudioPrev" = "${exec} ${pkgs.playerctl}/bin/platerctl previous";
+            "XF86AudioNext" = "${exec} ${pkgs.playerctl}/bin/platerctl next";
+          } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
+            ("${mod}+ctrl+${x}") ("${exec} ${load-layouts}/bin/load-layouts.sh ${x}")
+          ) (builtins.listToAttrs (map
+            (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
+          ))
+        );
         colors = with config.colorScheme.colors; {
           focused = {
             border = "#${base07}";
