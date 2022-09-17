@@ -90,6 +90,7 @@ in
       let base16colorspace=256
 
       let g:fugitive_dynamic_colors = 0
+      let g:lc3_detect_asm = 1
 
       " disable language packs
       let g:polyglot_disabled = [
