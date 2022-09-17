@@ -69,6 +69,7 @@ jobs:
     - name: Build
       id: build
       run: |
+        set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
           instantiateCommand="nix-instantiate ./shell.nix"
           buildCommand="nix-shell ./shell.nix --run 'exit'"
@@ -79,7 +80,7 @@ jobs:
 
         git switch --detach "HEAD^"
         oldDrv="$($instantiateCommand)"
-        git checkout ${{ github.head_ref }}
+        git checkout ${{ github.ref_name }}
         newDrv="$($instantiateCommand)"
         if [[ "$newDrv" != "$oldDrv" ]]; then
           $buildCommand
