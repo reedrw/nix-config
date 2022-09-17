@@ -151,6 +151,24 @@ in
             };
           }
           {
+            command = "border none";
+            criteria = {
+              class = "TelegramDesktop";
+            };
+          }
+          {
+            command = "border none";
+            criteria = {
+              class = "Element";
+            };
+          }
+          {
+            command = "border none";
+            criteria = {
+              class = "discord";
+            };
+          }
+          {
             command = "floating enable";
             criteria = {
               class = "Alacritty";
