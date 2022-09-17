@@ -3,6 +3,7 @@
   home.packages = with pkgs; [
     tdesktop
     discord-canary
+    cinny-desktop
   ];
 
   xdg.configFile = {

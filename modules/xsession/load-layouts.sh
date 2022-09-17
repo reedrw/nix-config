@@ -7,6 +7,24 @@ loadLayout(){
   i3-msg "workspace $1; append_layout ~/.config/i3/workspace-$1.json"
 }
 
+launchPrograms(){
+  case "$1" in
+    "1" )
+      (firefox &)
+    ;;
+    "2" )
+      (cinny &)
+      (DiscordCanary &)
+      (telegram-desktop &)
+    ;;
+    "4" )
+      (blueman-manager &)
+      (pavucontrol &)
+      (easyeffects &)
+    ;;
+  esac
+}
+
 windowExists(){
   if (( "$#" == 1 )); then
     wmctrl -lx | grep -q "$1"
@@ -18,35 +36,43 @@ windowExists(){
 }
 
 main(){
-  # Load workspace 1
-  loadLayout 1
+  if [[ -n "$1" ]]; then
+    case "$1" in
+      "0")
+        loadLayout 10
+        launchPrograms 10
+      ;;
+      *)
+        loadLayout "$1"
+        launchPrograms "$1"
+      ;;
+    esac
+  else
+    # Load workspace 1
+    loadLayout 1
+    launchPrograms 1
 
-  (firefox &)
-  until windowExists Firefox; do
-    sleep 1
-  done
+    until windowExists Firefox; do
+      sleep 1
+    done
 
-  # Load workspace 4
-  loadLayout 4
+    # Load workspace 4
+    loadLayout 4
+    launchPrograms 4
 
-  (blueman-manager &)
-  (pavucontrol &)
-  (easyeffects &)
+    until windowExists \
+      .blueman-manager-wrapped \
+      Pavucontrol \
+      easyeffects
+    do
+      sleep 1
+    done
 
-  until windowExists \
-    .blueman-manager-wrapped \
-    Pavucontrol \
-    easyeffects
-  do
-    sleep 1
-  done
-
-  # Load workspace 2
-  # Should always be last since Discord's updater is problematic otherwise
-  loadLayout 2
-
-  (DiscordCanary &)
-  (telegram-desktop &)
+    # Load workspace 2
+    # Should always be last since Discord's updater is problematic otherwise
+    loadLayout 2
+    launchPrograms 2
+  fi
 }
 
 main "$@"

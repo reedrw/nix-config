@@ -12,4 +12,12 @@ self: super: {
   discord-canary = super.discord-canary.override {
     nss = super.nss_latest;
   };
+  # https://github.com/NixOS/nixpkgs/pull/191659
+  cinny-desktop = super.cinny-desktop.overrideAttrs (
+    old: rec {
+      buildInputs = old.buildInputs ++ [
+        super.openssl_1_1
+      ];
+    }
+  );
 }
