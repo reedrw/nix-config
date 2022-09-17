@@ -177,18 +177,18 @@ in
     "i3/workspace-4.json".source = ./workspace-4.json;
   };
 
-  # systemd.user.services.clipboard-clean = {
-  #   Unit = {
-  #     After = [ "graphical.target" ];
-  #     Description = "Clean URLS on clipboard using ClearURL rules.";
-  #   };
-  #   Install = {
-  #     WantedBy = [ "default.target" ];
-  #   };
-  #   Service = {
-  #     #Environment = "PATH=${config.home.profileDirectory}/bin";
-  #     ExecStart = "${clipboard-clean}/bin/clipboard-clean";
-  #     Type = "simple";
-  #   };
-  # };
+  systemd.user.services.clipboard-clean = {
+    Unit = {
+      After = [ "graphical.target" ];
+      Description = "Clean URLS on clipboard using ClearURL rules.";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+    Service = {
+      #Environment = "PATH=${config.home.profileDirectory}/bin";
+      ExecStart = "${scripts.clipboard-clean}/bin/clipboard-clean";
+      Type = "simple";
+    };
+  };
 }

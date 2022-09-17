@@ -22,6 +22,26 @@
     text = (builtins.readFile ./record.sh);
   };
 
+  clipboard-clean = let
+    sources = import ./clipboard-clean-patches/nix/sources.nix { };
+    unalix = pkgs.python3Packages.buildPythonPackage rec {
+      name = "Unalix";
+      src = sources.Unalix;
+
+      patches = [ ./clipboard-clean-patches/update.patch ];
+
+      doCheck = false;
+    };
+    in pkgs.writeShellApplication {
+    name = "clipboard-clean";
+    runtimeInputs = with pkgs; [
+      coreutils
+      xclip
+      (python3.withPackages(ps: with ps; [ unalix ]))
+    ];
+    text = (builtins.readFile ./clipboard-clean.sh);
+  };
+
   bwmenu-patched = pkgs.nur.repos.reedrw.bitwarden-rofi.overrideAttrs (
     old: rec {
       src = pkgs.fetchFromGitHub {
