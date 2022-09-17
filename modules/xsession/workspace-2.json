@@ -49,12 +49,11 @@
                        "y": 0
                     },
                     "marks": [],
-                    "name": "Cinny",
                     "percent": 0.5,
                     "swallows": [
                        {
-                           "class": "^Cinny$",
-                           "instance": "^cinny$"
+                           "class": "^Element$",
+                           "instance": "^element$"
                        }
                     ],
                     "type": "con"
