@@ -18,6 +18,7 @@ EOF
 }
 
 while true; do
+    sleep 5
     CURR_CLIP=$($PASTE_CMD) || continue
     if [ "$CURR_CLIP" != "$PREV_CLIP" ]; then
         # Check if the clipboard starts with 'http'
@@ -30,5 +31,4 @@ while true; do
         esac
     fi
     PREV_CLIP=$($PASTE_CMD)
-    sleep 5
 done

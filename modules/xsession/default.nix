@@ -186,8 +186,8 @@ in
       WantedBy = [ "default.target" ];
     };
     Service = {
-      #Environment = "PATH=${config.home.profileDirectory}/bin";
       ExecStart = "${scripts.clipboard-clean}/bin/clipboard-clean";
+      Restart = "on-failure";
       Type = "simple";
     };
   };
