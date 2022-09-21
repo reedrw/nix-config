@@ -14,6 +14,7 @@ let
     ngrok
     pavucontrol
     ripgrep
+    sshpass
     xclip
     xsel
   ];
