@@ -167,6 +167,8 @@ in
       nnoremap / /\v
       vnoremap / /\v
 
+      nnoremap <F5> :UndotreeToggle<CR>
+
       nnoremap hms :!home-manager switch
       nnoremap hmb :!home-manager build
       " https://stackoverflow.com/questions/597687/how-to-quickly-change-variable-names-in-vim/597932#597932
