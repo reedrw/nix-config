@@ -4,7 +4,7 @@
     enable = true;
     shadow = true;
     fade = true;
-    fadeDelta = 2;
+    fadeDelta = 3;
     shadowOpacity = 0.3;
     shadowExclude = [
       "! name      ~= ''"
