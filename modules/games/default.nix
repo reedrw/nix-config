@@ -21,6 +21,7 @@ in
     (aagl-gtk-on-nix.an-anime-game-launcher-gtk.override {
       an-anime-game-launcher-gtk-unwrapped = aagl-gtk-unwrapped.override {
         customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
+        libadwaita = pkgs.libadwaita12;
       };
     })
   ];

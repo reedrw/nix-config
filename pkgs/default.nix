@@ -1,3 +1,6 @@
+let
+  sources = import ./nix/sources.nix { };
+in
 self: super: {
   ranger = super.ranger.overrideAttrs (
     old: rec {
@@ -20,4 +23,7 @@ self: super: {
       ];
     }
   );
+
+  # https://github.com/NixOS/nixpkgs/pull/182618
+  libadwaita12 = (import sources.nixpkgs { }).libadwaita;
 }
