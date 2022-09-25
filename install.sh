@@ -60,7 +60,7 @@ updateNixpkgs(){
   channelName="${2:-nixpkgs}"
   nixChannel="nix-channel"
   if [[ "$user" == "root" ]]; then
-    nixChannel="sudo $nixChannel"
+    nixChannel="sudo -i $nixChannel"
   fi
   echo "Installing pinned nixpkgs as $user..."
   $nixChannel --add "$nixpkgsURL" "$channelName"
@@ -96,6 +96,8 @@ nixpkgsURL="$(getPinnedURL nixpkgs)"
 # if a system profile exists (NixOS check)
 if [[ -d "$systemProfile" ]]; then
   onNixOS="true"
+elif [[ -d "/nix/var/nix/profiles/per-user/root/channels/nixpkgs" ]]; then
+  multiUser="true"
 fi
 
 checkForUpdates
@@ -106,10 +108,11 @@ if [[ -n "$nixpkgsUpdateNeeded" ]]; then
   updateNixpkgs
   # TODO: add check for non-NixOS multi-user install
   [[ -n "$onNixOS" ]] && updateNixpkgs root nixos
+  [[ -n "$multiUser" ]] && updateNixpkgs root
 fi
 
 # Update NIX_PATH here or else you'd need to log out
-export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels
+export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
 
 [[ -n "$onNixOS" ]] && system || exit 1
 hm || exit 1
