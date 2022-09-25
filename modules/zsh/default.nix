@@ -45,12 +45,12 @@ in
       }) sources;
       autocd = true;
       defaultKeymap = "emacs";
+      completionInit = "autoload -U compinit && compinit -i";
       initExtra = ''
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
           colors
-          compinit
           down-line-or-beginning-search
           up-line-or-beginning-search
         EOF
@@ -108,7 +108,7 @@ in
 
         FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
 
-        if [ -n "$TMUX" ]; then
+        if [[ "$USER" != "root" ]] && [[ "$TMUX" == *"tmux"* ]]; then
           zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
         fi
 
