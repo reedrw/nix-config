@@ -114,7 +114,7 @@ fi
 # Update NIX_PATH here or else you'd need to log out
 export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
 
-[[ -n "$onNixOS" ]] && system || exit 1
+[[ -n "$onNixOS" ]] && (system || exit 1)
 hm || exit 1
 
 popd > /dev/null || exit
