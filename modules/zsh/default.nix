@@ -69,6 +69,12 @@ in
         source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right)
         source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
+        export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
+
+        if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+          . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+        fi
+
         colors
         setopt promptsubst
         PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$))%{$reset_color%} '
