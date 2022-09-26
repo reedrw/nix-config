@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p niv nix-prefetch gron jq git
+#! nix-shell -i bash -p git gron jq niv nix-prefetch
 
 PS4=''
 set -x
@@ -49,7 +49,7 @@ niv update
 aaglNewRev="$(getAttribute an-anime-game-launcher-gtk rev)"
 aaglNixNewRev="$(getAttribute aagl-gtk-on-nix rev)"
 
-if ( [[ "$aaglNewRev" != "$aaglOldRev" ]] && cargoUpdateNeeded ) \
+if ( [[ "$aaglNewRev"    != "$aaglOldRev" ]] && cargoUpdateNeeded ) \
   || [[ "$aaglNixNewRev" != "$aaglNixOldRev" ]]; then
     updateCargoSha
 fi
