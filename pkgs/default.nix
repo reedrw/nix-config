@@ -23,7 +23,4 @@ self: super: {
       ];
     }
   );
-
-  # https://github.com/NixOS/nixpkgs/pull/182618
-  libadwaita12 = (import sources.nixpkgs { }).libadwaita;
 }
