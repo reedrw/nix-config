@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p coreutils curl gawk git jq
+#! nix-shell -i bash -p gawk git jq
 
 savedUrl="$(jq -r '.url' ./source.json)"
 
