@@ -3,7 +3,7 @@ let
   calnotify = pkgs.writeShellApplication {
     name = "calnotify";
     runtimeInputs = with pkgs; [
-      utillinux
+      util-linux
       gnused
       libnotify
     ];
