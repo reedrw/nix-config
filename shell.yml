@@ -5,13 +5,14 @@ packages:
   - doppler
   - gcc
   - git
+  - gron
   - home-manager
   - jq
   - niv
+  - nix-prefetch
   - pre-commit
   - shellcheck
   - wget
-  - nix-prefetch
 
 aliases:
   update-all: |
