@@ -10,6 +10,7 @@ in
   imports = [
     ./boot/efi.nix
     ./users/reed.nix
+    ./optional/games
     "${sources.nixos-hardware}/common/cpu/intel"
     "${sources.nixos-hardware}/common/pc/ssd"
   ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
