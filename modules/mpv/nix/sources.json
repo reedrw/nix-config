@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "ekisu",
         "repo": "mpv-webm",
-        "rev": "f688ae6a2a42a2ed594e7a011b4e905fcfceb25a",
-        "sha256": "0pw2762lk1vz0j7lkcyhhc28dggi9xmh3pgb3607ilq74j8kxnx4",
+        "rev": "a2997a0c3cfcf824639de03d089edd0435b3746c",
+        "sha256": "1adzna2d0vyav1xk63nljswdf7c8d5njiid3yiz8saqawn251nj4",
         "type": "tarball",
-        "url": "https://github.com/ekisu/mpv-webm/archive/f688ae6a2a42a2ed594e7a011b4e905fcfceb25a.tar.gz",
+        "url": "https://github.com/ekisu/mpv-webm/archive/a2997a0c3cfcf824639de03d089edd0435b3746c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mpv_thumbnail_script": {
