@@ -2,6 +2,7 @@
 
 {
   services.journald.extraConfig = "SystemMaxUse=500M";
+  services.udisks2.enable = true;
 
   systemd = let
     extraConfig = ''
