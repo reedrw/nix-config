@@ -77,8 +77,12 @@ in
       vim-table-mode
       vim-unimpaired
     ] ++ lib.attrsets.mapAttrsToList (name: src:
+      let
+        pname = name;
+        version = src.rev;
+      in
       pkgs.vimUtils.buildVimPlugin {
-        inherit name src;
+        inherit pname version src;
       }
     ) sources;
     extraConfig = with config.colorScheme.colors; ''
