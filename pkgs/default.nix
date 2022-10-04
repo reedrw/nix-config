@@ -12,14 +12,6 @@ self: super: {
   discord-canary = super.discord-canary.override {
     nss = super.nss_latest;
   };
-  # https://github.com/NixOS/nixpkgs/pull/191659
-  cinny-desktop = super.cinny-desktop.overrideAttrs (
-    old: rec {
-      buildInputs = old.buildInputs ++ [
-        super.openssl_1_1
-      ];
-    }
-  );
   # https://github.com/i3/i3/issues/5184
   i3-gaps = (import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/f4edfa5f90abd526d563da66c84c29723deb3e9b.tar.gz) {}).i3-gaps;
 }
