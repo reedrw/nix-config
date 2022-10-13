@@ -44,7 +44,7 @@ jobs:
         echo "::set-output name=commit::$commit"
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v17
+      uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=${{ steps.nixpkgs-commit.outputs.commit }}
 
@@ -100,7 +100,7 @@ jobs:
         echo "::set-output name=commit::$commit"
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v17
+      uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=${{ steps.nixpkgs-commit.outputs.commit }}
 
