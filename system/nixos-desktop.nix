@@ -16,16 +16,7 @@ in
   ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
 
   boot = {
-    kernelPackages = with pkgs; let
-      customKernelPackages = linuxPackagesFor (linuxPackages_lqx.kernel.override {
-      structuredExtraConfig = with lib.kernel; {
-        SCHED_MUQSS = yes;
-         # RQ_MC is better for 6 or less cores, apparently, as a rule of thumb
-        RQ_SMT = yes;
-      };
-      ignoreConfigErrors = true;
-    });
-    in customKernelPackages;
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
@@ -52,31 +43,6 @@ in
       };
     };
   };
-
-  # programs.ssh.extraConfig = ''
-  #   Host eu.nixbuild.net
-  #     PubkeyAcceptedKeyTypes ssh-ed25519
-  #     IdentityFile /home/reed/.ssh/my-nixbuild-key
-  # '';
-  #
-  # programs.ssh.knownHosts = {
-  #   nixbuild = {
-  #     hostNames = [ "eu.nixbuild.net" ];
-  #     publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
-  #   };
-  # };
-  #
-  # nix = {
-  #   distributedBuilds = true;
-  #   buildMachines = [
-  #     {
-  #       hostName = "eu.nixbuild.net";
-  #       system = "x86_64-linux";
-  #       maxJobs = 100;
-  #       supportedFeatures = [ "benchmark" "big-parallel" ];
-  #     }
-  #   ];
-  # };
 
   networking.hostName = "nixos-desktop";
   networking.networkmanager.insertNameservers = [
