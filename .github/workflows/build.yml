@@ -23,8 +23,8 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - name: Cleanup Disk
-      uses: curoky/cleanup-disk-action@v2.0
+    # - name: Cleanup Disk
+    #   uses: curoky/cleanup-disk-action@v2.0
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v2
