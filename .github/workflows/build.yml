@@ -36,7 +36,7 @@ jobs:
       env:
         DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
-    - uses: tibdex/github-app-token@v1.6
+    - uses: tibdex/github-app-token@v1.7
       if: ${{ github.event_name == 'pull_request' && github.head_ref == 'update-dependencies' }}
       id: generate-token
       with:
