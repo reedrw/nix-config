@@ -13,7 +13,10 @@ in
     "${sources.nixos-hardware}/lenovo/thinkpad/t480"
   ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
 
-  boot.kernelPackages = pkgs.linuxPackages_lqx;
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
+  };
 
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
