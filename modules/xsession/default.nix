@@ -19,6 +19,7 @@ let
   ];
 
   scripts = import ./scripts { inherit pkgs; };
+  sources = import ./nix/sources.nix { };
 
 in
 {
@@ -26,7 +27,12 @@ in
     enable = true;
     windowManager.i3 = {
       enable = true;
-      package = pkgs.i3-gaps;
+      package = pkgs.i3-gaps.overrideAttrs (
+        old: rec {
+          version = sources.i3-gaps.rev;
+          src = sources.i3-gaps;
+        }
+      );
       config = {
         bars = [ ];
         gaps = {
