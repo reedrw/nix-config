@@ -49,15 +49,14 @@ jobs:
         fetch-depth: 0
 
     - name: Get nixpkgs commit
-      id: nixpkgs-commit
       run: |
         commit="$(jq -r '.nixpkgs.url' ./nix/sources.json)"
-        echo "::set-output name=commit::$commit"
+        echo "nixpkgs-commit=$commit" >> $GITHUB_ENV
 
     - name: Install Nix
       uses: cachix/install-nix-action@v18
       with:
-        nix_path: nixpkgs=${{ steps.nixpkgs-commit.outputs.commit }}
+        nix_path: nixpkgs=${{ env.nixpkgs-commit }}
 
     - name: Install Cachix
       uses: cachix/cachix-action@v11
@@ -67,7 +66,6 @@ jobs:
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
 
     - name: Build
-      id: build
       run: |
         set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
@@ -84,9 +82,9 @@ jobs:
         newDrv="$($instantiateCommand)"
         if [[ "$newDrv" != "$oldDrv" ]]; then
           $buildCommand
-          echo "::set-output name=skipped::no"
+          echo "build-skipped=no" >> $GITHUB_ENV
         else
-          echo "::set-output name=skipped::yes"
+          echo "build-skipped=yes" >> $GITHUB_ENV
         fi
       env:
         NIXPKGS_ALLOW_UNFREE: 1
@@ -96,7 +94,7 @@ jobs:
       if: ${{ github.event_name == 'pull_request'
         && github.head_ref == 'update-dependencies'
         && matrix.output != 'nix-shell'
-        && steps.build.outputs.skipped == 'no' }}
+        && env.build-skipped == 'no' }}
       run: |
         nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
         git checkout "$(git rev-parse @~)"
