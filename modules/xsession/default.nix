@@ -61,8 +61,8 @@ in
             "${mod}+r" = "${exec} ${record}/bin/record.sh";
             "${mod}+p" = "${exec} ${bwmenu-patched}/bin/bwmenu";
             "${mod}+Shift+s" = "sticky toggle";
-            "XF86MonBrightnessUp" = "${exec} xbacklight -inc 10";
-            "XF86MonBrightnessDown" = "${exec} xbacklight -dec 10";
+            "XF86MonBrightnessUp" = "${exec} ${pkgs.brightnessctl}/bin/brightnessctl s 10%+";
+            "XF86MonBrightnessDown" = "${exec} ${pkgs.brightnessctl}/bin/brightnessctl s 10%-";
             "Ctrl+Down" = "${exec} ${pkgs.playerctl}/bin/playerctl play-pause";
             "Ctrl+Left" = "${exec} ${pkgs.playerctl}/bin/playerctl previous";
             "Ctrl+Right" = "${exec} ${pkgs.playerctl}/bin/playerctl next";
