@@ -104,42 +104,6 @@ in
         };
         window.commands = [
           {
-            command = "border none";
-            criteria = {
-              class = "firefox";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
-              class = "mpv";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
-              class = "Alacritty";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
-              class = "TelegramDesktop";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
-              class = "Element";
-            };
-          }
-          {
-            command = "border none";
-            criteria = {
-              class = "discord";
-            };
-          }
-          {
             command = "floating enable";
             criteria = {
               class = "Alacritty";
@@ -152,23 +116,35 @@ in
               class = "An Anime Game Launcher";
             };
           }
+        ] ++ builtins.map ( class:
+          {
+            command = "border none";
+            criteria = {
+              inherit class;
+            };
+          }
+        ) [
+          "firefox"
+          "mpv"
+          "Alacritty"
+          "TelegramDesktop"
+          "Element"
+          "discord"
         ];
         startup = []
-        ++
-        builtins.map ( command:
+        ++ builtins.map ( command:
             {
-              command = command;
+              inherit command;
               always = true;
               notification = false;
             }
           ) alwaysRun
-        ++
-          builtins.map ( command:
-            {
-              command = command;
-              notification = false;
-            }
-          ) run;
+        ++ builtins.map ( command:
+          {
+            inherit command;
+            notification = false;
+          }
+        ) run;
       };
     };
   };
