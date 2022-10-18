@@ -109,6 +109,9 @@ in
       set cursorline
       set inccommand=nosplit
 
+      " Makes regex syntax highlighting significantly faster
+      set re=1
+
       function! s:ModeCheck(id)
         let vmode = mode() =~# '[vV�]'
         if vmode && !&rnu
