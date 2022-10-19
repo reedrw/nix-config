@@ -8,5 +8,6 @@ in
     nur = import "${sources.NUR}" {
       inherit pkgs;
     };
+    master = import "${sources.nixpkgs-master}" { };
   };
 }

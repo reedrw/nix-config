@@ -1,19 +1,8 @@
 { config, pkgs, ... }:
-let
-  sources = import ../../nix/sources.nix { sourcesFile = ../../nix/sources.json; };
-in
 {
   nixpkgs = {
     overlays = [ (import ../../pkgs) ];
-    config = {
-      allowUnfree = true;
-      allowBroken = true;
-      packageOverrides = pkgs: {
-        nur = import sources.NUR {
-          inherit pkgs;
-        };
-      };
-    };
+    config = import ../../config.nix;
   };
 
   nix = {

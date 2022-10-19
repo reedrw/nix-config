@@ -35,6 +35,18 @@
         "url": "https://github.com/NixOS/nixos-hardware/archive/0e6593630071440eb89cd97a52921497482b22c6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "nixpkgs-master": {
+        "branch": "master",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "e66821278399ba9565178ce3b525e72275fe004e",
+        "sha256": "1yagbpqj9lxqjgjcag1irvpy4aqrxxmgbj9amx24b87a6p68si7s",
+        "type": "tarball",
+        "url": "https://github.com/nixos/nixpkgs/archive/e66821278399ba9565178ce3b525e72275fe004e.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "nixpkgs": {
         "branch": "nixos-unstable",
         "description": "Nix Packages collection",
