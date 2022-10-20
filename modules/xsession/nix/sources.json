@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "Airblader",
         "repo": "i3",
-        "rev": "db040c88b6806d00a9b19877b4dc2440c5663cab",
-        "sha256": "1ajv0n1vf9af0lz6935qxawrnhi7ak7xj883lsahx3s7xvl5ng6d",
+        "rev": "cc3b1eb8df67ee4215f874381ba05008860c8c88",
+        "sha256": "197rik4q6ki369f2p8z542i981smras34kpyayc6yakldx5r34xs",
         "type": "tarball",
-        "url": "https://github.com/Airblader/i3/archive/db040c88b6806d00a9b19877b4dc2440c5663cab.tar.gz",
+        "url": "https://github.com/Airblader/i3/archive/cc3b1eb8df67ee4215f874381ba05008860c8c88.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
