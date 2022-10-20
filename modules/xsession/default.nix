@@ -33,10 +33,6 @@ in
           src = sources.i3-gaps;
         }
       );
-      # https://github.com/i3/i3/pull/5213
-      extraConfig = ''
-        tiling_drag off
-      '';
       config = {
         bars = [ ];
         gaps = {
