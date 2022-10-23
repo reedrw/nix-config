@@ -198,7 +198,7 @@ in
         cat = "${pkgs.bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
         df = "${pkgs.pydf}/bin/pydf";
-        gcd = "sudo nix-collect-garbage -d";
+        gcd = "sudo gc -d";
         ln = "ln -v";
         ls = "${pkgs.exa}/bin/exa -lh --git -s type";
         mkdir = "mkdir -vp";
