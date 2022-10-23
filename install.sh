@@ -89,32 +89,30 @@ checkForUpdates(){
 
 dir="$(dirname "$0")"
 pushd "$dir" > /dev/null || exit
+  HomeManagerURL="$(getPinnedURL home-manager)"
+  nixpkgsURL="$(getPinnedURL nixpkgs)"
 
-HomeManagerURL="$(getPinnedURL home-manager)"
-nixpkgsURL="$(getPinnedURL nixpkgs)"
+  # if a system profile exists (NixOS check)
+  if [[ -d "$systemProfile" ]]; then
+    onNixOS="true"
+  elif [[ -d "/nix/var/nix/profiles/per-user/root/channels/nixpkgs" ]]; then
+    multiUser="true"
+  fi
 
-# if a system profile exists (NixOS check)
-if [[ -d "$systemProfile" ]]; then
-  onNixOS="true"
-elif [[ -d "/nix/var/nix/profiles/per-user/root/channels/nixpkgs" ]]; then
-  multiUser="true"
-fi
+  checkForUpdates
 
-checkForUpdates
+  [[ -n "$hmUpdateNeeded" ]] && updateHomeManager
 
-[[ -n "$hmUpdateNeeded" ]] && updateHomeManager
+  if [[ -n "$nixpkgsUpdateNeeded" ]]; then
+    updateNixpkgs
+    # TODO: add check for non-NixOS multi-user install
+    [[ -n "$onNixOS" ]] && updateNixpkgs root nixos
+    [[ -n "$multiUser" ]] && updateNixpkgs root
+  fi
 
-if [[ -n "$nixpkgsUpdateNeeded" ]]; then
-  updateNixpkgs
-  # TODO: add check for non-NixOS multi-user install
-  [[ -n "$onNixOS" ]] && updateNixpkgs root nixos
-  [[ -n "$multiUser" ]] && updateNixpkgs root
-fi
+  # Update NIX_PATH here or else you'd need to log out
+  export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
 
-# Update NIX_PATH here or else you'd need to log out
-export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
-
-[[ -n "$onNixOS" ]] && (system || exit 1)
-hm || exit 1
-
+  [[ -n "$onNixOS" ]] && (system || exit 1)
+  hm || exit 1
 popd > /dev/null || exit
