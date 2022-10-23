@@ -17,24 +17,25 @@ let
     sshpass
     xclip
     xsel
+
+    globalAliases
   ];
 
   # `pai` anywhere to update computer
-  globalAliases = {
-    gc = "nix-collect-garbage";
-    hms = "home-manager switch";
-    ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
-    pai = "~/.config/nixpkgs/pull-and-install.sh";
+  globalAliases = let
+    aliasToPackage = alias: (lib.mapAttrsToList
+      (name: value: pkgs.writeShellScriptBin name value)
+      alias
+    );
+  in pkgs.symlinkJoin {
+    name = "global-aliases";
+    paths = aliasToPackage {
+      gc = "nix-collect-garbage";
+      hms = "home-manager switch";
+      ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
+      pai = "~/.config/nixpkgs/pull-and-install.sh";
+    };
   };
-
-  aliasPackages = let
-    aliasToPackage = alias:
-      (lib.mapAttrsToList
-        (name: value: pkgs.writeShellScriptBin name value)
-        alias
-      )
-    ;
-  in aliasToPackage globalAliases;
 
 in
 {
@@ -68,7 +69,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
-    packages = packages ++ aliasPackages;
+    inherit packages;
   };
 
   systemd.user.startServices = true;
