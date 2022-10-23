@@ -30,7 +30,7 @@ let
   in pkgs.symlinkJoin {
     name = "global-aliases";
     paths = aliasToPackage {
-      gc = "nix-collect-garbage";
+      gc = ''nix-collect-garbage "$@"'';
       hms = "home-manager switch";
       ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
       pai = "~/.config/nixpkgs/pull-and-install.sh";
