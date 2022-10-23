@@ -39,6 +39,19 @@ let
       hms = "home-manager switch";
       ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
       pai = "~/.config/nixpkgs/pull-and-install.sh";
+      json2nix = ''
+        [[ -n "$1" ]] && json="$(readlink -f "$1")"
+        [[ -p /dev/stdin ]] && json=/dev/stdin
+        nix-instantiate -E --arg json "$json" '
+          { json ? "" }:
+          let
+            v = builtins.fromJSON (builtins.readFile json);
+          in
+          builtins.trace v v
+        ' &> /dev/stdout \
+          | cut -f 2- -d ' ' \
+          | alejandra -q
+      '';
     };
   };
 
