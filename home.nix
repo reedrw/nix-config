@@ -4,22 +4,23 @@ let
 
   packages = with pkgs; [
     # utilities
-    bitwarden
-    cachix
-    git
-    github-cli
-    htop
-    libreoffice
-    moreutils
-    ngrok
-    pavucontrol
-    ripgrep
-    sshpass
-    xclip
-    xsel
     alejandra   # nix formatter
+    bitwarden   # password manager
+    cachix      # binary cache
+    git         # version control
+    github-cli  # github from command line
+    gron        # greppable json
+    htop        # process monitor
     jq          # json processor
+    libreoffice # free office suite
+    moreutils   # more scripting tools
+    ngrok       # port tunneling
+    pavucontrol # volume control
     pipr        # interactive pipeline builder
+    ripgrep     # recursive grep
+    sshpass     # specify ssh password
+    xclip       # x clipboard scripting
+    xsel        # x clipbaord scripting
     yj          # yaml to json
 
     globalAliases
