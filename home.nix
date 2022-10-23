@@ -17,6 +17,10 @@ let
     sshpass
     xclip
     xsel
+    alejandra   # nix formatter
+    jq          # json processor
+    pipr        # interactive pipeline builder
+    yj          # yaml to json
 
     globalAliases
   ];
