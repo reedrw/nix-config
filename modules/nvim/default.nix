@@ -137,6 +137,14 @@ in
         set clipboard=unnamedplus
       end
 
+      let mapleader=','
+      nmap <Leader>a= :Tabularize /=<CR>
+      vmap <Leader>a= :Tabularize /=<CR>
+      nmap <Leader>a: :Tabularize /:\zs<CR>
+      vmap <Leader>a: :Tabularize /:\zs<CR>
+      nnoremap <Leader>hms :!hms
+      nnoremap <Leader>hmb :!home-manager build
+
       set expandtab
       set mouse=a
       set noshowmode
@@ -176,8 +184,6 @@ in
 
       nnoremap <F5> :UndotreeToggle<CR>
 
-      nnoremap hms :!home-manager switch
-      nnoremap hmb :!home-manager build
       " https://stackoverflow.com/questions/597687/how-to-quickly-change-variable-names-in-vim/597932#597932
       nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
