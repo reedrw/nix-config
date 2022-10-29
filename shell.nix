@@ -1,8 +1,6 @@
 let
   sources = import ./nix/sources.nix { };
 
-  nur = import sources.NUR { };
-
   hm-overlay = self: super: {
     home-manager = super.callPackage "${sources.home-manager}/home-manager" { };
   };
@@ -15,11 +13,6 @@ let
     config = import ./config.nix;
   };
 
-  aliasToPackage = alias: (
-    pkgs.lib.mapAttrsToList
-    (name: value: pkgs.writeShellScriptBin name value)
-    alias
-  );
 in
 with pkgs;
 mkShell {
@@ -38,29 +31,26 @@ mkShell {
     shellcheck
     wget
 
-    (symlinkJoin {
-      name = "alias";
-      paths = aliasToPackage {
-        build = ''
-          export NIXPKGS_ALLOW_UNFREE=1
-          ci="$(git rev-parse --show-toplevel)/ci.nix"
-          if [[ -z "$1" ]]; then
-            nix shell nixpkgs#nix-output-monitor -c nom-build "$ci"
-          else
-            nix shell nixpkgs#nix-output-monitor -c nom-build "$ci" -A "$1"
-          fi
-        '';
-        update-all = ''
-          find -L "$(pwd)/" -type f -name "update-sources.sh" \
-          | while read -r updatescript; do
-            (
-              dir="$(dirname -- "$updatescript")"
-              cd "$dir" || exit
-              $updatescript
-            )
-          done
-        '';
-      };
+    (aliasToPackage {
+      build = ''
+        export NIXPKGS_ALLOW_UNFREE=1
+        ci="$(git rev-parse --show-toplevel)/ci.nix"
+        if [[ -z "$1" ]]; then
+          nix shell nixpkgs#nix-output-monitor -c nom-build "$ci"
+        else
+          nix shell nixpkgs#nix-output-monitor -c nom-build "$ci" -A "$1"
+        fi
+      '';
+      update-all = ''
+        find -L "$(pwd)/" -type f -name "update-sources.sh" \
+        | while read -r updatescript; do
+          (
+            dir="$(dirname -- "$updatescript")"
+            cd "$dir" || exit
+            $updatescript
+          )
+        done
+      '';
     })
   ];
 

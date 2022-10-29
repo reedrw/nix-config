@@ -12,4 +12,13 @@ self: super: {
   discord-canary = super.discord-canary.override {
     nss = super.nss_latest;
   };
+
+  aliasToPackage = alias: super.symlinkJoin {
+    name = "alias";
+      paths = (
+        super.lib.mapAttrsToList
+        (name: value: super.writeShellScriptBin name value)
+        alias
+      );
+    };
 }

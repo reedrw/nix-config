@@ -23,18 +23,8 @@ let
     xsel        # x clipbaord scripting
     yj          # yaml to json
 
-    globalAliases
-  ];
-
-  # `pai` anywhere to update computer
-  globalAliases = let
-    aliasToPackage = alias: (lib.mapAttrsToList
-      (name: value: pkgs.writeShellScriptBin name value)
-      alias
-    );
-  in pkgs.symlinkJoin {
-    name = "global-aliases";
-    paths = aliasToPackage {
+    # global aliases
+    (aliasToPackage {
       gc = ''nix-collect-garbage "$@"'';
       hms = "home-manager switch";
       ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
@@ -52,8 +42,8 @@ let
           | cut -f 2- -d ' ' \
           | alejandra -q
       '';
-    };
-  };
+    })
+  ];
 
 in
 {
