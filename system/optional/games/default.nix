@@ -31,4 +31,11 @@ in
     enable = true;
     package = aagl-gtk-custom;
   };
+
+  environment.systemPackages = with pkgs; [
+    (aliasToPackage {
+      gsi = "anime-game-launcher --run-game";
+    })
+  ];
+
 }
