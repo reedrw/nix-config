@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "Misterio77",
         "repo": "nix-colors",
-        "rev": "bb56fe29c3e16029a783b7a85354fc14098f2560",
-        "sha256": "0gsfvrjyh3d1lbgiw8qh1qbqr5am0dg3fikcksv9hpic90pcz9gf",
+        "rev": "a58fb210eb285920ec10f204d007185b3629cadc",
+        "sha256": "0ahbc450m1kkkc1zhj7cbxrv41rmdl0jikmdz56b6anlvqy09f73",
         "type": "tarball",
-        "url": "https://github.com/Misterio77/nix-colors/archive/bb56fe29c3e16029a783b7a85354fc14098f2560.tar.gz",
+        "url": "https://github.com/Misterio77/nix-colors/archive/a58fb210eb285920ec10f204d007185b3629cadc.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
