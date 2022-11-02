@@ -1,14 +1,14 @@
 {
-    "i3-gaps": {
-        "branch": "gaps-next",
+    "i3": {
+        "branch": "next",
         "description": "A fork of the i3 window manager with gaps and some other features",
         "homepage": "",
-        "owner": "Airblader",
+        "owner": "i3",
         "repo": "i3",
-        "rev": "f2515873afe4a26aeb13bdbdd6a7783686a1a385",
-        "sha256": "10kbzy745k10yysrg4yjnjilcy4qw8x3j1s3bhdgylvd5yxq8p11",
+        "rev": "2bfa06b7df0e45fa80f2097818a477d8bdbcf0ca",
+        "sha256": "0nav3nhnpjfh5vymn5j2k4dkzr76xk505qk5sg507v6vg296kzg1",
         "type": "tarball",
-        "url": "https://github.com/Airblader/i3/archive/f2515873afe4a26aeb13bdbdd6a7783686a1a385.tar.gz",
+        "url": "https://github.com/i3/i3/archive/2bfa06b7df0e45fa80f2097818a477d8bdbcf0ca.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

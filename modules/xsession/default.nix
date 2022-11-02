@@ -27,10 +27,10 @@ in
     enable = true;
     windowManager.i3 = {
       enable = true;
-      package = pkgs.i3-gaps.overrideAttrs (
+      package = pkgs.i3.overrideAttrs (
         old: rec {
-          version = sources.i3-gaps.rev;
-          src = sources.i3-gaps;
+          version = sources.i3.rev;
+          src = sources.i3;
         }
       );
       config = {
