@@ -118,7 +118,7 @@ in
           }
         ] ++ builtins.map ( class:
           {
-            command = "border none";
+            command = "border pixel 0";
             criteria = {
               inherit class;
             };
@@ -130,6 +130,7 @@ in
           "TelegramDesktop"
           "Element"
           "discord"
+          "Zathura"
         ];
         startup = []
         ++ builtins.map ( command:
