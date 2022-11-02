@@ -1,4 +1,14 @@
-self: super: {
+let
+  sources = import ../nix/sources.nix { };
+in
+self: super: rec {
+
+  nur = import "${sources.NUR}" {
+    pkgs = super;
+  };
+  master = import "${sources.nixpkgs-master}" { };
+  staging-next = import "${sources.nixpkgs-staging-next}" { };
+
   ranger = super.ranger.overrideAttrs (
     old: rec {
       postFixup = old.postFixup + ''

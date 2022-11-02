@@ -9,5 +9,6 @@ in
       inherit pkgs;
     };
     master = import "${sources.nixpkgs-master}" { };
+    staging-next = import "${sources.nixpkgs-staging-next}" { };
   };
 }
