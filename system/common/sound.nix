@@ -17,6 +17,9 @@
   };
 
   environment.systemPackages = with pkgs; [
-    helvum
+    qpwgraph
+    (aliasToPackage {
+      helvum = "qpwgraph";
+    })
   ];
 }
