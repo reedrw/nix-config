@@ -9,6 +9,7 @@ in
       inherit pkgs;
     };
     master = import "${sources.nixpkgs-master}" { };
+    stable = import "${sources.nixpkgs-stable}" { };
     staging-next = import "${sources.nixpkgs-staging-next}" { };
   };
 }

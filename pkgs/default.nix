@@ -7,6 +7,7 @@ self: super: rec {
     pkgs = super;
   };
   master = import "${sources.nixpkgs-master}" { };
+  stable = import "${sources.nixpkgs-stable}" { };
   staging-next = import "${sources.nixpkgs-staging-next}" { };
 
   ranger = super.ranger.overrideAttrs (
