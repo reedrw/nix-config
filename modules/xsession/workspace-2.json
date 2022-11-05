@@ -12,7 +12,6 @@
             // tabbed split container with 2 children
             "border": "pixel",
             "floating": "auto_off",
-            "layout": "tabbed",
             "marks": [],
             "percent": 0.8,
             "type": "con",
@@ -34,26 +33,6 @@
                            "class": "^discord$",
                            "instance": "^discord$",
                            "title": "^(?!.*discord\\ updater).*$"
-                       }
-                    ],
-                    "type": "con"
-                },
-                {
-                    "border": "pixel",
-                    "current_border_width": 5,
-                    "floating": "auto_off",
-                    "geometry": {
-                       "height": 724,
-                       "width": 1024,
-                       "x": 0,
-                       "y": 0
-                    },
-                    "marks": [],
-                    "percent": 0.5,
-                    "swallows": [
-                       {
-                           "class": "^Element$",
-                           "instance": "^element$"
                        }
                     ],
                     "type": "con"

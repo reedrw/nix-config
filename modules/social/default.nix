@@ -3,7 +3,7 @@
   home.packages = with pkgs; [
     tdesktop
     discord-canary
-    element-desktop
+    #element-desktop
   ];
 
   xdg.configFile = {

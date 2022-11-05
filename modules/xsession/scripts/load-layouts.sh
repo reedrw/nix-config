@@ -13,7 +13,6 @@ launchPrograms(){
       (firefox &)
     ;;
     "2" )
-      (element-desktop &)
       (DiscordCanary &)
       (telegram-desktop &)
     ;;
