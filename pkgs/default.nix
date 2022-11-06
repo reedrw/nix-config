@@ -18,7 +18,6 @@ self: super: rec {
     }
   );
 
-  vimPlugins = stable.vimPlugins;
   libreoffice = stable.libreoffice;
 
   discord = super.discord.override {
