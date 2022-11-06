@@ -36,9 +36,9 @@ mkShell {
         export NIXPKGS_ALLOW_UNFREE=1
         ci="$(git rev-parse --show-toplevel)/ci.nix"
         if [[ -z "$1" ]]; then
-          nix shell nixpkgs#nix-output-monitor -c nom-build "$ci"
+          ${nix-output-monitor}/bin/nom-build "$ci"
         else
-          nix shell nixpkgs#nix-output-monitor -c nom-build "$ci" -A "$1"
+          ${nix-output-monitor}/bin/nom-build "$ci" -A "$1"
         fi
       '';
       update-all = ''
