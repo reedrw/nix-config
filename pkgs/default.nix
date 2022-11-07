@@ -47,7 +47,7 @@ self: super: rec {
   # Override a package until next release. Takes current version, package, and override as arguments.
   # Ex.
   # versionConditionalOverride "1.4.1" distrobox
-  #   distrobox.overrideAttrs (
+  #   (distrobox.overrideAttrs (
   #     old: rec {
   #       src = pkgs.fetchFromGitHub {
   #         owner = "89luca89";
@@ -56,9 +56,9 @@ self: super: rec {
   #         sha256 = "nIqkptnP3fOviGcm8WWJkBQ0NcTE9z/BNLH/ox6qIoA=";
   #       };
   #     }
-  #   )
+  #   ))
   versionConditionalOverride = version: package: override:
-    if package.version <= version
+    if builtins.compareVersions package.version version < 1
     then override
     else package;
 }

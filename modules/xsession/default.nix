@@ -27,12 +27,14 @@ in
     enable = true;
     windowManager.i3 = {
       enable = true;
-      package = pkgs.i3.overrideAttrs (
-        old: rec {
-          version = sources.i3.rev;
-          src = sources.i3;
-        }
-      );
+      package = with pkgs;
+        versionConditionalOverride "4.21.1" i3
+          i3.overrideAttrs (
+            old: rec {
+              version = sources.i3.rev;
+              src = sources.i3;
+            }
+          );
       config = {
         bars = [ ];
         gaps = {
