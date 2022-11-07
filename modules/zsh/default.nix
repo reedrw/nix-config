@@ -80,7 +80,7 @@ in
         PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(!.%(?.#.%{%F{red}%}#).%(?.$.%{%F{red}%}$))%{$reset_color%} '
 
         # show hostname if in ssh session
-        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$DISTROBOX_ENTER_PATH" ]; then
           PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
         else
           PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
