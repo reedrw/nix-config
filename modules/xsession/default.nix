@@ -29,12 +29,12 @@ in
       enable = true;
       package = with pkgs;
         versionConditionalOverride "4.21.1" i3
-          i3.overrideAttrs (
+          (i3.overrideAttrs (
             old: rec {
               version = sources.i3.rev;
               src = sources.i3;
             }
-          );
+          ));
       config = {
         bars = [ ];
         gaps = {
