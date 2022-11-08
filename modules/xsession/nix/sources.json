@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "i3",
         "repo": "i3",
-        "rev": "e6a28b9475e90805806bbe5e4c3dcdcc28d49f4b",
-        "sha256": "01jn4dlnh01m8c0707k3r4vg745kwbzpc8sy6jqajxv7pk35j32b",
+        "rev": "804bca3a9ab4dce2c163e9c1028c34f7ff8c0bc7",
+        "sha256": "086awv116sbnsfp5b8rq1vfmdv5khsgd0d9jmyys4b363aazy8m7",
         "type": "tarball",
-        "url": "https://github.com/i3/i3/archive/e6a28b9475e90805806bbe5e4c3dcdcc28d49f4b.tar.gz",
+        "url": "https://github.com/i3/i3/archive/804bca3a9ab4dce2c163e9c1028c34f7ff8c0bc7.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
