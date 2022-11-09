@@ -1,8 +1,8 @@
 {
     "i3": {
         "branch": "next",
-        "description": "A fork of the i3 window manager with gaps and some other features",
-        "homepage": "",
+        "description": "A tiling window manager",
+        "homepage": "https://i3wm.org/",
         "owner": "i3",
         "repo": "i3",
         "rev": "be27a2f50d9e0d3d9b0c5f7c3ad79b548810e194",
