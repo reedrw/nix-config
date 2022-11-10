@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "a0ec6c7a46bf3fb37cc01ba4b3d8df9496d122fa",
-        "sha256": "0d8w3w0f1jmybyppk50xw83h6msda227k0wabq8lcx6v5ky1w683",
+        "rev": "30bf83a37716a55b376d8bd531b13e272eab69fb",
+        "sha256": "1nbfg2zh0rq1a14k8f68b9y79vb9xwfc4rw98asqh79ndxsk16jn",
         "type": "tarball",
-        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/a0ec6c7a46bf3fb37cc01ba4b3d8df9496d122fa.tar.gz",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/30bf83a37716a55b376d8bd531b13e272eab69fb.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "an-anime-game-launcher-gtk": {
