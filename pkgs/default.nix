@@ -1,13 +1,6 @@
-let
-  sources = import ../nix/sources.nix { };
-in
 self: super: rec {
-  nur = import "${sources.NUR}" {
-    pkgs = super;
-  };
-  master = import "${sources.nixpkgs-master}" { };
-  stable = import "${sources.nixpkgs-stable}" { };
-  staging-next = import "${sources.nixpkgs-staging-next}" { };
+
+  inherit ((import ../config.nix).packageOverrides super) nur fromBranch;
 
   ranger = super.ranger.overrideAttrs (
     old: rec {
@@ -19,7 +12,7 @@ self: super: rec {
     }
   );
 
-  libreoffice = stable.libreoffice;
+  libreoffice = fromBranch.stable.libreoffice;
 
   discord = super.discord.override {
     nss = super.nss_latest;
