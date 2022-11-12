@@ -5,10 +5,10 @@
         "homepage": "https://i3wm.org/",
         "owner": "i3",
         "repo": "i3",
-        "rev": "be27a2f50d9e0d3d9b0c5f7c3ad79b548810e194",
-        "sha256": "116x3dcsm871z9ihfkhf5v0vvrvx3ma7p7bj2z63lchp0yynzkjp",
+        "rev": "96614a2f32ae5f0a8f39e49d98a4d2183a379516",
+        "sha256": "1yy3s3cyi6dipyz72li7nnijbnif5llmh19wb0kzkz6iclzczpyd",
         "type": "tarball",
-        "url": "https://github.com/i3/i3/archive/be27a2f50d9e0d3d9b0c5f7c3ad79b548810e194.tar.gz",
+        "url": "https://github.com/i3/i3/archive/96614a2f32ae5f0a8f39e49d98a4d2183a379516.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
