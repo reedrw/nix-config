@@ -2,26 +2,17 @@
 let
   sources = import ./nix/sources.nix { };
 
-  packages = with pkgs; [
+  hostname = builtins.readFile /etc/hostname;
+
+  packagesMinimal = with pkgs; [
     # utilities
-    alejandra   # nix formatter
-    bitwarden   # password manager
     cachix      # binary cache
     git         # version control
     github-cli  # github from command line
-    gron        # greppable json
     htop        # process monitor
-    jq          # json processor
-    libreoffice # free office suite
     moreutils   # more scripting tools
-    ngrok       # port tunneling
-    pavucontrol # volume control
-    pipr        # interactive pipeline builder
     ripgrep     # recursive grep
-    sshpass     # specify ssh password
-    xclip       # x clipboard scripting
-    xsel        # x clipbaord scripting
-    yj          # yaml to json
+    pm2         # process manager
 
     # global aliases
     (aliasToPackage {
@@ -29,6 +20,25 @@ let
       hms = "home-manager switch";
       ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
       pai = "~/.config/nixpkgs/pull-and-install.sh";
+    })
+  ];
+
+  packagesExtra = with pkgs; [
+    alejandra   # nix formatter
+    bitwarden   # password manager
+    gron        # greppable json
+    jq          # json processor
+    libreoffice # free office suite
+    ngrok       # port tunneling
+    pavucontrol # volume control
+    pipr        # interactive pipeline builder
+    sshpass     # specify ssh password
+    xclip       # x clipboard scripting
+    xsel        # x clipbaord scripting
+    yj          # yaml to json
+
+    # more global aliases
+    (aliasToPackage{
       json2nix = ''
         [[ -n "$1" ]] && json="$(readlink -f "$1")"
         [[ -p /dev/stdin ]] && json=/dev/stdin
@@ -45,10 +55,24 @@ let
     })
   ];
 
+  full =
+    if builtins.pathExists (./system + "/${builtins.replaceStrings ["\n"] [".nix"] hostname}")
+    || (builtins.getEnv "USER") == "runner"
+    then true
+    else false;
+
 in
 {
 
-  imports = builtins.map (x: ./modules + ("/" + x)) (builtins.attrNames (builtins.readDir ./modules));
+  imports = if full
+    then builtins.map (x: ./modules + ("/" + x)) (builtins.attrNames (builtins.readDir ./modules))
+    else [
+      ./modules/comma
+      ./modules/nvim
+      ./modules/ranger
+      ./modules/styling
+      ./modules/zsh
+    ];
 
   nixpkgs = {
     config = import ./config.nix;
@@ -77,7 +101,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
-    inherit packages;
+    packages = packagesMinimal ++ lib.optionals full packagesExtra;
   };
 
   systemd.user.startServices = true;
