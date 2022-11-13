@@ -1,9 +1,5 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
-
-  hostname = builtins.readFile /etc/hostname;
-
   packagesMinimal = with pkgs; [
     # utilities
     cachix      # binary cache
@@ -11,8 +7,10 @@ let
     github-cli  # github from command line
     htop        # process monitor
     moreutils   # more scripting tools
-    ripgrep     # recursive grep
+    nq          # queue utility
     pm2         # process manager
+    ripgrep     # recursive grep
+    screen      # terminal multiplexer
 
     # global aliases
     (aliasToPackage {
@@ -24,10 +22,12 @@ let
   ];
 
   packagesExtra = with pkgs; [
+    # extra utilities
     alejandra   # nix formatter
     bitwarden   # password manager
     gron        # greppable json
     jq          # json processor
+    libnotify   # notification library
     libreoffice # free office suite
     ngrok       # port tunneling
     pavucontrol # volume control
@@ -38,7 +38,7 @@ let
     yj          # yaml to json
 
     # more global aliases
-    (aliasToPackage{
+    (aliasToPackage {
       json2nix = ''
         [[ -n "$1" ]] && json="$(readlink -f "$1")"
         [[ -p /dev/stdin ]] && json=/dev/stdin
@@ -54,6 +54,8 @@ let
       '';
     })
   ];
+
+  hostname = builtins.readFile /etc/hostname;
 
   full =
     if builtins.pathExists (./system + "/${builtins.replaceStrings ["\n"] [".nix"] hostname}")
