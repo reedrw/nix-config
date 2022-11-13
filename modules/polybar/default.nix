@@ -9,6 +9,7 @@ let
     ];
     text = (builtins.readFile ./calnotify.sh);
   };
+  screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
 in
 {
   home.packages = [ pkgs.nur.repos.reedrw.artwiz-lemon ]; # font
@@ -21,7 +22,7 @@ in
         foreground = "#${base05}";
         modules-left = "i3";
         modules-center = "mpris";
-        modules-right = "battery date";
+        modules-right = "screen battery date";
         border-left-size = 1;
         border-left-color = "#${base00}";
         border-right-size = 1;
@@ -54,6 +55,11 @@ in
         type = "custom/script";
         exec = "${pkgs.playerctl}/bin/playerctl metadata -F --format '{{ artist }} - {{ title }}'";
         click-left = "${pkgs.playerctl}/bin/playerctl play-pause";
+        tail = true;
+      };
+      "module/screen" = {
+        type = "custom/script";
+        exec = "${screenthing}/bin/screenthing";
         tail = true;
       };
     };
