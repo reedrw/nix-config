@@ -200,6 +200,7 @@ in
         df = "${pkgs.pydf}/bin/pydf";
         gcd = "sudo gc -d";
         ln = "ln -v";
+        taskdone = "${pkgs.libnotify}/bin/notify-send 'Task finished.' && exit";
         ls = "${pkgs.exa}/bin/exa -lh --git -s type";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
