@@ -41,7 +41,7 @@ in
         date = "%I:%M %p    %a %b %d";
         label = "%{A1:${calnotify}/bin/calnotify ${base0B}:}%date%%{A}";
         format = "<label>";
-        label-padding = 5;
+        label-padding = 4;
       };
       "module/i3" = {
         type = "internal/i3";
@@ -60,6 +60,7 @@ in
       "module/screen" = {
         type = "custom/script";
         exec = "${screenthing}/bin/screenthing";
+        label-padding = 4;
         tail = true;
       };
     };
