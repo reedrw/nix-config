@@ -18,5 +18,17 @@
         "rev": "755a4aeece5018db4a079a6ce00ebfcf4107dfe0",
         "submodules": true,
         "type": "git"
+    },
+    "components": {
+        "branch": "main",
+        "description": "This repository contains all the components that could be used by the launchers, including wine and dxvk versions",
+        "homepage": null,
+        "owner": "an-anime-team",
+        "repo": "components",
+        "rev": "72db38b8e868a17037a8f278264772629821a67a",
+        "sha256": "06hwl269jl371l5nlnwsiqrnhvy4kzr03zdpmbxzqnwji4g73jgq",
+        "type": "tarball",
+        "url": "https://github.com/an-anime-team/components/archive/72db38b8e868a17037a8f278264772629821a67a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
