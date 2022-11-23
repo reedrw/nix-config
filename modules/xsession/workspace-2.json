@@ -32,7 +32,7 @@
                        {
                            "class": "^discord$",
                            "instance": "^discord$",
-                           "title": "^(?!.*discord\\ updater).*$"
+                           "title": "^(?!.*Discord\\ Updater).*$"
                        }
                     ],
                     "type": "con"
