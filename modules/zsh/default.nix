@@ -152,7 +152,7 @@ in
 
           attr="$(echo "$attr" | ${pkgs.fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
 
-          nix shell "nixpkgs#$attr" -c "$argv0" "$@"
+          nix-shell -p "$attr" --run "$argv0 $@"
         }
 
         bw-rofi-login(){
