@@ -8,10 +8,10 @@
     Install = {
       WantedBy = [ "default.target" ];
     };
-    Service = {
+    Service = with pkgs; {
       Environment = "PATH=${config.home.profileDirectory}/bin";
-      ExecStart = "${pkgs.shairport-sync}/bin/shairport-sync -v -o pa";
-      ExecStop = "${pkgs.procps}/bin/pkill shairport-sync";
+      ExecStart = "${binPath shairport-sync} -v -o pa";
+      ExecStop = "${procps}/bin/pkill shairport-sync";
       Restart= "on-failure";
       Type = "simple";
     };

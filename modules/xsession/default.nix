@@ -6,8 +6,8 @@ let
   sup = "Mod4";
   exec = "exec --no-startup-id";
 
-  alwaysRun = [
-    "${pkgs.feh}/bin/feh --bg-fill ~/.background-image"
+  alwaysRun = with pkgs; [
+    "${binPath feh} --bg-fill ~/.background-image"
     "systemctl --user restart picom"
     "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
     "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
@@ -44,11 +44,11 @@ in
         floating.border = 5;
         modifier = "${mod}";
         terminal = "${term}";
-        keybindings = with scripts; lib.mkOptionDefault (
+        keybindings = with pkgs; lib.mkOptionDefault (
           {
             "Print" = "${exec} flameshot gui";
             "${mod}+Return" = "${exec} ${term}";
-            "${sup}+Return" = "${exec} ${selecterm}/bin/select-term.sh";
+            "${sup}+Return" = "${exec} ${scripts.selecterm}/bin/select-term.sh";
             "${mod}+d" = "focus child";
             "${mod}+o" = "open";
             "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
@@ -56,20 +56,20 @@ in
             "${sup}+Down" = "resize grow height 5 px or 5 ppt";
             "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
             "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
-            "${mod}+r" = "${exec} ${record}/bin/record.sh";
-            "${mod}+p" = "${exec} ${bwmenu-patched}/bin/bwmenu";
+            "${mod}+r" = "${exec} ${scripts.record}/bin/record.sh";
+            "${mod}+p" = "${exec} ${scripts.bwmenu-patched}/bin/bwmenu";
             "${mod}+Shift+s" = "sticky toggle";
-            "XF86MonBrightnessUp" = "${exec} ${pkgs.brightnessctl}/bin/brightnessctl s 10%+";
-            "XF86MonBrightnessDown" = "${exec} ${pkgs.brightnessctl}/bin/brightnessctl s 10%-";
-            "Ctrl+Down" = "${exec} ${pkgs.playerctl}/bin/playerctl play-pause";
-            "Ctrl+Left" = "${exec} ${pkgs.playerctl}/bin/playerctl previous";
-            "Ctrl+Right" = "${exec} ${pkgs.playerctl}/bin/playerctl next";
-            "XF86AudioPause" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
-            "XF86AudioPlay" = "${exec} ${pkgs.playerctl}/bin/platerctl play-pause";
-            "XF86AudioPrev" = "${exec} ${pkgs.playerctl}/bin/platerctl previous";
-            "XF86AudioNext" = "${exec} ${pkgs.playerctl}/bin/platerctl next";
+            "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
+            "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
+            "Ctrl+Down" = "${exec} ${binPath playerctl} play-pause";
+            "Ctrl+Left" = "${exec} ${binPath playerctl} previous";
+            "Ctrl+Right" = "${exec} ${binPath playerctl} next";
+            "XF86AudioPause" = "${exec} ${binPath playerctl} play-pause";
+            "XF86AudioPlay" = "${exec} ${binPath playerctl} play-pause";
+            "XF86AudioPrev" = "${exec} ${binPath playerctl} previous";
+            "XF86AudioNext" = "${exec} ${binPath playerctl} next";
           } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
-            ("${mod}+ctrl+${x}") ("${exec} ${load-layouts}/bin/load-layouts.sh ${x}")
+            ("${mod}+ctrl+${x}") ("${exec} ${scripts.load-layouts}/bin/load-layouts.sh ${x}")
           ) (builtins.listToAttrs (map
             (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
           ))
@@ -170,8 +170,8 @@ in
     Install = {
       WantedBy = [ "default.target" ];
     };
-    Service = {
-      ExecStart = "${scripts.clipboard-clean}/bin/clipboard-clean";
+    Service = with pkgs; {
+      ExecStart = "${binPath scripts.clipboard-clean}";
       Restart = "on-failure";
       Type = "simple";
     };

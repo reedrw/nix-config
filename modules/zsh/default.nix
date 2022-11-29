@@ -70,7 +70,7 @@ in
 
         source ${oh-my-zsh.src}/lib/git.zsh
         source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-        source <(${any-nix-shell}/bin/any-nix-shell zsh --info-right)
+        source <(${binPath any-nix-shell} zsh --info-right)
         source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
         export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
@@ -154,7 +154,7 @@ in
             return 127
           fi
 
-          attr="$(echo "$attr" | ${fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
+          attr="$(echo "$attr" | ${binPath fzf} --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
 
           nix-shell -p "$attr" --run "$argv0 $*"
         }
@@ -167,8 +167,8 @@ in
 
         c(){
           [[ -p /dev/stdin ]] && \
-            ${xclip}/bin/xclip -i -selection clipboard || \
-            ${xclip}/bin/xclip -o -selection clipboard
+            ${binPath xclip} -i -selection clipboard || \
+            ${binPath xclip} -o -selection clipboard
         }
 
         git(){
@@ -177,10 +177,10 @@ in
               cd "$(command git rev-parse --show-toplevel)"
             ;;
             clone)
-              ${gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
+              ${binPath gitAndTools.hub} clone --recurse-submodules "''${@:2}"
             ;;
             *)
-              ${gitAndTools.hub}/bin/hub "$@"
+              ${binPath gitAndTools.hub} "$@"
             ;;
           esac
         }
@@ -198,17 +198,17 @@ in
       shellAliases = with pkgs; {
         ":q" = "exit";
         "\\$" = "";
-        bmount = "${bashmount}/bin/bashmount";
-        cat = "${bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+        bmount = "${binPath bashmount}";
+        cat = "${binPath bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
-        df = "${pydf}/bin/pydf";
+        df = "${binPath pydf}";
         gcd = "sudo gc -d";
         ln = "ln -v";
         taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
-        ls = "${exa}/bin/exa -lh --git -s type";
+        ls = "${binPath exa} -lh --git -s type";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
-        ping = "${prettyping}/bin/prettyping --nolegend";
+        ping = "${binPath prettyping} --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
         rr = "ranger";
@@ -216,8 +216,8 @@ in
         tb = "termbin";
         termbin = "nc termbin.com 9999";
         tree = "ls --tree";
-        watch = "${viddy}/bin/viddy";
-        wget = "${wget}/bin/wget --progress=dot:giga";
+        watch = "${binPath viddy}";
+        wget = "${binPath wget} --progress=dot:giga";
         x = "exit";
       };
     };
