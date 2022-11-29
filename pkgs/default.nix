@@ -37,6 +37,17 @@ self: super: rec {
       );
     };
 
+  # Takes a package as input and returns the path to the binary with the same name.
+  # Ex.
+  # binPath bat
+  #
+  # Returns:
+  # /nix/store/vkbfya4qhmzykw6fqs409q5ajdrnhzlq-bat-0.22.1/bin/bat
+  binPath = package: let
+    name = (builtins.parseDrvName package.name).name;
+  in
+    "${package}/bin/${name}";
+
   # Override a package until next release. Takes current version, package, and override as arguments.
   # Ex.
   # versionConditionalOverride "1.4.1" distrobox
