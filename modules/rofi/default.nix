@@ -21,7 +21,7 @@ in
     );
   };
 
-  xdg.configFile = {
-    "rofi/roficomma.sh".source = "${roficomma}/bin/roficomma";
+  xdg.configFile = with pkgs; {
+    "rofi/roficomma.sh".source = "${binPath roficomma}";
   };
 }

@@ -13,9 +13,9 @@ let
 in
 {
   home.packages = [ pkgs.nur.repos.reedrw.artwiz-lemon ]; # font
-  services.polybar = {
+  services.polybar = with pkgs; {
     enable = true;
-    package = pkgs.polybarFull;
+    package = polybarFull;
     config = with config.colorScheme.colors; {
       "bar/main" = {
         background = "#${base00}";
@@ -39,7 +39,7 @@ in
       "module/date" = {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
-        label = "%{A1:${calnotify}/bin/calnotify ${base0B}:}%date%%{A}";
+        label = "%{A1:${binPath calnotify} ${base0B}:}%date%%{A}";
         format = "<label>";
         label-padding = 4;
       };
@@ -53,13 +53,13 @@ in
       };
       "module/mpris" = {
         type = "custom/script";
-        exec = "${pkgs.playerctl}/bin/playerctl metadata -F --format '{{ artist }} - {{ title }}'";
-        click-left = "${pkgs.playerctl}/bin/playerctl play-pause";
+        exec = "${binPath playerctl} metadata -F --format '{{ artist }} - {{ title }}'";
+        click-left = "${binPath playerctl} play-pause";
         tail = true;
       };
       "module/screen" = {
         type = "custom/script";
-        exec = "${screenthing}/bin/screenthing";
+        exec = "${binPath screenthing}";
         label-padding = 4;
         tail = true;
       };

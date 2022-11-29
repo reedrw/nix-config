@@ -75,8 +75,8 @@ in
           y = 15;
         };
       };
-      shell = {
-        program = "${pkgs.tmux}/bin/tmux";
+      shell = with pkgs; {
+        program = "${binPath tmux}";
         args = [
           "-f"
           "${tmuxconf}"

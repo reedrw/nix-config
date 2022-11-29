@@ -2,8 +2,8 @@
 let
   sources = import ./nix/sources.nix { };
 
-  ccat = pkgs.writeShellScriptBin "bat" ''
-    ${pkgs.bat}/bin/bat --theme=base16 "$@"
+  ccat = with pkgs; writeShellScriptBin "bat" ''
+    ${binPath bat} --theme=base16 "$@"
   '';
 
   rangercommand = pkgs.writeShellScript "rangercommand" ''
