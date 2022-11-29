@@ -46,7 +46,11 @@ in
       autocd = true;
       defaultKeymap = "emacs";
       completionInit = "autoload -U compinit && compinit -i";
-      initExtra = ''
+      initExtra = let
+        inherit (config.colorScheme.colors) base02;
+      in
+      with pkgs;
+      ''
         while read -r i; do
           autoload -Uz "$i"
         done << EOF
@@ -64,10 +68,10 @@ in
 
         unsetopt nomatch
 
-        source ${pkgs.oh-my-zsh.src}/lib/git.zsh
-        source ${pkgs.oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-        source <(${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right)
-        source ${pkgs.ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
+        source ${oh-my-zsh.src}/lib/git.zsh
+        source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
+        source <(${any-nix-shell}/bin/any-nix-shell zsh --info-right)
+        source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
         export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
 
@@ -91,7 +95,7 @@ in
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${config.colorScheme.colors.base02}"
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${base02}"
         ZSH_AUTOSUGGEST_STRATEGY="completion"
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
@@ -143,28 +147,28 @@ in
           fi
 
           argv0=$1; shift
-          attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
+          attr="$(${nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
 
           if [[ -z $attr ]]; then
             >&2 echo "$argv0: command not found"
             return 127
           fi
 
-          attr="$(echo "$attr" | ${pkgs.fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
+          attr="$(echo "$attr" | ${fzf}/bin/fzf --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
 
           nix-shell -p "$attr" --run "$argv0 $*"
         }
 
         bw-rofi-login(){
-          ${pkgs.keyutils}/bin/keyctl purge user bw_session
-          ${pkgs.bitwarden-cli}/bin/bw login
-          ${pkgs.keyutils}/bin/keyctl link @u @s
+          ${keyutils}/bin/keyctl purge user bw_session
+          ${bitwarden-cli}/bin/bw login
+          ${keyutils}/bin/keyctl link @u @s
         }
 
         c(){
           [[ -p /dev/stdin ]] && \
-            ${pkgs.xclip}/bin/xclip -i -selection clipboard || \
-            ${pkgs.xclip}/bin/xclip -o -selection clipboard
+            ${xclip}/bin/xclip -i -selection clipboard || \
+            ${xclip}/bin/xclip -o -selection clipboard
         }
 
         git(){
@@ -173,10 +177,10 @@ in
               cd "$(command git rev-parse --show-toplevel)"
             ;;
             clone)
-              ${pkgs.gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
+              ${gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
             ;;
             *)
-              ${pkgs.gitAndTools.hub}/bin/hub "$@"
+              ${gitAndTools.hub}/bin/hub "$@"
             ;;
           esac
         }
@@ -191,20 +195,20 @@ in
         }
 
       '';
-      shellAliases = {
+      shellAliases = with pkgs; {
         ":q" = "exit";
         "\\$" = "";
-        bmount = "${pkgs.bashmount}/bin/bashmount";
-        cat = "${pkgs.bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+        bmount = "${bashmount}/bin/bashmount";
+        cat = "${bat}/bin/bat --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
-        df = "${pkgs.pydf}/bin/pydf";
+        df = "${pydf}/bin/pydf";
         gcd = "sudo gc -d";
         ln = "ln -v";
-        taskdone = "${pkgs.libnotify}/bin/notify-send 'Task finished.' && exit";
-        ls = "${pkgs.exa}/bin/exa -lh --git -s type";
+        taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
+        ls = "${exa}/bin/exa -lh --git -s type";
         mkdir = "mkdir -vp";
         mv = "mv -iv";
-        ping = "${pkgs.prettyping}/bin/prettyping --nolegend";
+        ping = "${prettyping}/bin/prettyping --nolegend";
         ranger = "ranger_cd";
         rm = "rm -v";
         rr = "ranger";
@@ -212,8 +216,8 @@ in
         tb = "termbin";
         termbin = "nc termbin.com 9999";
         tree = "ls --tree";
-        watch = "${pkgs.nur.repos.reedrw.viddy}/bin/viddy";
-        wget = "${pkgs.wget}/bin/wget --progress=dot:giga";
+        watch = "${viddy}/bin/viddy";
+        wget = "${wget}/bin/wget --progress=dot:giga";
         x = "exit";
       };
     };
