@@ -5,10 +5,10 @@
         "homepage": "https://distrobox.privatedns.org/",
         "owner": "89luca89",
         "repo": "distrobox",
-        "rev": "004017de49ebef45a468244ace9c0daa1ab7beee",
-        "sha256": "1s1y667p9406ivx1lwv47w5wq6fg6bz5pcfvxpwsgs43qpnpygam",
+        "rev": "93291f01a6a3114954d95611fa6c4f24b95489f5",
+        "sha256": "0b9m7inb5pkp07dzydv60yl1kimgbnxwznf70jys92gvw3hn46k5",
         "type": "tarball",
-        "url": "https://github.com/89luca89/distrobox/archive/004017de49ebef45a468244ace9c0daa1ab7beee.tar.gz",
+        "url": "https://github.com/89luca89/distrobox/archive/93291f01a6a3114954d95611fa6c4f24b95489f5.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
