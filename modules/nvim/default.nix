@@ -75,6 +75,7 @@ in
       vim-repeat
       vim-sandwich
       vim-table-mode
+      vim-trailing-whitespace
       vim-unimpaired
     ] ++ lib.attrsets.mapAttrsToList (name: src:
       let
@@ -139,9 +140,13 @@ in
 
       let mapleader=','
       nmap <Leader>a= :Tabularize /=<CR>
+      nmap <Leader>c :%s/\s\+$//e<Return>``
+      vmap <Leader>c :%s/\s\+$//e<Return>``
       vmap <Leader>a= :Tabularize /=<CR>
       nmap <Leader>a: :Tabularize /:\zs<CR>
       vmap <Leader>a: :Tabularize /:\zs<CR>
+      vmap <Leader>A :s/$/
+      nmap <Leader>n :noh<Return>
       nnoremap <Leader>hms :!hms
       nnoremap <Leader>hmb :!home-manager build
 
