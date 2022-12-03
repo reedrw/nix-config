@@ -70,7 +70,7 @@ in
 
         source ${oh-my-zsh.src}/lib/git.zsh
         source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-        source <(${binPath any-nix-shell} zsh --info-right)
+        source <(${binPath any-nix-shell} zsh)
         source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
         export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
@@ -88,6 +88,10 @@ in
           PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
         else
           PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
+        fi
+
+        if [ -n "$IN_NIX_SHELL" ]; then
+          RPROMPT="%K{green}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[green]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
         fi
 
         ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
