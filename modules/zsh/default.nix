@@ -205,7 +205,7 @@ in
         bmount = "${binPath bashmount}";
         cat = "${binPath bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
         cp = "cp -riv";
-        df = "${binPath pydf}";
+        df = "${pydf}/bin/pydf";
         gcd = "sudo gc -d";
         ln = "ln -v";
         taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
