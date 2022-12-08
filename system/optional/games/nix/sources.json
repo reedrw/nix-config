@@ -5,30 +5,10 @@
         "homepage": null,
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "f01655a16faaeac910a1cce6a2a7afb40f0b311c",
-        "sha256": "0fzsjq80nysv55jzxa4pzxc1nm45hn5qbg85fq1gdz2cq0cvwv0y",
+        "rev": "ef9f2230b33790fce25e5b24940700871844d5f0",
+        "sha256": "0g9qfd3ykdqh5na6qnyfaqb4wgxmsv8pbsfg0pqzrkph2h93x7s9",
         "type": "tarball",
-        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/f01655a16faaeac910a1cce6a2a7afb40f0b311c.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "an-anime-game-launcher-gtk": {
-        "branch": "main",
-        "cargoSha256": "sha256-IkuG/1S84Rleik8qliRyMFzwL+rxFoJu/oXWElfU4e4=",
-        "repo": "https://github.com/an-anime-team/an-anime-game-launcher-gtk.git",
-        "rev": "219bac46f1a268e7563c65385cb4e36179dd613f",
-        "submodules": true,
-        "type": "git"
-    },
-    "components": {
-        "branch": "main",
-        "description": "This repository contains all the components that could be used by the launchers, including wine and dxvk versions",
-        "homepage": null,
-        "owner": "an-anime-team",
-        "repo": "components",
-        "rev": "66d33ab5309335678ba5568561fba66919894e11",
-        "sha256": "042jgsb3aabsdcrrr9gxg8s02xvdp4wl9a8ly1ipxbphi3wdcks9",
-        "type": "tarball",
-        "url": "https://github.com/an-anime-team/components/archive/66d33ab5309335678ba5568561fba66919894e11.tar.gz",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/ef9f2230b33790fce25e5b24940700871844d5f0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
