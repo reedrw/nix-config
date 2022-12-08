@@ -31,7 +31,7 @@ in
         versionConditionalOverride "4.21.1" i3
           (i3.overrideAttrs (
             old: rec {
-              version = sources.i3.rev;
+              version = shortenRev sources.i3.rev;
               src = sources.i3;
             }
           ));

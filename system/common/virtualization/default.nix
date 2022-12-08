@@ -13,7 +13,7 @@ in
     (versionConditionalOverride "1.4.1" distrobox
       (distrobox.overrideAttrs (
         old: rec {
-          version = sources.distrobox.rev;
+          version = shortenRev sources.distrobox.rev;
           src = sources.distrobox;
         }
       ))

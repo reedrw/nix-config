@@ -65,4 +65,6 @@ self: super: rec {
     if builtins.compareVersions package.version version < 1
     then override
     else package;
+
+  shortenRev = rev: builtins.substring 0 7 rev;
 }
