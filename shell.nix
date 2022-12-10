@@ -20,12 +20,14 @@ mkShell {
   packages = [
     cargo
     doppler
+    expect
     gcc
     git
     gron
     home-manager
     jq
     niv
+    nix-output-monitor
     nix-prefetch
     pre-commit
     shellcheck

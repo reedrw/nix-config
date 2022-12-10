@@ -25,13 +25,13 @@ system(){
     # compare deriver of current and new system builds, if different, rebuild
     if [[ "$currentSystemDrv" != "$newSystemDrv" ]]; then
       echo "Rebuilding NixOS..."
-      sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix
+      sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix |& nom
     else
       echo "No changes to system. Not rebuilding."
     fi
   else
     echo "Rebuilding NixOS..."
-    sudo nixos-rebuild switch || exit 1
+    ( sudo nixos-rebuild switch |& nom ) || exit 1
   fi
 }
 
@@ -45,7 +45,7 @@ hm(){
   newHomeManagerDrv="$(nix-instantiate ci.nix -A home-manager 2> /dev/null)"
   if [[ "$currentHomeManagerDrv" != "$newHomeManagerDrv" ]]; then
     echo "Rebuilding home-manager..."
-    home-manager switch || exit 1
+    ( unbuffer home-manager switch |& nom )|| exit 1
   else
     echo "No changes to home-manager. Not rebuilding."
   fi

@@ -16,7 +16,7 @@ let
     # global aliases
     (aliasToPackage {
       gc = ''nix-collect-garbage "$@"'';
-      hms = "home-manager switch";
+      hms = "${expect}/bin/unbuffer home-manager switch |& ${nix-output-monitor}/bin/nom";
       ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
       pai = "~/.config/nixpkgs/pull-and-install.sh";
     })
