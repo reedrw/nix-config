@@ -10,6 +10,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    virt-manager
     (versionConditionalOverride "1.4.1" distrobox
       (distrobox.overrideAttrs (
         old: rec {
