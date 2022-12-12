@@ -337,10 +337,20 @@ index 632fc24..0c69f9f 100644
 +N9k=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..b20a0b6 100644
+index f2a54b1..a281aa3 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -188,8 +188,6 @@
+@@ -33,7 +33,8 @@
+                 "dchild",
+                 "camp",
+                 "creative",
+-                "s"
++                "s",
++                "content-id"
+             ],
+             "rawRules": [
+                 "\\/ref=[^/?]*"
+@@ -188,8 +189,6 @@
                  "(?:%3F)?gs_l",
                  "(?:%3F)?mkt_tok",
                  "(?:%3F)?hmb_(?:campaign|medium|source)",
@@ -349,7 +359,7 @@ index f2a54b1..b20a0b6 100644
                  "(?:%3F)?gclid",
                  "(?:%3F)?otm_[a-z_]*",
                  "(?:%3F)?cmpid",
-@@ -205,7 +203,29 @@
+@@ -205,7 +204,29 @@
                  "(?:%3F)?spm",
                  "(?:%3F)?vn(?:_[a-z]*)+",
                  "(?:%3F)?tracking_source",
@@ -380,7 +390,7 @@ index f2a54b1..b20a0b6 100644
              ],
              "exceptions": [
                  "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
-@@ -336,7 +356,11 @@
+@@ -336,7 +357,11 @@
                  "(?:ref_?)?src",
                  "s",
                  "cn",
@@ -393,7 +403,7 @@ index f2a54b1..b20a0b6 100644
              ]
          },
          "reddit": {
-@@ -1623,6 +1647,46 @@
+@@ -1623,6 +1648,46 @@
                  "log",
                  "p"
              ]
