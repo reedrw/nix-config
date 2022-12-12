@@ -25,12 +25,14 @@ system(){
     # compare deriver of current and new system builds, if different, rebuild
     if [[ "$currentSystemDrv" != "$newSystemDrv" ]]; then
       echo "Rebuilding NixOS..."
+      sudo -v
       sudo nixos-rebuild switch -I nixos-config="$dir"/system/"$host".nix |& nom
     else
       echo "No changes to system. Not rebuilding."
     fi
   else
     echo "Rebuilding NixOS..."
+    sudo -v
     ( sudo nixos-rebuild switch |& nom ) || exit 1
   fi
 }
