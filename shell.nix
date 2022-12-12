@@ -58,8 +58,4 @@ mkShell {
 
   PRE_COMMIT_COLOR = "never";
   SHELLCHECK_OPTS = "-e SC1008";
-
-  shellHook = ''
-    [[ -f .git/hooks/pre-commit ]] || pre-commit install --install-hooks
-  '';
 }
