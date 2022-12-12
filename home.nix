@@ -17,7 +17,7 @@ let
     (aliasToPackage {
       gc = ''nix-collect-garbage "$@"'';
       hms = "${expect}/bin/unbuffer home-manager switch |& ${nix-output-monitor}/bin/nom";
-      ldp = "sh -c '(cd ~/.config/nixpkgs/; ./install.sh)'";
+      ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
       pai = "~/.config/nixpkgs/pull-and-install.sh";
     })
   ];
