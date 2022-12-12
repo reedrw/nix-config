@@ -4,6 +4,10 @@
 export NIXPKGS_ALLOW_UNFREE=1
 systemProfile="/nix/var/nix/profiles/system"
 
+if [[ "$1" == "-x" ]]; then
+  set -x
+fi
+
 getChannelURL(){
   nix-channel --list | grep "$1 " | cut -d' ' -f2
 }
