@@ -14,7 +14,7 @@ mainUrl="$api/repos/$user/$repo"
 # Get latest reedbot PR numbers
 PRs=$(curl -s "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot]") | .number')
 
-main(){
+mergePr(){
   for prNumber in $PRs; do
 
     # Get PR ref
@@ -50,5 +50,12 @@ main(){
 }
 
 pushd "$dir" > /dev/null || exit
-main "$@"
+clonedCommitSha="$(git rev-parse master)"
+upstreamCommitSha="$(curl -s "$mainUrl/branches" | jq -r '.[] | select(.name == "master") | .commit.sha')"
+if [[ "$clonedCommitSha" == "$upstreamCommitSha" ]]; then
+  mergePr
+else
+  git pull --rebase
+  ./install.sh
+fi
 popd >> /dev/null || exit
