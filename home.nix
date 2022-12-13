@@ -15,7 +15,12 @@ let
 
     # global aliases
     (aliasToPackage {
-      gc = ''${binPath lorri} gc rm && nix-collect-garbage "$@"'';
+      gc = ''
+        if type -P lorri &> /dev/null; then
+          lorri gc rm
+        fi
+        nix-collect-garbage "$@"
+      '';
       hms = "${expect}/bin/unbuffer home-manager switch |& ${nix-output-monitor}/bin/nom";
       ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
       pai = "~/.config/nixpkgs/pull-and-install.sh";

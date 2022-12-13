@@ -26,8 +26,6 @@ in
     };
   };
 
-  services.lorri.enable = true;
-
   programs.zsh = let
     mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: rec {
       name = pkg.pname;
