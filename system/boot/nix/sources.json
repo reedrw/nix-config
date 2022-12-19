@@ -1,0 +1,14 @@
+{
+    "distro-grub-themes": {
+        "branch": "master",
+        "description": "A pack of GRUB2 themes for each Linux distribution",
+        "homepage": "https://k1ng.dev/distro-grub-themes",
+        "owner": "AdisonCavani",
+        "repo": "distro-grub-themes",
+        "rev": "5796b12b7cdec6d5d82cc95896670602958d4a5b",
+        "sha256": "1b7i4g11c2f4advg4nqhlyn81gxy72kl3f251y51nk1nwyggw3nd",
+        "type": "tarball",
+        "url": "https://github.com/AdisonCavani/distro-grub-themes/archive/5796b12b7cdec6d5d82cc95896670602958d4a5b.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
