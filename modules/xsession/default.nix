@@ -28,13 +28,7 @@ in
     windowManager.i3 = {
       enable = true;
       package = with pkgs;
-        versionConditionalOverride "4.21.1" i3
-          (i3.overrideAttrs (
-            old: rec {
-              version = shortenRev sources.i3.rev;
-              src = sources.i3;
-            }
-          ));
+        (buildFromNivSourceUntilVersion "4.21.1" i3 sources);
       config = {
         bars = [ ];
         gaps = {

@@ -67,4 +67,21 @@ self: super: rec {
     else package;
 
   shortenRev = rev: builtins.substring 0 7 rev;
+
+  buildFromNivSource = package: sources:
+  let
+    name = (builtins.parseDrvName package.name).name;
+    src = sources."${name}";
+    version = shortenRev src.rev;
+  in
+    package.overrideAttrs (
+      _: {
+        inherit version src;
+      }
+    );
+
+  buildFromNivSourceUntilVersion = version: package: sources:
+    versionConditionalOverride version package
+      (buildFromNivSource package sources);
+
 }

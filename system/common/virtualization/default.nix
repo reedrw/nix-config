@@ -11,13 +11,6 @@ in
 
   environment.systemPackages = with pkgs; [
     virt-manager
-    (versionConditionalOverride "1.4.1" distrobox
-      (distrobox.overrideAttrs (
-        old: rec {
-          version = shortenRev sources.distrobox.rev;
-          src = sources.distrobox;
-        }
-      ))
-    )
+    (buildFromNivSourceUntilVersion "1.4.1" distrobox sources)
   ];
 }
