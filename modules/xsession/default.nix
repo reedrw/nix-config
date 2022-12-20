@@ -136,12 +136,12 @@ in
         ];
         startup = []
         ++ builtins.map ( command:
-            {
-              inherit command;
-              always = true;
-              notification = false;
-            }
-          ) alwaysRun
+          {
+            inherit command;
+            always = true;
+            notification = false;
+          }
+        ) alwaysRun
         ++ builtins.map ( command:
           {
             inherit command;
