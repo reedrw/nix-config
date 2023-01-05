@@ -1,15 +1,23 @@
 {
   sources ? import ./nix/sources.nix { },
-  pkgs ? import sources.nixpkgs { config = import ./config.nix; }
+  pkgs ? import sources.nixpkgs { config = import ./config.nix; },
+  lib ? pkgs.lib
 }:
-
-{
-
-  nixos = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos.nix; }).system;
-  nixos-t400 = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos-t400.nix; }).system;
-  nixos-t480 = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos-t480.nix; }).system;
-  nixos-t520 = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos-t520.nix; }).system;
-  nixos-desktop = (import "${sources.nixpkgs}/nixos" { configuration = import ./system/nixos-desktop.nix; }).system;
-  home-manager = (import "${sources.home-manager}/home-manager/home-manager.nix" { confPath = ./home.nix; inherit pkgs; }).activationPackage;
-
+let
+  systemDir = builtins.readDir ./system;
+  systemConfigs = (builtins.partition
+    (x: lib.strings.hasSuffix ".nix" x)
+    (builtins.attrNames systemDir)
+  ).right;
+  systemConfigsImported = lib.attrsets.genAttrs
+    (map (x: builtins.replaceStrings [".nix"] [""] x) systemConfigs)
+    (name: let
+        configuration = import (./system + "/${name}.nix");
+      in (import "${sources.nixpkgs}/nixos" { inherit configuration; }).system);
+in
+systemConfigsImported // {
+  home-manager = (import "${sources.home-manager}/home-manager/home-manager.nix" {
+    inherit pkgs;
+    confPath = ./home.nix;
+  }).activationPackage;
 }
