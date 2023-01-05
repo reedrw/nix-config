@@ -63,24 +63,20 @@ let
 
   hostname = builtins.readFile /etc/hostname;
 
-  full =
-    if builtins.pathExists (./system + "/${builtins.replaceStrings ["\n"] [".nix"] hostname}")
-    || (builtins.getEnv "USER") == "runner"
-    then true
-    else false;
+  full = builtins.pathExists (./system + "/${builtins.replaceStrings ["\n"] [".nix"] hostname}")
+    || (builtins.getEnv "USER") == "runner";
 
 in
 {
-
   imports = if full
-    then builtins.map (x: ./modules + ("/" + x)) (builtins.attrNames (builtins.readDir ./modules))
-    else [
-      ./modules/comma
-      ./modules/nvim
-      ./modules/ranger
-      ./modules/styling
-      ./modules/zsh
-    ];
+  then builtins.map (x: ./modules + "/${x}") (builtins.attrNames (builtins.readDir ./modules))
+  else [
+    ./modules/comma
+    ./modules/nvim
+    ./modules/ranger
+    ./modules/styling
+    ./modules/zsh
+  ];
 
   nixpkgs = {
     config = import ./config.nix;
