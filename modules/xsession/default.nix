@@ -35,7 +35,9 @@ in
           inner = 5;
         };
         window.border = 5;
+        window.titlebar = false;
         floating.border = 5;
+        floating.titlebar = false;
         modifier = "${mod}";
         terminal = "${term}";
         keybindings = with pkgs; lib.mkOptionDefault (
