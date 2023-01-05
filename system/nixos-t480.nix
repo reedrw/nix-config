@@ -11,7 +11,7 @@ in
     ./boot/efi.nix
     ./users/reed.nix
     "${sources.nixos-hardware}/lenovo/thinkpad/t480"
-  ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
+  ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;

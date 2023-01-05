@@ -8,7 +8,7 @@
   imports = [
     ./boot/bios.nix
     ./users/reed.nix
-  ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
+  ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.device = "/dev/vda";

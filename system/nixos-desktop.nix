@@ -13,7 +13,7 @@ in
     ./optional/games
     "${sources.nixos-hardware}/common/cpu/intel"
     "${sources.nixos-hardware}/common/pc/ssd"
-  ] ++ builtins.map (x: ./common + ("/"  + x)) (builtins.attrNames (builtins.readDir ./common));
+  ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
