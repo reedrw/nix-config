@@ -158,18 +158,34 @@ in
     "i3/workspace-4.json".source = ./workspace-4.json;
   };
 
-  systemd.user.services.clipboard-clean = {
-    Unit = {
-      After = [ "graphical.target" ];
-      Description = "Clean URLS on clipboard using ClearURL rules.";
+  systemd.user.services = {
+    clipboard-clean = {
+      Unit = {
+        After = [ "graphical.target" ];
+        Description = "Clean URLS on clipboard using ClearURL rules.";
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+      Service = with pkgs; {
+        ExecStart = "${binPath scripts.clipboard-clean}";
+        Restart = "on-failure";
+        Type = "simple";
+      };
     };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-    Service = with pkgs; {
-      ExecStart = "${binPath scripts.clipboard-clean}";
-      Restart = "on-failure";
-      Type = "simple";
+    autotiling = {
+      Unit = {
+        After = [ "graphical.target" ];
+        Description = "Automatic tiling for i3/sway";
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+      Service = with pkgs; {
+        ExecStart = "${binPath autotiling}";
+        Restart = "on-failure";
+        Type = "simple";
+      };
     };
   };
 }
