@@ -47,6 +47,10 @@ in
     autocd = true;
     defaultKeymap = "emacs";
     completionInit = "autoload -U compinit && compinit -i";
+    history = {
+      save = 99999;
+      size = 99999;
+    };
     initExtra = let
       inherit (config.colorScheme.colors) base02;
     in
