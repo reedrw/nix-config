@@ -28,7 +28,7 @@ else
     exit 1
   fi
 
-  attr="$(nix-locate -d "$database" --top-level -1 --at-root -w "/bin/$cmd")"
+  attr="$(nix-locate -d "$database" --top-level --minimal --at-root -w "/bin/$cmd")"
 
   if [ -z "$attr" ]; then
     rofi "$rofiArgs" -e "$cmd: command not found"
