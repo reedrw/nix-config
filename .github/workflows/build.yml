@@ -102,7 +102,8 @@ jobs:
         nix-build ./ci.nix -A ${{ matrix.output }} -o result-old
         echo "diff_closure<<EOF" >> $GITHUB_ENV
         # TODO remove pipe to sed when NixOS/nix#4626 is fixed
-        nix store diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
+        #nix store diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
+        nix-shell -p nvd --run "nvd diff ./result-old ./result-new" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
       env:
         NIXPKGS_ALLOW_UNFREE: 1
