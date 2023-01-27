@@ -17,7 +17,16 @@ in
     aagl-gtk-on-nix.module
   ];
 
-  programs.steam.enable = true;
+  programs.steam = {
+    enable = true;
+    package = (pkgs.steam.override {
+      extraLibraries = pkgs: [ config.hardware.opengl.package ];
+      extraPkgs = pkgs: with pkgs; [
+        mangohud
+      ];
+    });
+  };
+
   programs.an-anime-game-launcher = {
     enable = true;
     package = aagl-gtk-custom;
