@@ -34,6 +34,7 @@ in
     plugins = with pkgs.vimPlugins; [
       ale
       base16-vim
+      camelcasemotion
       caw-vim
       coc-pyright
       context_filetype-vim
@@ -149,6 +150,15 @@ in
       nmap <Leader>n :noh<Return>
       nnoremap <Leader>hms :!hms
       nnoremap <Leader>hmb :!home-manager build
+
+      map <silent> w <Plug>CamelCaseMotion_w
+      map <silent> b <Plug>CamelCaseMotion_b
+      map <silent> e <Plug>CamelCaseMotion_e
+      map <silent> ge <Plug>CamelCaseMotion_ge
+      sunmap w
+      sunmap b
+      sunmap e
+      sunmap ge
 
       set expandtab
       set mouse=a
