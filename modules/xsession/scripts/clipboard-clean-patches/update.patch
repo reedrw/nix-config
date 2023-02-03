@@ -492,7 +492,7 @@ index 632fc24..2ae7b6c 100644
 +N9k=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..7ff8976 100644
+index f2a54b1..9ebe4d1 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -33,7 +33,8 @@
@@ -505,7 +505,15 @@ index f2a54b1..7ff8976 100644
              ],
              "rawRules": [
                  "\\/ref=[^/?]*"
-@@ -136,7 +137,7 @@
+@@ -110,7 +111,6 @@
+                 "gws_[a-z]*",
+                 "atyp",
+                 "vet",
+-                "zx",
+                 "_u",
+                 "je",
+                 "dcr",
+@@ -136,11 +136,9 @@
              "exceptions": [
                  "^https?:\\/\\/mail\\.google\\.com\\/mail\\/u\\/",
                  "^https?:\\/\\/(?:docs|accounts)\\.google(?:\\.[a-z]{2,}){1,}",
@@ -513,8 +521,12 @@ index f2a54b1..7ff8976 100644
 +                "^https?:\\/\\/([a-z0-9-\\.])*(chat|drive)\\.google\\.com\\/videoplayback",
                  "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}(?:\\/upload)?\\/drive\\/",
                  "^https?:\\/\\/news\\.google\\.com.*\\?hl=.",
-                 "^https?:\\/\\/hangouts\\.google\\.com\\/webchat.*?zx=.",
-@@ -188,8 +189,6 @@
+-                "^https?:\\/\\/hangouts\\.google\\.com\\/webchat.*?zx=.",
+-                "^https?:\\/\\/client-channel\\.google\\.com\\/client-channel.*?zx=.",
+                 "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/s\\?tbm=map.*?gs_[a-z]*=.",
+                 "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/(?:complete\\/search|setprefs|searchbyimage)",
+                 "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}\\/(?:appsactivity|aclk\\?)"
+@@ -188,8 +186,6 @@
                  "(?:%3F)?gs_l",
                  "(?:%3F)?mkt_tok",
                  "(?:%3F)?hmb_(?:campaign|medium|source)",
@@ -523,7 +535,7 @@ index f2a54b1..7ff8976 100644
                  "(?:%3F)?gclid",
                  "(?:%3F)?otm_[a-z_]*",
                  "(?:%3F)?cmpid",
-@@ -205,7 +204,30 @@
+@@ -205,7 +201,30 @@
                  "(?:%3F)?spm",
                  "(?:%3F)?vn(?:_[a-z]*)+",
                  "(?:%3F)?tracking_source",
@@ -555,7 +567,7 @@ index f2a54b1..7ff8976 100644
              ],
              "exceptions": [
                  "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
-@@ -336,7 +358,11 @@
+@@ -336,7 +355,11 @@
                  "(?:ref_?)?src",
                  "s",
                  "cn",
@@ -568,7 +580,7 @@ index f2a54b1..7ff8976 100644
              ]
          },
          "reddit": {
-@@ -693,7 +719,8 @@
+@@ -693,7 +716,8 @@
              "rules": [
                  "refId",
                  "trk",
@@ -578,7 +590,7 @@ index f2a54b1..7ff8976 100644
              ]
          },
          "LinkedIn Learning": {
-@@ -1089,19 +1116,23 @@
+@@ -1089,19 +1113,23 @@
                  "from_source",
                  "from",
                  "seid",
@@ -604,7 +616,7 @@ index f2a54b1..7ff8976 100644
              ]
          },
          "m.bilibili.com": {
-@@ -1623,6 +1654,76 @@
+@@ -1623,6 +1651,76 @@
                  "log",
                  "p"
              ]
