@@ -6,3 +6,5 @@ set -x
 
 niv init
 niv update
+
+./update-components.sh
