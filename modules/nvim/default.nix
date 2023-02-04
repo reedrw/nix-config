@@ -147,6 +147,8 @@ in
       nmap <Leader>a: :Tabularize /:\zs<CR>
       vmap <Leader>a: :Tabularize /:\zs<CR>
       vmap <Leader>A :s/$/
+      vmap <Leader>t :Tabularize /
+      nmap <Leader>t :Tabularize /
       nmap <Leader>n :noh<Return>
       nnoremap <Leader>hms :!hms
       nnoremap <Leader>hmb :!home-manager build
