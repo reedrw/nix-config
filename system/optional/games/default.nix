@@ -6,7 +6,13 @@ let
   aagl-gtk-unwrapped = aagl-gtk-on-nix.an-anime-game-launcher-gtk-unwrapped-git;
 
   aagl-gtk-custom = aagl-gtk-on-nix.an-anime-game-launcher-gtk.override {
-    an-anime-game-launcher-gtk-unwrapped = aagl-gtk-unwrapped.override {
+    an-anime-game-launcher-gtk-unwrapped =
+    let
+      components = lib.importJSON ./components.json;
+    in
+    aagl-gtk-unwrapped.override {
+      # customDxvk = components.dxvk;
+      # customGEProton = components.GEProton;
       customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
     };
   };
