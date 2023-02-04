@@ -2,16 +2,18 @@
 let
   packagesMinimal = with pkgs; [
     # utilities
-    cachix      # binary cache
-    git         # version control
-    github-cli  # github from command line
-    htop        # process monitor
-    moreutils   # more scripting tools
-    nix-tree    # nix derivation graph browser
-    nq          # queue utility
-    pm2         # process manager
-    ripgrep     # recursive grep
-    screen      # terminal multiplexer
+    cachix     # binary cache
+    expect     # interactive automation
+    git        # version control
+    github-cli # github from command line
+    htop       # process monitor
+    moreutils  # more scripting tools
+    nom        # prettier nix output
+    nix-tree   # nix derivation graph browser
+    nq         # queue utility
+    pm2        # process manager
+    ripgrep    # recursive grep
+    screen     # terminal multiplexer
 
     # global aliases
     (aliasToPackage {
@@ -21,7 +23,7 @@ let
         fi
         nix-collect-garbage "$@"
       '';
-      hms = "${expect}/bin/unbuffer home-manager switch |& ${nix-output-monitor}/bin/nom";
+      hms = "unbuffer home-manager switch |& nom";
       ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
       pai = "~/.config/nixpkgs/pull-and-install.sh";
     })

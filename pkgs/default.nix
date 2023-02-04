@@ -21,6 +21,8 @@ self: super: rec {
     nss = super.nss_latest;
   };
 
+  nom = super.nix-output-monitor;
+
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
   # Ex.
   # aliasToPackage {
