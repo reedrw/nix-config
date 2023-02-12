@@ -11,8 +11,8 @@ let
       components = lib.importJSON ./components.json;
     in
     aagl-gtk-unwrapped.override {
-      # customDxvk = components.dxvk;
-      # customGEProton = components.GEProton;
+      customDxvk = components.dxvk;
+      customGEProton = components.GEProton;
       customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
     };
   };
