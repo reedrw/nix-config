@@ -5,8 +5,16 @@ set -x
 
 apiURL="https://api.github.com"
 
+if [[ -n "$GITHUB_TOKEN" ]]; then
+  curl="curl -s --request GET \
+    --header \"Accept: application/vnd.github+json\" \
+    --header \"Authorization: Bearer $GITHUB_TOKEN\" --url"
+else
+  curl="curl -s"
+fi
+
 getLatestDXVKRelease(){
-  curl -s "$apiURL/repos/doitsujin/dxvk/releases/latest" | jq -r '.tag_name'
+  $curl "$apiURL/repos/doitsujin/dxvk/releases/latest" | jq -r '.tag_name'
 }
 
 dxvkVersion="$(getLatestDXVKRelease)"
@@ -15,7 +23,7 @@ v="$dxvkVersion"
 dxvkURL="https://github.com/doitsujin/dxvk/releases/download/v$v/dxvk-$v.tar.gz"
 
 getLatestGEProtonRelease(){
-  curl -s "$apiURL/repos/GloriousEggroll/proton-ge-custom/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
+  $curl "$apiURL/repos/GloriousEggroll/proton-ge-custom/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
 }
 
 protonGEVersion="$(getLatestGEProtonRelease)"
@@ -23,7 +31,7 @@ v="$protonGEVersion"
 protonGEURL="https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton$v/GE-Proton$v.tar.gz"
 
 getLatestWineGERelease(){
-  curl -s "$apiURL/repos/GloriousEggroll/wine-ge-custom/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
+  $curl "$apiURL/repos/GloriousEggroll/wine-ge-custom/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
 }
 
 wineGEVersion="$(getLatestWineGERelease)"
@@ -31,7 +39,7 @@ v="$wineGEVersion"
 wineGEURL="https://github.com/GloriousEggroll/wine-ge-custom/releases/download/GE-Proton$v/wine-lutris-GE-Proton$v-x86_64.tar.xz"
 
 getLatestLutrisRelease(){
-  curl -s "$apiURL/repos/lutris/wine/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
+  $curl "$apiURL/repos/lutris/wine/releases/latest" | jq -r '.tag_name' | grep -oP '\d.*'
 }
 
 lutrisVersion="$(getLatestLutrisRelease)"
@@ -39,7 +47,7 @@ v="$lutrisVersion"
 lutrisURL="https://github.com/lutris/wine/releases/download/lutris-wine-$v/wine-lutris-$v-x86_64.tar.xz"
 
 getLatestSodaRelease(){
-  releases="$(curl -s "$apiURL/repos/bottlesdevs/wine/releases")"
+  releases="$($curl "$apiURL/repos/bottlesdevs/wine/releases")"
   index="$(echo "$releases" | gron | grep 'Soda' | head -1 | awk -F'[^0-9]+' '{ print $2 }')"
 
   echo "$releases" | jq -r ".[$index].tag_name" | grep -oP '\d.*'
