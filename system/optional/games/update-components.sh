@@ -49,7 +49,13 @@ sodaVersion="$(getLatestSodaRelease)"
 v="$sodaVersion"
 sodaURL="https://github.com/bottlesdevs/wine/releases/download/soda-$v/soda-$v-x86_64.tar.xz"
 
+iconURL="$(jq -r '.icon.url' ./components.json)"
+iconSha265="$(jq -r '.icon.sha256' ./components.json)"
+
 gron -u > components.json << EOF
+json.icon = {};
+json.icon.url = "$iconURL";
+json.icon.sha256 = "$iconSha265";
 json.dxvk = {};
 json.dxvk.version = "$dxvkVersion";
 json.dxvk.url = "$dxvkURL";

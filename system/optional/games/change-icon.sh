@@ -1,12 +1,14 @@
 #! /usr/bin/env bash
 
+json=./components.json
+
 url="$1"
 
 sha256="$(nix-prefetch-url "$url")"
 
-cat > icon.json << EOF
-{
-    "url": "$url",
-    "sha256": "$sha256"
-}
-EOF
+newJson="$(jq -r "
+  .icon.url = \"$url\" |
+  .icon.sha256 = \"$sha256\"
+" "$json")"
+
+echo "$newJson" > "$json"

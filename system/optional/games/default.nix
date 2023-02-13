@@ -12,7 +12,7 @@ let
       customSoda = soda;
       customLutris = lutris;
       customWineGEProton = wineGE;
-      customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
+      customIcon = builtins.fetchurl icon;
     };
   };
 
