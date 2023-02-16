@@ -12,6 +12,8 @@ let
     "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
     "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
     "xset r rate 250 50"
+    "${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'"
+    "${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'"
   ];
 
   run = [
