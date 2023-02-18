@@ -77,6 +77,7 @@ in
     ./modules/comma
     ./modules/nvim
     ./modules/ranger
+    ./modules/scripts
     ./modules/styling
     ./modules/zsh
   ];
