@@ -100,4 +100,7 @@ self: super: rec {
     versionConditionalOverride version package
       (buildFromNivSource package sources);
 
+  # Given a nixpkgs source as arugment, import it with the current config.
+  importNixpkgs = nixpkgs:
+    import nixpkgs { inherit (super) config; };
 }
