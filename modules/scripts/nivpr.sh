@@ -6,7 +6,7 @@ fi
 
 apiOutput="$(curl -s https://api.github.com/repos/NixOS/nixpkgs/pulls/"$1")"
 
-name="nixpkgs-$1"
+name="pr-$1"
 repo="$(jq -r '.head.repo.full_name' <<< "$apiOutput")"
 branch="$(jq -r '.head.ref' <<< "$apiOutput")"
 

@@ -22,9 +22,9 @@ in
     aagl-gtk-on-nix.module
   ];
 
-  programs.steam = {
+  programs.steam = with pkgs; {
     enable = true;
-    package = ((pkgs.importNixpkgs sources.nixpkgs-216883).steam.override {
+    package = ((importNixpkgs sources.pr-216883).steam.override {
       extraLibraries = pkgs: [ config.hardware.opengl.package ];
       extraPkgs = pkgs: with pkgs; [
         mangohud

@@ -11,7 +11,7 @@
         "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/681e79586ae38ec092fa26035df3783f365dcfbc.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "nixpkgs-216883": {
+    "pr-216883": {
         "branch": "steam-mangohud",
         "description": "Nix Packages collection",
         "homepage": "",
