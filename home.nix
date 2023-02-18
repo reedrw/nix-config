@@ -32,7 +32,6 @@ let
 
   packagesExtra = with pkgs; [
     # extra utilities
-    alejandra   # nix formatter
     bitwarden   # password manager
     gron        # greppable json
     jq          # json processor
@@ -44,24 +43,6 @@ let
     sshpass     # specify ssh password
     xclip       # x clipboard scripting
     xsel        # x clipbaord scripting
-    yj          # yaml to json
-
-    # more global aliases
-    (aliasToPackage {
-      json2nix = ''
-        [[ -n "$1" ]] && json="$(readlink -f "$1")"
-        [[ -p /dev/stdin ]] && json=/dev/stdin
-        nix-instantiate -E --arg json "$json" '
-          { json ? "" }:
-          let
-            v = builtins.fromJSON (builtins.readFile json);
-          in
-          builtins.trace v v
-        ' &> /dev/stdout \
-          | cut -f 2- -d ' ' \
-          | alejandra -q
-      '';
-    })
   ];
 
   hostname = builtins.readFile /etc/hostname;
