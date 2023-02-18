@@ -10,6 +10,7 @@ let
     moreutils  # more scripting tools
     nom        # prettier nix output
     nix-tree   # nix derivation graph browser
+    niv        # painless nix dependency management
     nq         # queue utility
     pm2        # process manager
     ripgrep    # recursive grep
