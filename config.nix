@@ -4,13 +4,13 @@ in
 {
   allowUnfree = true;
   allowBroken = true;
-  packageOverrides = pkgs: {
-    nur = import "${sources.NUR}" {
+  packageOverrides = pkgs: with sources; {
+    nur = import NUR {
       inherit pkgs;
     };
     fromBranch = {
-      master = import "${sources.nixpkgs-master}" { };
-      stable = import "${sources.nixpkgs-stable}" { };
+      master = import nixpkgs-master { };
+      stable = import nixpkgs-stable { };
     };
   };
 }
