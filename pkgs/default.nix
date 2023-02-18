@@ -68,8 +68,18 @@ self: super: rec {
     then override
     else package;
 
+  # Shortens a git commit hash to the first 7 characters
+  # Ex.
+  # shortenRev "acb36a427a35f451b42dd5d0f29f1c4e2fe447b9"
+  #
+  # Returns:
+  # "acb36a4"
   shortenRev = rev: builtins.substring 0 7 rev;
 
+  # Given a package an niv sources set, overrides package to build from niv source with same name.
+  # Ex.
+  # `buildFromNivSource i3 sources`
+  # will build i3 from sources.i3
   buildFromNivSource = package: sources:
   let
     name = (builtins.parseDrvName package.name).name;
@@ -82,6 +92,10 @@ self: super: rec {
       }
     );
 
+  # Given the current version of a package, the package itsef, and a niv sources set, build from
+  # niv sources until the version of the package is newer than the specified version.
+  # Ex.
+  # buildFromNivSourceUntilVersion "1.4.1" distrobox sources
   buildFromNivSourceUntilVersion = version: package: sources:
     versionConditionalOverride version package
       (buildFromNivSource package sources);
