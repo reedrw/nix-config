@@ -76,7 +76,8 @@ in
       vim-repeat
       vim-sandwich
       vim-table-mode
-      vim-trailing-whitespace
+      # https://github.com/bronson/vim-trailing-whitespace/issues/26
+      pkgs.fromBranch.stable.vimPlugins.vim-trailing-whitespace
       vim-unimpaired
     ] ++ lib.attrsets.mapAttrsToList (name: src:
       let
