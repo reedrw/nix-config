@@ -24,7 +24,7 @@ in
 
   programs.steam = {
     enable = true;
-    package = (pkgs.steam.override {
+    package = ((pkgs.importNixpkgs sources.nixpkgs-216883).steam.override {
       extraLibraries = pkgs: [ config.hardware.opengl.package ];
       extraPkgs = pkgs: with pkgs; [
         mangohud
