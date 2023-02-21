@@ -10,17 +10,5 @@
         "type": "tarball",
         "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/681e79586ae38ec092fa26035df3783f365dcfbc.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "pr-216883": {
-        "branch": "steam-mangohud",
-        "description": "Nix Packages collection",
-        "homepage": "",
-        "owner": "hw-lunemann",
-        "repo": "nixpkgs",
-        "rev": "eaf87014062fc1fc8fdfeb19dd81b208f41d46f9",
-        "sha256": "0lyrfwhi56cmlzx4a5jf4l35jk5z59cv8gvd4dxmhz2i6vvkxy4q",
-        "type": "tarball",
-        "url": "https://github.com/hw-lunemann/nixpkgs/archive/eaf87014062fc1fc8fdfeb19dd81b208f41d46f9.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

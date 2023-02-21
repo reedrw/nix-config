@@ -24,12 +24,12 @@ in
 
   programs.steam = with pkgs; {
     enable = true;
-    package = ((importNixpkgs sources.pr-216883).steam.override {
+    package = steam.override {
       extraLibraries = pkgs: [ config.hardware.opengl.package ];
       extraPkgs = pkgs: with pkgs; [
         mangohud
       ];
-    });
+    };
   };
 
   programs.an-anime-game-launcher = {
@@ -38,6 +38,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    r2mod_cli
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
     })
