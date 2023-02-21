@@ -1,27 +1,31 @@
-self: super: rec {
+_: pkgs:
+let
+  lib = pkgs.lib;
+in
+rec {
 
-  inherit ((import ../config.nix).packageOverrides super) nur fromBranch;
+  inherit ((import ../config.nix).packageOverrides pkgs) nur fromBranch;
 
-  ranger = super.ranger.overrideAttrs (
+  ranger = pkgs.ranger.overrideAttrs (
     old: rec {
       postFixup =
         old.postFixup
         + ''
-          sed -i "s_#!/nix/store/.*_#!${super.pypy3}/bin/pypy3_" $out/bin/.ranger-wrapped
+          sed -i "s_#!/nix/store/.*_#!${pkgs.pypy3}/bin/pypy3_" $out/bin/.ranger-wrapped
         '';
     }
   );
 
   libreoffice = fromBranch.stable.libreoffice;
 
-  discord = super.discord.override {
-    nss = super.nss_latest;
+  discord = pkgs.discord.override {
+    nss = pkgs.nss_latest;
   };
-  discord-canary = super.discord-canary.override {
-    nss = super.nss_latest;
+  discord-canary = pkgs.discord-canary.override {
+    nss = pkgs.nss_latest;
   };
 
-  nom = super.nix-output-monitor;
+  nom = pkgs.nix-output-monitor;
 
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
   # Ex.
@@ -30,11 +34,11 @@ self: super: rec {
   #   hms = "home-manager switch;
   # }
   aliasToPackage = alias:
-    super.symlinkJoin {
+    pkgs.symlinkJoin {
       name = "alias";
       paths = (
-        super.lib.mapAttrsToList
-        (name: value: super.writeShellScriptBin name value)
+        lib.mapAttrsToList
+        (name: value: pkgs.writeShellScriptBin name value)
         alias
       );
     };
@@ -102,5 +106,5 @@ self: super: rec {
 
   # Given a nixpkgs source as arugment, import it with the current config.
   importNixpkgs = nixpkgs:
-    import nixpkgs { inherit (super) config; };
+    import nixpkgs { inherit (pkgs) config overlays system; };
 }
