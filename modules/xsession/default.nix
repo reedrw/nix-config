@@ -9,6 +9,7 @@ let
   alwaysRun = with pkgs; [
     "${binPath feh} --bg-fill ~/.background-image"
     "systemctl --user restart picom"
+    "systemctl --user restart autotiling"
     "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
     "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
     "xset r rate 250 50"
