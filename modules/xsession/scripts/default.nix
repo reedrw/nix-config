@@ -16,7 +16,7 @@
     name = "record.sh";
     runtimeInputs = with pkgs; [
       slop
-      ffmpeg
+      fromBranch.stable.ffmpeg
       libnotify
     ];
     text = (builtins.readFile ./record.sh);
