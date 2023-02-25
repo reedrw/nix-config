@@ -5,10 +5,10 @@
         "homepage": "https://k1ng.dev/distro-grub-themes",
         "owner": "AdisonCavani",
         "repo": "distro-grub-themes",
-        "rev": "71a1cac74271178cdf1e392fcf21c2b897363737",
-        "sha256": "0xxbjz45cdvlwnhf429l5xapy83kzplgbfhd399bjj4sh22i2iaw",
+        "rev": "5cb10a2f7934da59079312cb8df4e887df7d9714",
+        "sha256": "0w54ba6lcqqs2afsr13x5pmrgfnb8hmfnkv4qss73pyarlxrf4ag",
         "type": "tarball",
-        "url": "https://github.com/AdisonCavani/distro-grub-themes/archive/71a1cac74271178cdf1e392fcf21c2b897363737.tar.gz",
+        "url": "https://github.com/AdisonCavani/distro-grub-themes/archive/5cb10a2f7934da59079312cb8df4e887df7d9714.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
