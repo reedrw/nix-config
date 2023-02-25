@@ -22,7 +22,6 @@ let
   ];
 
   scripts = import ./scripts { inherit pkgs; };
-  sources = import ./nix/sources.nix { };
 
 in
 {
@@ -30,8 +29,7 @@ in
     enable = true;
     windowManager.i3 = {
       enable = true;
-      package = with pkgs;
-        (buildFromNivSourceUntilVersion "4.21.1" i3 sources);
+      package = pkgs.i3;
       config = {
         bars = [ ];
         gaps = {
