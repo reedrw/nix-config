@@ -39,8 +39,10 @@ in
 
   environment.systemPackages = with pkgs; [
     r2mod_cli
+    nur.repos.reedrw.genshin-account-switcher
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
+      gas = ''genshin-account-switcher "$@"'';
     })
   ];
 
