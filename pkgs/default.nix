@@ -6,16 +6,6 @@ rec {
 
   inherit ((import ../config.nix).packageOverrides pkgs) nur fromBranch;
 
-  ranger = pkgs.ranger.overrideAttrs (
-    old: rec {
-      postFixup =
-        old.postFixup
-        + ''
-          sed -i "s_#!/nix/store/.*_#!${pkgs.pypy3}/bin/pypy3_" $out/bin/.ranger-wrapped
-        '';
-    }
-  );
-
   libreoffice = fromBranch.stable.libreoffice;
 
   discord = pkgs.discord.override {
