@@ -76,8 +76,7 @@ in
       vim-repeat
       vim-sandwich
       vim-table-mode
-      # https://github.com/bronson/vim-trailing-whitespace/issues/26
-      pkgs.fromBranch.stable.vimPlugins.vim-trailing-whitespace
+      vim-trailing-whitespace
       vim-unimpaired
     ] ++ lib.attrsets.mapAttrsToList (name: src:
       let
@@ -111,6 +110,20 @@ in
       set numberwidth=5
       set cursorline
       set inccommand=nosplit
+
+      " Make line wrapping nicer
+      set breakindent
+      set formatoptions=l
+      set lbr
+      set virtualedit=
+      set wrap linebreak nolist
+      set display+=lastline
+      inoremap <buffer> <silent> <Up>   <C-o>gk
+      inoremap <buffer> <silent> <Down> <C-o>gj
+      noremap <silent> <Up>   gk
+      noremap <silent> <Down> gj
+      noremap <silent> k gk
+      noremap <silent> j gj
 
       " Makes regex syntax highlighting significantly faster
       set re=1
