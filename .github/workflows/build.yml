@@ -22,7 +22,7 @@ jobs:
           - nixos-t520
           - nix-shell
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     # - name: Cleanup Disk
     #   uses: curoky/cleanup-disk-action@v2.0
