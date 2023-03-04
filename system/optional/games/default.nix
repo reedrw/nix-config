@@ -3,7 +3,16 @@ let
   sources = import ./nix/sources.nix { };
   aagl-gtk-on-nix = import sources.aagl-gtk-on-nix { inherit pkgs; };
 
-  aagl-unwrapped = aagl-gtk-on-nix.an-anime-game-launcher-unwrapped;
+  aagl-unwrapped = with aagl-gtk-on-nix; an-anime-game-launcher-unwrapped.overrideAttrs (
+    old: with sources.an-anime-game-launcher; rec {
+      version = pkgs.shortenRev rev;
+      src = sources.an-anime-game-launcher;
+      cargoDeps = old.cargoDeps.overrideAttrs (old: {
+        inherit src;
+        outputHash = cargoSha256;
+      });
+    }
+  );
 
   aagl-gtk-custom = aagl-gtk-on-nix.an-anime-game-launcher.override {
     an-anime-game-launcher-unwrapped = with (lib.importJSON ./components.json); aagl-unwrapped.override {
