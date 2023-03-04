@@ -70,11 +70,11 @@ jobs:
       run: |
         set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
-          instantiateCommand="nix-instantiate ./shell.nix"
+          instantiateCommand="nix-instantiate ./shell.nix --show-trace"
           buildCommand="nix-shell ./shell.nix --run 'exit'"
         else
-          instantiateCommand="nix-instantiate ./ci.nix -A ${{ matrix.output }}"
-          buildCommand="nix-build ci.nix -A ${{ matrix.output }}"
+          instantiateCommand="nix-instantiate ./ci.nix -A ${{ matrix.output }}" --show-trace
+          buildCommand="nix-build ci.nix -A ${{ matrix.output }} --show-trace"
         fi
 
         git switch --detach "HEAD^"
