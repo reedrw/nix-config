@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "a40d50cedea93fb0b45c78b52da69e380fe61b0f",
-        "sha256": "0p2ybd6q7szx0drlcc3jh63d35js6i5ii461y2qf0i967xpv7dhv",
+        "rev": "f545dd14fa8295c283033f154681ef544e84415b",
+        "sha256": "1h8clmxpiqahk2njhmik7fgyri3wxkbbk3v3ch2ldp1zhmr3xig5",
         "type": "tarball",
-        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/a40d50cedea93fb0b45c78b52da69e380fe61b0f.tar.gz",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/f545dd14fa8295c283033f154681ef544e84415b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
