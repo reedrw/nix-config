@@ -1,34 +1,24 @@
 { config, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
-  aagl-gtk-on-nix = import sources.aagl-gtk-on-nix { inherit pkgs; };
+  aaglPkgs = import sources.aagl-gtk-on-nix { inherit pkgs; };
 
-  aagl-unwrapped = with aagl-gtk-on-nix; an-anime-game-launcher-unwrapped.overrideAttrs (
+  components = lib.importJSON ./components.json;
+
+  aagl-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped.overrideAttrs (
     old: with sources.an-anime-game-launcher; rec {
       version = pkgs.shortenRev rev;
       src = sources.an-anime-game-launcher;
       cargoDeps = old.cargoDeps.overrideAttrs (old: {
-        inherit src;
-        outputHash = cargoSha256;
+        inherit src outputHash;
       });
     }
   );
 
-  aagl-gtk-custom = aagl-gtk-on-nix.an-anime-game-launcher.override {
-    an-anime-game-launcher-unwrapped = with (lib.importJSON ./components.json); aagl-unwrapped.override {
-      customDxvk = dxvk;
-      customGEProton = GEProton;
-      customSoda = soda;
-      customLutris = lutris;
-      customWineGEProton = wineGE;
-      customIcon = builtins.fetchurl icon;
-    };
-  };
-
 in
 {
   imports = [
-    aagl-gtk-on-nix.module
+    aaglPkgs.module
   ];
 
   programs.steam = with pkgs; {
@@ -43,7 +33,17 @@ in
 
   programs.an-anime-game-launcher = {
     enable = true;
-    package = aagl-gtk-custom;
+    package = with components; aaglPkgs.an-anime-game-launcher.override {
+      customIcon = builtins.fetchurl icon;
+      an-anime-game-launcher-unwrapped = aagl-unwrapped.override {
+        inherit
+          customDxvk
+          customGEProton
+          customSoda
+          customLutris
+          customWineGEProton;
+      };
+    };
   };
 
   environment.systemPackages = with pkgs; [

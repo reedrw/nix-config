@@ -1,26 +1,26 @@
 {
-  "GEProton": {
-    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-49/GE-Proton7-49.tar.gz",
-    "version": "7-49"
-  },
-  "dxvk": {
+  "customDxvk": {
     "url": "https://github.com/doitsujin/dxvk/releases/download/v2.1/dxvk-2.1.tar.gz",
     "version": "2.1"
   },
-  "icon": {
-    "sha256": "0qzhz6g6xln2ppsh8rjhzaprkc9ri55ijwcz8h4pgbl393707bsl",
-    "url": "https://i.imgur.com/61KYjIk.png"
+  "customGEProton": {
+    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-49/GE-Proton7-49.tar.gz",
+    "version": "7-49"
   },
-  "lutris": {
+  "customLutris": {
     "url": "https://github.com/lutris/wine/releases/download/lutris-wine-7.2-2/wine-lutris-7.2-2-x86_64.tar.xz",
     "version": "7.2-2"
   },
-  "soda": {
+  "customSoda": {
     "url": "https://github.com/bottlesdevs/wine/releases/download/soda-7.0-9/soda-7.0-9-x86_64.tar.xz",
     "version": "7.0-9"
   },
-  "wineGE": {
+  "customWineGEProton": {
     "url": "https://github.com/GloriousEggroll/wine-ge-custom/releases/download/GE-Proton7-37/wine-lutris-GE-Proton7-37-x86_64.tar.xz",
     "version": "7-37"
+  },
+  "icon": {
+    "sha256": "01wsn1n5lakl0mnklnxza9y9cb7zfgm61g65y4wp8bklv5mx75gm",
+    "url": "https://i.imgur.com/tBkh4N6.png"
   }
 }

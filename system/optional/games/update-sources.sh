@@ -21,7 +21,7 @@ updateCargoSha(){
       cargoSha256 = sha256;
     })
   ")"
-  gronnedJson="$gronnedJson"$'\n'"json[\"an-anime-game-launcher\"].cargoSha256 = \"$aaglCargoSha\";"
+  gronnedJson="$gronnedJson"$'\n'"json[\"an-anime-game-launcher\"].outputHash = \"$aaglCargoSha\";"
   gron -u <<< "$gronnedJson" | jq -r '.' --indent 4 > "$sourceJson"
 }
 
