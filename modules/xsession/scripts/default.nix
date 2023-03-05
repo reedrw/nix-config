@@ -42,7 +42,7 @@
     text = (builtins.readFile ./clipboard-clean.sh);
   };
 
-  bwmenu-patched = pkgs.nur.repos.reedrw.bitwarden-rofi.overrideAttrs (
+  bwmenu-patched = pkgs.nurPkgs.bitwarden-rofi.overrideAttrs (
     old: rec {
       src = pkgs.fetchFromGitHub {
         owner = "mattydebie";

@@ -12,7 +12,7 @@ let
   screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
 in
 {
-  home.packages = [ pkgs.nur.repos.reedrw.artwiz-lemon ]; # font
+  home.packages = with pkgs; [ nurPkgs.artwiz-lemon ]; # font
   services.polybar = with pkgs; {
     enable = true;
     package = polybarFull;
