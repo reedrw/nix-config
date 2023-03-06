@@ -34,8 +34,8 @@ in
   programs.an-anime-game-launcher = {
     enable = true;
     package = with components; aaglPkgs.an-anime-game-launcher.override {
-      customIcon = builtins.fetchurl icon;
       an-anime-game-launcher-unwrapped = aagl-unwrapped.override {
+        customIcon = builtins.fetchurl icon;
         inherit
           customDxvk
           customGEProton
