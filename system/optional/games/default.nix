@@ -36,12 +36,6 @@ in
     package = with components; aaglPkgs.an-anime-game-launcher.override {
       an-anime-game-launcher-unwrapped = aagl-unwrapped.override {
         customIcon = builtins.fetchurl icon;
-        inherit
-          customDxvk
-          customGEProton
-          customSoda
-          customLutris
-          customWineGEProton;
       };
     };
   };
