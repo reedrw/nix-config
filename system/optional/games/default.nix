@@ -5,7 +5,15 @@ let
 
   components = lib.importJSON ./components.json;
 
-  aagl-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped;
+  aagl-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped.overrideAttrs (
+    old: with sources.an-anime-game-launcher; rec {
+      version = pkgs.shortenRev rev;
+      src = sources.an-anime-game-launcher;
+      cargoDeps = old.cargoDeps.overrideAttrs (old: {
+        inherit src outputHash;
+      });
+    }
+  );
 
 in
 {
