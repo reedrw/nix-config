@@ -7,4 +7,5 @@
     firewall.allowedUDPPorts = [ 5353 ];
     firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
   };
+  services.tailscale.enable = true;
 }
