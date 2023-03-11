@@ -48,14 +48,23 @@ in
     };
   };
 
-  services.autossh.sessions = [{
-    extraArguments = ''
-      -o ServerAliveInterval=30 \
-      -N -T -R 5555:localhost:22 142.4.208.215
-    '';
-    name = "ssh-port-forward";
-    user = "reed";
-  }];
+  services.autossh.sessions = [
+    {
+      extraArguments = ''
+        -o ServerAliveInterval=30 \
+        -N -T -R 5555:localhost:22 142.4.208.215
+      '';
+      name = "ssh-port-forward";
+      user = "reed";
+    }
+    {
+      extraArguments = ''
+        -D 1337 -nNT localhost
+      '';
+      name = "ssh-socks-proxy";
+      user = "reed";
+    }
+  ];
 
   programs = {
     droidcam.enable = true;
