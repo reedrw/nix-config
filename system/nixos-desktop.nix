@@ -61,22 +61,22 @@ in
   };
 
   services.autossh.sessions = [
-  {
-    extraArguments = ''
-      -o ServerAliveInterval=30 \
-      -N -T -R 5000:localhost:22 142.4.208.215
-    '';
-    name = "ssh-port-forward";
-    user = "reed";
-  }
-  {
-    extraArguments = ''
-      -D 1337 -nNT 142.4.208.215
-    '';
-    name = "ssh-socks-proxy";
-    user = "reed";
-  }
-];
+    {
+      extraArguments = ''
+        -o ServerAliveInterval=30 \
+        -N -T -R 5000:localhost:22 142.4.208.215
+      '';
+      name = "ssh-port-forward";
+      user = "reed";
+    }
+    {
+      extraArguments = ''
+        -D 1337 -nNT 142.4.208.215
+      '';
+      name = "ssh-socks-proxy";
+      user = "reed";
+    }
+  ];
 
   programs.gamemode = {
     enable = true;
