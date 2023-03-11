@@ -3,8 +3,15 @@
 {
   networking = {
     networkmanager.enable = true;
-    firewall.allowedTCPPorts = [ 5000 2049 ];
-    firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
+    firewall.allowedTCPPorts = [
+      # shairport-sync
+      5000
+      2049
+    ];
+    firewall.allowedUDPPortRanges = [
+      # shairport-sync
+      { from = 6001; to = 6011; }
+    ];
   };
   services.mullvad-vpn = {
     enable = true;
