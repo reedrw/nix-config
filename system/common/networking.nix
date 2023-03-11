@@ -6,7 +6,6 @@
     firewall.allowedTCPPorts = [
       # shairport-sync
       5000
-      2049
     ];
     firewall.allowedUDPPortRanges = [
       # shairport-sync
@@ -39,7 +38,10 @@
 
   systemd.services.tailscaled.serviceConfig.ExecStart = [
     ""
-    "${pkgs.mullvad}/bin/mullvad-exclude ${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=\${PORT} $FLAGS"
+    ''${pkgs.mullvad}/bin/mullvad-exclude ${pkgs.tailscale}/bin/tailscaled \
+      --state=/var/lib/tailscale/tailscaled.state \
+      --socket=/run/tailscale/tailscaled.sock \
+      --port=''${PORT} $FLAGS''
   ];
 
   networking.search = [ "tail3b7ba.ts.net" ];
