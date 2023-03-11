@@ -71,7 +71,7 @@ in
     }
     {
       extraArguments = ''
-        -D 1337 -nNT 142.4.208.215
+        -D 1337 -nNT localhost
       '';
       name = "ssh-socks-proxy";
       user = "reed";
