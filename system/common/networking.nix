@@ -6,13 +6,9 @@
     firewall.allowedTCPPorts = [ 5000 2049 ];
     firewall.allowedUDPPortRanges = [ { from = 6001; to = 6101; } ];
   };
-  services = {
-    mullvad-vpn = {
-      enable = true;
-      package = pkgs.mullvad-vpn;
-    };
-    tailscale.enable = true;
-    resolved.enable = true;
+  services.mullvad-vpn = {
+    enable = true;
+    package = pkgs.mullvad-vpn;
   };
 
   systemd.services."mullvad-daemon".postStart = ''
@@ -21,18 +17,31 @@
     ${pkgs.mullvad}/bin/mullvad auto-connect set on
   '';
 
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      userServices = true;
+    };
+  };
+
+  services.resolved.enable = true;
+  services.tailscale.enable = true;
+
   systemd.services.tailscaled.serviceConfig.ExecStart = [
     ""
     "${pkgs.mullvad}/bin/mullvad-exclude ${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=\${PORT} $FLAGS"
   ];
 
+  networking.search = [ "tail3b7ba.ts.net" ];
   networking.nameservers = [
     "100.100.100.100"
     "1.1.1.1"
     "8.8.8.8"
   ];
 
-  networking.search = [ "tail3b7ba.ts.net" ];
   networking.firewall.extraCommands =
     let
       ts = pkgs.writeText "tailscale.rules" ''
