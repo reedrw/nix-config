@@ -22,5 +22,17 @@
         "type": "tarball",
         "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/e655e4142838061cedd664c57abfbaa742df85f0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "hosts": {
+        "branch": "master",
+        "description": "🔒 Consolidating and extending hosts files from several well-curated sources. Optionally pick extensions for porn, social media, and other categories.",
+        "homepage": "",
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "rev": "618a6dfa7e47129cec3fe4d5ef2d3937804f7cb3",
+        "sha256": "0v3fgll28rhzcli8hc51silwkgbxhpxvlxz89m3mvywbiqzly12h",
+        "type": "tarball",
+        "url": "https://github.com/StevenBlack/hosts/archive/618a6dfa7e47129cec3fe4d5ef2d3937804f7cb3.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

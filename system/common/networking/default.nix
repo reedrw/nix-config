@@ -23,10 +23,11 @@ in
         "www.ocsp2.apple.com"
       ];
     };
-    extraHosts = ''''
-      + (builtins.readFile "${sources.Lists}/ads.txt")
-      + (builtins.readFile "${sources.Lists}/tracking.txt")
-      + (builtins.readFile "${sources.Lists}/gambling.txt")
+    extraHosts = with sources; ''''
+      + (builtins.readFile "${hosts}/hosts")
+      + (builtins.readFile "${Lists}/ads.txt")
+      + (builtins.readFile "${Lists}/tracking.txt")
+      + (builtins.readFile "${Lists}/gambling.txt")
       + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts0")
       + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts1")
       + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts2")
