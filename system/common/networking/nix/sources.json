@@ -1,0 +1,26 @@
+{
+    "Lists": {
+        "branch": "master",
+        "description": "Primary Block Lists",
+        "homepage": "",
+        "owner": "blocklistproject",
+        "repo": "Lists",
+        "rev": "a3005f7a5c30db5e3ec677e7f94bc231ed0c4dc3",
+        "sha256": "1fg32i0zqxk66yddhc93hd228mnr7ili63fd85alznr2wm4hb50c",
+        "type": "tarball",
+        "url": "https://github.com/blocklistproject/Lists/archive/a3005f7a5c30db5e3ec677e7f94bc231ed0c4dc3.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "Ultimate.Hosts.Blacklist": {
+        "branch": "master",
+        "description": "The Ultimate Unified Hosts file for protecting your network, computer, smartphones and Wi-Fi devices against millions of bad web sites. Protect your children and family from gaining access to bad web sites and protect your devices and pc from being infected with Malware or Ransomware.",
+        "homepage": "",
+        "owner": "Ultimate-Hosts-Blacklist",
+        "repo": "Ultimate.Hosts.Blacklist",
+        "rev": "e655e4142838061cedd664c57abfbaa742df85f0",
+        "sha256": "14w8vpx12hnd5pg4hack822r01i5v1h3qwm8ihidkxw48zzd250b",
+        "type": "tarball",
+        "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/e655e4142838061cedd664c57abfbaa742df85f0.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

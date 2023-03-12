@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
-
+let
+  sources = import ./nix/sources.nix { };
+in
 {
   networking = {
     networkmanager.enable = true;
@@ -11,6 +13,24 @@
       # shairport-sync
       { from = 6001; to = 6011; }
     ];
+    hosts = {
+      "0.0.0.0" = [
+        "ffapple.com"
+        "ppq.apple.com"
+        "ocsp.apple.com"
+        "ocsp2.apple.com"
+        "www.ocsp.apple.com"
+        "www.ocsp2.apple.com"
+      ];
+    };
+    extraHosts = ''''
+      + (builtins.readFile "${sources.Lists}/ads.txt")
+      + (builtins.readFile "${sources.Lists}/tracking.txt")
+      + (builtins.readFile "${sources.Lists}/gambling.txt")
+      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts0")
+      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts1")
+      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts2")
+      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts3");
   };
   services.mullvad-vpn = {
     enable = true;
