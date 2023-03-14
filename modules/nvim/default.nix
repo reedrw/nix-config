@@ -118,8 +118,8 @@ in
       set virtualedit=
       set wrap linebreak nolist
       set display+=lastline
-      inoremap <buffer> <silent> <Up>   <C-o>gk
-      inoremap <buffer> <silent> <Down> <C-o>gj
+      inoremap <expr><buffer> <silent> <Up>   coc#pum#visible() ? coc#pum#prev(1) : "\<C-o>gk"
+      inoremap <expr><buffer> <silent> <Down> coc#pum#visible() ? coc#pum#next(1) : "\<C-o>gj"
       noremap <silent> <Up>   gk
       noremap <silent> <Down> gj
       noremap <silent> k gk
