@@ -22,6 +22,11 @@ in
     };
   };
 
+  powerManagement.resumeCommands = with pkgs; ''
+    ${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'
+    ${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'
+  '';
+
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
 
