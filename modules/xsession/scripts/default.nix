@@ -42,18 +42,25 @@
     text = (builtins.readFile ./clipboard-clean.sh);
   };
 
-  bwmenu-patched = pkgs.nurPkgs.bitwarden-rofi.overrideAttrs (
-    old: rec {
-      src = pkgs.fetchFromGitHub {
-        owner = "mattydebie";
-        repo = "bitwarden-rofi";
-        rev = "a5f6348fae6a96499a27a25a79f83ed37da81716";
-        sha256 = "sha256-QggtjWrt27obx8Igjj2DVtIZ5XLAf/iJSPsUmZkY4Yk=";
-      };
-      patches = [
-        ./bwmenu-patches/copy-totp.patch
-        ./bwmenu-patches/fix-quotes.patch
-      ];
-    }
-  );
+  bwmenu-patched = pkgs.nurPkgs.bitwarden-rofi.overrideAttrs (_: rec {
+    src = pkgs.fetchFromGitHub {
+      owner = "mattydebie";
+      repo = "bitwarden-rofi";
+      rev = "a5f6348fae6a96499a27a25a79f83ed37da81716";
+      sha256 = "sha256-QggtjWrt27obx8Igjj2DVtIZ5XLAf/iJSPsUmZkY4Yk=";
+    };
+    patches = [
+      ./bwmenu-patches/copy-totp.patch
+      ./bwmenu-patches/fix-quotes.patch
+    ];
+  });
+
+  volume= pkgs.writeShellApplication {
+    name = "volume";
+    runtimeInputs = with pkgs; [
+      glib
+      pulseaudio
+    ];
+    text = (builtins.readFile ./volume.sh);
+  };
 }

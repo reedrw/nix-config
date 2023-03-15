@@ -66,6 +66,9 @@ in
             "XF86AudioPlay" = "${exec} ${binPath playerctl} play-pause";
             "XF86AudioPrev" = "${exec} ${binPath playerctl} previous";
             "XF86AudioNext" = "${exec} ${binPath playerctl} next";
+            "XF86AudioMute" = "${exec} ${binPath scripts.volume} mute";
+            "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
+            "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
           } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
             ("${mod}+ctrl+${x}") ("${exec} ${scripts.load-layouts}/bin/load-layouts.sh ${x}")
           ) (builtins.listToAttrs (map
