@@ -30,7 +30,7 @@ runCommand(){
 }
 
 outputdev="$(gsettings \
-  --schemadir ~/.nix-profile/share/gsettings-schemas/easyeffects-7.0.0/glib-2.0/schemas \
+  --schemadir ~/.nix-profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
   get com.github.wwmm.easyeffects.streamoutputs output-device | cut -f2 -d\')"
 
 main(){
