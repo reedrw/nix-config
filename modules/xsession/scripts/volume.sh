@@ -33,27 +33,34 @@ outputdev="$(gsettings \
   --schemadir ~/.nix-profile/share/gsettings-schemas/easyeffects-7.0.0/glib-2.0/schemas \
   get com.github.wwmm.easyeffects.streamoutputs output-device | cut -f2 -d\')"
 
-if   [[ -f "$cachefile" && -f "$idCacheFile" && -f "$descCacheFile" ]] \
-  && [[ "$(< "$cachefile")" == "$outputdev" ]]; then
-  outputid="$(< "$idCacheFile")"
-  outputdesc="$(< "$descCacheFile")"
-else
-  getInfo
-fi
+main(){
+  if   [[ -f "$cachefile" && -f "$idCacheFile" && -f "$descCacheFile" ]] \
+    && [[ "$(< "$cachefile")" == "$outputdev" ]]; then
+    outputid="$(< "$idCacheFile")"
+    outputdesc="$(< "$descCacheFile")"
+  else
+    getInfo
+  fi
 
-if [[ "$1" == "mute" ]]; then
-  command="wpctl set-mute $outputid toggle"
+  if [[ "$1" == "mute" ]]; then
+    command="wpctl set-mute $outputid toggle"
+    runCommand "$command"
+    return 0
+  fi
+
+  if [[ "$1" == "up" ]]; then
+    pm="+"
+  else
+    pm="-"
+  fi
+
+  command="wpctl set-volume $outputid $2%$pm"
   runCommand "$command"
-  $notifyCommand "$outputdesc" "$(wpctl get-volume "$outputid")"
-  exit "$?"
-fi
+}
 
-if [[ "$1" == "up" ]]; then
-  pm="+"
-else
-  pm="-"
-fi
-
-command="wpctl set-volume $outputid $2%$pm"
-runCommand "$command"
-$notifyCommand "$outputdesc" "$(wpctl get-volume "$outputid")"
+main "$@"
+# Print with fixed with. hair space (U+200A) at the end
+# so dunst doesn't cull the whitespace
+status="$(wpctl get-volume "$outputid")"
+status="$(printf '%-20s ' "$status")"
+$notifyCommand "$outputdesc" "$status"
