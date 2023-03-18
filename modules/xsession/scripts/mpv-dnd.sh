@@ -11,13 +11,17 @@ getActiveWindow(){
 
 stopPrograms(){
   for i in "${programs[@]}"; do
-    pkill -STOP "$i"
+    if pgrep "$i"; then
+      pkill -STOP "$i"
+    fi
   done
 }
 
 contPrograms(){
   for i in "${programs[@]}"; do
-    pkill -CONT "$i"
+    if pgrep "$i"; then
+      pkill -CONT "$i"
+    fi
   done
 }
 
@@ -29,6 +33,6 @@ while true; do
     done
     contPrograms
   else
-    sleep 300
+    sleep 180
   fi
 done
