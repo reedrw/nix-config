@@ -55,12 +55,22 @@
     ];
   });
 
-  volume= pkgs.writeShellApplication {
+  volume = pkgs.writeShellApplication {
     name = "volume";
     runtimeInputs = with pkgs; [
       glib
       pulseaudio
     ];
     text = (builtins.readFile ./volume.sh);
+  };
+
+  mpv-dnd = pkgs.writeShellApplication {
+    name = "mpv-dnd";
+    runtimeInputs = with pkgs; [
+      procps
+      coreutils
+      xdotool
+    ];
+    text = (builtins.readFile ./mpv-dnd.sh);
   };
 }

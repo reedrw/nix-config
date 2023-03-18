@@ -192,5 +192,22 @@ in
         Type = "simple";
       };
     };
+    mpv-dnd = {
+      Unit = {
+        After = [ "graphical.target" ];
+        Description = "Suspend chat apps while mpv is active so I can watch things in peace.";
+      };
+      # Install = {
+      #   WantedBy = [ "default.target" ];
+      # };
+      Service = with pkgs; {
+        ExecStart = "${binPath scripts.mpv-dnd}" + lib.concatMapStrings (x: " " + x) [
+          "DiscordCanary"
+          "telegram-deskt"
+        ];
+        Restart = "on-failure";
+        Type = "simple";
+      };
+    };
   };
 }
