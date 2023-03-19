@@ -32,6 +32,7 @@ in
         border-bottom-size = 2;
         border-bottom-color = "#${base00}";
         font-0 = "lemon:pixelsize=10;1";
+        font-1 = "Kochi Gothic:size=8;1";
       };
       "module/battery" = {
         type = "internal/battery";
