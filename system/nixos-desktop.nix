@@ -19,6 +19,10 @@ in
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
+    kernel.sysctl = {
+      "net.ipv4.ip_forward" = 1;
+      "net.ipv6.conf.all.forwarding" = 1;
+    };
   };
 
   boot.loader.grub = {
