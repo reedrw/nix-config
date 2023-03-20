@@ -4,8 +4,8 @@
     "version": "2.1"
   },
   "customGEProton": {
-    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-51/GE-Proton7-51.tar.gz",
-    "version": "7-51"
+    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-51-diablo_4_beta/GE-Proton7-51-diablo_4_beta.tar.gz",
+    "version": "7-51-diablo_4_beta"
   },
   "customLutris": {
     "url": "https://github.com/lutris/wine/releases/download/lutris-wine-7.2-2/wine-lutris-7.2-2-x86_64.tar.xz",
@@ -16,8 +16,8 @@
     "version": "7.0-9"
   },
   "customWineGEProton": {
-    "url": "https://github.com/GloriousEggroll/wine-ge-custom/releases/download/GE-Proton7-39/wine-lutris-GE-Proton7-39-x86_64.tar.xz",
-    "version": "7-39"
+    "url": "https://github.com/GloriousEggroll/wine-ge-custom/releases/download/GE-Proton7-39-diablo_4_beta/wine-lutris-GE-Proton7-39-diablo_4_beta-x86_64.tar.xz",
+    "version": "7-39-diablo_4_beta"
   },
   "icon": {
     "sha256": "01wsn1n5lakl0mnklnxza9y9cb7zfgm61g65y4wp8bklv5mx75gm",
