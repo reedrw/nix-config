@@ -54,5 +54,3 @@ if ( [[ "$aaglNewRev"    != "$aaglOldRev" ]] && cargoUpdateNeeded ) \
   || [[ "$aaglNixNewRev" != "$aaglNixOldRev" ]]; then
     updateCargoSha
 fi
-
-./update-components.sh

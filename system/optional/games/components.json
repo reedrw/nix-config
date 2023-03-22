@@ -1,26 +1,6 @@
 {
-  "customDxvk": {
-    "url": "https://github.com/doitsujin/dxvk/releases/download/v2.1/dxvk-2.1.tar.gz",
-    "version": "2.1"
-  },
-  "customGEProton": {
-    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-51-diablo_4_beta/GE-Proton7-51-diablo_4_beta.tar.gz",
-    "version": "7-51-diablo_4_beta"
-  },
-  "customLutris": {
-    "url": "https://github.com/lutris/wine/releases/download/lutris-wine-7.2-2/wine-lutris-7.2-2-x86_64.tar.xz",
-    "version": "7.2-2"
-  },
-  "customSoda": {
-    "url": "https://github.com/bottlesdevs/wine/releases/download/soda-7.0-9/soda-7.0-9-x86_64.tar.xz",
-    "version": "7.0-9"
-  },
-  "customWineGEProton": {
-    "url": "https://github.com/GloriousEggroll/wine-ge-custom/releases/download/GE-Proton7-39-diablo_4_beta/wine-lutris-GE-Proton7-39-diablo_4_beta-x86_64.tar.xz",
-    "version": "7-39-diablo_4_beta"
-  },
   "icon": {
-    "sha256": "01wsn1n5lakl0mnklnxza9y9cb7zfgm61g65y4wp8bklv5mx75gm",
-    "url": "https://i.imgur.com/tBkh4N6.png"
+    "sha256": "1kjcvj7w3cb759d3flyxn0kfnh1h1dd2dss8rrd5ri1w181s91rx",
+    "url": "https://i.imgur.com/GCmFDYk.png"
   }
 }
