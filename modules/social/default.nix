@@ -2,7 +2,7 @@
 {
   home.packages = with pkgs; [
     tdesktop
-    discord-canary
+    discord
     #element-desktop
   ];
 

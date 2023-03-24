@@ -202,7 +202,7 @@ in
       };
       Service = with pkgs; {
         ExecStart = "${binPath scripts.mpv-dnd}" + lib.concatMapStrings (x: " " + x) [
-          "DiscordCanary"
+          "Discord"
           "telegram-deskt"
         ];
         Restart = "on-failure";
