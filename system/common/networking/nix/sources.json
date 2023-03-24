@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "Ultimate-Hosts-Blacklist",
         "repo": "Ultimate.Hosts.Blacklist",
-        "rev": "aa4312e63963332d832ae47b5f2dc163dfb0cd1d",
-        "sha256": "1qxlv7acwfhpjz2671yl33yb7a7jlh1h02cxyxs9p2pyllq7v0z2",
+        "rev": "202cfe424d77bbdac05bb4ece56bcf839fd6c5ab",
+        "sha256": "1ha1wphrijhrr9fz1r8p14yq5d3wrr3xqi2gdbrvb68qmp1h6nhn",
         "type": "tarball",
-        "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/aa4312e63963332d832ae47b5f2dc163dfb0cd1d.tar.gz",
+        "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/202cfe424d77bbdac05bb4ece56bcf839fd6c5ab.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "hosts": {
