@@ -166,6 +166,7 @@ in
       nmap <Leader>n :noh<Return>
       nnoremap <Leader>hms :!hms
       nnoremap <Leader>hmb :!home-manager build
+      nnoremap <Leader><Space> :ToggleBool<CR>
 
       map <silent> w <Plug>CamelCaseMotion_w
       map <silent> b <Plug>CamelCaseMotion_b

@@ -11,6 +11,18 @@
         "url": "https://github.com/nprindle/lc3.vim/archive/5d2b84480738e5d262007ff884e939860084dc22.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "toggle-bool": {
+        "branch": "master",
+        "description": "vim plugin to toggle the boolean values",
+        "homepage": null,
+        "owner": "sagarrakshe",
+        "repo": "toggle-bool",
+        "rev": "7bc8358d2de311805e6802f9df7ca876b76308a3",
+        "sha256": "1jhmh90cs69mqndmykj2ga9prlxpf7q8arkfhfdpcb54ms7b6wb5",
+        "type": "tarball",
+        "url": "https://github.com/sagarrakshe/toggle-bool/archive/7bc8358d2de311805e6802f9df7ca876b76308a3.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "vim-fugitive-blame-ext": {
         "branch": "master",
         "description": "Extend tpope/vim-fugitive to show commit message on statusline in :Gblame",
