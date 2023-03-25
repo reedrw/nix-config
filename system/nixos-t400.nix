@@ -100,6 +100,7 @@ in
 
   fonts.fontconfig.enable = true;
 
+  programs.zsh.enable = true;
   users.users.reed = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "audio" ];

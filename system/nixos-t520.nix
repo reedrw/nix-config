@@ -158,6 +158,7 @@ in
   virtualisation.docker.enable = true;
   # }}}
   # {{{ Users
+  programs.zsh.enable = true;
   users.users.reed = {
     isNormalUser = true;
     extraGroups = [ "docker" "wheel" "networkmanager" "audio" ];
