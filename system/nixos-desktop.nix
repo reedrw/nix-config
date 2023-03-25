@@ -86,6 +86,7 @@ in
     enable = true;
     settings = {
       general = {
+        renice = 10;
         desiredgov = "performance";
         softrealtime = "on";
       };
