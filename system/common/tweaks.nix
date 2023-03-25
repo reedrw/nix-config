@@ -17,6 +17,17 @@
     '';
   in {
     inherit extraConfig;
-    user = {inherit extraConfig;};
+    user = { inherit extraConfig; };
   };
+
+  # Fix xdg-open in FHS sandbox
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+  };
+
+  environment.systemPackages = with pkgs; [ xdg-desktop-portal ];
 }

@@ -11,6 +11,8 @@ let
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
+    "systemctl --user import-environment PATH"
+    "systemctl --user restart xdg-desktop-portal.service"
     "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
     "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
     "xset r rate 250 50"
