@@ -46,6 +46,7 @@ in
           {
             "Print" = "${exec} flameshot gui";
             "${mod}+Return" = "${exec} ${term}";
+            "${mod}+Shift+q" = "${exec} sh -c 'kill \"$(${binPath xdotool} getactivewindow getwindowpid)\" || i3-msg \"kill\"'";
             "${sup}+Return" = "${exec} ${scripts.selecterm}/bin/select-term.sh";
             "${mod}+d" = "focus child";
             "${mod}+o" = "open";
