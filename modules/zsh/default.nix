@@ -143,8 +143,8 @@ in
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
       unset HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
 
-      bindkey '^[[A'  up-line-or-beginning-search
-      bindkey '^[[B'  down-line-or-beginning-search
+      bindkey  "''${terminfo[kcuu1]}" up-line-or-beginning-search
+      bindkey  "''${terminfo[kcud1]}" down-line-or-beginning-search
       bindkey '^[[1~' beginning-of-line
       bindkey '^[[4~' end-of-line
 
