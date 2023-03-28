@@ -5,34 +5,27 @@ let
 
   components = lib.importJSON ./components.json;
 
-  aagl-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped.overrideAttrs ( old:
+  aagl-unwrapped =
     let
       fromLocal = false;
     in with sources.an-anime-game-launcher;
     if fromLocal then
-    rec {
-      src = /home/reed/files/an-anime-game-launcher;
-      version = with pkgs; let
-        versionFile = stdenv.mkDerivation {
-          name = "ver";
-          inherit src;
-          buildInputs = [ git ];
-          buildPhase = "git rev-parse HEAD > $out";
+    aaglPkgs.an-anime-game-launcher-unwrapped.overrideAttrs ( old:
+      rec {
+        src = /home/reed/files/an-anime-game-launcher;
+        version = with pkgs; let
+          versionFile = stdenv.mkDerivation {
+            name = "ver";
+            inherit src;
+            buildInputs = [ git ];
+            buildPhase = "git rev-parse HEAD > $out";
+          };
+        in shortenRev (builtins.readFile versionFile);
+        cargoDeps = pkgs.rustPlatform.importCargoLock {
+          lockFile = "${src}/Cargo.lock";
         };
-      in shortenRev (builtins.readFile versionFile);
-      cargoDeps = pkgs.rustPlatform.importCargoLock {
-        lockFile = "${src}/Cargo.lock";
-      };
-    }
-    else rec {
-      version = pkgs.shortenRev rev;
-      src = sources.an-anime-game-launcher;
-      cargoDeps = old.cargoDeps.overrideAttrs (old: {
-        inherit src outputHash;
-      });
-    }
-  );
-
+      })
+    else aaglPkgs.an-anime-game-launcher-unwrapped;
 in
 {
   imports = [
