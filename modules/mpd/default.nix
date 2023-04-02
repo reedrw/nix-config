@@ -38,6 +38,9 @@ in
     '';
   };
 
+  services.mpd-mpris.enable = true;
+  services.playerctld.enable = true;
+
   programs.ncmpcpp = {
     enable = true;
     package = ncmpcpp.override {
