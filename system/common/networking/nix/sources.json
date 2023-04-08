@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "Ultimate-Hosts-Blacklist",
         "repo": "Ultimate.Hosts.Blacklist",
-        "rev": "4258553d1679c04cc11e43582e540d8c1ab07543",
-        "sha256": "1f65c40z2grhqq7hr63qggp234q29sj30l66cdwg1jbrvqay6sqi",
+        "rev": "bd994be36b7e51ea2d35baf10d2ffe695392601e",
+        "sha256": "13dfd1594cdff78bi4n1995grabb5gabfwpc4jf38vppb3vakplk",
         "type": "tarball",
-        "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/4258553d1679c04cc11e43582e540d8c1ab07543.tar.gz",
+        "url": "https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/archive/bd994be36b7e51ea2d35baf10d2ffe695392601e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "hosts": {
@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "StevenBlack",
         "repo": "hosts",
-        "rev": "4f140bed91c314fef10d8aacabdb426c5dc610fe",
-        "sha256": "1xmb7k0195w8373p40wjblkjpp9nj2yjc6w2ris4ynl0sqybydkz",
+        "rev": "3dc0b5f9623ddfa4c19f7d675bf6d8c0bf01b049",
+        "sha256": "13md7vmzb40qdmyshaids69gf38mchv0s6sy36zcnyi1w7vyngpb",
         "type": "tarball",
-        "url": "https://github.com/StevenBlack/hosts/archive/4f140bed91c314fef10d8aacabdb426c5dc610fe.tar.gz",
+        "url": "https://github.com/StevenBlack/hosts/archive/3dc0b5f9623ddfa4c19f7d675bf6d8c0bf01b049.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
