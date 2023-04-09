@@ -31,6 +31,8 @@ let
       defaultPref("browser.proton.enabled", false);
       defaultPref("browser.proton.modals.enabled", false);
       defaultPref("browser.proton.places-tooltip.enabled", false);
+      defaultPref("browser.sessionstore.restore_tabs_lazily", false);
+      defaultPref("browser.sessionstore.restore_on_demand", false);
     '';
   };
 
