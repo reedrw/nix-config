@@ -492,7 +492,7 @@ index 632fc24..2ae7b6c 100644
 +N9k=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..9ebe4d1 100644
+index f2a54b1..e5e46bb 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -33,7 +33,8 @@
@@ -590,7 +590,7 @@ index f2a54b1..9ebe4d1 100644
              ]
          },
          "LinkedIn Learning": {
-@@ -1089,19 +1113,23 @@
+@@ -1089,19 +1113,27 @@
                  "from_source",
                  "from",
                  "seid",
@@ -607,7 +607,11 @@ index f2a54b1..9ebe4d1 100644
                  "timestamp",
 -                "unique_k"
 +                "unique_k",
-+                "vd_source"
++                "vd_source",
++                "plat_id",
++                "buvid",
++                "is_story_h5",
++                "up_id"
              ],
              "exceptions": [
 -                "^https?:\\/\\/api\\.bilibili\\.com"
@@ -616,7 +620,7 @@ index f2a54b1..9ebe4d1 100644
              ]
          },
          "m.bilibili.com": {
-@@ -1623,6 +1651,76 @@
+@@ -1623,6 +1655,92 @@
                  "log",
                  "p"
              ]
@@ -689,6 +693,22 @@ index f2a54b1..9ebe4d1 100644
 +            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?quizlet\\.com",
 +            "rules": [
 +                "funnelUUID"
++            ]
++        },
++        "bbc": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?bbc\\.com",
++            "rules": [
++                "xtor",
++                "at_[a-z_]+"
++            ]
++        },
++        "airbnb": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?airbnb\\.(com|ae|ca|co\\.in|co\\.nz|co\\.uk|co\\.za|com\\.au|com\\.mt|com\\.sg|de|gy|ie)",
++            "rules": [
++                "federated_search_id",
++                "search_type",
++                "source",
++                "source_impression_id"
 +            ]
          }
      }
