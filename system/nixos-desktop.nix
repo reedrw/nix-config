@@ -11,6 +11,7 @@ in
     ./boot/efi.nix
     ./users/reed.nix
     ./optional/games
+    ./optional/torrent.nix
     "${sources.nixos-hardware}/common/cpu/intel"
     "${sources.nixos-hardware}/common/pc/ssd"
   ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
@@ -97,12 +98,18 @@ in
     BigHD /dev/disk/by-uuid/c5d3a438-5719-4020-be28-f258a15c5ab7 /etc/secrets/crypt/BigHD.key luks
   '';
 
-  fileSystems."/mnt/BigHD" = {
-    fsType = "ext4";
-    device = "/dev/mapper/BigHD";
-    options = [
-      "nofail"
-    ];
+  fileSystems = {
+    "/mnt/BigHD" = {
+      fsType = "ext4";
+      device = "/dev/mapper/BigHD";
+      options = [
+        "nofail"
+      ];
+    };
+    "/var/lib/deluge/Downloads" = {
+      device = "/mnt/BigHD/torrents";
+      options = [ "bind" ];
+    };
   };
 
   services.gnome.gnome-keyring.enable = true;
