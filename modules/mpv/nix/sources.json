@@ -5,10 +5,10 @@
         "homepage": "https://observeroftime.github.io/mpv-scripts",
         "owner": "ObserverOfTime",
         "repo": "mpv-scripts",
-        "rev": "8433289d0efee47f567c44937fcbd7bb49ab58bc",
-        "sha256": "00gbh48cn6jx385js22lxkl7mbh876d975jdvw3kmg1z4j44dhc6",
+        "rev": "98dbc054c1172eabb2ca827d477389173a8e2681",
+        "sha256": "0pvivj8f6lhn9kwfkswmb0fpqijdkfjwbm6rki411p8mkp05igz2",
         "type": "tarball",
-        "url": "https://github.com/ObserverOfTime/mpv-scripts/archive/8433289d0efee47f567c44937fcbd7bb49ab58bc.tar.gz",
+        "url": "https://github.com/ObserverOfTime/mpv-scripts/archive/98dbc054c1172eabb2ca827d477389173a8e2681.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mpv-webm": {
