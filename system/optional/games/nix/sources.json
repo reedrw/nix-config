@@ -5,17 +5,17 @@
         "homepage": null,
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "205eb59302ab219b6e0d2c6da9e3a10995dae5c2",
-        "sha256": "01fb3ry9bgqzqrzkrxg8zc7r4sp9crbfh54z9slhdkljm754d82j",
+        "rev": "f09dfb5a1cb92d92fde5218450647a4308d3dcf9",
+        "sha256": "190pya7c77s3ig9as476y8i3rwg8xcig04mjs1l64jm14wzs0by4",
         "type": "tarball",
-        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/205eb59302ab219b6e0d2c6da9e3a10995dae5c2.tar.gz",
+        "url": "https://github.com/ezKEa/aagl-gtk-on-nix/archive/f09dfb5a1cb92d92fde5218450647a4308d3dcf9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "an-anime-game-launcher": {
         "branch": "next",
         "outputHash": "",
         "repo": "https://github.com/an-anime-team/an-anime-game-launcher.git",
-        "rev": "6281d1a49d031ce5d6a76e96a5bb8d7b4f489265",
+        "rev": "ce20f1e667626e45487a2b5dae8b87b4e42c3be6",
         "submodules": true,
         "type": "git"
     }
