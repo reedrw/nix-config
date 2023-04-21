@@ -16,6 +16,21 @@ in
 
   programs.alacritty = {
     enable = true;
+    # select-term script broken by bug introduced at commit 0e418bc2f761617455cc58aaabc375055dfe4284
+    package = with pkgs; versionConditionalOverride "0.12.0" alacritty (
+      alacritty.overrideAttrs (old: rec {
+        src = fetchFromGitHub {
+          owner = "alacritty";
+          repo = "alacritty";
+          rev = "578e08486dfcdee0b2cd0e7a66752ff50edc46b8";
+          sha256 = "sha256-FVbgQ7KDJgl3lrlJIvykus7MPBKlp5e/Gaj0UYUlg7Y=";
+        };
+
+        cargoDeps = rustPlatform.importCargoLock {
+          lockFile = "${src}/Cargo.lock";
+        };
+      })
+    );
     settings = {
       live_config_reload = true;
       # copied from
