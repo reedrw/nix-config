@@ -10,6 +10,8 @@ let
     text = (builtins.readFile ./calnotify.sh);
   };
   screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
+  # Average battery capacities together cuz my laptop has 2 internal batteries
+  bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
 in
 {
   home.packages = with pkgs; [ nurPkgs.artwiz-lemon ]; # font
@@ -35,7 +37,9 @@ in
         font-1 = "Kochi Gothic:size=8;1";
       };
       "module/battery" = {
-        type = "internal/battery";
+        type = "custom/script";
+        exec = "${binPath bataverage}";
+        tail = true;
       };
       "module/date" = {
         type = "internal/date";
