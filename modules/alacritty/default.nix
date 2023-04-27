@@ -17,6 +17,7 @@ in
   programs.alacritty = {
     enable = true;
     # select-term script broken by bug introduced at commit 0e418bc2f761617455cc58aaabc375055dfe4284
+    # https://github.com/alacritty/alacritty/issues/6884
     package = with pkgs; versionConditionalOverride "0.12.0" alacritty (
       alacritty.overrideAttrs (old: rec {
         src = fetchFromGitHub {
