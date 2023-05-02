@@ -51,6 +51,8 @@ in
     };
   };
 
+  programs.the-honkers-railway-launcher.enable = true;
+
   environment.systemPackages = with pkgs; [
     r2mod_cli
     nurPkgs.genshin-account-switcher
