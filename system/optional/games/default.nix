@@ -35,7 +35,7 @@ in
   programs.steam = with pkgs; {
     enable = true;
     package = steam.override {
-      extraLibraries = pkgs: [ config.hardware.opengl.package ];
+      extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.opengl.package ];
       extraPkgs = pkgs: with pkgs; [
         mangohud
       ];
