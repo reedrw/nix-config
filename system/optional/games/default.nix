@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
-  aaglPkgs = import sources.aagl-gtk-on-nix { inherit pkgs; };
+  aaglPkgs = import sources.aagl-gtk-on-nix;
 
   components = lib.importJSON ./components.json;
 
