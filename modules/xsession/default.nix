@@ -121,6 +121,12 @@ in
               class = "An Anime Game Launcher";
             };
           }
+          {
+            command = "floating enable";
+            criteria = {
+              class = "The Honkers Railway Launcher";
+            };
+          }
         ] ++ builtins.map ( class:
           {
             command = "border pixel 0";

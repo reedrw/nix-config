@@ -59,6 +59,7 @@ in
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
       gas = ''genshin-account-switcher "$@"'';
+      hsr = "honkers-railway-launcher --run-game";
     })
   ];
 
