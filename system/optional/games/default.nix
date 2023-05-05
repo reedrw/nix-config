@@ -10,7 +10,7 @@ let
       fromLocal = false;
     in with sources.an-anime-game-launcher;
     if fromLocal then
-    aaglPkgs.an-anime-game-launcher-unwrapped.overrideAttrs ( old:
+    pkgs.an-anime-game-launcher-unwrapped.overrideAttrs ( old:
       rec {
         src = /home/reed/files/an-anime-game-launcher;
         version = with pkgs; let
@@ -25,12 +25,14 @@ let
           lockFile = "${src}/Cargo.lock";
         };
       })
-    else aaglPkgs.an-anime-game-launcher-unwrapped;
+    else pkgs.an-anime-game-launcher-unwrapped;
 in
 {
   imports = [
     aaglPkgs.module
   ];
+
+  nixpkgs.overlays = [ aaglPkgs.overlay ];
 
   programs.steam = with pkgs; {
     enable = true;
@@ -44,14 +46,17 @@ in
 
   programs.an-anime-game-launcher = {
     enable = true;
-    package = with components; aaglPkgs.an-anime-game-launcher.override {
+    package = with components; pkgs.an-anime-game-launcher.override {
       an-anime-game-launcher-unwrapped = aagl-unwrapped.override {
         customIcon = builtins.fetchurl icon;
       };
     };
   };
 
-  programs.the-honkers-railway-launcher.enable = true;
+  programs.the-honkers-railway-launcher = {
+    enable = true;
+    package = pkgs.the-honkers-railway-launcher;
+  };
 
   environment.systemPackages = with pkgs; [
     r2mod_cli
