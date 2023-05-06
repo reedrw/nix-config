@@ -38,9 +38,14 @@ in
     enable = true;
     package = steam.override {
       extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.opengl.package ];
-      extraPkgs = pkgs: with pkgs; [
+      extraPkgs = pkgs: [
+        xdg-user-dirs
         mangohud
       ];
+      # https://github.com/NixOS/nixpkgs/issues/230246
+      extraProfile = ''
+        export GSETTINGS_SCHEMA_DIR="${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}/glib-2.0/schemas/"
+      '';
     };
   };
 
