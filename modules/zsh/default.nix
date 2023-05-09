@@ -75,7 +75,6 @@ in
 
       source ${oh-my-zsh.src}/lib/git.zsh
       source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
-      source <(${binPath any-nix-shell} zsh)
       source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
       export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
@@ -96,7 +95,18 @@ in
       fi
 
       if [ -n "$IN_NIX_SHELL" ]; then
-        RPROMPT="%K{green}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[green]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
+        if [ -n "$IN_AUTO_SHELL" ]; then
+          alias leave="noglob exit"
+          color="yellow"
+        else
+          color="green"
+        fi
+        # if [ "''${#''${=ANY_NIX_SHELL_PKGS}}" -gt 1 ]; then
+        #   RPROMPT="%{$fg_bold[$color]%}▐%K{236}''${ANY_NIX_SHELL_PKGS} %{$reset_color%}"
+        # else
+        #   RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
+        # fi
+        RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
       fi
 
       ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
@@ -165,8 +175,11 @@ in
         fi
 
         attr="$(echo "$attr" | ${binPath fzf} --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
+        attr="''${attr%.*}"
 
-        nix-shell -p "$attr" --run "$argv0 $*"
+        export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
+        export IN_AUTO_SHELL="yes"
+        __nix-shell -p "$attr" --run "$argv0 $*; zsh"
       }
 
       bw-rofi-login(){
@@ -193,6 +206,24 @@ in
             ${gitAndTools.hub}/bin/hub "$@"
           ;;
         esac
+      }
+
+      __nix-shell(){
+        ${any-nix-shell}/bin/.any-nix-shell-wrapper zsh "$@"
+      }
+
+      nix-shell(){
+        unset IN_AUTO_SHELL
+        __nix-shell "$@"
+      }
+
+      nix(){
+        if [[ $1 == shell ]]; then
+          shift
+          ${any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
+        else
+          command nix "$@"
+        fi
       }
 
       touch(){
@@ -229,6 +260,7 @@ in
       watch = "${binPath viddy}";
       wget = "${binPath wget} --progress=dot:giga";
       x = "exit";
+      exit = ''[[ -n "$IN_AUTO_SHELL" ]] && kill -9 "$(ps -o ppid="" | sed -n 2p | xargs)" || noglob exit'';
     };
   };
 }
