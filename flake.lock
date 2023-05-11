@@ -116,6 +116,22 @@
         "type": "github"
       }
     },
+    "flake-compat_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673956053,
+        "narHash": "sha256-4gtG9iQuiKITOjNQQeQIpoIB6b16fm+504Ch3sNKLd8=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "35bb57c0c8d8b62bbfd284272c928ceb64ddbde9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -321,6 +337,7 @@
         "Ultimate.Hosts.Blacklist": "Ultimate.Hosts.Blacklist",
         "aagl": "aagl",
         "distro-grub-themes": "distro-grub-themes",
+        "flake-compat": "flake-compat_2",
         "home-manager": "home-manager",
         "hosts": "hosts",
         "master": "master",
