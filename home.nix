@@ -49,11 +49,6 @@ in
 {
   imports = builtins.map (x: ./modules + "/${x}") (builtins.attrNames (builtins.readDir ./modules));
 
-  nixpkgs = {
-    config = import ./config.nix;
-    overlays = [ (import ./pkgs) ];
-  };
-
   xdg = {
     userDirs = {
       enable = true;
