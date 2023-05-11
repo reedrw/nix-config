@@ -1,7 +1,5 @@
-{ config, lib, pkgs, ... }:
+{ inputs, outputs, config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
-
   ccat = with pkgs; writeShellScriptBin "bat" ''
     ${binPath bat} --theme=base16 "$@"
   '';
@@ -116,6 +114,6 @@ in
     '';
 
     "ranger/scope.sh".source = pkgs.writeShellScript "scope.sh" (builtins.readFile ./scope.sh);
-    "ranger/plugins/ranger-archives".source = "${sources.ranger-archives}";
+    "ranger/plugins/ranger-archives".source = "${inputs.ranger-archives}";
   };
 }

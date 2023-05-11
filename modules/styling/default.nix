@@ -1,8 +1,5 @@
-{ config, lib, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-  nix-colors = import sources.nix-colors { };
-in
+{ nix-colors, config, lib, pkgs, ... }:
+
 with nix-colors;
 {
   imports = [ homeManagerModule ];

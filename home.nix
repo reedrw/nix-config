@@ -45,23 +45,9 @@ let
     xsel        # x clipbaord scripting
   ];
 
-  hostname = builtins.readFile /etc/hostname;
-
-  full = builtins.pathExists (./system + "/${builtins.replaceStrings ["\n"] [".nix"] hostname}")
-    || (builtins.getEnv "USER") == "runner";
-
 in
 {
-  imports = if full
-  then builtins.map (x: ./modules + "/${x}") (builtins.attrNames (builtins.readDir ./modules))
-  else [
-    ./modules/comma
-    ./modules/nvim
-    ./modules/ranger
-    ./modules/scripts
-    ./modules/styling
-    ./modules/zsh
-  ];
+  imports = builtins.map (x: ./modules + "/${x}") (builtins.attrNames (builtins.readDir ./modules));
 
   nixpkgs = {
     config = import ./config.nix;
@@ -90,7 +76,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
-    packages = packagesMinimal ++ lib.optionals full packagesExtra;
+    packages = packagesMinimal ++ packagesExtra;
   };
 
   systemd.user.startServices = true;

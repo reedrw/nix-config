@@ -1,13 +1,11 @@
-{ config, lib, pkgs, ... }:
+{ inputs, outputs, config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
-
   # use https://github.com/ncmpcpp/ncmpcpp master until new release
   # this fixes the genius lyric fetcher
   ncmpcpp = pkgs.ncmpcpp.overrideAttrs (
     old: {
-      src = sources.ncmpcpp;
-      version = sources.ncmpcpp.rev;
+      src = inputs.ncmpcpp;
+      version = pkgs.shortenRev inputs.ncmpcpp.rev;
 
       nativeBuildInputs = with pkgs; [
         autoconf
