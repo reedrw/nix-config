@@ -1,7 +1,5 @@
-{ config, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-in
+{ inputs, outputs, config, pkgs, ... }:
+
 {
-  boot.loader.grub.theme = "${sources.distro-grub-themes}/customize/nixos";
+  boot.loader.grub.theme = "${inputs.distro-grub-themes}/customize/nixos";
 }

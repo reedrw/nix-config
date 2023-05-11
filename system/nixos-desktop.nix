@@ -2,18 +2,17 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, ... }:
-let
-  sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
-in
+{ inputs, outputs, config, lib, pkgs, ... }:
+
 {
   imports = [
     ./boot/efi.nix
     ./users/reed.nix
     ./optional/games
     ./optional/torrent.nix
-    "${sources.nixos-hardware}/common/cpu/intel"
-    "${sources.nixos-hardware}/common/pc/ssd"
+    ./hardware/desktop.nix
+    "${inputs.nixos-hardware}/common/cpu/intel"
+    "${inputs.nixos-hardware}/common/pc/ssd"
   ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
 
   boot = {

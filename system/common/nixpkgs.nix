@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
 {
-  nixpkgs = {
-    overlays = [ (import ../../pkgs) ];
-    config = import ../../config.nix;
-  };
+  # nixpkgs = {
+  #   overlays = [ (import ../../pkgs) ];
+  #   config = import ../../config.nix;
+  # };
 
   nix = {
     settings = {

@@ -1,6 +1,6 @@
-{ nix-colors, config, lib, pkgs, ... }:
+{ inputs, config, lib, pkgs, ... }:
 
-with nix-colors;
+with inputs.nix-colors;
 {
   imports = [ homeManagerModule ];
   colorScheme = colorSchemes.material-darker;

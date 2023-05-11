@@ -1,10 +1,8 @@
-{ config, pkgs, ... }:
-let
-  sources = import ../../nix/sources.nix { };
-in
+{ inputs, outputs, config, pkgs, ... }:
+
 {
   imports = [
-    "${sources.home-manager}/nixos"
+    inputs.home-manager.nixosModules.home-manager
   ];
   programs.dconf.enable = true;
   services.xserver = {
@@ -28,6 +26,7 @@ in
     };
   };
   # Dark mode when running apps in sudo
+  home-manager.extraSpecialArgs = { inherit inputs outputs; };
   home-manager.users.root = {
     home = {
       username = "root";

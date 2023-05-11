@@ -1,38 +1,14 @@
-{ config, lib, pkgs, ... }:
+{ inputs, outputs, config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
-  aaglPkgs = import sources.aagl-gtk-on-nix;
-
   components = lib.importJSON ./components.json;
-
-  aagl-unwrapped =
-    let
-      fromLocal = false;
-    in with sources.an-anime-game-launcher;
-    if fromLocal then
-    pkgs.an-anime-game-launcher-unwrapped.overrideAttrs ( old:
-      rec {
-        src = /home/reed/files/an-anime-game-launcher;
-        version = with pkgs; let
-          versionFile = stdenv.mkDerivation {
-            name = "ver";
-            inherit src;
-            buildInputs = [ git ];
-            buildPhase = "git rev-parse HEAD > $out";
-          };
-        in shortenRev (builtins.readFile versionFile);
-        cargoDeps = pkgs.rustPlatform.importCargoLock {
-          lockFile = "${src}/Cargo.lock";
-        };
-      })
-    else pkgs.an-anime-game-launcher-unwrapped;
+  aaglPkgs = inputs.aagl.packages.x86_64-linux;
 in
 {
   imports = [
-    aaglPkgs.module
+    inputs.aagl.nixosModules.default
   ];
 
-  nixpkgs.overlays = [ aaglPkgs.overlay ];
+  # nixpkgs.overlays = [ aaglPkgs.overlay ];
 
   programs.steam = with pkgs; {
     enable = true;
@@ -51,8 +27,8 @@ in
 
   programs.an-anime-game-launcher = {
     enable = true;
-    package = with components; pkgs.an-anime-game-launcher.override {
-      an-anime-game-launcher-unwrapped = aagl-unwrapped.override {
+    package = with components; aaglPkgs.an-anime-game-launcher.override {
+      an-anime-game-launcher-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped.override {
         customIcon = builtins.fetchurl icon;
       };
     };
@@ -60,7 +36,7 @@ in
 
   programs.the-honkers-railway-launcher = {
     enable = true;
-    package = pkgs.the-honkers-railway-launcher;
+    # package = pkgs.the-honkers-railway-launcher;
   };
 
   environment.systemPackages = with pkgs; [

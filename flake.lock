@@ -1,17 +1,70 @@
 {
   "nodes": {
+    "Lists": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1675166787,
+        "narHash": "sha256-DJQFSeUi209VQc0NE2k82VYkRIMjMdiaN2Z2/EEU47k=",
+        "owner": "blocklistproject",
+        "repo": "Lists",
+        "rev": "a3005f7a5c30db5e3ec677e7f94bc231ed0c4dc3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "blocklistproject",
+        "repo": "Lists",
+        "type": "github"
+      }
+    },
     "NUR": {
       "locked": {
-        "lastModified": 1683813821,
-        "narHash": "sha256-Wb/Sa7+hS0vC0lT9byfpOUfLJxa7X4aNEZjoQA2gv6k=",
+        "lastModified": 1683823518,
+        "narHash": "sha256-u9YSqMFfVy3tIlq2W/Yi2bFN8ZZF2g4IlGnKIrM7vrk=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "1b388bb0c2052916b93dbbae0e49af552980644e",
+        "rev": "781c5c24892d4038cf711d4762d67b1f48498319",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "NUR",
+        "type": "github"
+      }
+    },
+    "Ultimate.Hosts.Blacklist": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1683745616,
+        "narHash": "sha256-EqBIIfwXXZFgbTNiceI/6hnRGuwPmBt3ECD/tb7uI8U=",
+        "owner": "Ultimate-Hosts-Blacklist",
+        "repo": "Ultimate.Hosts.Blacklist",
+        "rev": "5345b7e3443e3a646a049e9b3cd01f42752ae55e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Ultimate-Hosts-Blacklist",
+        "repo": "Ultimate.Hosts.Blacklist",
+        "type": "github"
+      }
+    },
+    "aagl": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1683754654,
+        "narHash": "sha256-e4V3EVdLZ2vTkb3mLmbYFhxzZGoErnG/70KcgRK6a60=",
+        "owner": "ezKEa",
+        "repo": "aagl-gtk-on-nix",
+        "rev": "64eeb9b2a0b62c2a78f852d1da6252e060daf091",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ezKEa",
+        "repo": "aagl-gtk-on-nix",
         "type": "github"
       }
     },
@@ -28,6 +81,38 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-schemes",
+        "type": "github"
+      }
+    },
+    "distro-grub-themes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1682572446,
+        "narHash": "sha256-OB8za/aaIcsnwGhOH2SR+2WeDi19Et67QuvK5geG9+o=",
+        "owner": "AdisonCavani",
+        "repo": "distro-grub-themes",
+        "rev": "15b20532b0d443dbd118b179ac7b63cba9499511",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AdisonCavani",
+        "repo": "distro-grub-themes",
+        "type": "github"
+      }
+    },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673956053,
+        "narHash": "sha256-4gtG9iQuiKITOjNQQeQIpoIB6b16fm+504Ch3sNKLd8=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "35bb57c0c8d8b62bbfd284272c928ceb64ddbde9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
         "type": "github"
       }
     },
@@ -51,13 +136,29 @@
         "type": "github"
       }
     },
+    "hosts": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1683817706,
+        "narHash": "sha256-C+M21Glsbo78QCzEY1SEuYujC8I+9TsRMLUhLdrKfAI=",
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "rev": "a41b71d57538b2c256a5e041bc90f0b93eef01f2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "type": "github"
+      }
+    },
     "master": {
       "locked": {
-        "lastModified": 1683819286,
-        "narHash": "sha256-1OyP5kx68TaYJ/Od7gbvQXAVmb/Gjz1V6XUaPi6G6nU=",
+        "lastModified": 1683822374,
+        "narHash": "sha256-UEvh4KI82s1S2Gpb1sRQQ8sFP0mcypxN4nPkzhbdiLs=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "5c3e59b6d6ab60cee1c3c404840f2a98f703e599",
+        "rev": "6948ef4deff7a72ebe5242244bd3730e8542b925",
         "type": "github"
       },
       "original": {
@@ -215,8 +316,13 @@
     },
     "root": {
       "inputs": {
+        "Lists": "Lists",
         "NUR": "NUR",
+        "Ultimate.Hosts.Blacklist": "Ultimate.Hosts.Blacklist",
+        "aagl": "aagl",
+        "distro-grub-themes": "distro-grub-themes",
         "home-manager": "home-manager",
+        "hosts": "hosts",
         "master": "master",
         "mpv-scripts": "mpv-scripts",
         "mpv-webm": "mpv-webm",

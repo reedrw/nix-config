@@ -1,7 +1,5 @@
-{ config, pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-in
+{ inputs, outputs, config, pkgs, ... }:
+
 {
   networking = {
     networkmanager.enable = true;
@@ -23,15 +21,15 @@ in
         "www.ocsp2.apple.com"
       ];
     };
-    extraHosts = with sources; ''''
+    extraHosts = with inputs; ''''
       + (builtins.readFile "${hosts}/hosts")
       + (builtins.readFile "${Lists}/ads.txt")
       + (builtins.readFile "${Lists}/tracking.txt")
       + (builtins.readFile "${Lists}/gambling.txt")
-      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts0")
-      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts1")
-      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts2")
-      + (builtins.readFile "${sources."Ultimate.Hosts.Blacklist"}/hosts/hosts3");
+      + (builtins.readFile "${inputs."Ultimate.Hosts.Blacklist"}/hosts/hosts0")
+      + (builtins.readFile "${inputs."Ultimate.Hosts.Blacklist"}/hosts/hosts1")
+      + (builtins.readFile "${inputs."Ultimate.Hosts.Blacklist"}/hosts/hosts2")
+      + (builtins.readFile "${inputs."Ultimate.Hosts.Blacklist"}/hosts/hosts3");
   };
   services.mullvad-vpn = {
     enable = true;
