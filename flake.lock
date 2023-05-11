@@ -34,11 +34,11 @@
     "Ultimate.Hosts.Blacklist": {
       "flake": false,
       "locked": {
-        "lastModified": 1683745616,
-        "narHash": "sha256-EqBIIfwXXZFgbTNiceI/6hnRGuwPmBt3ECD/tb7uI8U=",
+        "lastModified": 1683831939,
+        "narHash": "sha256-c6SdFih5sYwabZewAMURILbWrrvzXpyqPN1rHqRdJRc=",
         "owner": "Ultimate-Hosts-Blacklist",
         "repo": "Ultimate.Hosts.Blacklist",
-        "rev": "5345b7e3443e3a646a049e9b3cd01f42752ae55e",
+        "rev": "4680506f33811ba81efa0a530149931c05ff9fd4",
         "type": "github"
       },
       "original": {
@@ -170,11 +170,11 @@
     },
     "master": {
       "locked": {
-        "lastModified": 1683822374,
-        "narHash": "sha256-UEvh4KI82s1S2Gpb1sRQQ8sFP0mcypxN4nPkzhbdiLs=",
+        "lastModified": 1683830600,
+        "narHash": "sha256-GiQOxqVQKGpaTXxLSxFINDytjRpm2dRuFnHWFuoSSmU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "6948ef4deff7a72ebe5242244bd3730e8542b925",
+        "rev": "d4652d33d6af0caf80c9976af34db03d5c2c8fa7",
         "type": "github"
       },
       "original": {
