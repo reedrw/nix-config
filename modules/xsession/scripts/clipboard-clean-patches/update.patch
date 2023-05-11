@@ -492,7 +492,7 @@ index 632fc24..2ae7b6c 100644
 +N9k=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..e5e46bb 100644
+index f2a54b1..38ffb1f 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -33,7 +33,8 @@
@@ -567,7 +567,17 @@ index f2a54b1..e5e46bb 100644
              ],
              "exceptions": [
                  "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?matrix\\.org\\/_matrix\\/",
-@@ -336,7 +355,11 @@
+@@ -246,7 +265,8 @@
+                 "^https?:\\/\\/button.like.co\\/in\\/.*?&?referrer=[^/?&]*",
+                 "^https?:\\/\\/www\\.mma\\.go\\.kr",
+                 "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
+-                "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc="
++                "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
++                "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?\\.youtrack\\.cloud"
+             ]
+         },
+         "adtech": {
+@@ -336,7 +356,11 @@
                  "(?:ref_?)?src",
                  "s",
                  "cn",
@@ -580,7 +590,7 @@ index f2a54b1..e5e46bb 100644
              ]
          },
          "reddit": {
-@@ -693,7 +716,8 @@
+@@ -693,7 +717,8 @@
              "rules": [
                  "refId",
                  "trk",
@@ -590,7 +600,7 @@ index f2a54b1..e5e46bb 100644
              ]
          },
          "LinkedIn Learning": {
-@@ -1089,19 +1113,27 @@
+@@ -1089,19 +1114,27 @@
                  "from_source",
                  "from",
                  "seid",
@@ -620,7 +630,7 @@ index f2a54b1..e5e46bb 100644
              ]
          },
          "m.bilibili.com": {
-@@ -1623,6 +1655,92 @@
+@@ -1623,6 +1656,98 @@
                  "log",
                  "p"
              ]
@@ -709,6 +719,12 @@ index f2a54b1..e5e46bb 100644
 +                "search_type",
 +                "source",
 +                "source_impression_id"
++            ]
++        },
++        "partner-ads.com": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?partner-ads\\.com",
++            "redirections": [
++                "^https?:\\/\\/.*?partner-ads\\.com\\/.*?htmlurl=([^&]+)"
 +            ]
          }
      }
