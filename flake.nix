@@ -94,7 +94,14 @@
       "reed" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = { inherit inputs outputs; };
-        modules = [ ./home.nix ];
+        modules = [
+          ./home.nix
+          (args: {
+            xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+            home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+            nix.registry.nixpkgs.flake = nixpkgs;
+          })
+        ];
       };
     };
 
@@ -108,6 +115,11 @@
             overlays = [ overlay ];
             inherit config;
           }; }
+          {
+            environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+            nix.registry.nixpkgs.flake = nixpkgs;
+            nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
+          }
         ];
       };
     };
