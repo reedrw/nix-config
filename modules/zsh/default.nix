@@ -94,7 +94,7 @@ in
         PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
       fi
 
-      if [ -n "$IN_NIX_SHELL" ]; then
+      if [ -n "$ANY_NIX_SHELL_PKGS" ]; then
         if [ -n "$IN_AUTO_SHELL" ]; then
           alias leave="noglob exit"
           color="yellow"
@@ -179,7 +179,7 @@ in
 
         export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
         export IN_AUTO_SHELL="yes"
-        __nix-shell -p "$attr" --run "$argv0 $*; zsh"
+        __nix shell "nixpkgs#$attr" -c sh -c "$argv0 $*; exec zsh"
       }
 
       bw-rofi-login(){
@@ -217,13 +217,18 @@ in
         __nix-shell "$@"
       }
 
-      nix(){
+      __nix(){
         if [[ $1 == shell ]]; then
           shift
           ${any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
         else
           command nix "$@"
         fi
+      }
+
+      nix() {
+        unset IN_AUTO_SHELL
+        __nix "$@"
       }
 
       touch(){
