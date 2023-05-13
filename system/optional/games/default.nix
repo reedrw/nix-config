@@ -25,19 +25,16 @@ in
     };
   };
 
-  programs.an-anime-game-launcher = {
+  programs.anime-game-launcher = {
     enable = true;
-    package = with components; aaglPkgs.an-anime-game-launcher.override {
-      an-anime-game-launcher-unwrapped = aaglPkgs.an-anime-game-launcher-unwrapped.override {
-        customIcon = builtins.fetchurl icon;
+    package = with aaglPkgs.anime-game-launcher; override {
+      unwrapped = unwrapped.override {
+        customIcon = builtins.fetchurl components.icon;
       };
     };
   };
 
-  programs.the-honkers-railway-launcher = {
-    enable = true;
-    # package = pkgs.the-honkers-railway-launcher;
-  };
+  programs.honkers-railway-launcher.enable = true;
 
   environment.systemPackages = with pkgs; [
     r2mod_cli
