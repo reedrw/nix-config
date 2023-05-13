@@ -82,6 +82,13 @@
     }
   ];
 
+  services.jellyfin = {
+    enable = true;
+    user = "reed";
+    group = "users";
+    openFirewall = true;
+  };
+
   programs.gamemode = {
     enable = true;
     settings = {
