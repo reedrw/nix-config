@@ -29,12 +29,19 @@ in
     enable = true;
     package = with aaglPkgs.anime-game-launcher; override {
       unwrapped = unwrapped.override {
-        customIcon = builtins.fetchurl components.icon;
+        customIcon = builtins.fetchurl components.aagl.icon;
       };
     };
   };
 
-  programs.honkers-railway-launcher.enable = true;
+  programs.honkers-railway-launcher = {
+    enable = true;
+    package = with aaglPkgs.honkers-railway-launcher; override {
+      unwrapped = unwrapped.override {
+        customIcon = builtins.fetchurl components.hrl.icon;
+      };
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     r2mod_cli

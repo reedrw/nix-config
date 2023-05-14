@@ -1,6 +1,14 @@
 {
-  "icon": {
-    "sha256": "1123dwd0j1qi20vmfm29ddk7h0bsr6h35mv0wlcwmxy0g6hx543w",
-    "url": "https://cdn.discordapp.com/attachments/878042281318420571/1102758488540721222/latest.png"
+  "aagl": {
+    "icon": {
+      "url": "https://cdn.discordapp.com/attachments/878042281318420571/1102758488540721222/latest.png",
+      "sha256": "1123dwd0j1qi20vmfm29ddk7h0bsr6h35mv0wlcwmxy0g6hx543w"
+    }
+  },
+  "hrl": {
+    "icon": {
+      "url": "https://cdn.discordapp.com/attachments/878042281318420571/1107006445200871524/kafka.png",
+      "sha256": "16nkca4q8c2nazhb7h3c9xyxm9ap50gr8s124m6347rghfh4xl16"
+    }
   }
 }
