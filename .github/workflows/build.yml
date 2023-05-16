@@ -15,11 +15,8 @@ jobs:
         cachixName:
           - reedrw
         output:
-          - home-manager
-          - nixos-desktop
-          - nixos-t400
-          - nixos-t480
-          - nixos-t520
+          - .#homeConfigurations.reed.activationPackage
+          - .#nixosConfigurations.nixos-desktop.config.system.build.toplevel
           - nix-shell
 
     runs-on: ubuntu-latest
@@ -49,15 +46,9 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Get nixpkgs commit
-      run: |
-        commit="$(jq -r '.nixpkgs.url' ./nix/sources.json)"
-        echo "nixpkgs-commit=$commit" >> $GITHUB_ENV
-
     - name: Install Nix
       uses: cachix/install-nix-action@v20
       with:
-        nix_path: nixpkgs=${{ env.nixpkgs-commit }}
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Cachix
@@ -71,23 +62,11 @@ jobs:
       run: |
         set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
-          instantiateCommand="nix-instantiate --show-trace ./shell.nix"
-          buildCommand="nix-shell --show-trace ./shell.nix --run 'exit'"
+          buildCommand="nix-shell --show-trace ./shell.nix --run exit"
         else
-          instantiateCommand="nix-instantiate --show-trace ./ci.nix -A ${{ matrix.output }}"
           buildCommand="nix-build --show-trace ci.nix -A ${{ matrix.output }}"
         fi
-
-        git switch --detach "HEAD^"
-        oldDrv="$($instantiateCommand)"
-        git checkout ${{ github.head_ref || github.ref_name }}
-        newDrv="$($instantiateCommand)"
-        if [[ "$newDrv" != "$oldDrv" ]]; then
-          $buildCommand
-          echo "build-skipped=no" >> $GITHUB_ENV
-        else
-          echo "build-skipped=yes" >> $GITHUB_ENV
-        fi
+        $buildCommand
       env:
         NIXPKGS_ALLOW_UNFREE: 1
 
@@ -95,12 +74,11 @@ jobs:
       id: diff
       if: ${{ github.event_name == 'pull_request'
         && github.head_ref == 'update-dependencies'
-        && matrix.output != 'nix-shell'
-        && env.build-skipped == 'no' }}
+        && matrix.output != 'nix-shell' }}
       run: |
-        nix-build ./ci.nix -A ${{ matrix.output }} -o result-new
+        nix build ${{ matrix.output }} -o result-new
         git checkout "$(git rev-parse @~)"
-        nix-build ./ci.nix -A ${{ matrix.output }} -o result-old
+        nix build ${{ matrix.output }} -o result-old
         echo "diff_closure<<EOF" >> $GITHUB_ENV
         # TODO remove pipe to sed when NixOS/nix#4626 is fixed
         nix store diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV

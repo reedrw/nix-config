@@ -23,15 +23,6 @@ mkShell {
     wget
 
     (aliasToPackage {
-      build = ''
-        export NIXPKGS_ALLOW_UNFREE=1
-        ci="$(git rev-parse --show-toplevel)/ci.nix"
-        if [[ -z "$1" ]]; then
-          ${nix-output-monitor}/bin/nom-build "$ci"
-        else
-          ${nix-output-monitor}/bin/nom-build "$ci" -A "$1"
-        fi
-      '';
       update-all = ''
         find -L "$(pwd)/" -type f -name "update-sources.sh" \
         | while read -r updatescript; do
