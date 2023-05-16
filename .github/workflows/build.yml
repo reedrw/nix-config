@@ -64,7 +64,7 @@ jobs:
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
           buildCommand="nix-shell --show-trace ./shell.nix --run exit"
         else
-          buildCommand="nix-build --show-trace ci.nix -A ${{ matrix.output }}"
+          buildCommand="nix build --show-trace ${{ matrix.output }}"
         fi
         $buildCommand
       env:
