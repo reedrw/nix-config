@@ -46,9 +46,15 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Get nixpkgs commit
+      run: |
+        rev="$(jq -r '.nodes.nixpkgs.locked.rev' ./flake.lock)"
+        echo "nixpkgs-commit=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz" >> $GITHUB_ENV
+
     - name: Install Nix
       uses: cachix/install-nix-action@v20
       with:
+        nix_path: nixpkgs=${{ env.nixpkgs-commit }}
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Cachix
