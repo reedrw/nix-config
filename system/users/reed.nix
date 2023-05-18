@@ -10,6 +10,7 @@
       "networkmanager"
       "wheel"
     ];
+    packages = with pkgs; [ home-manager ];
     shell = pkgs.zsh;
   };
 

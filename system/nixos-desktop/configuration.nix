@@ -6,14 +6,16 @@
 
 {
   imports = [
-    ./boot/efi.nix
-    ./users/reed.nix
-    ./optional/games
-    ./optional/torrent.nix
-    ./hardware/desktop.nix
+    ../boot/efi.nix
+    ../users/reed.nix
+    ../optional/games
+    ../optional/torrent.nix
+    ../optional/btrfs-optin-persistence.nix
+    ./hardware-configuration.nix
+    ./persist.nix
     "${inputs.nixos-hardware}/common/cpu/intel"
     "${inputs.nixos-hardware}/common/pc/ssd"
-  ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
+  ] ++ builtins.map (x: ../common + "/${x}") (builtins.attrNames (builtins.readDir ../common));
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -30,6 +32,14 @@
     gfxpayloadEfi = "keep";
   };
 
+  users.mutableUsers = false;
+  users.users.reed.passwordFile = "/persist/secrets/reed-passwordFile";
+
+  home-manager = {
+    users.reed = import ../../home.nix;
+    extraSpecialArgs = { inherit inputs outputs; };
+  };
+
   # Remote decrypt via phone shortcut
   boot.initrd = {
     availableKernelModules = [ "alx" ];
@@ -41,9 +51,9 @@
         authorizedKeys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjDgwhUiKpmpjx/yAz8SMC1bo7bS7LiZ+9LumJfHufv Shortcuts on iPhone 13 mini"
         ];
-        # sudo ssh-keygen -t ed25519 -N "" -f /etc/secrets/initrd/ssh_host_ed25519_key
-        # sudo ssh-keygen -t rsa -N "" -f /etc/secrets/initrd/ssh_host_rsa_key
-        hostKeys = [ "/etc/secrets/initrd/ssh_host_rsa_key" "/etc/secrets/initrd/ssh_host_ed25519_key" ];
+        # sudo ssh-keygen -t ed25519 -N "" -f /persist/secrets/initrd/ssh_host_ed25519_key
+        # sudo ssh-keygen -t rsa -N "" -f /persist/secrets/initrd/ssh_host_rsa_key
+        hostKeys = [ "/persist/secrets/initrd/ssh_host_rsa_key" "/persist/secrets/initrd/ssh_host_ed25519_key" ];
       };
     };
   };
@@ -65,14 +75,14 @@
   };
 
   services.autossh.sessions = [
-    {
-      extraArguments = ''
-        -o ServerAliveInterval=30 \
-        -N -T -R 5000:localhost:22 142.4.208.215
-      '';
-      name = "ssh-port-forward";
-      user = "reed";
-    }
+    # {
+    #   extraArguments = ''
+    #     -o ServerAliveInterval=30 \
+    #     -N -T -R 5000:localhost:22 142.4.208.215
+    #   '';
+    #   name = "ssh-port-forward";
+    #   user = "reed";
+    # }
     {
       extraArguments = ''
         -D 1337 -nNT localhost
@@ -101,7 +111,7 @@
   };
 
   environment.etc."crypttab".text = ''
-    BigHD /dev/disk/by-uuid/c5d3a438-5719-4020-be28-f258a15c5ab7 /etc/secrets/crypt/BigHD.key luks
+    BigHD /dev/disk/by-uuid/c5d3a438-5719-4020-be28-f258a15c5ab7 /persist/secrets/crypt/BigHD.key luks
   '';
 
   fileSystems = {
@@ -126,5 +136,5 @@
     steam.enable = true;
   };
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "22.11";
 }

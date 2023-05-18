@@ -15,6 +15,8 @@
 
     nix-colors.url = "github:misterio77/nix-colors";
 
+    impermanence.url = "github:nix-community/impermanence";
+
     # home-manager non-flake dependencies
     ncmpcpp = {
       url = "github:ncmpcpp/ncmpcpp";
@@ -69,7 +71,7 @@
   };
   # }}}
 
-  outputs = { self, nixpkgs, master, stable, nixos-hardware, NUR, home-manager, nix-colors, ... } @ inputs: let
+  outputs = { self, nixpkgs, master, stable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
     inherit (self) outputs;
     inherit (nixpkgs) lib;
     system = "x86_64-linux";
@@ -96,6 +98,10 @@
         extraSpecialArgs = { inherit inputs outputs; };
         modules = [
           ./home.nix
+          { nixpkgs = {
+            overlays = [ overlay ];
+            inherit config;
+          }; }
           (args: {
             xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
             home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
@@ -110,7 +116,9 @@
         inherit system;
         specialArgs = { inherit inputs outputs; };
         modules = [
-          ./system/nixos-desktop.nix
+          ./system/nixos-desktop/configuration.nix
+          home-manager.nixosModules.home-manager
+          impermanence.nixosModule
           { nixpkgs = {
             overlays = [ overlay ];
             inherit config;
