@@ -25,6 +25,7 @@
       ".config/discord"
       ".config/easyeffects"
       ".config/gh"
+      ".config/htop"
       ".config/nixpkgs"
       ".config/obs-studio"
 
