@@ -8,7 +8,6 @@ let
     github-cli # github from command line
     htop       # process monitor
     moreutils  # more scripting tools
-    nom        # prettier nix output
     nix-tree   # nix derivation graph browser
     niv        # painless nix dependency management
     nq         # queue utility
@@ -24,7 +23,7 @@ let
         fi
         nix-collect-garbage "$@"
       '';
-      hms = "unbuffer home-manager switch |& nom";
+      hms = "home-manager switch";
       ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
       pai = "~/.config/nixpkgs/pull-and-install.sh";
     })

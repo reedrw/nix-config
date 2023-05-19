@@ -16,7 +16,6 @@ mkShell {
     home-manager
     jq
     niv
-    nix-output-monitor
     nix-prefetch
     pre-commit
     shellcheck
