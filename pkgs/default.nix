@@ -6,6 +6,8 @@ rec {
 
   inherit ((import ../config.nix).packageOverrides pkgs) nur fromBranch;
 
+  bitwarden = versionConditionalOverride "2023.3.2" pkgs.bitwarden fromBranch.stable.bitwarden;
+
   libreoffice = fromBranch.stable.libreoffice;
 
   discord = pkgs.discord.override {
