@@ -1,4 +1,4 @@
-{ inputs, outputs, config, pkgs, ... }:
+{ inputs, outputs, config, pkgs, lib, ... }:
 
 {
   networking = {
@@ -38,11 +38,12 @@
 
   systemd.services."mullvad-daemon".postStart = let
     mullvad = config.services.mullvad-vpn.package;
+    dnsServers = builtins.concatStringsSep " " (lib.lists.remove "100.100.100.100" config.networking.nameservers);
   in ''
     while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
     ${mullvad}/bin/mullvad lan set allow
     ${mullvad}/bin/mullvad auto-connect set on
-    ${mullvad}/bin/mullvad dns set custom ${builtins.concatStringsSep " " config.networking.nameservers}
+    ${mullvad}/bin/mullvad dns set custom ${dnsServers}
   '';
 
   services.avahi = {
