@@ -2,6 +2,22 @@
 let
   components = lib.importJSON ./components.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
+
+  aagl = aaglPkgs.anime-game-launcher;
+  # aagl = with aaglPkgs.anime-game-launcher; override {
+  #   unwrapped = unwrapped.overrideAttrs (old: rec {
+  #     src = inputs.an-anime-game-launcher;
+  #     version = pkgs.shortenRev inputs.an-anime-game-launcher.rev;
+  #     cargoDeps = pkgs.rustPlatform.importCargoLock {
+  #       lockFile = "${src}/Cargo.lock";
+  #       outputHashes = {
+  #         "anime-game-core-1.10.1" = "sha256-144mNiHSHypmQU02BXMyKnUA3h+0KPAWTCyfZmvwE0A=";
+  #         "anime-launcher-sdk-1.4.2" = "sha256-Zk0M/Ll8iyU/SVa134pSzLDjGxPD0UyeQMhSzEveHZY=";
+  #       };
+  #     };
+  #   });
+  # };
+
 in
 {
   imports = [
@@ -27,7 +43,7 @@ in
 
   programs.anime-game-launcher = {
     enable = true;
-    package = with aaglPkgs.anime-game-launcher; override {
+    package = with aagl; override {
       unwrapped = unwrapped.override {
         customIcon = builtins.fetchurl components.aagl.icon;
       };

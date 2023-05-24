@@ -51,9 +51,11 @@
       url = "github:AdisonCavani/distro-grub-themes";
       flake = false;
     };
-
-      flake = false;
-    };
+    #
+    # an-anime-game-launcher = {
+    #   url = "github:an-anime-team/an-anime-game-launcher/next";
+    #   flake = false;
+    # };
   };
   # }}}
 
