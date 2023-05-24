@@ -46,28 +46,14 @@
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     # system non-flake dependencies
     distro-grub-themes = {
       url = "github:AdisonCavani/distro-grub-themes";
       flake = false;
     };
 
-    Lists = {
-      url = "github:blocklistproject/Lists";
       flake = false;
     };
-
-    "Ultimate.Hosts.Blacklist" = {
-      url = "github:Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist";
-      flake = false;
-    };
-
-    hosts = {
-      url = "github:StevenBlack/hosts";
-      flake = false;
-    };
-
   };
   # }}}
 

@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "Lists": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1675166787,
-        "narHash": "sha256-DJQFSeUi209VQc0NE2k82VYkRIMjMdiaN2Z2/EEU47k=",
-        "owner": "blocklistproject",
-        "repo": "Lists",
-        "rev": "a3005f7a5c30db5e3ec677e7f94bc231ed0c4dc3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "blocklistproject",
-        "repo": "Lists",
-        "type": "github"
-      }
-    },
     "NUR": {
       "locked": {
         "lastModified": 1684642209,
@@ -28,22 +12,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "NUR",
-        "type": "github"
-      }
-    },
-    "Ultimate.Hosts.Blacklist": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1684609867,
-        "narHash": "sha256-T5dVKDOt4oenBI0r7+MvFzRmk0BxB0oWN6rZmLXUkZ0=",
-        "owner": "Ultimate-Hosts-Blacklist",
-        "repo": "Ultimate.Hosts.Blacklist",
-        "rev": "9151a06de1f3b26d30e3278d88b6e41aae99b48b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Ultimate-Hosts-Blacklist",
-        "repo": "Ultimate.Hosts.Blacklist",
         "type": "github"
       }
     },
@@ -133,22 +101,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "hosts": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1684631838,
-        "narHash": "sha256-45J8dc75gJAyS3vvaZlB94QKqR/yuSo4QUUg9pEtVgg=",
-        "owner": "StevenBlack",
-        "repo": "hosts",
-        "rev": "6380b4fe128e702d61ae0d8388dfc79e5ac9e59e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "StevenBlack",
-        "repo": "hosts",
         "type": "github"
       }
     },
@@ -331,13 +283,10 @@
     },
     "root": {
       "inputs": {
-        "Lists": "Lists",
         "NUR": "NUR",
-        "Ultimate.Hosts.Blacklist": "Ultimate.Hosts.Blacklist",
         "aagl": "aagl",
         "distro-grub-themes": "distro-grub-themes",
         "home-manager": "home-manager",
-        "hosts": "hosts",
         "impermanence": "impermanence",
         "master": "master",
         "mpv-scripts": "mpv-scripts",
