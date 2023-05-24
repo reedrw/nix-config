@@ -27,6 +27,20 @@
     };
   };
 
+  services.snapper = {
+    configs.persist = {
+      SUBVOLUME = "/persist";
+      ALLOW_USERS = [ "reed" ];
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_LIMIT_HOURLY = 0;
+      TIMELINE_LIMIT_DAILY = 3;
+      TIMELINE_LIMIT_WEEKLY = 0;
+      TIMELINE_LIMIT_MONTHLY = 0;
+      TIMELINE_LIMIT_YEARLY = 0;
+    };
+  };
+
   boot.loader.grub = {
     gfxmodeEfi = "1920x1080";
     gfxpayloadEfi = "keep";

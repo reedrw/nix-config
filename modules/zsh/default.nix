@@ -265,6 +265,7 @@ in
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
+      snapper = "snapper -c persist";
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
