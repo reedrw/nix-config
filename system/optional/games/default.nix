@@ -50,14 +50,14 @@ in
     };
   };
 
-  programs.honkers-railway-launcher = {
-    enable = true;
-    package = with aaglPkgs.honkers-railway-launcher; override {
-      unwrapped = unwrapped.override {
-        customIcon = builtins.fetchurl components.hrl.icon;
-      };
-    };
-  };
+  # programs.honkers-railway-launcher = {
+  #   enable = true;
+  #   package = with aaglPkgs.honkers-railway-launcher; override {
+  #     unwrapped = unwrapped.override {
+  #       customIcon = builtins.fetchurl components.hrl.icon;
+  #     };
+  #   };
+  # };
 
   environment.systemPackages = with pkgs; [
     r2mod_cli

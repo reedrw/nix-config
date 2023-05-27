@@ -34,7 +34,7 @@
       ".local/share/TelegramDesktop"
       ".local/share/anime-game-launcher"
       ".local/share/direnv"
-      ".local/share/honkers-railway-launcher"
+      # ".local/share/honkers-railway-launcher"
       ".local/share/ranger"
 
       ".local/state/wireplumber"
