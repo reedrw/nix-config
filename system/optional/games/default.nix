@@ -2,8 +2,9 @@
 let
   components = lib.importJSON ./components.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
+  # aaglPkgs = import /home/reed/files/aagl-gtk-on-nix;
 
-  aagl = aaglPkgs.anime-game-launcher;
+  unwrapped = aaglPkgs.anime-game-launcher.unwrapped;
   # aagl = with aaglPkgs.anime-game-launcher; override {
   #   unwrapped = unwrapped.overrideAttrs (old: rec {
   #     src = inputs.an-anime-game-launcher;
@@ -17,7 +18,24 @@ let
   #     };
   #   });
   # };
+  aagl = aaglPkgs.anime-game-launcher.override {
+    unwrapped = unwrapped.override {
+      customIcon = builtins.fetchurl components.aagl.icon;
+    };
+  };
 
+  mve = lib.optionalString config.services.mullvad-vpn.enable "mullvad-exclude";
+
+  anime-game-launcher = with pkgs; let
+    wrapper = aliasToPackage { anime-game-launcher = "${mve} ${aagl}/bin/anime-game-launcher"; };
+  in symlinkJoin {
+    inherit (unwrapped) pname version name;
+    paths = with aagl.passthru; [
+      wrapper
+      icon
+      desktopEntry
+    ];
+  };
 in
 {
   imports = [
@@ -41,14 +59,7 @@ in
     };
   };
 
-  programs.anime-game-launcher = {
-    enable = true;
-    package = with aagl; override {
-      unwrapped = unwrapped.override {
-        customIcon = builtins.fetchurl components.aagl.icon;
-      };
-    };
-  };
+  networking.mihoyo-telemetry.block = true;
 
   # programs.honkers-railway-launcher = {
   #   enable = true;
@@ -62,6 +73,7 @@ in
   environment.systemPackages = with pkgs; [
     r2mod_cli
     nurPkgs.genshin-account-switcher
+    anime-game-launcher
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
       gas = ''genshin-account-switcher "$@"'';
