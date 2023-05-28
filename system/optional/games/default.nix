@@ -30,11 +30,7 @@ let
     wrapper = aliasToPackage { anime-game-launcher = "${mve} ${aagl}/bin/anime-game-launcher"; };
   in symlinkJoin {
     inherit (unwrapped) pname version name;
-    paths = with aagl.passthru; [
-      wrapper
-      icon
-      desktopEntry
-    ];
+    paths = with aagl.passthru; [ wrapper icon desktopEntry ];
   };
 in
 {
