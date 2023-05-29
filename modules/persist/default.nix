@@ -11,6 +11,7 @@
       ".cache/lorri"
       ".cache/mesa_shader_cache"
       ".cache/mozilla"
+      ".cache/mpv"
       ".cache/nix"
       ".cache/pre-commit"
       ".cache/ranger"
