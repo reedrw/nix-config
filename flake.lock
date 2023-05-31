@@ -36,6 +36,22 @@
         "type": "github"
       }
     },
+    "alacritty": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1685352135,
+        "narHash": "sha256-asyEz7k+uSYoStG5z3suGR+8YwCb7MTLphcW/nUknsU=",
+        "owner": "alacritty",
+        "repo": "alacritty",
+        "rev": "d94cb6be99b098b0084d0a54dc4e655cd9c0e47c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alacritty",
+        "repo": "alacritty",
+        "type": "github"
+      }
+    },
     "base16-schemes": {
       "flake": false,
       "locked": {
@@ -285,6 +301,7 @@
       "inputs": {
         "NUR": "NUR",
         "aagl": "aagl",
+        "alacritty": "alacritty",
         "distro-grub-themes": "distro-grub-themes",
         "home-manager": "home-manager",
         "impermanence": "impermanence",

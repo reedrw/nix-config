@@ -56,6 +56,10 @@
     #   url = "github:an-anime-team/an-anime-game-launcher/next";
     #   flake = false;
     # };
+    alacritty = {
+      url = "github:alacritty/alacritty";
+      flake = false;
+    };
   };
   # }}}
 
