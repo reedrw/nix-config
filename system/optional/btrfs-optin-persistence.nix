@@ -9,6 +9,9 @@ let
     # so we can manipulate btrfs subvolumes.
     mount -o subvol=/ /dev/disk/by-label/nixos /mnt
 
+    num="$(ls /mnt/prev | sort -n | tail -1)"
+    num="$(( num + 1 ))"
+
     # While we're tempted to just delete /root and create
     # a new snapshot from /root-blank, /root is already
     # populated at this point with a number of subvolumes,
@@ -30,6 +33,8 @@ let
     echo "deleting /$subvolume subvolume..."
     btrfs subvolume delete "/mnt/$subvolume"
     done &&
+    echo "snapshotting /root to /prev/$num" &&
+    btrfs subvolume snapshot /mnt/root "/mnt/prev/$num" &&
     echo "deleting /root subvolume..." &&
     btrfs subvolume delete /mnt/root
 
