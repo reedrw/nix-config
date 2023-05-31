@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 dir="$(dirname "$0")"
 pushd "$dir" > /dev/null || exit
 
