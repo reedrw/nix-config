@@ -78,6 +78,7 @@ jobs:
 
     - name: Calculate diff between closures
       id: diff
+      continue-on-error: true
       if: ${{ github.event_name == 'pull_request'
         && github.head_ref == 'update-dependencies'
         && matrix.output != 'nix-shell' }}
