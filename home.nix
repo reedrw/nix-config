@@ -54,6 +54,7 @@ in
   };
 
   xdg = {
+    mimeApps.enable = true;
     userDirs = {
       enable = true;
       desktop = "\$HOME";

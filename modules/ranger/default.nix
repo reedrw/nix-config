@@ -75,6 +75,9 @@ in
     in
     [ ranger pkgs.ueberzug ];
 
+  xdg.mimeApps.defaultApplications = {
+    "inode/directory" = "ranger.desktop";
+  };
   xdg.configFile = {
     "ranger/rc.conf".text = ''
       map D shell dragon -a -x %p
