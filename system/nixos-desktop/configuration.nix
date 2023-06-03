@@ -58,7 +58,7 @@
   boot.initrd = {
     availableKernelModules = [ "alx" ];
     network = {
-      enable = true;
+      enable = lib.mkIf (config.specialisation != {}) true;
       ssh = {
         enable = true;
         port = 2222;
@@ -68,6 +68,15 @@
         # sudo ssh-keygen -t ed25519 -N "" -f /persist/secrets/initrd/ssh_host_ed25519_key
         # sudo ssh-keygen -t rsa -N "" -f /persist/secrets/initrd/ssh_host_rsa_key
         hostKeys = [ "/persist/secrets/initrd/ssh_host_rsa_key" "/persist/secrets/initrd/ssh_host_ed25519_key" ];
+      };
+    };
+  };
+
+  specialisation = {
+    "no-initrd-networking".configuration = {
+      boot = {
+        loader.grub.configurationName = "No initrd networking";
+        initrd.network.enable = false;
       };
     };
   };
