@@ -1,4 +1,4 @@
-{ cconfig, lib, pkgs, ... }:
+{ ... }:
 
 {
   services.deluge = {

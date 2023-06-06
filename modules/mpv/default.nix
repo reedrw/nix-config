@@ -1,4 +1,4 @@
-{ inputs, outputs, config, lib, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 let
   mpv-webm = pkgs.stdenv.mkDerivation {
     name = "mpv-webm";

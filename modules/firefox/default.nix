@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 let
   myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
     extraPolicies = {

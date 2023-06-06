@@ -65,7 +65,6 @@
 
   outputs = { self, nixpkgs, master, stable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
     inherit (self) outputs;
-    inherit (nixpkgs) lib;
     system = "x86_64-linux";
 
     config = import ./pkgs/config.nix {

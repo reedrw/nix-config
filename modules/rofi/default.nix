@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 let
   roficomma = pkgs.writeShellApplication {
     name = "roficomma";

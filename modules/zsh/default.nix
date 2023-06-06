@@ -27,7 +27,7 @@ in
   };
 
   programs.zsh = let
-    mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: rec {
+    mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: {
       name = pkg.pname;
       src = pkg.src;
       inherit file;

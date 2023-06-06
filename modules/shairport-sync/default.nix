@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 {
   systemd.user.services.shairport-sync = {
     Unit = {

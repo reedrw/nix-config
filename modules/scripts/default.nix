@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 let
   scripts = with pkgs; symlinkJoin {
     name = "scripts";
@@ -17,5 +17,5 @@ let
   };
 in
 {
-  home.packages = with pkgs; [ scripts ];
+  home.packages = [ scripts ];
 }

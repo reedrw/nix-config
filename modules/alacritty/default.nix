@@ -1,4 +1,4 @@
-{ inputs, config, lib, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 let
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off

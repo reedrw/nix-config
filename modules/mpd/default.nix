@@ -1,4 +1,4 @@
-{ inputs, outputs, config, lib, pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   # use https://github.com/ncmpcpp/ncmpcpp master until new release
   # this fixes the genius lyric fetcher

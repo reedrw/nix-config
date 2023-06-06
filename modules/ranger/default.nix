@@ -1,4 +1,4 @@
-{ inputs, outputs, config, lib, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 let
   ccat = with pkgs; writeShellScriptBin "bat" ''
     ${binPath bat} --theme=base16 "$@"

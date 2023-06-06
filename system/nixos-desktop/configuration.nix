@@ -58,7 +58,7 @@
   boot.initrd = {
     availableKernelModules = [ "alx" ];
     network = {
-      enable = lib.mkIf (config.specialisation != {}) true;
+      enable = lib.mkDefault true;
       ssh = {
         enable = true;
         port = 2222;
@@ -81,6 +81,18 @@
     };
   };
 
+  # virtualisation.vmVariant = {
+  #   boot = {
+  #     initrd = {
+  #       network.enable = false;
+  #       postDeviceCommands = "";
+  #     };
+  #   };
+  #   environment.persistence = {};
+  #   home-manager.users.reed.home.persistence = {};
+  #   environment.etc."crypttab".text = "";
+  # };
+  #
   networking.hostName = "nixos-desktop";
   networking.networkmanager.insertNameservers = [
     "1.1.1.1"

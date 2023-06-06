@@ -24,7 +24,7 @@
 
   clipboard-clean = let
     sources = import ./clipboard-clean-patches/nix/sources.nix { };
-    unalix = pkgs.python3Packages.buildPythonPackage rec {
+    unalix = pkgs.python3Packages.buildPythonPackage {
       name = "Unalix";
       src = sources.Unalix;
 
@@ -37,12 +37,12 @@
     runtimeInputs = with pkgs; [
       coreutils
       xclip
-      (python3.withPackages(ps: with ps; [ unalix ]))
+      (python3.withPackages(ps: [ unalix ]))
     ];
     text = (builtins.readFile ./clipboard-clean.sh);
   };
 
-  bwmenu-patched = pkgs.nurPkgs.bitwarden-rofi.overrideAttrs (_: rec {
+  bwmenu-patched = pkgs.nurPkgs.bitwarden-rofi.overrideAttrs (_: {
     src = pkgs.fetchFromGitHub {
       owner = "mattydebie";
       repo = "bitwarden-rofi";

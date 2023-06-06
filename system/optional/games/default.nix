@@ -1,4 +1,4 @@
-{ inputs, outputs, config, lib, pkgs, ... }:
+{ inputs, config, lib, pkgs, ... }:
 let
   components = lib.importJSON ./components.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;

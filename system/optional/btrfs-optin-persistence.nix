@@ -1,7 +1,5 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, config, ... }:
 let
-  host = config.networking.hostName;
-
   wipeScript = ''
     mkdir -p /mnt
 

@@ -1,4 +1,4 @@
-{ inputs, outputs, config, lib, pkgs, ... }:
+{ ... }:
 {
   programs.fuse.userAllowOther = true;
   environment.persistence."/persist" = {

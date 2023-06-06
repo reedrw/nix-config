@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 let
   calnotify = pkgs.writeShellApplication {
     name = "calnotify";

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 let
 
   indexCache = builtins.fetchurl (lib.importJSON ./source.json);
