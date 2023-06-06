@@ -10,7 +10,7 @@ in
     vimdiffAlias = true;
     withPython3 = true;
     extraPackages = with pkgs; [
-      rnix-lsp
+      nil
     ];
     extraPython3Packages = (ps: with ps; [
       black
@@ -22,8 +22,9 @@ in
       settings = {
         "languageserver" = {
           "nix" = {
-            "command" = "rnix-lsp";
+            "command" = "nil";
             "filetypes" = [ "nix" ];
+            "rootPatterns" = [ "flake.nix" ];
           };
         };
         "pyright" = {
