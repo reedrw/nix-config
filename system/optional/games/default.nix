@@ -36,14 +36,14 @@ let
   mve = lib.optionalString config.services.mullvad-vpn.enable "mullvad-exclude";
 
   anime-game-launcher = with pkgs; let
-    wrapper = aliasToPackage { anime-game-launcher = "${mve} ${aagl}/bin/anime-game-launcher"; };
+    wrapper = aliasToPackage { anime-game-launcher = ''${mve} ${aagl}/bin/anime-game-launcher "$@"''; };
   in symlinkJoin {
     inherit (aagl-unwrapped) pname version name;
     paths = with aagl.passthru; [ wrapper icon desktopEntry ];
   };
 
   honkers-railway-launcher = with pkgs; let
-    wrapper = aliasToPackage { honkers-railway-launcher = "${mve} ${hrl}/bin/honkers-railway-launcher"; };
+    wrapper = aliasToPackage { honkers-railway-launcher = ''${mve} ${hrl}/bin/honkers-railway-launcher "$@"''; };
   in symlinkJoin {
     inherit (hrl-unwrapped) pname version name;
     paths = with hrl.passthru; [ wrapper icon desktopEntry ];
