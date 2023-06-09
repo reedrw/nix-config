@@ -7,25 +7,25 @@ let
   aagl-unwrapped = aaglPkgs.anime-game-launcher.unwrapped;
   hrl-unwrapped = aaglPkgs.honkers-railway-launcher.unwrapped;
 
-  # aagl = with aaglPkgs.anime-game-launcher; override {
-  #   unwrapped = unwrapped.overrideAttrs (old: rec {
-  #     src = inputs.an-anime-game-launcher;
-  #     version = pkgs.shortenRev inputs.an-anime-game-launcher.rev;
-  #     cargoDeps = pkgs.rustPlatform.importCargoLock {
-  #       lockFile = "${src}/Cargo.lock";
-  #       outputHashes = {
-  #         "anime-game-core-1.10.1" = "sha256-144mNiHSHypmQU02BXMyKnUA3h+0KPAWTCyfZmvwE0A=";
-  #         "anime-launcher-sdk-1.4.2" = "sha256-Zk0M/Ll8iyU/SVa134pSzLDjGxPD0UyeQMhSzEveHZY=";
-  #       };
-  #     };
-  #   });
-  # };
-
-  aagl = aaglPkgs.anime-game-launcher.override {
-    unwrapped = aagl-unwrapped.override {
-      customIcon = builtins.fetchurl components.aagl.icon;
-    };
+  aagl = with aaglPkgs.anime-game-launcher; override {
+    unwrapped = unwrapped.overrideAttrs (old: rec {
+      src = inputs.an-anime-game-launcher;
+      version = inputs.an-anime-game-launcher.shortRev;
+      cargoDeps = pkgs.rustPlatform.importCargoLock {
+        lockFile = "${src}/Cargo.lock";
+        outputHashes = {
+          "anime-game-core-1.11.6" = "sha256-lUyJW1k3FzlF63zFwGfK8BvGNdgKCHYWzudOaZ8VhCA=";
+          "anime-launcher-sdk-1.6.4" = "sha256-jBCd+QQRW2PLys+LmGLW3ONb6O6wfpUsO0yLAgTdSUc=";
+        };
+      };
+    });
   };
+
+  # aagl = aaglPkgs.anime-game-launcher.override {
+  #   unwrapped = aagl-unwrapped.override {
+  #     customIcon = builtins.fetchurl components.aagl.icon;
+  #   };
+  # };
 
   hrl = aaglPkgs.honkers-railway-launcher.override {
     unwrapped = hrl-unwrapped.override {

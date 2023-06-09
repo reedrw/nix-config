@@ -52,6 +52,23 @@
         "type": "github"
       }
     },
+    "an-anime-game-launcher": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1686250516,
+        "narHash": "sha256-p9dS6nfSdWONSMGO08IiEYiyJsfvHnNoZ6OBTgRxlQo=",
+        "owner": "an-anime-team",
+        "repo": "an-anime-game-launcher",
+        "rev": "18b00516e87da19e245146b04c22fa5e8826924d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "an-anime-team",
+        "ref": "next",
+        "repo": "an-anime-game-launcher",
+        "type": "github"
+      }
+    },
     "base16-schemes": {
       "flake": false,
       "locked": {
@@ -303,6 +320,7 @@
         "NUR": "NUR",
         "aagl": "aagl",
         "alacritty": "alacritty",
+        "an-anime-game-launcher": "an-anime-game-launcher",
         "distro-grub-themes": "distro-grub-themes",
         "home-manager": "home-manager",
         "impermanence": "impermanence",

@@ -5,7 +5,7 @@ let
   ncmpcpp = pkgs.ncmpcpp.overrideAttrs (
     old: {
       src = inputs.ncmpcpp;
-      version = pkgs.shortenRev inputs.ncmpcpp.rev;
+      version = inputs.ncmpcpp.shortRev;
 
       nativeBuildInputs = with pkgs; [
         autoconf
