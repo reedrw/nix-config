@@ -45,6 +45,8 @@ let
   '';
 
 in {
-	boot.initrd.supportedFilesystems = [ "btrfs" ];
-	boot.initrd.postDeviceCommands = pkgs.lib.mkBefore wipeScript;
+  boot.initrd = {
+    supportedFilesystems = [ "btrfs" ];
+    postDeviceCommands = pkgs.lib.mkBefore wipeScript;
+  };
 }
