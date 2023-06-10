@@ -8,17 +8,19 @@ let
   hrl-unwrapped = aaglPkgs.honkers-railway-launcher.unwrapped;
 
   aagl = with aaglPkgs.anime-game-launcher; override {
-    unwrapped = unwrapped.overrideAttrs (old: rec {
+    unwrapped = (unwrapped.overrideAttrs (old: rec {
       src = inputs.an-anime-game-launcher;
       version = inputs.an-anime-game-launcher.shortRev;
       cargoDeps = pkgs.rustPlatform.importCargoLock {
         lockFile = "${src}/Cargo.lock";
         outputHashes = {
-          "anime-game-core-1.11.6" = "sha256-lUyJW1k3FzlF63zFwGfK8BvGNdgKCHYWzudOaZ8VhCA=";
-          "anime-launcher-sdk-1.6.4" = "sha256-jBCd+QQRW2PLys+LmGLW3ONb6O6wfpUsO0yLAgTdSUc=";
+          "anime-game-core-1.11.7" = "sha256-yZvP9TpwdkiBrJ2TbfHcK4DaOug4CQBx+0vllwwRihg=";
+          "anime-launcher-sdk-1.6.5" = "sha256-kOKj56wAi1+uyJDQt2WirzS84grGiArDDikys660hLk=";
         };
       };
-    });
+    })).override {
+      customIcon = builtins.fetchurl components.aagl.icon;
+    };
   };
 
   # aagl = aaglPkgs.anime-game-launcher.override {
