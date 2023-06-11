@@ -14,8 +14,8 @@ let
       cargoDeps = pkgs.rustPlatform.importCargoLock {
         lockFile = "${src}/Cargo.lock";
         outputHashes = {
-          "anime-game-core-1.11.7" = "sha256-yZvP9TpwdkiBrJ2TbfHcK4DaOug4CQBx+0vllwwRihg=";
-          "anime-launcher-sdk-1.6.5" = "sha256-kOKj56wAi1+uyJDQt2WirzS84grGiArDDikys660hLk=";
+          "anime-game-core-1.12.1" = "sha256-a0ySBB4XqrP1JYkaAHS81cRiQBKS+B4P4WSm/cEvnMw=";
+          "anime-launcher-sdk-1.7.2" = "sha256-b7yJa9i8lfBWt7KxqGhIgMxPN6nA1KDKmlfnEXZkEcI=";
         };
       };
     })).override {
