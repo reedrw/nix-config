@@ -29,11 +29,27 @@ let
   #   };
   # };
 
-  hrl = aaglPkgs.honkers-railway-launcher.override {
-    unwrapped = hrl-unwrapped.override {
+  hrl = with aaglPkgs.honkers-railway-launcher; override {
+    unwrapped = (unwrapped.overrideAttrs (old: rec {
+      src = inputs.the-honkers-railway-launcher;
+      version = inputs.the-honkers-railway-launcher.shortRev;
+      cargoDeps = pkgs.rustPlatform.importCargoLock {
+        lockFile = "${src}/Cargo.lock";
+        outputHashes = {
+          "anime-game-core-1.12.0" = "sha256-Tx4weGNroSr62QeAhXDCS7LWtKOrVopQ48hdyeHJQI0=";
+          "anime-launcher-sdk-1.7.0" = "sha256-YxM2V6qGjgJ5ZCin0rF//eBhKjAgGqQUmbhBarlmt+Y=";
+        };
+      };
+    })).override {
       customIcon = builtins.fetchurl components.hrl.icon;
     };
   };
+
+  # hrl = aaglPkgs.honkers-railway-launcher.override {
+  #   unwrapped = hrl-unwrapped.override {
+  #     customIcon = builtins.fetchurl components.hrl.icon;
+  #   };
+  # };
 
   mve = lib.optionalString config.services.mullvad-vpn.enable "mullvad-exclude";
 
@@ -79,7 +95,7 @@ in
     r2mod_cli
     nurPkgs.genshin-account-switcher
     anime-game-launcher
-    # honkers-railway-launcher
+    honkers-railway-launcher
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
       gas = ''genshin-account-switcher "$@"'';

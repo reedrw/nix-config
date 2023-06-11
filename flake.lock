@@ -333,7 +333,8 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "ranger-archives": "ranger-archives",
-        "stable": "stable"
+        "stable": "stable",
+        "the-honkers-railway-launcher": "the-honkers-railway-launcher"
       }
     },
     "stable": {
@@ -349,6 +350,23 @@
         "owner": "nixos",
         "ref": "nixos-23.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "the-honkers-railway-launcher": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1686427824,
+        "narHash": "sha256-JSZH0NNVHSXIVYWeXzj5QLPQG1E1OzCeJlEHLkHHGUY=",
+        "owner": "an-anime-team",
+        "repo": "the-honkers-railway-launcher",
+        "rev": "21772ff73590408687dd9975c145c9bee4f5abb6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "an-anime-team",
+        "ref": "next",
+        "repo": "the-honkers-railway-launcher",
         "type": "github"
       }
     }

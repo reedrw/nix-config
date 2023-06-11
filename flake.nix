@@ -57,6 +57,11 @@
       flake = false;
     };
 
+    the-honkers-railway-launcher = {
+      url = "github:an-anime-team/the-honkers-railway-launcher/next";
+      flake = false;
+    };
+
     alacritty = {
       url = "github:alacritty/alacritty";
       flake = false;
