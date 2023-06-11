@@ -22,6 +22,7 @@ let
 
   run = [
     "i3-msg workspace 1"
+    "sh -c '[ -d \"$HOME/.nix-profile\" ] || /nix/var/nix/profiles/per-user/$USER/home-manager/activate'"
   ];
 
   scripts = import ./scripts { inherit pkgs; };
