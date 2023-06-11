@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 let
   wipeScript = ''
     mkdir -p /mnt

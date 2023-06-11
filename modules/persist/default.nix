@@ -17,8 +17,6 @@
       ".cache/ranger"
 
       ".config/BetterDiscord"
-      ".config/Bitwarden CLI"
-      ".config/Bitwarden"
       ".config/Mullvad VPN"
       ".config/cachix"
       ".config/coc"
@@ -43,7 +41,11 @@
       ".mozilla/firefox"
 
       ".ssh"
-    ];
+    ] ++ (map (directory: { inherit directory; method = "symlink"; }) [
+      # Directories to symlink rather than bind mount
+      ".config/Bitwarden CLI"
+      ".config/Bitwarden"
+    ]);
     files = [
       ".cache/rofi-2.sshcache"
       ".cache/rofi-3.runcache"
