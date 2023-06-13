@@ -158,8 +158,8 @@ in
       bindkey '^[[1~' beginning-of-line
       bindkey '^[[4~' end-of-line
 
-      if [[ -f "/persist/$USER/.zsh_history" ]]; then
-        HISTFILE="/persist/$USER/.zsh_history"
+      if [[ -f "/persist/home/$USER/.zsh_history" ]]; then
+        HISTFILE="/persist/home/$USER/.zsh_history"
       else
         HISTFILE="$HOME/.zsh_history"
       fi
