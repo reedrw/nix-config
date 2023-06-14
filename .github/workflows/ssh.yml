@@ -39,8 +39,8 @@ jobs:
 
     - name: Get nixpkgs commit
       run: |
-        commit="$(jq -r '.nixpkgs.url' ./nix/sources.json)"
-        echo "nixpkgs-commit=$commit" >> $GITHUB_ENV
+        rev="$(jq -r '.nodes.nixpkgs.locked.rev' ./flake.lock)"
+        echo "nixpkgs-commit=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz" >> $GITHUB_ENV
 
     - name: Install Nix
       uses: cachix/install-nix-action@v21
@@ -95,8 +95,8 @@ jobs:
 
     - name: Get nixpkgs commit
       run: |
-        commit="$(jq -r '.nixpkgs.url' ./nix/sources.json)"
-        echo "nixpkgs-commit=$commit" >> $GITHUB_ENV
+        rev="$(jq -r '.nodes.nixpkgs.locked.rev' ./flake.lock)"
+        echo "nixpkgs-commit=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz" >> $GITHUB_ENV
 
     - name: Install Nix
       uses: cachix/install-nix-action@v21
