@@ -79,10 +79,16 @@
 
     overlay = import ./pkgs;
 
-    pkgs = import nixpkgs {
-      inherit system config;
-      overlays = [ overlay ];
+    nixpkgs-options = {
+      nixpkgs = {
+        overlays = [ overlay ];
+        inherit config;
+      };
     };
+
+    pkgs = import nixpkgs (nixpkgs-options.nixpkgs // {
+      inherit system;
+    });
   in
   {
     devShells."${system}".default = import ./shell.nix {
@@ -95,10 +101,7 @@
         extraSpecialArgs = { inherit inputs outputs; };
         modules = [
           ./home.nix
-          { nixpkgs = {
-            overlays = [ overlay ];
-            inherit config;
-          }; }
+          nixpkgs-options
           (args: {
             xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
             home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
@@ -116,10 +119,7 @@
           ./system/nixos-desktop/configuration.nix
           home-manager.nixosModules.home-manager
           impermanence.nixosModule
-          { nixpkgs = {
-            overlays = [ overlay ];
-            inherit config;
-          }; }
+          nixpkgs-options
           {
             environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
             nix.registry.nixpkgs.flake = nixpkgs;

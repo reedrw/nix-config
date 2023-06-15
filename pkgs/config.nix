@@ -1,6 +1,6 @@
-{ NUR ? import ../nixpkgs.nix "NUR"
-, master ? import ../nixpkgs.nix "master"
-, stable ? import ../nixpkgs.nix "stable"
+{ NUR ? import ./nixpkgs.nix "NUR"
+, master ? import ./nixpkgs.nix "master"
+, stable ? import ./nixpkgs.nix "stable"
 }:
 
 {
