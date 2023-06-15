@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1686789787,
-        "narHash": "sha256-9gDvJgElf35kpb6DIhvNYko5MfTq7fd2YVL52UJWc80=",
+        "lastModified": 1686839001,
+        "narHash": "sha256-RYyTnz4gjmoh5dcAT577rKh6Tm7esOtvr9f4xkt/zXg=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "b3663f52b977b6eaf78996507e49b6a0945d3d0e",
+        "rev": "8034469dea30dfe972d3c258958c019f62e63e4b",
         "type": "github"
       },
       "original": {
@@ -39,11 +39,11 @@
     "alacritty": {
       "flake": false,
       "locked": {
-        "lastModified": 1686787418,
-        "narHash": "sha256-lStCDtFV5wtF8fsaRliV4BWwfJB8q2dR9Wmmy8eZxVM=",
+        "lastModified": 1686819552,
+        "narHash": "sha256-kgcM8K+IYewbD+bNZGVDxepwqj9cKapIzThGbPkmsBU=",
         "owner": "alacritty",
         "repo": "alacritty",
-        "rev": "be03effdbe5b5bdabfed50d87963e78017329182",
+        "rev": "afffdbe612cb8b573016184400e0deeb0137ccb9",
         "type": "github"
       },
       "original": {
@@ -125,11 +125,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1686778999,
-        "narHash": "sha256-3qBtOJdznerw33LgwJTSUL6u8/j1Ot83fcc0f6oHKmk=",
+        "lastModified": 1686852570,
+        "narHash": "sha256-Hzufya/HxjSliCwpuLJCGY0WCQajzcpsnhFGa+TCkCM=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "e0034971f9def16bbc32124147787bc0f09f0e59",
+        "rev": "4e09c83255c5b23d58714d56672d3946faf1bcef",
         "type": "github"
       },
       "original": {
@@ -155,11 +155,11 @@
     },
     "master": {
       "locked": {
-        "lastModified": 1686791427,
-        "narHash": "sha256-oodrL6xKzp1HvXsVyDSA0MVTXI/KD/0sohr/okmioW0=",
+        "lastModified": 1686851400,
+        "narHash": "sha256-1g+323o3ZH9/nuAoCFm60CtB6QFCEHmroBLAlncCews=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "3cda91a80ce779172d03a8c0c7f5127f75552c5e",
+        "rev": "147635ed43d836f93f64dcb1b51a5fb2362a697a",
         "type": "github"
       },
       "original": {
@@ -254,11 +254,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1686452266,
-        "narHash": "sha256-zLKiX0iu6jZFeZDpR1gE6fNyMr8eiM8GLnj9SoUCjFs=",
+        "lastModified": 1686838567,
+        "narHash": "sha256-aqKCUD126dRlVSKV6vWuDCitfjFrZlkwNuvj5LtjRRU=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "2a807ad6e8dc458db08588b78cc3c0f0ec4ff321",
+        "rev": "429f232fe1dc398c5afea19a51aad6931ee0fb89",
         "type": "github"
       },
       "original": {
@@ -356,11 +356,11 @@
     "the-honkers-railway-launcher": {
       "flake": false,
       "locked": {
-        "lastModified": 1686698685,
-        "narHash": "sha256-Jhv5GjL8V1pz1RDo4H++Xm1wYkuTAwuBuYMs5cNQxa0=",
+        "lastModified": 1686851812,
+        "narHash": "sha256-AruJRCdUFoXEggIMefb0cw/uR3cqcc9bhf3POxgoCyI=",
         "owner": "an-anime-team",
         "repo": "the-honkers-railway-launcher",
-        "rev": "a45a4ff5d187ecf847a967f057a9d4e912312c8f",
+        "rev": "3880e2f5032880710c6f08d4d9fa6f82d3852b31",
         "type": "github"
       },
       "original": {
