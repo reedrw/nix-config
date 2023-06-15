@@ -168,7 +168,6 @@
   programs = {
     droidcam.enable = true;
     nix-ld.enable = true;
-    steam.enable = true;
   };
 
   system.stateVersion = "22.11";
