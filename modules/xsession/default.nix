@@ -22,6 +22,7 @@ let
 
   run = [
     "i3-msg workspace 1"
+    "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 144"
   ];
 
   scripts = import ./scripts { inherit pkgs; };

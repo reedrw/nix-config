@@ -13,7 +13,7 @@
     ../optional/btrfs-optin-persistence.nix
     ./hardware-configuration.nix
     ./persist.nix
-    "${inputs.nixos-hardware}/common/cpu/intel"
+    "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
   ] ++ builtins.map (x: ../common + "/${x}") (builtins.attrNames (builtins.readDir ../common));
 
@@ -56,7 +56,7 @@
 
   # Remote decrypt via phone shortcut
   boot.initrd = {
-    availableKernelModules = [ "alx" ];
+    availableKernelModules = [ "alx" "r8169" ];
     network = {
       enable = lib.mkDefault true;
       ssh = {
@@ -104,7 +104,7 @@
   services.xserver = {
     videoDrivers = [ "amdgpu" ];
     monitorSection = ''
-      ModeLine "1920x1080_144.00"  325.08  1920 1944 1976 2056  1080 1083 1088 1098 +hsync +vsync
+      Modeline "1920x1080_144.00"  452.50  1920 2088 2296 2672  1080 1083 1088 1177 -hsync +vsync
       Option "PreferredMode" "1920x1080_144.00"
     '';
   };
@@ -168,6 +168,7 @@
   programs = {
     droidcam.enable = true;
     nix-ld.enable = true;
+    corectrl.enable = true;
   };
 
   system.stateVersion = "22.11";
