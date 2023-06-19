@@ -19,12 +19,16 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "ip=dhcp" "intel_pstate=active" ];
+    kernelParams = [ "ip=dhcp" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
     kernel.sysctl = {
       "net.ipv4.ip_forward" = 1;
       "net.ipv6.conf.all.forwarding" = 1;
     };
+    extraModprobeConfig = ''
+      options nct6683 force=1
+      options kvm_amd avic=1
+    '';
   };
 
   services.snapper = {
@@ -35,8 +39,8 @@
       TIMELINE_CLEANUP = true;
       TIMELINE_LIMIT_HOURLY = 10;
       TIMELINE_LIMIT_DAILY = 10;
-      TIMELINE_LIMIT_WEEKLY = 0;
-      TIMELINE_LIMIT_MONTHLY = 0;
+      TIMELINE_LIMIT_WEEKLY = 100;
+      TIMELINE_LIMIT_MONTHLY = 36;
       TIMELINE_LIMIT_YEARLY = 0;
     };
   };
