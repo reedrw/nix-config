@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 with inputs.nix-colors;
 {
@@ -16,12 +16,28 @@ with inputs.nix-colors;
 
     sessionVariables = {
       QT_QPA_PLATFORMTHEME = "qt5ct";
+      XCURSOR_THEME = config.gtk.cursorTheme.name;
+    };
+  };
+
+  home.pointerCursor = {
+    # name = "Adwaita";
+    # package = pkgs.gnome.adwaita-icon-theme;
+    name = "Vanilla-DMZ-AA";
+    package = pkgs.vanilla-dmz;
+    size = 24;
+    # name = "Quintom_Ink";
+    # package = pkgs.quintom-cursor-theme;
+    gtk.enable = true;
+    x11 = {
+      enable = true;
+      defaultCursor = "Vanilla-DMZ-AA";
     };
   };
 
   xdg.configFile = {
     "Trolltech.conf".source = ./Trolltech.conf;
-    "gtk-3.0/settings.ini".source = ./settings.ini;
+    #"gtk-3.0/settings.ini".source = ./settings.ini;
     "qt5ct/qt5ct.conf".text = ''
       [Appearance]
       color_scheme_path=${pkgs.qt5ct}/share/qt5ct/colors/airy.conf
@@ -56,6 +72,13 @@ with inputs.nix-colors;
 
   gtk = {
     enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    cursorTheme = {
+      inherit (config.home.pointerCursor) name package size;
+    };
     gtk2.extraConfig = ''
       gtk-application-prefer-dark-theme = true;
     '';
