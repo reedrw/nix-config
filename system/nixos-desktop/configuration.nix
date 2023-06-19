@@ -20,16 +20,23 @@
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "ip=dhcp" ];
+    kernelModules = [
+      # Nuvoton nct6687 needs this driver
+      "nct6683"
+    ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
     kernel.sysctl = {
       "net.ipv4.ip_forward" = 1;
       "net.ipv6.conf.all.forwarding" = 1;
+      "usbcore.old_scheme_first" = 1;
     };
     extraModprobeConfig = ''
       options nct6683 force=1
       options kvm_amd avic=1
     '';
   };
+
+  hardware.firmware = with pkgs; [ linux-firmware ];
 
   services.snapper = {
     configs.persist = {
@@ -110,6 +117,9 @@
     monitorSection = ''
       Modeline "1920x1080_144.00"  452.50  1920 2088 2296 2672  1080 1083 1088 1177 -hsync +vsync
       Option "PreferredMode" "1920x1080_144.00"
+    '';
+    deviceSection = ''
+      Option "SWCursor" "True"
     '';
   };
 
