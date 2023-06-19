@@ -185,7 +185,7 @@ in
 
         export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
         export IN_AUTO_SHELL="yes"
-        __nix shell "nixpkgs#$attr" -c sh -c "$argv0 $*; exec zsh"
+        __nix shell "nixpkgs#$attr" -c sh -c "$argv0 $*; >&2 exec zsh"
       }
 
       bw-rofi-login(){
