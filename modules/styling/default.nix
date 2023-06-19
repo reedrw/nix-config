@@ -72,6 +72,7 @@ with inputs.nix-colors;
 
   gtk = {
     enable = true;
+    theme.name = "Adwaita-dark";
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -80,7 +81,7 @@ with inputs.nix-colors;
       inherit (config.home.pointerCursor) name package size;
     };
     gtk2.extraConfig = ''
-      gtk-application-prefer-dark-theme = true;
+      gtk-application-prefer-dark-theme = true
     '';
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
