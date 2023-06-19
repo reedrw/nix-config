@@ -165,6 +165,8 @@
 
   services.gnome.gnome-keyring.enable = true;
 
+  nix.settings.cores = 8;
+
   programs = {
     droidcam.enable = true;
     nix-ld.enable = true;
