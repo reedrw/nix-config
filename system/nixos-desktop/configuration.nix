@@ -38,6 +38,11 @@
 
   hardware.firmware = with pkgs; [ linux-firmware ];
 
+  services.btrfs.autoScrub = {
+    enable = true;
+    interval = "weekly";
+  };
+
   services.snapper = {
     configs.persist = {
       SUBVOLUME = "/persist";
