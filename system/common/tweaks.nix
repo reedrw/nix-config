@@ -29,5 +29,8 @@
     ];
   };
 
-  environment.systemPackages = with pkgs; [ xdg-desktop-portal ];
+  environment.systemPackages = with pkgs; [
+    xdg-desktop-portal
+    btdu
+  ];
 }
