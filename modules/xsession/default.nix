@@ -48,6 +48,7 @@ in
         keybindings = with pkgs; lib.mkOptionDefault (
           {
             "Print" = "${exec} flameshot gui";
+            "${mod}+Escape" = "${exec} ${binPath scripts.pause-suspend}";
             "${mod}+Return" = "${exec} ${term}";
             "${sup}+Return" = "${exec} ${scripts.selecterm}/bin/select-term.sh";
             "${mod}+d" = "focus child";

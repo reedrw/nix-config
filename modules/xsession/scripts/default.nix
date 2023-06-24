@@ -73,4 +73,12 @@
     ];
     text = (builtins.readFile ./mpv-dnd.sh);
   };
+
+  pause-suspend = pkgs.writeShellApplication {
+    name = "pause-suspend";
+    runtimeInputs = with pkgs; [
+      xdotool
+    ];
+    text = (builtins.readFile ./pause-suspend.sh);
+  };
 }
