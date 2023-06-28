@@ -3,6 +3,10 @@
 
 set -e
 
+if [[ "$1" == "-x" ]]; then
+  set -x
+fi
+
 dir="$(dirname "$0")"
 
 api="https://api.github.com"

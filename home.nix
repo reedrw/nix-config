@@ -25,7 +25,7 @@ let
       '';
       hms = "home-manager switch -L";
       ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
-      pai = "~/.config/nixpkgs/pull-and-install.sh";
+      pai = ''~/.config/nixpkgs/pull-and-install.sh "$@"'';
     })
   ];
 
