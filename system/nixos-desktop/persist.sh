@@ -91,7 +91,7 @@ add(){
   mkdir -p "$newLoc"
 
   # Make new snapshot and copy to /persist
-  snapper -c persist create --command "rsync -a $fileArgOrigPath $newLoc" -d "persist $fileArg"
+  snapper -c persist create --command "cp -rp --reflink $fileArgOrigPath $newLoc" -d "persist $fileArg"
 
   # Rename so file isn't in the way of NixOS generation activation.
   if pathExists "$fileArg"; then
@@ -142,7 +142,7 @@ remove(){
   persistDir="/persist$(dirname "$fileArg")"
 
   # Make a new snapshot and remove from /persist
-  snapper -c persist create --command "rm -rf $persistDir/$(basename "$fileArg")" -d "persist remove $fileArg"
+  snapper -c persist create --command "rm -rf $persistDir/$(basename "$fileArg")" -d "remove $fileArg"
 
   # Activate the removal
   if ldp && [[ -d "$fileArg" ]]; then
