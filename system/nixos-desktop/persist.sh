@@ -4,10 +4,14 @@ set -e
 
 runDir="$(dirname "$0")"
 persistJson="$runDir/persist.json"
+configJson="$runDir/config.json"
 tmpJson="$(mktemp)"
 
 ! [[ -f "$persistJson" ]] &&
   echo '{ "files": [], "directories": [] }' | jq > "$persistJson"
+
+! [[ -f "$configJson" ]] &&
+  echo '{ "activateCommand": "", "snapper": { "enable": false, "config": "persist" }}' | jq > "$configJson"
 
 show_help() {
   fileName="$(basename "$0")"
