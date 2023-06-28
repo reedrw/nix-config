@@ -1,4 +1,7 @@
 { ... }:
+let
+  json = (builtins.fromJSON (builtins.readFile ./persist.json));
+in
 {
   programs.fuse.userAllowOther = true;
   environment.persistence."/persist" = {
@@ -49,7 +52,7 @@
       "/home/reed/.local/share/TelegramDesktop"
       "/home/reed/.local/share/anime-game-launcher"
       "/home/reed/.local/share/direnv"
-      "/home/reed/.local/share/honkers-railway-launcher"
+      # "/home/reed/.local/share/honkers-railway-launcher"
       "/home/reed/.local/share/ranger"
 
       "/home/reed/.local/state/wireplumber"
@@ -57,6 +60,6 @@
       "/home/reed/.mozilla/firefox"
 
       "/home/reed/.ssh"
-    ];
+    ] ++ json.directories;
   };
 }
