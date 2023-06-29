@@ -12,4 +12,13 @@ in
     allowOther = true;
     files = [] ++ files;
   };
+
+  home.file.".config/persist-path-manager/config.json".text = builtins.toJSON {
+    activateCommand = "ldp";
+    persistJson = "${config.home.homeDirectory}/.config/nixpkgs/system/nixos-desktop/persist.json";
+    snapper = {
+      enable = true;
+      config = "persist";
+    };
+  };
 }
