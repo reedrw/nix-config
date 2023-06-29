@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # set -x
+# export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -e
 
 configJson="$HOME/.config/persist-path-manager/config.json"
@@ -94,7 +95,7 @@ add(){
 
   fileArgOrigPath="$fileArg"
 
-  if [[ -d "$fileArg" ]] && ! [[ -L "$fileArg" ]]; then
+  if [[ -d "$fileArg" ]]; then
     isDir="yes"
   fi
 
