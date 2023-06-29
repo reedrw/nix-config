@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 
+# set -x
 set -e
 
-runDir="$(dirname "$0")"
-persistJson="$runDir/persist.json"
-configJson="$runDir/config.json"
+configJson="$HOME/.config/persist-path-manager/config.json"
 tmpJson="$(mktemp)"
-
-! [[ -f "$persistJson" ]] &&
-  echo '{ "files": [], "directories": [] }' | jq > "$persistJson"
-
-! [[ -f "$configJson" ]] &&
-  echo '{ "activateCommand": "", "snapper": { "enable": false, "config": "persist" }}' | jq > "$configJson"
 
 show_help() {
   fileName="$(basename "$0")"
@@ -49,6 +42,41 @@ show_help() {
   exit 0
 }
 
+parseConfig(){
+  if ! [[ -f "$configJson" ]]; then
+    mkdir -p "$(dirname "$configJson")"
+    jq > "$tmpJson" << EOF
+      {
+        "activateCommand": "",
+        "persistJson": "$(dirname "$configJson")/persist.json",
+        "snapper": {
+          "enable": false,
+          "config": "persist"
+        }
+      }
+EOF
+  cat "$tmpJson" > "$configJson"
+  rm "$tmpJson"
+  fi
+  activateCommand="$(jq -r '.activateCommand' "$configJson")"
+  persistJson="$(jq -r '.persistJson' "$configJson")"
+  useSnapper="$(jq -r '.snapper.enable' "$configJson")"
+  snapperConfig="$(jq -r '.snapper.config' "$configJson")"
+
+  if [[ -z "$activateCommand" ]]; then
+    echo "Make sure you set activateCommand in $configJson"
+    echo
+    echo "Ex:"
+    jq -r ".activateCommand |= \"sh -c 'sudo nixos-rebuild switch && home-manager switch'\"" "$configJson"
+    exit 7
+  fi
+}
+
+parseConfig
+
+! [[ -f "$persistJson" ]] &&
+  echo '{ "files": [], "directories": [] }' | jq > "$persistJson"
+
 pathExists(){
   if [[ -f "$1" ]] || [[ -d "$1" ]] || [[ -L "$1" ]]; then
     return 0
@@ -66,7 +94,7 @@ add(){
 
   fileArgOrigPath="$fileArg"
 
-  if [[ -d "$fileArg" ]]; then
+  if [[ -d "$fileArg" ]] && ! [[ -L "$fileArg" ]]; then
     isDir="yes"
   fi
 
@@ -76,6 +104,8 @@ add(){
   elif [[ "$fileArg" == /persist/.snapshots/* ]]; then
     newLoc="$(dirname "/persist${fileArg#/persist/.snapshots/*/snapshot}")"
     fileArg="${fileArg#/persist/.snapshots/*/snapshot}"
+  elif [[ "$fileArg" == /persist/* ]]; then
+    fileArg="${fileArg#/persist}"
   else
     newLoc="/persist$(dirname "$fileArg")"
   fi
@@ -91,22 +121,30 @@ add(){
       jq -r '.files |= if . then sort else empty end' | jq '.files |= unique' > "$tmpJson"
   fi
   cat "$tmpJson" > "$persistJson"
+  rm "$tmpJson"
 
-  mkdir -p "$newLoc"
+  if [[ -n "$newLoc" ]]; then
+    mkdir -p "$newLoc"
 
-  # Make new snapshot and copy to /persist
-  snapper -c persist create --command "cp -rp --reflink $fileArgOrigPath $newLoc" -d "persist $fileArg"
+    # Make new snapshot and copy to /persist
+    if [[ "$useSnapper" == "true" ]]; then
+      snapper -c "$snapperConfig" create --command "cp -rp --reflink $fileArgOrigPath $newLoc" -d "persist $fileArg"
+    else
+      cp -rp --reflink "$fileArgOrigPath" "$newLoc"
+    fi
 
-  # Rename so file isn't in the way of NixOS generation activation.
-  if pathExists "$fileArg"; then
-    moveBack="yes"
-    mv "$fileArg" "$fileArg.bak"
+    # Rename so file isn't in the way of NixOS generation activation.
+    if pathExists "$fileArg"; then
+      moveBack="yes"
+      mv "$fileArg" "$fileArg.bak"
+    fi
   fi
 
   # Activate. If activation fails, and the file location is
   # not a mount (for directories) or symlink (for files).
-  # ldp is my alias for sh -c 'nixos-rebuild switch; home-manager switch'
-  if ldp ||  ( mountpoint "$fileArg" || pathExists "$fileArg" ); then
+  # activateCommand is the command run to activate the NixOS generations.
+  # Eg. sh -c 'nixos-rebuild switch; home-manager switch'
+  if eval "$activateCommand" ||  ( mountpoint "$fileArg" > /dev/null || pathExists "$fileArg" ); then
     [[ -z "$moveBack" ]] || rm -r "$fileArg.bak"
   else
     [[ -z "$moveBack" ]] || mv "$fileArg.bak" "$fileArg"
@@ -141,17 +179,28 @@ remove(){
     jq -r ".files |= del(.[index(\"$fileArg\")])" "$persistJson" > "$tmpJson"
   fi
   cat "$tmpJson" > "$persistJson"
+  rm "$tmpJson"
 
   # Find the corresponding directory in /persist
   persistDir="/persist$(dirname "$fileArg")"
 
-  # Make a new snapshot and remove from /persist
-  snapper -c persist create --command "rm -rf $persistDir/$(basename "$fileArg")" -d "remove $fileArg"
-
   # Activate the removal
-  if ldp && [[ -d "$fileArg" ]]; then
+  if eval "$activateCommand" && [[ -d "$fileArg" ]]; then
     rm -rf "$fileArg"
   fi
+
+  # Make a new snapshot and remove from /persist
+  read -rp "Delete $persistDir/$(basename "$fileArg")? [y/N]: " yn
+  case "$yn" in
+    [Yy]*)
+      if [[ "$useSnapper" == "true" ]]; then
+        snapper -c persist create --command "rm -rf ${persistDir:?}/$(basename "${fileArg:?}")" -d "remove $fileArg"
+      else
+        rm -rf "${persistDir:?}/$(basename "${fileArg:?}")"
+      fi
+    ;;
+    *) exit 0;;
+  esac
 }
 
 list(){
