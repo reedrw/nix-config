@@ -91,6 +91,11 @@ EOF
   ! [[ -f "$persistJson" ]] &&
     echo '{ "files": [], "directories": [] }' | jq > "$persistJson"
 
+  if ! [[ -d "$persistDir" ]]; then
+    echo "The specified perist directory ($persistDir) is not a directory or does not exist."
+    exit 204
+  fi
+
   if [[ -z "$activateCommand" ]]; then
     echo "Make sure you set activateCommand in $configJson"
     echo
@@ -101,9 +106,10 @@ EOF
 }
 
 # handleErrors(){
-#   case "$1" in
-#     52) remove;;
-#   esac
+#   # Clean tmp files in case of error
+#   rm -f "$tmpJson"
+#
+#   # restore original perist.json if it was modified
 # }
 
 list(){
@@ -233,8 +239,12 @@ remove(){
   local tmpJson
   tmpJson="$(mktemp)"
 
+  # Parse the provided file arguments and determine if they are directories or files
   parseFileArgs "$@"
 
+  # Check if the provided path exists in the persist.json file
+  # by searching for it in the appropriate JSON array (directories or files).
+  # If the path is not found, exit with an error code.
   if [[ -n "$isDir" ]]; then
     exists=$(jq -r ".directories[] | select(. == \"$fileArg\")" "$persistJson")
   else
@@ -248,6 +258,9 @@ remove(){
 
   echo "Removing $fileArg from persistence."
 
+  # Remove the path from the appropriate JSON array (directories or files).
+  # This is done by using the 'jq' command to delete the matching entry from the array.
+  # The resulting JSON data is saved in a temporary file.
   if [[ -d "$fileArg" ]]; then
     jq -r ".directories |= del(.[index(\"$fileArg\")])" "$persistJson" > "$tmpJson"
   else
@@ -256,22 +269,30 @@ remove(){
   cat "$tmpJson" > "$persistJson"
   rm "$tmpJson"
 
+  # Determine the path within the persisted directory ("/persist") where the item was located.
+  # This is used later to prompt the user to delete the corresponding directory or file.
   persistLoc="$persistDir$(dirname "$fileArg")"
 
+  # If the NixOS generations activation command succeeds and the item is a directory,
+  # remove the directory from the original location.
   if eval "$activateCommand" && [[ -d "$fileArg" ]]; then
     rm -rf "$fileArg"
   fi
 
+  # Prompt the user to confirm the deletion of the item from the persisted directory ("/persist").
+  # Depending on the user's choice, the item will be deleted from the persisted directory.
   read -rp "Delete $persistLoc/$(basename "$fileArg")? [y/N]: " yn
   case "$yn" in
     [Yy]*)
+      # If the 'useSnapper' option is set to true, create a new snapshot and then delete the item.
+      # Otherwise, directly delete the item from the persisted directory.
       if [[ "$useSnapper" == "true" ]]; then
         snapper -c persist create --command "rm -rf ${persistLoc:?}/$(basename "${fileArg:?}")" -d "remove $fileArg"
       else
         rm -rf "${persistLoc:?}/$(basename "${fileArg:?}")"
       fi
     ;;
-    *) exit 0;;
+    *) exit 0;; # If the user chooses not to delete, exit the function without performing any deletion.
   esac
 }
 
