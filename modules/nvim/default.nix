@@ -39,6 +39,7 @@ in
       caw-vim
       coc-pyright
       context_filetype-vim
+      copilot-vim
       editorconfig-vim
       {
         plugin = galaxyline-nvim;
