@@ -7,21 +7,32 @@ configJson="$HOME/.config/persist-path-manager/config.json"
 
 main(){
   parseConfig
-  if [[ "$#" == '0' || "$1" == "-h" || "$1" == "--help" ]]; then
+  # If there are no args, show help and exit
+  if [[ "$#" == '0' ]]; then
     show_help
-  elif [[ "$1" == "-l" || "$1" == "--list" ]]; then
-    list
-  elif [[ "$1" == "-v" || "$1" == "--verbose" ]]; then
-    set -x
-    export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-    shift
-    main "$@"
-  elif [[ "$1" == "-r" || "$1" == "--remove" ]]; then
-    shift;
-    remove "$@"
-  else
-    add "$@"
   fi
+
+  case $1 in
+    -h|--help)
+      show_help
+      ;;
+    -l|--list)
+      list
+      ;;
+    -v|--verbose)
+      set -x
+      export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+      shift
+      main "$@"
+      ;;
+    -r|--remove)
+      shift;
+      remove "$@"
+      ;;
+    *)
+      add "$@"
+      ;;
+  esac
 }
 
 show_help() {
@@ -88,14 +99,17 @@ EOF
   useSnapper="$(jq -r '.snapper.enable' "$configJson")"
   snapperConfig="$(jq -r '.snapper.config' "$configJson")"
 
+  # Create persist.json if it doesn't exist
   ! [[ -f "$persistJson" ]] &&
     echo '{ "files": [], "directories": [] }' | jq > "$persistJson"
 
+  # Check if persistDir is a directory
   if ! [[ -d "$persistDir" ]]; then
     echo "The specified perist directory ($persistDir) is not a directory or does not exist."
     exit 204
   fi
 
+  # Check if activateCommand is set
   if [[ -z "$activateCommand" ]]; then
     echo "Make sure you set activateCommand in $configJson"
     echo
@@ -192,7 +206,7 @@ add() {
 
   parseFileArgs "$@"
 
-  echo "Adding path $fileArg to persistence."
+  echo "Adding path $(tput setaf 2)$fileArg$(tput sgr0) to persistence."
 
   # Update the JSON data based on the path type (file or directory)
   if [[ -n "$isDir" ]]; then
@@ -256,7 +270,7 @@ remove(){
     exit 52
   fi
 
-  echo "Removing $fileArg from persistence."
+  echo "Removing $(tput setaf 1)$fileArg$(tput sgr0) from persistence."
 
   # Remove the path from the appropriate JSON array (directories or files).
   # This is done by using the 'jq' command to delete the matching entry from the array.
@@ -274,8 +288,9 @@ remove(){
   persistLoc="$persistDir$(dirname "$fileArg")"
 
   # If the NixOS generations activation command succeeds and the item is a directory,
-  # remove the directory from the original location.
-  if eval "$activateCommand" && [[ -d "$fileArg" ]]; then
+  # remove the directory from the original location. As it was perviously a mountpoint,
+  # and should now be empty. Make sure it's empty before removing it.
+  if eval "$activateCommand" && [[ -d "$fileArg" ]] && [[ -z "$(ls -A "$fileArg")" ]]; then
     rm -rf "$fileArg"
   fi
 
