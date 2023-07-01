@@ -260,7 +260,6 @@ in
       ls = "${binPath exa} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
-      persist = "~/.config/nixpkgs/system/nixos-desktop/persist.sh";
       ping = "${binPath prettyping} --nolegend";
       ranger = "echo 'You already have an alias for this! Use `rr` instead'";
       rm = "rm -v";
