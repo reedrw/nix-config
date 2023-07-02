@@ -95,4 +95,25 @@ rec {
   # Given a nixpkgs source as arugment, import it with the current config.
   importNixpkgs = nixpkgs:
     import nixpkgs { inherit (pkgs) config overlays system; };
+
+  # Given a name and the text of a shell script with nix-shell shebang, return a package that
+  # has the packages specfied in the shebang as dependencies.
+  # Ex.
+  # writeNixShellScript "hello-world" (builtins.readFile ./hello-world)
+  #
+  # Contents of ./hello-world:
+  # #!/usr/bin/env nix-shell
+  # #! nix-shell -i bash -p hello
+  # hello
+  writeNixShellScript = name: text:
+    pkgs.writeShellApplication {
+      inherit name text;
+      runtimeInputs = map (x: pkgs."${x}") # Convert package names to packages
+      # Split package names by spaces
+      (lib.splitString " " (builtins.elemAt
+      # Read text after "-p" from the second line of the script
+      (lib.splitString " -p " (builtins.elemAt
+      # Read the second line of the script
+      (lib.splitString "\n" text) 1)) 1));
+    };
 }

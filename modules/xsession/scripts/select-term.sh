@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p slop
 
 export WINIT_X11_SCALE_FACTOR=1.0
 

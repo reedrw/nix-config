@@ -1,14 +1,6 @@
 { config, pkgs, ... }:
 let
-  calnotify = pkgs.writeShellApplication {
-    name = "calnotify";
-    runtimeInputs = with pkgs; [
-      util-linux
-      gnused
-      libnotify
-    ];
-    text = (builtins.readFile ./calnotify.sh);
-  };
+  calnotify = pkgs.writeNixShellScript "calnotify" (builtins.readFile ./calnotify.sh);
   screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
   # Average battery capacities together cuz my laptop has 2 internal batteries
   bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
@@ -65,6 +57,7 @@ in
       "module/screen" = {
         type = "custom/script";
         exec = "${binPath screenthing}";
+        click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
         label-padding = 4;
         tail = true;
       };

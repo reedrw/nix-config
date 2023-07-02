@@ -39,7 +39,7 @@ let
   # Exclude firefox from mullvad. I use the FoxyProxy extension
   # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
   # (because private trackers block mullvad).
-  pkg = pkgs.symlinkJoin rec {
+  pkg = pkgs.symlinkJoin {
     name = "firefox";
     paths = [ myFirefox ];
     postBuild = ''

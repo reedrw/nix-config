@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p slop ffmpeg-full libnotify
 
 startrec(){
   # shellcheck disable=SC2046

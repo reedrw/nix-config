@@ -1,26 +1,16 @@
 { pkgs, ... }:
 {
-  load-layouts = pkgs.writeShellApplication {
-    name = "load-layouts.sh";
-    runtimeInputs = [ pkgs.wmctrl ];
-    text = (builtins.readFile ./load-layouts.sh);
-  };
+  load-layouts = pkgs.writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
 
-  selecterm = pkgs.writeShellApplication {
-    name = "select-term.sh";
-    runtimeInputs = [ pkgs.slop ];
-    text = (builtins.readFile ./select-term.sh);
-  };
+  mpv-dnd = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
 
-  record = pkgs.writeShellApplication {
-    name = "record.sh";
-    runtimeInputs = with pkgs; [
-      slop
-      ffmpeg-full
-      libnotify
-    ];
-    text = (builtins.readFile ./record.sh);
-  };
+  pause-suspend = pkgs.writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
+
+  record = pkgs.writeNixShellScript "record.sh" (builtins.readFile ./record.sh);
+
+  selecterm = pkgs.writeNixShellScript "select-term.sh" (builtins.readFile ./select-term.sh);
+
+  volume = pkgs.writeNixShellScript "volume" (builtins.readFile ./volume.sh);
 
   clipboard-clean = let
     sources = import ./clipboard-clean-patches/nix/sources.nix { };
@@ -54,31 +44,4 @@
       ./bwmenu-patches/fix-quotes.patch
     ];
   });
-
-  volume = pkgs.writeShellApplication {
-    name = "volume";
-    runtimeInputs = with pkgs; [
-      glib
-      pulseaudio
-    ];
-    text = (builtins.readFile ./volume.sh);
-  };
-
-  mpv-dnd = pkgs.writeShellApplication {
-    name = "mpv-dnd";
-    runtimeInputs = with pkgs; [
-      procps
-      coreutils
-      xdotool
-    ];
-    text = (builtins.readFile ./mpv-dnd.sh);
-  };
-
-  pause-suspend = pkgs.writeShellApplication {
-    name = "pause-suspend";
-    runtimeInputs = with pkgs; [
-      xdotool
-    ];
-    text = (builtins.readFile ./pause-suspend.sh);
-  };
 }

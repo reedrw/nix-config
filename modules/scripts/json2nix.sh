@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p alejandra
 
 if [[ -n "$1" ]]; then
   json="$(readlink -f "$1")"

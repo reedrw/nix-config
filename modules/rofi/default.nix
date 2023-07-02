@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 let
-  roficomma = pkgs.writeShellApplication {
-    name = "roficomma";
-    runtimeInputs = with pkgs; [ nix-index ];
-    text = builtins.readFile ./roficomma.sh;
-  };
+  roficomma = pkgs.writeNixShellScript "roficomma" (builtins.readFile ./roficomma.sh);
 in
 {
   imports = [

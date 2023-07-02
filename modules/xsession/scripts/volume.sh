@@ -1,4 +1,14 @@
-#! /usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p glib pulseaudio
+
+# This script is used to control the volume of the output currently selected in easyeffects.
+# It uses the wpctl command from wireplumber to control the volume and
+# uses gsettings to get the output device from easyeffects.
+#
+# Usage:
+#  volume.sh up <amount>   - Increase volume by <amount> (default 5)
+#  volume.sh down <amount> - Decrease volume by <amount> (default 5)
+#  volume.sh mute          - Toggle mute
 
 set -x
 
@@ -29,11 +39,14 @@ runCommand(){
   fi
 }
 
+# Get the output device from easyeffects
 outputdev="$(gsettings \
   --schemadir ~/.nix-profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
   get com.github.wwmm.easyeffects.streamoutputs output-device | cut -f2 -d\')"
 
 main(){
+  # If cache files exist and the output device hasn't changed, use the cached values
+  # Otherwise, get the info and cache it
   if   [[ -f "$cachefile" && -f "$idCacheFile" && -f "$descCacheFile" ]] \
     && [[ "$(< "$cachefile")" == "$outputdev" ]]; then
     outputid="$(< "$idCacheFile")"

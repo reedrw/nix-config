@@ -1,4 +1,5 @@
-#! /usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p xdotool coreutils procps
 
 # Suspends programs while mpv player is active because I dont like notifications while I'm watching stuff
 set -x
@@ -31,7 +32,7 @@ while true; do
   if [[ "$(getActiveWindow)" == "mpv" ]]; then
     stopPrograms
     while [[ "$(getActiveWindow)" == "mpv" ]]; do
-      sleep 5
+      sleep 2
     done
     contPrograms
   else
