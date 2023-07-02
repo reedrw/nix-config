@@ -32,7 +32,7 @@ let
     btrfs subvolume delete "/mnt/$subvolume"
     done &&
     echo "snapshotting /root to /prev/$num" &&
-    btrfs subvolume snapshot /mnt/root "/mnt/prev/$num" &&
+    btrfs subvolume snapshot -r /mnt/root "/mnt/prev/$num" &&
     echo "deleting /root subvolume..." &&
     btrfs subvolume delete /mnt/root
 
