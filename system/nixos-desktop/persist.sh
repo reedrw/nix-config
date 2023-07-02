@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p bat coreutils exa fzf jq
 
 set -e
 # trap 'handleErrors "$?"' ERR
@@ -55,6 +56,7 @@ ${green}${bold}Options:${reset}
 ${green}${bold}Examples:${reset}
   ${bold}$fileName /path/to/directory${reset}       Add a directory to persistence
   ${bold}$fileName -r /path/to/file.txt${reset}     Remove a file from persistence
+  ${bold}$fileName -r${reset}                       Select a path to remove from persistence
 
 ${green}${bold}Description:${reset}
   This script for NixOS systems with ephemeral root allows you to manage
@@ -121,9 +123,10 @@ EOF
 
 # handleErrors(){
 #   # Clean tmp files in case of error
-#   rm -f "$tmpJson"
+#   rm -f "$tmpJson" || true
 #
 #   # restore original perist.json if it was modified
+#   echo "$oldJson" > "$persistJson"
 # }
 
 list(){
@@ -201,6 +204,7 @@ pathExists(){
 }
 
 add() {
+  # TODO: Add support for adding multiple paths at once
   local tmpJson
   tmpJson="$(mktemp)"
 
@@ -220,6 +224,7 @@ add() {
   fi
 
   # Update the main 'persist.json' file with the updated JSON data
+  oldJson="$(cat "$persistJson")"
   cat "$tmpJson" > "$persistJson"
   rm "$tmpJson"
 
@@ -234,6 +239,7 @@ add() {
       cp -rp --reflink "$fileArgOrigPath" "$newLoc"
     fi
 
+    moveBack=""
     if pathExists "$fileArg"; then
       # Rename the original path by appending ".bak" to avoid conflicts
       moveBack="yes"
@@ -246,6 +252,7 @@ add() {
     [[ -z "$moveBack" ]] || rm -r "$fileArg.bak"
   else
     [[ -z "$moveBack" ]] || mv "$fileArg.bak" "$fileArg"
+    echo "$oldJson" > "$persistJson"
   fi
 }
 
@@ -253,8 +260,34 @@ remove(){
   local tmpJson
   tmpJson="$(mktemp)"
 
-  # Parse the provided file arguments and determine if they are directories or files
-  parseFileArgs "$@"
+  # If no options are provided, use fzf to choose path to remove from persistJson
+  if [[ -z "$*" ]]; then
+    # Check if the persistJson file is empty
+    if [[ ! -s "$persistJson" ]]; then
+      echo "No paths are currently persisted."
+      exit 0
+    fi
+
+    # Use fzf to select a path to remove from the persistJson file
+    fileArg="$(jq -r '.directories[] + "\n" + .files[]' "$persistJson" | sort | uniq | fzf --height=70% --layout=reverse --info=inline --preview "
+      if [[ -f {} ]]; then
+        bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never {};
+      else
+        exa -lah -s type {};
+      fi
+    " --color=16 --prompt="Select a path to remove from persistence: ")"
+
+    # Check if the user cancelled the fzf selection
+    if [[ -z "$fileArg" ]]; then
+      echo "No path was selected."
+      exit 0
+    fi
+
+    parseFileArgs "$fileArg"
+  else
+    # Parse the provided file arguments and determine if they are directories or files
+    parseFileArgs "$@"
+  fi
 
   # Check if the provided path exists in the persist.json file
   # by searching for it in the appropriate JSON array (directories or files).
@@ -280,6 +313,7 @@ remove(){
   else
     jq -r ".files |= del(.[index(\"$fileArg\")])" "$persistJson" > "$tmpJson"
   fi
+  oldJson="$(cat "$persistJson")"
   cat "$tmpJson" > "$persistJson"
   rm "$tmpJson"
 

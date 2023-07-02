@@ -4,7 +4,10 @@ let
 in
 {
   programs.fuse.userAllowOther = true;
-  environment.systemPackages = [ (pkgs.writeShellScriptBin "persist" (builtins.readFile ./persist.sh)) ];
+  environment.systemPackages = with pkgs; [
+    (writeNixShellScript "persist" (builtins.readFile ./persist.sh))
+  ];
+
   environment.persistence."/persist" = {
     hideMounts = true;
     directories = [] ++ json.directories;
