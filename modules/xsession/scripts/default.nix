@@ -6,9 +6,9 @@
 
   pause-suspend = pkgs.writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
 
-  record = pkgs.writeNixShellScript "record.sh" (builtins.readFile ./record.sh);
+  record = pkgs.writeNixShellScript "record" (builtins.readFile ./record.sh);
 
-  selecterm = pkgs.writeNixShellScript "select-term.sh" (builtins.readFile ./select-term.sh);
+  select-term = pkgs.writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
 
   volume = pkgs.writeNixShellScript "volume" (builtins.readFile ./volume.sh);
 

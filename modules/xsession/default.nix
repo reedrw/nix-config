@@ -50,7 +50,7 @@ in
             "Print" = "${exec} flameshot gui";
             "${mod}+Escape" = "${exec} ${binPath scripts.pause-suspend}";
             "${mod}+Return" = "${exec} ${term}";
-            "${sup}+Return" = "${exec} ${scripts.selecterm}/bin/select-term.sh";
+            "${sup}+Return" = "${exec} ${binPath scripts.select-term}";
             "${mod}+d" = "focus child";
             "${mod}+o" = "open";
             "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
@@ -58,7 +58,7 @@ in
             "${sup}+Down" = "resize grow height 5 px or 5 ppt";
             "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
             "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
-            "${mod}+r" = "${exec} ${scripts.record}/bin/record.sh";
+            "${mod}+r" = "${exec} ${binPath scripts.record}";
             "${mod}+p" = "${exec} ${scripts.bwmenu-patched}/bin/bwmenu";
             "${mod}+Shift+s" = "sticky toggle";
             "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
@@ -74,7 +74,7 @@ in
             "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
             "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
           } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
-            ("${mod}+ctrl+${x}") ("${exec} ${scripts.load-layouts}/bin/load-layouts.sh ${x}")
+            ("${mod}+ctrl+${x}") ("${exec} ${binPath scripts.load-layouts} ${x}")
           ) (builtins.listToAttrs (map
             (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
           ))
