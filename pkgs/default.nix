@@ -78,11 +78,9 @@ rec {
     src = sources."${name}";
     version = shortenRev src.rev;
   in
-    package.overrideAttrs (
-      _: {
-        inherit version src;
-      }
-    );
+    package.overrideAttrs ( _: {
+      inherit version src;
+    });
 
   # Given the current version of a package, the package itsef, and a niv sources set, build from
   # niv sources until the version of the package is newer than the specified version.
@@ -106,14 +104,15 @@ rec {
   # #! nix-shell -i bash -p hello
   # hello
   writeNixShellScript = name: text:
+    let
+      # Get the second line of the script, which contains the packages
+      secondLine = builtins.elemAt (lib.splitString "\n" text) 1;
+      # Get the packages from the second line
+      packageList = builtins.elemAt (lib.splitString " -p " secondLine) 1;
+      # Convert the package names to nixpkgs packages
+      runtimeInputs = map (x: pkgs."${x}") (lib.splitString " " packageList);
+    in
     pkgs.writeShellApplication {
-      inherit name text;
-      runtimeInputs = map (x: pkgs."${x}") # Convert package names to packages
-      # Split package names by spaces
-      (lib.splitString " " (builtins.elemAt
-      # Read text after "-p" from the second line of the script
-      (lib.splitString " -p " (builtins.elemAt
-      # Read the second line of the script
-      (lib.splitString "\n" text) 1)) 1));
+      inherit name text runtimeInputs;
     };
 }
