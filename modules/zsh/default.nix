@@ -257,7 +257,7 @@ in
       gcd = "sudo gc -d";
       ln = "ln -v";
       taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
-      ls = "${binPath exa} -lh --git -s type";
+      ls = "${exa}/bin/exa -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       ping = "${binPath prettyping} --nolegend";
