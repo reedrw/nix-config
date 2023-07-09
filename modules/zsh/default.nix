@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, inputs, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
 in
@@ -94,21 +94,6 @@ in
         PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
       fi
 
-      if [ -n "$ANY_NIX_SHELL_PKGS" ]; then
-        if [ -n "$IN_AUTO_SHELL" ]; then
-          alias leave="noglob exit"
-          color="yellow"
-        else
-          color="green"
-        fi
-        # if [ "''${#''${=ANY_NIX_SHELL_PKGS}}" -gt 1 ]; then
-        #   RPROMPT="%{$fg_bold[$color]%}▐%K{236}''${ANY_NIX_SHELL_PKGS} %{$reset_color%}"
-        # else
-        #   RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
-        # fi
-        RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{236}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
-      fi
-
       ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
       ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
       ZSH_THEME_GIT_PROMPT_DIRTY=" *"
@@ -164,30 +149,6 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      command_not_found_handler(){
-        if [ -f "$HOME/.cache/nix-index/files" ]; then
-          database="$HOME/.cache/nix-index"
-        else
-          >&2 echo 'No database.'
-          return 1
-        fi
-
-        argv0=$1; shift
-        attr="$(${nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
-
-        if [[ -z $attr ]]; then
-          >&2 echo "$argv0: command not found"
-          return 127
-        fi
-
-        attr="$(echo "$attr" | ${binPath fzf} --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
-        attr="''${attr%.*}"
-
-        export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
-        export IN_AUTO_SHELL="yes"
-        __nix shell "nixpkgs#$attr" -c sh -c "$argv0 $*; >&2 exec zsh"
-      }
-
       bw-rofi-login(){
         ${keyutils}/bin/keyctl purge user bw_session
         ${bitwarden-cli}/bin/bw login
@@ -214,29 +175,6 @@ in
         esac
       }
 
-      __nix-shell(){
-        ${any-nix-shell}/bin/.any-nix-shell-wrapper zsh "$@"
-      }
-
-      nix-shell(){
-        unset IN_AUTO_SHELL
-        __nix-shell "$@"
-      }
-
-      __nix(){
-        if [[ $1 == shell ]]; then
-          shift
-          ${any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
-        else
-          command nix "$@"
-        fi
-      }
-
-      nix() {
-        unset IN_AUTO_SHELL
-        __nix "$@"
-      }
-
       touch(){
         for file in "$@"; do
           if [[ "$file" = */* ]]; then
@@ -246,7 +184,7 @@ in
         done
       }
 
-    '';
+    '' + import ./command-not-found.nix { inherit config inputs pkgs; };
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
@@ -272,7 +210,6 @@ in
       watch = "${binPath viddy}";
       wget = "${binPath wget} --progress=dot:giga";
       x = "exit";
-      exit = ''[[ -n "$IN_AUTO_SHELL" ]] && kill -9 "$(ps -o ppid="" | sed -n 2p | xargs)" || noglob exit'';
     };
   };
 }

@@ -114,7 +114,7 @@
     nixosConfigurations = {
       nixos-desktop = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs outputs; };
+        specialArgs = { inherit inputs outputs nixpkgs-options; };
         modules = [
           ./system/nixos-desktop/configuration.nix
           home-manager.nixosModules.home-manager
