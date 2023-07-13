@@ -4,8 +4,9 @@ let
 in
 {
   programs.fuse.userAllowOther = true;
-  environment.systemPackages = with pkgs; [
-    (writeNixShellScript "persist" (builtins.readFile ./persist.sh))
+
+  environment.systemPackages = [
+    (import ./persist-path-manager { inherit pkgs; })
   ];
 
   environment.persistence."/persist" = {

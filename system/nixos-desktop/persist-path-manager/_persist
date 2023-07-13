@@ -1,0 +1,37 @@
+#compdef persist
+
+_persist() {
+  local options
+
+  # Define the available options
+  options=(
+    "-h[Print help message and exit]: :"
+    "--help[Print help message and exit]: :"
+    "-l[List all persistent files and directories]: :"
+    "--list[List all persistent files and directories]: :"
+    "-r[Remove the specified path from persistence]: :_persist_files"
+    "--remove[Remove the specified path from persistence]: :_persist_files"
+    "-v[Show verbose output for debugging purposes]"
+    "--verbose[Show verbose output for debugging purposes]"
+  )
+
+
+  # Set the current state and line
+  _arguments -C "$options[@]" "*: :_files"
+}
+
+# Custom completion function for persist file paths
+_persist_files() {
+  # Find persist.json from config
+  local persist_config=$(jq -r '.persistJson' $HOME/.config/persist-path-manager/config.json)
+
+  # Read the paths from persist.json
+  IFS=$'\n'
+  local paths=($(jq -r '.directories[] // empty, .files[] // empty' $persist_config | sort))
+
+  # Set the completion context
+  compadd -Q -f  -- $paths
+}
+
+# Register the completion function
+compdef _persist persist

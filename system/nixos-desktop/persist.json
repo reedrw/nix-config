@@ -10,12 +10,10 @@
     "/home/reed/games",
     "/home/reed/images",
     "/home/reed/music",
-    "/home/reed/persist",
     "/home/reed/videos"
   ],
   "directories": [
     "/etc/mullvad-vpn",
-    "/etc/nixos",
     "/etc/ssh",
     "/home/reed/.cache/fontconfig",
     "/home/reed/.cache/lorri",

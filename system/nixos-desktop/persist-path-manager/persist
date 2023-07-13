@@ -1,8 +1,8 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash -p bat coreutils exa fzf jq
+# vim: filetype=sh
 
 set -e
-# trap 'handleErrors "$?"' ERR
 
 configJson="$HOME/.config/persist-path-manager/config.json"
 
@@ -39,13 +39,28 @@ main(){
 show_help() {
   fileName="$(basename "$0")"
   underline=$(tput smul)
-  yellow=$(tput setaf 3)
+
+  bgWhite=$(tput setab 7)
+
+  red=$(tput setaf 1)
   green=$(tput setaf 2)
+  yellow=$(tput setaf 3)
   blue=$(tput setaf 4)
+  purple=$(tput setaf 5)
+  cyan=$(tput setaf 6)
+  grey=$(tput setaf 8)
+  black=$(tput setaf 0)
   reset=$(tput sgr0)
   bold=$(tput bold)
 
-  echo "Usage: ${bold}$fileName${reset} [${yellow}OPTIONS${reset}] [${underline}PATH${reset}]
+  # Check if stdout is a terminal, if so, use bat, otherwise use cat
+  if [[ -t 1 ]]; then
+    catCommand="bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never --terminal-width=77"
+  else
+    catCommand="cat"
+  fi
+
+  echo "Usage: ${bold}$fileName${reset} [${bgWhite}${black}OPTIONS${reset}] [${underline}PATH${reset}]
 
 ${green}${bold}Options:${reset}
   ${yellow}-r, --remove${reset}     Remove the specified path from persistence.
@@ -61,16 +76,27 @@ ${green}${bold}Examples:${reset}
 ${green}${bold}Description:${reset}
   This script for NixOS systems with ephemeral root allows you to manage
   persistent files and directories. When given a path as an argument, it
-  will be copied to the '/persist' directory, and a snapshot will be
-  created using the 'snapper' tool. The added items will be automatically
-  restored on system activation.
+  will be copied to the '/persist' directory, added to the 'persist.json'
+  file, and (if enabled) a snapshot will be created using the 'snapper' tool.
 
-  Nix can parse the 'persist.json' file using the 'builtins.fromJSON' function.
-  For example:
-    ${blue}${bold}json = (builtins.fromJSON (builtins.readFile ./persist.json));${reset}
+  Nix can then parse the 'persist.json' file using the 'builtins.fromJSON'
+  function to mount the specified paths on system activation.
+  For example:"
+  eval "$catCommand" << EOF
+${grey}# persist.nix${reset}
+{ ${red}config${reset}, ${red}pkgs${reset}, ... }:
 
-If no options are provided, the specified path will be added to persistence.
-"
+${purple}let${reset}
+  ${red}json${reset} = (${cyan}builtins.fromJSON${reset} (${cyan}builtins.readFile${blue} ./persist.json${reset}));
+${purple}in${reset}
+{
+  environment.persistence.${red}"${green}/persist${red}"${reset} = {
+    ${red}files${reset} = json.files;
+    ${red}directories${reset} = json.directories;
+  };
+}
+EOF
+  echo
   exit 0
 }
 
@@ -120,14 +146,6 @@ EOF
     exit 7
   fi
 }
-
-# handleErrors(){
-#   # Clean tmp files in case of error
-#   rm -f "$tmpJson" || true
-#
-#   # restore original perist.json if it was modified
-#   echo "$oldJson" > "$persistJson"
-# }
 
 list(){
   files=$(jq -r '.files[]' "$persistJson")
