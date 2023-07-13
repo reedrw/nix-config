@@ -172,6 +172,12 @@ list(){
 }
 
 parseFileArgs(){
+  # This function sets the following variables:
+  #  - fileArg (the absolute path of the file to be persisted, relative to /) (e.g. /home/user/file.txt)
+  #  - fileArgOrigPath (the original path of the file to be persisted.) (e.g. /prev/30/home/user/file.txt)
+  #  - newLoc (the new location of the file within persistDir) (e.g. /var/persist/home/user/file.txt)
+  #  - isDir (whether fileArgOrigPath is a directory or not)
+
   local removalSubstring
   removalSubstring=""
   # Resolve the absolute path of the input argument
