@@ -58,6 +58,8 @@ show_help() {
     catCommand="bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never --terminal-width=77"
   else
     catCommand="cat"
+    # Clear all colors and formatting
+    unset underline bgWhite red green yellow blue purple cyan grey black reset bold
   fi
 
   echo "Usage: ${bold}$fileName${reset} [${bgWhite}${black}OPTIONS${reset}] [${underline}PATH${reset}]
