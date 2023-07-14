@@ -88,7 +88,7 @@ in
     r2mod_cli
     nurPkgs.genshin-account-switcher
     anime-game-launcher
-    honkers-railway-launcher
+    # honkers-railway-launcher
     (aliasToPackage {
       gsi = "anime-game-launcher --run-game";
       gas = ''genshin-account-switcher "$@"'';
