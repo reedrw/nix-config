@@ -6,6 +6,31 @@ set -e
 
 configJson="$HOME/.config/persist-path-manager/config.json"
 
+# Formatting/color variables
+underline=$(tput smul)
+
+bgWhite=$(tput setab 7)
+
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+blue=$(tput setaf 4)
+purple=$(tput setaf 5)
+cyan=$(tput setaf 6)
+grey=$(tput setaf 8)
+black=$(tput setaf 0)
+reset=$(tput sgr0)
+bold=$(tput bold)
+
+# Check if stdout is a terminal, if so, use bat, otherwise use cat
+if [[ -t 1 ]]; then
+  catCommand="bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never --terminal-width=77"
+else
+  catCommand="cat"
+  # Clear all colors and formatting
+  unset underline bgWhite red green yellow blue purple cyan grey black reset bold
+fi
+
 main(){
   parseConfig
   # If there are no args, show help and exit
@@ -38,30 +63,6 @@ main(){
 
 show_help() {
   fileName="$(basename "$0")"
-  underline=$(tput smul)
-
-  bgWhite=$(tput setab 7)
-
-  red=$(tput setaf 1)
-  green=$(tput setaf 2)
-  yellow=$(tput setaf 3)
-  blue=$(tput setaf 4)
-  purple=$(tput setaf 5)
-  cyan=$(tput setaf 6)
-  grey=$(tput setaf 8)
-  black=$(tput setaf 0)
-  reset=$(tput sgr0)
-  bold=$(tput bold)
-
-  # Check if stdout is a terminal, if so, use bat, otherwise use cat
-  if [[ -t 1 ]]; then
-    catCommand="bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never --terminal-width=77"
-  else
-    catCommand="cat"
-    # Clear all colors and formatting
-    unset underline bgWhite red green yellow blue purple cyan grey black reset bold
-  fi
-
   echo "Usage: ${bold}$fileName${reset} [${bgWhite}${black}OPTIONS${reset}] [${underline}PATH${reset}]
 
 ${green}${bold}Options:${reset}
@@ -155,21 +156,21 @@ list(){
 
   if [[ -n "$files" ]]; then
     echo "Persistent Files:"
-    tput setaf 4
+    printf '%s' "$blue"
     echo "$files" | while read -r file; do
       echo "$file"
     done
-    tput sgr0
+    printf '%s' "$reset"
     echo
   fi
 
   if [[ -n "$directories" ]]; then
     echo "Persistent Directories:"
-    tput setaf 2
+    printf '%s' "$green"
     echo "$directories" | while read -r directory; do
       echo "$directory"
     done
-    tput sgr0
+    printf '%s' "$reset"
   fi
 }
 
@@ -236,7 +237,7 @@ add() {
 
   parseFileArgs "$@"
 
-  echo "Adding path $(tput setaf 2)$fileArg$(tput sgr0) to persistence."
+  echo "Adding path ${green}$fileArg${reset} to persistence."
 
   # Update the JSON data based on the path type (file or directory)
   if [[ -n "$isDir" ]]; then
@@ -329,7 +330,7 @@ remove(){
     exit 52
   fi
 
-  echo "Removing $(tput setaf 1)$fileArg$(tput sgr0) from persistence."
+  echo "Removing ${red}$fileArg${reset} from persistence."
 
   # Remove the path from the appropriate JSON array (directories or files).
   # This is done by using the 'jq' command to delete the matching entry from the array.
