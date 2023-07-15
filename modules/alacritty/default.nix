@@ -118,7 +118,7 @@ in
         };
         draw_bold_text_with_bright_colors = false;
       };
-      cursor.style = "Underline";
+      cursor.style = "Beam";
       font = {
         size = 8;
         normal = {
