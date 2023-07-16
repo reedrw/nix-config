@@ -33,14 +33,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run all "update-sources.sh"
-      run: |
-        find -L "$(pwd)/" -type f -name "update-sources.sh" | while read -r updatescript; do
-          (
-            dir="$(dirname -- "$updatescript")"
-            cd "$dir" || exit
-            $updatescript
-          );
-        done
+      run: nix-shell --run "update-all"
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v5
