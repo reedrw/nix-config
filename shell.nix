@@ -23,14 +23,7 @@ mkShell {
 
     (aliasToPackage {
       update-all = ''
-        find -L "$(pwd)/" -type f -name "update-sources.sh" \
-        | while read -r updatescript; do
-          (
-            dir="$(dirname -- "$updatescript")"
-            cd "$dir" || exit
-            $updatescript
-          )
-        done
+        find . -name update-sources.sh -execdir sh -c "realpath {} && {}" \;
       '';
     })
   ];
