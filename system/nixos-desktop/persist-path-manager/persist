@@ -26,9 +26,20 @@ bold=$(tput bold)
 if [[ -t 1 ]]; then
   catCommand="bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never --terminal-width=77"
 else
-  catCommand="cat"
+  catCommand="catIndent"
   # Clear all colors and formatting
-  unset underline bgWhite red green yellow blue purple cyan grey black reset bold
+  underline=''
+  bgWhite=''
+  red=''
+  green=''
+  yellow=''
+  blue=''
+  purple=''
+  cyan=''
+  grey=''
+  black=''
+  reset=''
+  bold=''
 fi
 
 main(){
@@ -59,6 +70,13 @@ main(){
       add "$@"
       ;;
   esac
+}
+
+# Indent output of cat, used when stdout is not a terminal
+# to keep the nix config example aligned with the rest of the text
+catIndent(){
+  echo
+  cat "$@" | sed -e 's/^/  /'
 }
 
 show_help() {
@@ -155,7 +173,7 @@ list(){
   directories=$(jq -r '.directories[]' "$persistJson")
 
   if [[ -n "$files" ]]; then
-    echo "Persistent Files:"
+    echo "${bold}Persistent Files:${reset}"
     printf '%s' "$blue"
     echo "$files" | while read -r file; do
       echo "$file"
@@ -165,7 +183,7 @@ list(){
   fi
 
   if [[ -n "$directories" ]]; then
-    echo "Persistent Directories:"
+    echo "${bold}Persistent Directories:${reset}"
     printf '%s' "$green"
     echo "$directories" | while read -r directory; do
       echo "$directory"
@@ -205,6 +223,7 @@ parseFileArgs(){
     removalSubstring="s|$persistDir||g"
     # Paths already within "/persist" don't need newLoc handling
     fileArg="$(echo "$fileArg" | sed "$removalSubstring")"
+    newLoc=''
   else
     # Handle other paths by copying to "/persist/<directory>"
     newLoc="$persistDir$(dirname "$fileArg")"
@@ -295,14 +314,23 @@ remove(){
       exit 0
     fi
 
+    # Set the fzf arguments
+    fzfArgs=(
+      "--height=70%"
+      "--layout=reverse"
+      "--info=inline"
+      "--color=16"
+      "--prompt=Select a path to remove from persistence: "
+    )
+
     # Use fzf to select a path to remove from the persistJson file
-    fileArg="$(jq -r '.directories[] + "\n" + .files[]' "$persistJson" | sort | uniq | fzf --height=70% --layout=reverse --info=inline --preview "
+    fileArg="$(jq -r '.directories[] + "\n" + .files[]' "$persistJson" | sort | uniq | fzf "${fzfArgs[@]}" --preview "
       if [[ -f {} ]]; then
         bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never {};
       else
         exa -lah -s type {};
       fi
-    " --color=16 --prompt="Select a path to remove from persistence: ")"
+    ")"
 
     # Check if the user cancelled the fzf selection
     if [[ -z "$fileArg" ]]; then
