@@ -199,7 +199,6 @@ in
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       ping = "${binPath prettyping} --nolegend";
-      ranger = "echo 'You already have an alias for this! Use `rr` instead'";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";

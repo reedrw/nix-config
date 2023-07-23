@@ -21,17 +21,18 @@ with inputs.nix-colors;
   };
 
   home.pointerCursor = {
-    # name = "Adwaita";
-    # package = pkgs.gnome.adwaita-icon-theme;
-    name = "Vanilla-DMZ-AA";
-    package = pkgs.vanilla-dmz;
+    name = "Adwaita";
+    package = pkgs.gnome.adwaita-icon-theme;
+    # name = "Vanilla-DMZ-AA";
+    # package = pkgs.vanilla-dmz;
     size = 24;
     # name = "Quintom_Ink";
     # package = pkgs.quintom-cursor-theme;
     gtk.enable = true;
     x11 = {
       enable = true;
-      defaultCursor = "Vanilla-DMZ-AA";
+      #defaultCursor = "Vanilla-DMZ-AA";
+      defaultCursor = "Adwaita";
     };
   };
 
@@ -85,9 +86,17 @@ with inputs.nix-colors;
     '';
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
+      gtk-font-name = "Sans 10";
+      gtk-xft-antialias = 1;
+      gtk-xft-hinting = 1;
+      gtk-xft-hintstyle= "hintmedium";
     };
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
+      gtk-font-name = "Sans 10";
+      gtk-xft-antialias = 1;
+      gtk-xft-hinting = 1;
+      gtk-xft-hintstyle= "hintmedium";
     };
   };
 

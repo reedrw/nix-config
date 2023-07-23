@@ -4,7 +4,10 @@ let
   # We only manage the files in home-manager due to this bug:
   # https://github.com/nix-community/impermanence/issues/130
   # Grab files that start with the home directory.
-  files = builtins.map (v: builtins.substring (builtins.stringLength config.home.homeDirectory) 999999999 v) (builtins.filter (x: lib.hasPrefix config.home.homeDirectory x) json.files);
+  homeFiles = builtins.filter (x: lib.hasPrefix config.home.homeDirectory x) json.files;
+  # Remove the home directory from the file path.
+  # Eg. [ /home/reed/.zsh_history /home/reed/.gitconfig ] -> [ /.zsh_history /.gitconfig ]
+  files = builtins.map (v: builtins.substring (builtins.stringLength config.home.homeDirectory) 999999999 v) homeFiles;
 in
 {
   imports = [
