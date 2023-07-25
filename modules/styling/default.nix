@@ -86,14 +86,13 @@ with inputs.nix-colors;
     '';
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
-      gtk-font-name = "Sans 10";
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
       gtk-xft-hintstyle= "hintmedium";
     };
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
-      gtk-font-name = "Sans 10";
+      gtk-font-name = "Cantarell 10";
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
       gtk-xft-hintstyle= "hintmedium";

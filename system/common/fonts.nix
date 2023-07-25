@@ -3,6 +3,7 @@
 {
   fonts = {
     fonts = with pkgs; [
+      cantarell-fonts
       carlito
       corefonts
       dejavu_fonts
