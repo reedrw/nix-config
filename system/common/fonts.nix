@@ -14,7 +14,6 @@
       source-code-pro
       ttf_bitstream_vera
     ];
-    enableDefaultFonts = true;
     fontconfig = {
       enable = true;
       cache32Bit = true;
