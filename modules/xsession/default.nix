@@ -144,6 +144,7 @@ in
           "Element"
           "discord"
           "Zathura"
+          ".gamescope-wrapped"
         ];
         startup = []
         ++ builtins.map ( command:
