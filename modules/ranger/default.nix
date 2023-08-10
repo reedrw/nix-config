@@ -33,7 +33,7 @@ let
     libreoffice
     mediainfo
     poppler_utils
-    python38Packages.pdf2image
+    python3Packages.pdf2image
     tmux
     unrar
     unzip
