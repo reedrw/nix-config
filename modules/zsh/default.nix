@@ -103,7 +103,7 @@ in
       ZSH_AUTOSUGGEST_STRATEGY="completion"
       ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
-      export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
+      export MANPAGER="nvim +Man\!"
       export EDITOR="${config.home.sessionVariables.EDITOR}"
 
       FZF_TAB_FLAGS=(
