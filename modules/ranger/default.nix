@@ -49,31 +49,29 @@ in
 
   home.packages =
     let
-      myranger = ranger39.overrideAttrs (
-        oldAttrs: rec {
-          buildInputs = oldAttrs.buildInputs ++ [ pkgs.makeWrapper ];
-          postInstall = ''
-            cat << EOF > $out/share/applications/ranger.desktop
-            [Desktop Entry]
-            Type=Application
-            Name=ranger
-            Comment=Launches the ranger file manager
-            Icon=utilities-terminal
-            Exec=${rangerlaunch}
-            Categories=ConsoleOnly;System;FileTools;FileManager
-            MimeType=inode/directory;
-            Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
-            EOF
+      myranger = ranger39.overrideAttrs (_: {
+        buildInputs = _.buildInputs ++ [ pkgs.makeWrapper ];
+        postInstall = ''
+          cat << EOF > $out/share/applications/ranger.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=ranger
+          Comment=Launches the ranger file manager
+          Icon=utilities-terminal
+          Exec=${rangerlaunch}
+          Categories=ConsoleOnly;System;FileTools;FileManager
+          MimeType=inode/directory;
+          Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
+          EOF
 
-            wrapProgram $out/bin/ranger \
-              --prefix PATH : ${lib.makeBinPath bins}
-          '';
-        }
-      );
+          wrapProgram $out/bin/ranger \
+            --prefix PATH : ${lib.makeBinPath bins}
+        '';
+      });
       # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
       ranger = myranger.override { imagePreviewSupport = false; };
     in
-    [ ranger pkgs.ueberzug ];
+    [ ranger pkgs.ueberzugpp ];
 
   xdg.mimeApps.defaultApplications = {
     "inode/directory" = "ranger.desktop";
