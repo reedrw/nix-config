@@ -65,11 +65,6 @@
   users.mutableUsers = false;
   users.users.reed.passwordFile = "/persist/secrets/reed-passwordFile";
 
-  home-manager = {
-    users.reed = import ../../home.nix;
-    extraSpecialArgs = { inherit inputs outputs; };
-  };
-
   # Remote decrypt via phone shortcut
   boot.initrd = {
     availableKernelModules = [ "alx" "r8169" ];

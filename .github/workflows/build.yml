@@ -15,7 +15,7 @@ jobs:
         cachixName:
           - reedrw
         output:
-          - .#homeConfigurations.reed.activationPackage
+          - .#homeConfigurations.reed@nixos-desktop.activationPackage
           - .#nixosConfigurations.nixos-desktop.config.system.build.toplevel
           - nix-shell
 

@@ -89,6 +89,25 @@
     pkgs = import nixpkgs (nixpkgs-options.nixpkgs // {
       inherit system;
     });
+
+    # Get a list of machine-specific home-manager modules.
+    # This is necessary since I use hm both as a NixOS module, and as a flake output.
+    machineSpecificHM = host:
+      let
+        homeDirPath = ./system + "/${host}/home";
+        homeDirContents = builtins.attrNames (builtins.readDir homeDirPath);
+      in
+      builtins.map (x: homeDirPath + "/${x}") homeDirContents;
+
+    commonHMModules = [
+      ./home.nix
+      nixpkgs-options
+      (args: {
+        xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+        home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+        nix.registry.nixpkgs.flake = nixpkgs;
+      })
+    ];
   in
   {
     devShells."${system}".default = import ./shell.nix {
@@ -96,18 +115,10 @@
     };
 
     homeConfigurations = {
-      "reed" = home-manager.lib.homeManagerConfiguration {
+      "reed@nixos-desktop" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = { inherit inputs outputs; };
-        modules = [
-          ./home.nix
-          nixpkgs-options
-          (args: {
-            xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-            home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
-            nix.registry.nixpkgs.flake = nixpkgs;
-          })
-        ];
+        modules = commonHMModules ++ machineSpecificHM "nixos-desktop";
       };
     };
 
@@ -124,6 +135,7 @@
             environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
             nix.registry.nixpkgs.flake = nixpkgs;
             nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
+            home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM "nixos-desktop";
           }
         ];
       };
