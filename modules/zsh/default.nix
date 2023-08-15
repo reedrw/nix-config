@@ -194,15 +194,16 @@ in
       df = "${pydf}/bin/pydf";
       gcd = "sudo gc -d";
       ln = "ln -v";
-      taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
       ls = "${exa}/bin/exa -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
+      n = "cd ~/.config/nixpkgs";
       ping = "${binPath prettyping} --nolegend";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
       snapper = "snapper -c persist";
+      taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
