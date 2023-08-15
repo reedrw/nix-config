@@ -89,7 +89,7 @@ in
     nurPkgs.genshin-account-switcher
     anime-game-launcher
     (aliasToPackage {
-      gsi = "anime-game-launcher --run-game";
+      gsi = "anime-game-launcher --just-run-game";
       gas = ''genshin-account-switcher "$@"'';
     })
     # honkers-railway-launcher
