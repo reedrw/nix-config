@@ -22,7 +22,6 @@ let
 
   run = [
     "i3-msg workspace 1"
-    "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 144"
   ];
 
   scripts = import ./scripts { inherit pkgs; };
@@ -45,40 +44,38 @@ in
         floating.titlebar = false;
         modifier = "${mod}";
         terminal = "${term}";
-        keybindings = with pkgs; lib.mkOptionDefault (
-          {
-            "Print" = "${exec} flameshot gui";
-            "${mod}+Escape" = "${exec} ${binPath scripts.pause-suspend}";
-            "${mod}+Return" = "${exec} ${term}";
-            "${sup}+Return" = "${exec} ${binPath scripts.select-term}";
-            "${mod}+d" = "focus child";
-            "${mod}+o" = "open";
-            "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
-            "${sup}+Right" = "resize grow width 5 px or 5 ppt";
-            "${sup}+Down" = "resize grow height 5 px or 5 ppt";
-            "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-            "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
-            "${mod}+r" = "${exec} ${binPath scripts.record}";
-            "${mod}+p" = "${exec} ${scripts.bwmenu-patched}/bin/bwmenu";
-            "${mod}+Shift+s" = "sticky toggle";
-            "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
-            "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
-            "Ctrl+Down" = "${exec} ${binPath playerctl} play-pause";
-            "Ctrl+Left" = "${exec} ${binPath playerctl} previous";
-            "Ctrl+Right" = "${exec} ${binPath playerctl} next";
-            "XF86AudioPause" = "${exec} ${binPath playerctl} play-pause";
-            "XF86AudioPlay" = "${exec} ${binPath playerctl} play-pause";
-            "XF86AudioPrev" = "${exec} ${binPath playerctl} previous";
-            "XF86AudioNext" = "${exec} ${binPath playerctl} next";
-            "XF86AudioMute" = "${exec} ${binPath scripts.volume} mute";
-            "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
-            "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
-          } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
-            ("${mod}+ctrl+${x}") ("${exec} ${binPath scripts.load-layouts} ${x}")
-          ) (builtins.listToAttrs (map
-            (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
-          ))
-        );
+        keybindings = with pkgs; lib.mkOptionDefault ({
+          "Print" = "${exec} flameshot gui";
+          "${mod}+Escape" = "${exec} ${binPath scripts.pause-suspend}";
+          "${mod}+Return" = "${exec} ${term}";
+          "${sup}+Return" = "${exec} ${binPath scripts.select-term}";
+          "${mod}+d" = "focus child";
+          "${mod}+o" = "open";
+          "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
+          "${sup}+Right" = "resize grow width 5 px or 5 ppt";
+          "${sup}+Down" = "resize grow height 5 px or 5 ppt";
+          "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
+          "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
+          "${mod}+r" = "${exec} ${binPath scripts.record}";
+          "${mod}+p" = "${exec} ${scripts.bwmenu-patched}/bin/bwmenu";
+          "${mod}+Shift+s" = "sticky toggle";
+          "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
+          "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
+          "Ctrl+Down" = "${exec} ${binPath playerctl} play-pause";
+          "Ctrl+Left" = "${exec} ${binPath playerctl} previous";
+          "Ctrl+Right" = "${exec} ${binPath playerctl} next";
+          "XF86AudioPause" = "${exec} ${binPath playerctl} play-pause";
+          "XF86AudioPlay" = "${exec} ${binPath playerctl} play-pause";
+          "XF86AudioPrev" = "${exec} ${binPath playerctl} previous";
+          "XF86AudioNext" = "${exec} ${binPath playerctl} next";
+          "XF86AudioMute" = "${exec} ${binPath scripts.volume} mute";
+          "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
+          "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
+        } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
+          "${mod}+ctrl+${x}" "${exec} ${binPath scripts.load-layouts} ${x}"
+        ) (builtins.listToAttrs (map
+          (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
+        )));
         colors = with config.colorScheme.colors; {
           focused = {
             border = "#${base07}";
@@ -129,14 +126,12 @@ in
               class = "The Honkers Railway Launcher";
             };
           }
-        ] ++ builtins.map ( class:
-          {
-            command = "border pixel 0";
-            criteria = {
-              inherit class;
-            };
-          }
-        ) [
+        ] ++ map ( class: {
+          command = "border pixel 0";
+          criteria = {
+            inherit class;
+          };
+        }) [
           "firefox"
           "mpv"
           "Alacritty"
@@ -146,26 +141,19 @@ in
           "Zathura"
           ".gamescope-wrapped"
         ];
-        startup = []
-        ++ builtins.map ( command:
-          {
-            inherit command;
-            always = true;
-            notification = false;
-          }
-        ) alwaysRun
-        ++ builtins.map ( command:
-          {
-            inherit command;
-            notification = false;
-          }
-        ) run;
+        startup = map ( command: {
+          inherit command;
+          always = true;
+          notification = false;
+        }) alwaysRun ++ map ( command: {
+          inherit command;
+          notification = false;
+        }) run;
       };
     };
   };
-  services = {
-    flameshot.enable = true;
-  };
+
+  services.flameshot.enable = true;
   home.file.".background-image".source = ./wallpaper.png;
 
   xdg.configFile = {
