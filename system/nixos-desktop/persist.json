@@ -13,6 +13,7 @@
     "/home/reed/videos"
   ],
   "directories": [
+    "/etc/NetworkManager/system-connections",
     "/etc/mullvad-vpn",
     "/etc/ssh",
     "/home/reed/.cache/fontconfig",
