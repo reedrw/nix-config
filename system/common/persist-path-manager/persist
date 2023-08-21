@@ -238,6 +238,8 @@ parseFileArgs(){
   # Check if the path is a directory
   if [[ -d "$fileArgOrigPath" ]]; then
     isDir="yes"
+  else
+    isDir="no"
   fi
 }
 
@@ -259,7 +261,7 @@ add() {
   echo "Adding path ${green}$fileArg${reset} to persistence."
 
   # Update the JSON data based on the path type (file or directory)
-  if [[ -n "$isDir" ]]; then
+  if [[ "$isDir" == "yes" ]]; then
     # Add the directory path to the JSON data and ensure uniqueness
     jq -r ".directories[.directories | length] |= . + \"$fileArg\"" "$persistJson" |
       jq -r '.directories |= if . then sort else empty end' | jq '.directories |= unique' > "$tmpJson"
@@ -347,7 +349,7 @@ remove(){
   # Check if the provided path exists in the persist.json file
   # by searching for it in the appropriate JSON array (directories or files).
   # If the path is not found, exit with an error code.
-  if [[ -n "$isDir" ]]; then
+  if [[ "$isDir" == "yes" ]]; then
     exists=$(jq -r ".directories[] | select(. == \"$fileArg\")" "$persistJson")
   else
     exists=$(jq -r ".files[] | select(. == \"$fileArg\")" "$persistJson")

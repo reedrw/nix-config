@@ -2,16 +2,16 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
-let
-  sources = import ../nix/sources.nix { sourcesFile = ../nix/sources.json; };
-in
+{ config, inputs, pkgs, ... }:
 {
   imports = [
-    ./boot/efi.nix
-    ./users/reed.nix
-    "${sources.nixos-hardware}/lenovo/thinkpad/t480"
-  ] ++ builtins.map (x: ./common + "/${x}") (builtins.attrNames (builtins.readDir ./common));
+    ../boot/efi.nix
+    ../users/reed.nix
+    ../optional/btrfs-optin-persistence.nix
+    ./hardware-configuration.nix
+    ./persist.nix
+    "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
+  ] ++ builtins.map (x: ../common + "/${x}") (builtins.attrNames (builtins.readDir ../common));
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -30,6 +30,9 @@ in
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
 
+  users.mutableUsers = false;
+  users.users.reed.passwordFile = "/persist/secrets/reed-passwordFile";
+
   hardware = {
     opengl = {
       extraPackages = with pkgs; [
@@ -47,6 +50,26 @@ in
     acpilight.enable = true;
   };
 
+  services.btrfs.autoScrub = {
+    enable = true;
+    interval = "weekly";
+  };
+
+  services.snapper = {
+    configs.persist = {
+      SUBVOLUME = "/persist";
+      ALLOW_USERS = [ "reed" ];
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_LIMIT_HOURLY = 168;
+      TIMELINE_LIMIT_DAILY = 365;
+      TIMELINE_LIMIT_WEEKLY = 100;
+      TIMELINE_LIMIT_MONTHLY = 36;
+      TIMELINE_LIMIT_YEARLY = 0;
+    };
+  };
+
+
   services.xserver = {
     libinput = {
       enable = true;
@@ -61,14 +84,6 @@ in
   };
 
   services.autossh.sessions = [
-    {
-      extraArguments = ''
-        -o ServerAliveInterval=30 \
-        -N -T -R 5555:localhost:22 142.4.208.215
-      '';
-      name = "ssh-port-forward";
-      user = "reed";
-    }
     {
       extraArguments = ''
         -D 1337 -nNT localhost

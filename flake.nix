@@ -120,6 +120,11 @@
         extraSpecialArgs = { inherit inputs outputs; };
         modules = commonHMModules ++ machineSpecificHM "nixos-desktop";
       };
+      "reed@nixos-t480" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = { inherit inputs outputs; };
+        modules = commonHMModules ++ machineSpecificHM "nixos-t480";
+      };
     };
 
     nixosConfigurations = {
@@ -136,6 +141,22 @@
             nix.registry.nixpkgs.flake = nixpkgs;
             nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
             home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM "nixos-desktop";
+          }
+        ];
+      };
+      nixos-t480 = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs outputs nixpkgs-options; };
+        modules = [
+          ./system/nixos-t480/configuration.nix
+          home-manager.nixosModules.home-manager
+          impermanence.nixosModule
+          nixpkgs-options
+          {
+            environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+            nix.registry.nixpkgs.flake = nixpkgs;
+            nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
+            home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM "nixos-t480";
           }
         ];
       };
