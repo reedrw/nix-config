@@ -282,7 +282,7 @@ add() {
 
     # Copy the path to the new location and create a snapshot if enabled
     if [[ "$useSnapper" == "true" ]]; then
-      snapper -c "$snapperConfig" create --command "cp -rp --reflink $fileArgOrigPath $newLoc" -d "persist $fileArg"
+      snapper -c "$snapperConfig" create --command "cp -rp --reflink '$fileArgOrigPath' '$newLoc'" -d "persist $fileArg"
     else
       cp -rp --reflink "$fileArgOrigPath" "$newLoc"
     fi
