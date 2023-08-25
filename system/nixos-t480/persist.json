@@ -1,10 +1,12 @@
 {
   "files": [
+    "/home/reed/.cache/rofi-3.runcache",
     "/home/reed/.zsh_history"
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
     "/etc/ssh",
+    "/home/reed/.cache/dconf",
     "/home/reed/.cache/fontconfig",
     "/home/reed/.cache/lorri",
     "/home/reed/.cache/mesa_shader_cache",
@@ -16,6 +18,7 @@
     "/home/reed/.config/coc",
     "/home/reed/.config/dconf",
     "/home/reed/.config/discord",
+    "/home/reed/.config/gh",
     "/home/reed/.config/github-copilot",
     "/home/reed/.config/nixpkgs",
     "/home/reed/.local/share/TelegramDesktop",
@@ -23,6 +26,7 @@
     "/home/reed/.local/share/ranger",
     "/home/reed/.mozilla",
     "/home/reed/.ssh",
+    "/home/reed/downloads",
     "/home/reed/files",
     "/root/.cache/mesa_shader_cache",
     "/root/.cache/nix",
