@@ -108,6 +108,44 @@
         nix.registry.nixpkgs.flake = nixpkgs;
       })
     ];
+
+    commonNixOSModules = [
+        impermanence.nixosModule
+        nixpkgs-options
+        {
+          environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+          nix.registry.nixpkgs.flake = nixpkgs;
+          nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
+        }
+    ];
+
+    # Takes a hostname as argument and creates a set containing 2 NixOS configurations for that host:
+    # - one with home-manager enabled, which is used on the machine itself
+    # - one without home-manager, which is used for building in GitHub Actions
+    # This is necessary because the size of my home-manager config makes my NixOS config closures
+    # too large to build in GitHub Actions.
+    mkNixOSConfiguration = name:
+    let
+      modules-noHM = commonNixOSModules ++ [
+        (./. + "/system/${name}/configuration.nix")
+      ];
+      modules = modules-noHM ++ [
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM name;
+        }
+      ];
+    in {
+      "${name}" = nixpkgs.lib.nixosSystem {
+        inherit system modules;
+        specialArgs = { inherit inputs outputs nixpkgs-options; };
+      };
+      "${name}-no-home-manager" = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs outputs nixpkgs-options; };
+        modules = modules-noHM;
+      };
+    };
   in
   {
     devShells."${system}".default = import ./shell.nix {
@@ -127,39 +165,9 @@
       };
     };
 
-    nixosConfigurations = {
-      nixos-desktop = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs outputs nixpkgs-options; };
-        modules = [
-          ./system/nixos-desktop/configuration.nix
-          home-manager.nixosModules.home-manager
-          impermanence.nixosModule
-          nixpkgs-options
-          {
-            environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-            nix.registry.nixpkgs.flake = nixpkgs;
-            nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
-            home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM "nixos-desktop";
-          }
-        ];
-      };
-      nixos-t480 = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs outputs nixpkgs-options; };
-        modules = [
-          ./system/nixos-t480/configuration.nix
-          home-manager.nixosModules.home-manager
-          impermanence.nixosModule
-          nixpkgs-options
-          {
-            environment.etc."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-            nix.registry.nixpkgs.flake = nixpkgs;
-            nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
-            home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM "nixos-t480";
-          }
-        ];
-      };
-    };
+    nixosConfigurations = let configs = [
+      (mkNixOSConfiguration "nixos-desktop")
+      (mkNixOSConfiguration "nixos-t480")
+    ]; in builtins.foldl' (a: b: a // b) {} configs;
   };
 }

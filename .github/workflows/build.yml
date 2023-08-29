@@ -16,15 +16,16 @@ jobs:
           - reedrw
         output:
           - .#homeConfigurations.reed@nixos-desktop.activationPackage
-          - .#nixosConfigurations.nixos-desktop.config.system.build.toplevel
+          - .#nixosConfigurations.nixos-desktop-no-home-manager.config.system.build.toplevel
+          - .#nixosConfigurations.nixos-t480-no-home-manager.config.system.build.toplevel
           - nix-shell
 
     runs-on: ubuntu-latest
     steps:
 
-    # Keep running out of space. 15gb system closure.
-    - name: Cleanup Disk
-      uses: jlumbroso/free-disk-space@main
+    # Uncomment if GitHub Actions jobs start failing from lack of space
+    # - name: Cleanup Disk
+    #   uses: jlumbroso/free-disk-space@main
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v2
