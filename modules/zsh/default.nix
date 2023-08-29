@@ -149,12 +149,6 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      bw-rofi-login(){
-        ${keyutils}/bin/keyctl purge user bw_session
-        ${bitwarden-cli}/bin/bw login
-        ${keyutils}/bin/keyctl link @u @s
-      }
-
       c(){
         [[ -p /dev/stdin ]] && \
           ${binPath xclip} -i -selection clipboard || \

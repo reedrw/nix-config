@@ -6,8 +6,6 @@ rec {
 
   inherit ((import ../config.nix).packageOverrides pkgs) nur fromBranch;
 
-  libreoffice = fromBranch.stable.libreoffice;
-
   discord = pkgs.discord.override {
     nss = pkgs.nss_latest;
   };

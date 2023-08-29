@@ -57,7 +57,6 @@ in
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+r" = "${exec} ${binPath scripts.record}";
-          "${mod}+p" = "${exec} ${scripts.bwmenu-patched}/bin/bwmenu";
           "${mod}+Shift+s" = "sticky toggle";
           "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
           "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
