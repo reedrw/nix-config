@@ -8,9 +8,11 @@ rec {
 
   discord = pkgs.discord.override {
     nss = pkgs.nss_latest;
+    withVencord = true;
   };
   discord-canary = pkgs.discord-canary.override {
     nss = pkgs.nss_latest;
+    withVencord = true;
   };
 
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
