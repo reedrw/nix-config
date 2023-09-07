@@ -30,7 +30,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-23.05
 
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Run all "update-sources.sh"
       run: nix-shell --run "update-all"
