@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p bat coreutils exa fzf jq
+#! nix-shell -i bash -p bat coreutils eza fzf jq
 # vim: filetype=sh
 
 set -e
@@ -330,7 +330,7 @@ remove(){
       if [[ -f {} ]]; then
         bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never {};
       else
-        exa -lah -s type {};
+        eza -lah -s type {};
       fi
     ")"
 

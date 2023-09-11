@@ -188,7 +188,7 @@ in
       df = "${pydf}/bin/pydf";
       gcd = "sudo gc -d";
       ln = "ln -v";
-      ls = "${exa}/bin/exa -lh --git -s type";
+      ls = "${binPath eza} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       n = "cd ~/.config/nixpkgs";
