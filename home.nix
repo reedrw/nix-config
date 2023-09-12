@@ -75,6 +75,7 @@ in
     homeDirectory = "/home/reed";
     sessionVariables = {
       EDITOR = "nvim";
+      TERMINAL = "alacritty";
     };
     packages = packagesMinimal ++ packagesExtra;
   };
