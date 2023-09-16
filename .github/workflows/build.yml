@@ -16,6 +16,7 @@ jobs:
           - reedrw
         output:
           - .#homeConfigurations.reed@nixos-desktop.activationPackage
+          - .#homeConfigurations.reed@nixos-t480.activationPackage
           - .#nixosConfigurations.nixos-desktop-no-home-manager.config.system.build.toplevel
           - .#nixosConfigurations.nixos-t480-no-home-manager.config.system.build.toplevel
           - nix-shell
