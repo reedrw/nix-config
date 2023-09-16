@@ -187,6 +187,7 @@ in
       Service = with pkgs; {
         ExecStart = "${binPath autotiling}";
         Restart = "on-failure";
+        RestartSec = 5;
         Type = "simple";
       };
     };
