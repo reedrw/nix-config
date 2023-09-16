@@ -37,7 +37,16 @@ in
   };
 
   services.mpd-mpris.enable = true;
+
   services.playerctld.enable = true;
+  systemd.user.services.playerctld = {
+    Unit = {
+      After = [ "graphical.target" ];
+    };
+    Service = {
+      RestartSec = 5;
+    };
+  };
 
   programs.ncmpcpp = {
     enable = true;
