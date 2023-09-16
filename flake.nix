@@ -73,15 +73,15 @@
     inherit (self) outputs;
     system = "x86_64-linux";
 
+    # Nixpkgs setup
+    ########################################
     config = import ./pkgs/config.nix {
       inherit NUR master stable;
     };
 
-    overlay = import ./pkgs;
-
     nixpkgs-options = {
       nixpkgs = {
-        overlays = [ overlay ];
+        overlays = [ (import ./pkgs) ];
         inherit config;
       };
     };
@@ -90,26 +90,38 @@
       inherit system;
     });
 
-    # Get a list of machine-specific home-manager modules.
-    # This is necessary since I use hm both as a NixOS module, and as a flake output.
-    machineSpecificHM = host:
-      let
-        homeDirPath = ./system + "/${host}/home";
-        homeDirContents = builtins.attrNames (builtins.readDir homeDirPath);
-      in
-      builtins.map (x: homeDirPath + "/${x}") homeDirContents;
+    lib = pkgs.lib;
 
-    commonHMModules = [
-      ./home.nix
-      nixpkgs-options
-      (args: {
-        xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-        home.sessionVariables.NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
-        nix.registry.nixpkgs.flake = nixpkgs;
-      })
-    ];
+    # mkHost :: String -> AttrSet
+    ########################################
+    # Takes a hostname as argument and returns a set of flake outputs
+    # for that host. This is then merged into the top-level outputs.
+    #
+    # Example:
+    # mkHost "nixos-desktop"
+    #
+    # Returns a set with the following attributes:
+    # {
+    #   homeConfigurations = { "reed@nixos-desktop" = { ... }; };
+    #   nixosConfigurations = {
+    #     "nixos-desktop" = { ... };
+    #     "nixos-desktop-no-home-manager" = { ... };
+    #   };
+    # }
+    #  - `homeConfigurations` contains a home-manager configuration for ${username}@${host}
+    #  - `nixosConfigurations` contains a 2 NixOS configurations for ${host}:
+    #    - `${host}` is a NixOS configuration with home-manager enabled
+    #    - `${host}-no-home-manager` is a NixOS configuration with home-manager disabled.
+    #      This is used to build in Github Actions, to reduce unnecessary build time from
+    #      building the home-manager configuration twice.
+    mkHost = host:
+    let
+      # For now, repo is only set up for 1 home-manager user
+      username = "reed";
 
-    commonNixOSModules = [
+      # NixOS configuration imports, minus home-manager
+      modules-noHM = [
+        (./. + "/system/${host}/configuration.nix")
         impermanence.nixosModule
         nixpkgs-options
         {
@@ -117,57 +129,68 @@
           nix.registry.nixpkgs.flake = nixpkgs;
           nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
         }
-    ];
-
-    # Takes a hostname as argument and creates a set containing 2 NixOS configurations for that host:
-    # - one with home-manager enabled, which is used on the machine itself
-    # - one without home-manager, which is used for building in GitHub Actions
-    # This is necessary because the size of my home-manager config makes my NixOS config closures
-    # too large to build in GitHub Actions.
-    mkNixOSConfiguration = name:
-    let
-      modules-noHM = commonNixOSModules ++ [
-        (./. + "/system/${name}/configuration.nix")
       ];
+
+      # Home-manager configuration imports
+      hm.modules = let
+        # Each host has a directory for home-manager config in ./system/${host}/home.
+        # Any .nix files in that directory will be imported as part of the home-manager
+        # configuration for that host.
+        homeDirPath = ./system + "/${host}/home";
+        homeDirContents = builtins.attrNames (builtins.readDir homeDirPath);
+        perHost = builtins.map (x: homeDirPath + "/${x}") homeDirContents;
+      in [
+        ./home.nix
+        nixpkgs-options
+        (args: {
+          xdg.configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+          home = {
+            inherit username;
+            homeDirectory = "/home/${username}";
+            sessionVariables = {
+              NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+            };
+          };
+          nix.registry.nixpkgs.flake = nixpkgs;
+        })
+      ] ++ perHost;
+
+      # NixOS configuration imports, including home-manager
       modules = modules-noHM ++ [
         home-manager.nixosModules.home-manager
         {
-          home-manager.users.reed.imports = commonHMModules ++ machineSpecificHM name;
+          home-manager.users.${username}.imports = hm.modules;
         }
       ];
+
+      # Arguments to pass to our NixOS and home-manager configurations
+      specialArgs = { inherit inputs outputs nixpkgs-options; };
+      extraSpecialArgs = specialArgs;
     in {
-      "${name}" = nixpkgs.lib.nixosSystem {
-        inherit system modules;
-        specialArgs = { inherit inputs outputs nixpkgs-options; };
+      # The actual flake outputs for this host
+      nixosConfigurations = {
+        "${host}" = nixpkgs.lib.nixosSystem {
+          inherit system modules specialArgs;
+        };
+        "${host}-no-home-manager" = nixpkgs.lib.nixosSystem {
+          inherit system specialArgs;
+          modules = modules-noHM;
+        };
       };
-      "${name}-no-home-manager" = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs outputs nixpkgs-options; };
-        modules = modules-noHM;
+      homeConfigurations = {
+        "${username}@${host}" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs extraSpecialArgs;
+          inherit (hm) modules;
+        };
       };
     };
-  in
-  {
+  in builtins.foldl' (a: b: lib.attrsets.recursiveUpdate a b) {} [
+    (mkHost "nixos-desktop")
+    (mkHost "nixos-t480")
+  ] // {
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
     };
-
-    homeConfigurations = {
-      "reed@nixos-desktop" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = { inherit inputs outputs; };
-        modules = commonHMModules ++ machineSpecificHM "nixos-desktop";
-      };
-      "reed@nixos-t480" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = { inherit inputs outputs; };
-        modules = commonHMModules ++ machineSpecificHM "nixos-t480";
-      };
-    };
-
-    nixosConfigurations = let configs = [
-      (mkNixOSConfiguration "nixos-desktop")
-      (mkNixOSConfiguration "nixos-t480")
-    ]; in builtins.foldl' (a: b: a // b) {} configs;
   };
+
 }
