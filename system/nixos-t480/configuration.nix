@@ -31,7 +31,7 @@
   time.timeZone = "America/New_York";
 
   users.mutableUsers = false;
-  users.users.reed.passwordFile = "/persist/secrets/reed-passwordFile";
+  users.users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
 
   hardware = {
     opengl = {
