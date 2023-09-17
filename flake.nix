@@ -75,14 +75,12 @@
 
     # Nixpkgs setup
     ########################################
-    config = import ./pkgs/config.nix {
-      inherit NUR master stable;
-    };
-
     nixpkgs-options = {
       nixpkgs = {
         overlays = [ (import ./pkgs) ];
-        inherit config;
+        config = import ./pkgs/config.nix {
+          inherit NUR master stable;
+        };
       };
     };
 
@@ -113,7 +111,7 @@
     #    - `${host}` is a NixOS configuration with home-manager enabled
     #    - `${host}-no-home-manager` is a NixOS configuration with home-manager disabled.
     #      This is used to build in Github Actions, to reduce unnecessary build time from
-    #      building the home-manager configuration twice.
+    #      building the home-manager configuration within the NixOS configuration.
     mkHost = host:
     let
       # For now, repo is only set up for 1 home-manager user
