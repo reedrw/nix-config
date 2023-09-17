@@ -1,6 +1,15 @@
 { config, lib, pkgs, ... }:
 let
-  term = "WINIT_X11_SCALE_FACTOR=1.0 alacritty";
+  term = let
+    alacrittyd = pkgs.writeShellScriptBin "alacrittyd" ''
+      set -x
+      if [[ -z "$(pidof alacritty)" ]]; then
+        exec alacritty
+      else
+        exec alacritty msg create-window
+      fi
+    '';
+  in "WINIT_X11_SCALE_FACTOR=1.0 ${alacrittyd}/bin/alacrittyd";
 
   mod = "Mod1";
   sup = "Mod4";
