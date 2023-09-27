@@ -62,8 +62,9 @@
       flake = false;
     };
 
+    # https://github.com/alacritty/alacritty/issues/6884
     alacritty = {
-      url = "github:alacritty/alacritty";
+      url = "github:alacritty/alacritty?rev=578e08486dfcdee0b2cd0e7a66752ff50edc46b8";
       flake = false;
     };
   };
