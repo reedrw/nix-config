@@ -47,6 +47,11 @@
       options = [ "subvol=prev" "compress=zstd" "noatime" ];
     };
 
+  fileSystems."/mnt/subvols" =
+    { device = "/dev/mapper/enc";
+      fsType = "btrfs";
+    };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/4B09-6E16";
       fsType = "vfat";
