@@ -59,6 +59,7 @@ in
       while read -r i; do
         autoload -Uz "$i"
       done << EOF
+        add-zsh-hook
         colors
         down-line-or-beginning-search
         up-line-or-beginning-search
@@ -105,6 +106,31 @@ in
 
       export MANPAGER="nvim +Man\!"
       export EDITOR="${config.home.sessionVariables.EDITOR}"
+
+      # Make sure nix-shell gets its completions loaded
+      # BUG: Doesn't unload completions when leaving direnv
+      function set-completions-from-path() {
+        local old_fpath_len=''${#fpath}
+        local fpath_union=("''${(@)fpath}")
+        typeset -U fpath_union
+
+        fpath=()
+        for p in "''${(@)path}"; do
+          if [[ "$p" == /nix/store/* ]]; then
+            fpath+="$p"/../share/zsh/site-functions
+          fi
+        done
+        fpath+=("''${(@)fpath_backup}")
+
+        fpath_union+=("''${(@)fpath}")
+        if [[ "''${#fpath}" -ne "$old_fpath_len" || ''${#fpath_union} -ne "$old_fpath_len" ]]; then
+          compinit -D
+        fi
+      }
+
+      fpath_backup=("''${(@)fpath}")
+      add-zsh-hook precmd set-completions-from-path
+      add-zsh-hook chpwd set-completions-from-path
 
       FZF_TAB_FLAGS=(
         -i
