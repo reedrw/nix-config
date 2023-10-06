@@ -51,7 +51,6 @@
     "/root/.cache/mesa_shader_cache",
     "/root/.cache/nix",
     "/var/db/sudo",
-    "/var/lib/NetworkManager",
     "/var/lib/blueman",
     "/var/lib/bluetooth",
     "/var/lib/deluge",
