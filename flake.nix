@@ -164,8 +164,7 @@
 
       # Arguments to pass to our NixOS and home-manager configurations
       specialArgs = { inherit inputs outputs nixpkgs-options; };
-      extraSpecialArgs = specialArgs;
-    in {
+    in rec {
       # The actual flake outputs for this host
       nixosConfigurations = {
         "${host}" = nixpkgs.lib.nixosSystem {
@@ -176,7 +175,14 @@
           modules = modules-noHM;
         };
       };
-      homeConfigurations = {
+      homeConfigurations = let
+        extraSpecialArgs = specialArgs // {
+          # When used as a NixOS module, home-manager sets the parameter `osConfig` to the NixOS
+          # configuration that is importing it. We need to set this parameter manually when
+          # building a standalone home-manager generation.
+          osConfig = nixosConfigurations."${host}".config;
+        };
+      in {
         "${username}@${host}" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs extraSpecialArgs;
           inherit (hm) modules;
