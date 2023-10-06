@@ -32,7 +32,7 @@ in
         };
       };
     };
-    plugins = with pkgs.vimPlugins; [
+    plugins = with pkgs.fromBranch.stable.vimPlugins; [
       ale
       base16-vim
       camelcasemotion
