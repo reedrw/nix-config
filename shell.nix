@@ -22,8 +22,13 @@ mkShell {
     wget
 
     (aliasToPackage {
-      update-all = ''
-        find . -name update-sources.sh -execdir sh -c "realpath {} && {}" \;
+      update-all = let
+        blue = ''"$(tput setaf 4)"'';
+        green = ''"$(tput setaf 2)"'';
+        reset = ''"$(tput sgr0)"'';
+        dots = "${blue}....................................................................${reset}";
+      in ''
+        find . -name update-sources.sh -execdir sh -c 'echo -e "Running ${green}$(realpath {})\n${dots}" && {} && echo' \;
       '';
     })
   ];
