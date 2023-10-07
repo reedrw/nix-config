@@ -17,9 +17,6 @@ in
       };
       Service = with pkgs; {
         ExecStart = "${myLorri}/bin/lorri daemon";
-        PrivateTmp = true;
-        ProtectSystem = "strict";
-        ProtectHome = "read-only";
         Restart = "on-failure";
         Environment = let
           path =
