@@ -18,17 +18,19 @@ rec {
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
   # Ex.
   # aliasToPackage {
-  #   str = "${gcc}/bin/strings $@";
-  #   hms = "home-manager switch;
+  #   str = ''${gcc}/bin/strings "$@"'';
+  #   tb = ''${netcat}/bin/nc termbin.com 9999 "$@"'';
   # }
+  #
+  # Returns:
+  # /nix/store/l0x3s11938c2drxq19sp8hdmz4ig2nj1-alias-str-tb
+  # └── bin
+  #    ├── str -> /nix/store/bmajpd6q4j1g14s5vvg6li94rln9w3kp-str/bin/str
+  #    └── tb -> /nix/store/4q5d9z7r4a1qvpd6klblksrm0racx6px-tb/bin/tb
   aliasToPackage = alias:
     pkgs.symlinkJoin {
-      name = "alias";
-      paths = (
-        lib.mapAttrsToList
-        (name: value: pkgs.writeShellScriptBin name value)
-        alias
-      );
+      name = builtins.concatStringsSep "-"  ([ "alias" ] ++ (builtins.attrNames alias));
+      paths = lib.mapAttrsToList pkgs.writeShellScriptBin alias;
     };
 
   # Takes a package as input and returns the path to the binary with the same name.
@@ -36,7 +38,7 @@ rec {
   # binPath bat
   #
   # Returns:
-  # /nix/store/vkbfya4qhmzykw6fqs409q5ajdrnhzlq-bat-0.22.1/bin/bat
+  # "/nix/store/vkbfya4qhmzykw6fqs409q5ajdrnhzlq-bat-0.22.1/bin/bat"
   binPath = package: let
     name = (builtins.parseDrvName package.name).name;
   in
