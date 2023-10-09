@@ -70,11 +70,14 @@ in
           "XF86AudioMute" = "${exec} ${binPath scripts.volume} mute";
           "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
           "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
-        } // lib.attrsets.mapAttrs' (x: y: lib.attrsets.nameValuePair
-          "${mod}+ctrl+${x}" "${exec} ${binPath scripts.load-layouts} ${x}"
-        ) (builtins.listToAttrs (map
-          (x: { name = toString x; value = x; } ) (lib.lists.range 0 9)
-        )));
+        } // builtins.listToAttrs (map (n:
+          let
+            x = toString n;
+          in {
+            name = "${mod}+ctrl+${x}";
+            value = "${exec} ${binPath scripts.load-layouts} ${x}";
+          }) (lib.range 0 9))
+        );
         colors = with config.colorScheme.colors; {
           focused = {
             border = "#${base07}";
