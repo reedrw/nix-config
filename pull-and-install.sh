@@ -1,5 +1,4 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i bash -p jq gh git curl
+#! /usr/bin/env bash
 
 set -e
 
@@ -20,7 +19,6 @@ PRs=$(curl -s "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot
 
 mergePr(){
   for prNumber in $PRs; do
-
     # Get PR ref
     prRef="$(curl -s "$mainUrl/pulls/$prNumber" | jq -r '.head.sha')"
 
@@ -33,24 +31,13 @@ mergePr(){
       case $yn in
         [nN] )
           exit 2;;
-        [yY] )
-          gh pr merge "$prNumber" -dm
-          merged="true"
-          break;;
         * )
-          gh pr merge "$prNumber" -dm
-          merged="true"
+          gh pr merge "$prNumber" -dm && git pull
+          ./install.sh
           break;;
       esac
     fi
-
   done
-  if [[ $merged == "true" ]]; then
-    git pull
-    ./install.sh
-  else
-    exit 1
-  fi
 }
 
 pushd "$dir" > /dev/null || exit
