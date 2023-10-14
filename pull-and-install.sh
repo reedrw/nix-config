@@ -20,6 +20,7 @@ PRs=$(curl -s "$mainUrl/pulls" | jq -r '.[] | select(.user.login == "reedbot[bot
 
 mergePr(){
   for prNumber in $PRs; do
+
     # Get PR ref
     prRef="$(curl -s "$mainUrl/pulls/$prNumber" | jq -r '.head.sha')"
 
@@ -28,16 +29,28 @@ mergePr(){
 
     if [[ $prConclusion == "success" ]]; then
       gh pr view "$prNumber" --comments
-      read -rp "Merge and install PR? [Y/n] " yn
+      read -rp "Merge and install PR? (Y/n) " yn
       case $yn in
         [nN] )
           exit 2;;
-        [yY*] )
-          gh pr merge "$prNumber" -dm && git pull
+        [yY] )
+          gh pr merge "$prNumber" -dm
+          merged="true"
+          break;;
+        * )
+          gh pr merge "$prNumber" -dm
+          merged="true"
           break;;
       esac
     fi
+
   done
+  if [[ $merged == "true" ]]; then
+    git pull
+    ./install.sh
+  else
+    exit 1
+  fi
 }
 
 pushd "$dir" > /dev/null || exit
@@ -47,6 +60,6 @@ if [[ "$clonedCommitSha" == "$upstreamCommitSha" ]]; then
   mergePr
 else
   git pull --rebase
+  ./install.sh
 fi
-./install.sh
 popd >> /dev/null || exit
