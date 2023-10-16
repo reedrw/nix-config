@@ -24,7 +24,7 @@ let
         nix-collect-garbage "$@"
       '';
       hms = "home-manager switch -L";
-      ldp = ''sh -c "(cd ~/.config/nixpkgs/; ./install.sh "$@")"'';
+      ldp = ''~/.config/nixpkgs/install.sh "$@"'';
       pai = ''~/.config/nixpkgs/pull-and-install.sh "$@"'';
     })
   ];
