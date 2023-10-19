@@ -2,7 +2,6 @@
   "files": [
     "/home/reed/.cache/rofi-3.runcache",
     "/home/reed/.gitconfig",
-    "/home/reed/.local/share/home-manager/news-read-ids",
     "/home/reed/.zsh_history"
   ],
   "directories": [
@@ -25,6 +24,7 @@
     "/home/reed/.config/nixpkgs",
     "/home/reed/.local/share/TelegramDesktop",
     "/home/reed/.local/share/direnv",
+    "/home/reed/.local/share/home-manager",
     "/home/reed/.local/share/ranger",
     "/home/reed/.mozilla",
     "/home/reed/.ssh",
