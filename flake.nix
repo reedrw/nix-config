@@ -189,7 +189,7 @@
         };
       };
     };
-  in builtins.foldl' (a: b: lib.attrsets.recursiveUpdate a b) {} [
+  in builtins.foldl' (a: b: lib.recursiveUpdate a b) {} [
     (mkHost "nixos-desktop")
     (mkHost "nixos-t480")
   ] // {

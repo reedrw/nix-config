@@ -44,6 +44,7 @@
   fileSystems."/mnt/subvols" =
     { device = "/dev/disk/by-uuid/c3dbcb2a-b934-4c2c-9b78-b2e281eba70e";
       fsType = "btrfs";
+      options = [ "compress=zstd" "noatime" ];
     };
 
   fileSystems."/boot" =
@@ -54,7 +55,7 @@
   fileSystems."/prev" =
     { device = "/dev/disk/by-uuid/c3dbcb2a-b934-4c2c-9b78-b2e281eba70e";
       fsType = "btrfs";
-      options = [ "subvol=prev" ];
+      options = [ "subvol=prev" "compress=zstd" "noatime" ];
     };
 
   swapDevices =
