@@ -23,7 +23,7 @@ _persist() {
 # Custom completion function for persist file paths
 _persist_files() {
   # Find persist.json from config
-  local persist_config=$(jq -r '.persistJson' $HOME/.config/persist-path-manager/config.json)
+  local persist_config=$(persist -c | jq -r '.persistJson')
 
   # Read the paths from persist.json
   IFS=$'\n'

@@ -15,7 +15,7 @@
     ./persist.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
-  ] ++ builtins.map (x: ../common + "/${x}") (builtins.attrNames (builtins.readDir ../common));
+  ];
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -41,6 +41,19 @@
   services.btrfs.autoScrub = {
     enable = true;
     interval = "weekly";
+  };
+
+  programs.persist-path-manager = {
+    enable = true;
+    config = {
+      activateCommand = "ldp";
+      persistJson = "/home/reed/.config/nixpkgs/system/nixos-desktop/persist.json";
+      persistDir = "/persist";
+      snapper = {
+        enable = true;
+        config = "persist";
+      };
+    };
   };
 
   services.snapper = {
@@ -92,18 +105,6 @@
     };
   };
 
-  # virtualisation.vmVariant = {
-  #   boot = {
-  #     initrd = {
-  #       network.enable = false;
-  #       postDeviceCommands = "";
-  #     };
-  #   };
-  #   environment.persistence = {};
-  #   home-manager.users.reed.home.persistence = {};
-  #   environment.etc."crypttab".text = "";
-  # };
-  #
   networking.hostName = "nixos-desktop";
   networking.networkmanager.insertNameservers = [
     "1.1.1.1"
@@ -124,14 +125,6 @@
   };
 
   services.autossh.sessions = [
-    # {
-    #   extraArguments = ''
-    #     -o ServerAliveInterval=30 \
-    #     -N -T -R 5000:localhost:22 142.4.208.215
-    #   '';
-    #   name = "ssh-port-forward";
-    #   user = "reed";
-    # }
     {
       extraArguments = ''
         -D 1337 -nNT localhost

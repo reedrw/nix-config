@@ -19,14 +19,4 @@ in
     allowOther = true;
     files = [] ++ files;
   };
-
-  home.file.".config/persist-path-manager/config.json".text = builtins.toJSON {
-    activateCommand = "ldp";
-    persistJson = "${homeDir}/.config/nixpkgs/system/nixos-t480/persist.json";
-    persistDir = "/persist";
-    snapper = {
-      enable = true;
-      config = "persist";
-    };
-  };
 }

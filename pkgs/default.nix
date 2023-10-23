@@ -15,6 +15,10 @@ rec {
     withVencord = true;
   };
 
+  persist-path-manager = pkgs.callPackage ./persist-path-manager { };
+
+  # aliasToPackage :: AttrSet -> Package
+  ########################################
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
   # Ex.
   # aliasToPackage {
@@ -33,6 +37,8 @@ rec {
       paths = lib.mapAttrsToList pkgs.writeShellScriptBin alias;
     };
 
+  # binPath :: Package -> String
+  ########################################
   # Takes a package as input and returns the path to the binary with the same name.
   # Ex.
   # binPath bat
@@ -44,6 +50,8 @@ rec {
   in
     "${package}/bin/${name}";
 
+  # versionConditionalOverride :: String -> Package -> Package -> Package
+  ########################################
   # Override a package until next release. Takes current version, package, and override as arguments.
   # Ex.
   # versionConditionalOverride "1.4.1" distrobox
@@ -62,6 +70,8 @@ rec {
     then override
     else package;
 
+  # shortenRev :: String -> String
+  ########################################
   # Shortens a git commit hash to the first 7 characters
   # Ex.
   # shortenRev "acb36a427a35f451b42dd5d0f29f1c4e2fe447b9"
@@ -70,6 +80,8 @@ rec {
   # "acb36a4"
   shortenRev = rev: builtins.substring 0 7 rev;
 
+  # buildFromNivSource :: Package -> AttrSet -> Package
+  ########################################
   # Given a package an niv sources set, overrides package to build from niv source with same name.
   # Ex.
   # `buildFromNivSource i3 sources`
@@ -84,6 +96,8 @@ rec {
       inherit version src;
     });
 
+  # buildFromNivSourceUntilVersion :: String -> Package -> AttrSet -> Package
+  ########################################
   # Given the current version of a package, the package itsef, and a niv sources set, build from
   # niv sources until the version of the package is newer than the specified version.
   # Ex.
@@ -92,10 +106,14 @@ rec {
     versionConditionalOverride version package
       (buildFromNivSource package sources);
 
+  # importNixpkgs :: AttrSet -> AttrSet
+  ########################################
   # Given a nixpkgs source as arugment, import it with the current config.
   importNixpkgs = nixpkgs:
     import nixpkgs { inherit (pkgs) config overlays system; };
 
+  # writeNixShellScript :: String -> String -> Package
+  ########################################
   # Given a name and the text of a shell script with nix-shell shebang, return a package that
   # has the packages specfied in the shebang as dependencies.
   # Ex.
@@ -117,4 +135,10 @@ rec {
     pkgs.writeShellApplication {
       inherit name text runtimeInputs;
     };
+
+  # listDirectory :: String -> List
+  ########################################
+  # Given a path to a directory, return a list of everything in that directory.
+  listDirectory = path:
+    builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
 }

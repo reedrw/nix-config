@@ -119,7 +119,10 @@
       username = "reed";
 
       # NixOS configuration imports, minus home-manager
-      modules-noHM = [
+      modules-noHM = let
+        commonImports = pkgs.listDirectory ./system/common;
+        moduleImports = pkgs.listDirectory ./system/modules;
+      in [
         (./. + "/system/${host}/configuration.nix")
         impermanence.nixosModule
         nixpkgs-options
@@ -128,16 +131,15 @@
           nix.registry.nixpkgs.flake = nixpkgs;
           nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
         }
-      ];
+      ] ++ commonImports ++ moduleImports;
 
       # Home-manager configuration imports
       hm.modules = let
         # Each host has a directory for home-manager config in ./system/${host}/home.
         # Any .nix files in that directory will be imported as part of the home-manager
         # configuration for that host.
-        homeDirPath = ./system + "/${host}/home";
-        homeDirContents = builtins.attrNames (builtins.readDir homeDirPath);
-        perHost = builtins.map (x: homeDirPath + "/${x}") homeDirContents;
+        perHost = pkgs.listDirectory (./. + "/system/${host}/home");
+        hmCommon = pkgs.listDirectory ./modules;
       in [
         ./home.nix
         nixpkgs-options
@@ -152,7 +154,7 @@
           };
           nix.registry.nixpkgs.flake = nixpkgs;
         })
-      ] ++ perHost;
+      ] ++ perHost ++ hmCommon;
 
       # NixOS configuration imports, including home-manager
       modules = modules-noHM ++ [
@@ -196,6 +198,8 @@
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
     };
+
+    legacyPackages."${system}".default = pkgs;
   };
 
 }

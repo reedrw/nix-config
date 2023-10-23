@@ -46,13 +46,6 @@ let
 
 in
 {
-  imports = builtins.map (x: ./modules + "/${x}") (builtins.attrNames (builtins.readDir ./modules));
-
-  nixpkgs = {
-    overlays = [ (import ./pkgs) ];
-    config = import ./config.nix;
-  };
-
   xdg = {
     mimeApps.enable = true;
     userDirs = {

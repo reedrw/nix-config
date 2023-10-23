@@ -11,7 +11,7 @@
     ./hardware-configuration.nix
     ./persist.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
-  ] ++ builtins.map (x: ../common + "/${x}") (builtins.attrNames (builtins.readDir ../common));
+  ];
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -53,6 +53,19 @@
   services.btrfs.autoScrub = {
     enable = true;
     interval = "weekly";
+  };
+
+  programs.persist-path-manager = {
+    enable = true;
+    config = {
+      activateCommand = "ldp";
+      persistJson = "/home/reed/.config/nixpkgs/system/nixos-t480/persist.json";
+      persistDir = "/persist";
+      snapper = {
+        enable = true;
+        config = "persist";
+      };
+    };
   };
 
   services.snapper = {

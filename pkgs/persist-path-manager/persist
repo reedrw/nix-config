@@ -5,6 +5,7 @@
 set -e
 
 configJson="$HOME/.config/persist-path-manager/config.json"
+configJson=${PPM_CONFIG:-"$configJson"}
 
 # Formatting/color variables
 underline=$(tput smul)
@@ -66,6 +67,9 @@ main(){
       shift;
       remove "$@"
       ;;
+    -c|--config)
+      cat "$configJson"
+      ;;
     *)
       add "$@"
       ;;
@@ -87,6 +91,7 @@ ${green}${bold}Options:${reset}
   ${yellow}-r, --remove${reset}     Remove the specified path from persistence.
   ${yellow}-l, --list${reset}       List all persistent files and directories.
   ${yellow}-v, --verbose${reset}    Show verbose output for debugging purposes.
+  ${yellow}-c, --config${reset}     Show the current configuration.
   ${yellow}-h, --help${reset}       Show this help message and exit.
 
 ${green}${bold}Examples:${reset}
