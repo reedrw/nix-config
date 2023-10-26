@@ -2,14 +2,22 @@ _: pkgs:
 let
   lib = pkgs.lib;
 in
-rec {
-
-  inherit ((import ../config.nix).packageOverrides pkgs) nur fromBranch;
+{
 
   discord = pkgs.discord.override {
     nss = pkgs.nss_latest;
     withVencord = true;
   };
+
+  vencord = let version = "1.6.0"; in _.versionConditionalOverride version pkgs.vencord (pkgs.vencord.overrideAttrs (old: {
+    src = pkgs.fetchFromGitHub {
+      owner = "Vendicated";
+      repo = "Vencord";
+      rev = "v${version}";
+      hash = "sha256-t4+8ybPzqcCtTSukBBgvbD7HiKG4K51WPVnJg0RQbs8=";
+    };
+  }));
+
   discord-canary = pkgs.discord-canary.override {
     nss = pkgs.nss_latest;
     withVencord = true;
@@ -90,7 +98,7 @@ rec {
   let
     name = (builtins.parseDrvName package.name).name;
     src = sources."${name}";
-    version = shortenRev src.rev;
+    version = _.shortenRev src.rev;
   in
     package.overrideAttrs ( _: {
       inherit version src;
@@ -103,8 +111,8 @@ rec {
   # Ex.
   # buildFromNivSourceUntilVersion "1.4.1" distrobox sources
   buildFromNivSourceUntilVersion = version: package: sources:
-    versionConditionalOverride version package
-      (buildFromNivSource package sources);
+    _.versionConditionalOverride version package
+      (_.buildFromNivSource package sources);
 
   # importNixpkgs :: AttrSet -> AttrSet
   ########################################

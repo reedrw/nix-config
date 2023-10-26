@@ -13,6 +13,8 @@ _persist() {
     "--remove[Remove the specified path from persistence]: :_persist_files"
     "-v[Show verbose output for debugging purposes]"
     "--verbose[Show verbose output for debugging purposes]"
+    "-c[Show the current configuration]: :"
+    "--config[Show the current configuration]: :"
   )
 
 
