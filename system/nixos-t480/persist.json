@@ -6,6 +6,7 @@
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
+    "/etc/mullvad-vpn",
     "/etc/ssh",
     "/home/reed/.cache/dconf",
     "/home/reed/.cache/fontconfig",
@@ -16,6 +17,7 @@
     "/home/reed/.cache/pre-commit",
     "/home/reed/.config/Bitwarden",
     "/home/reed/.config/Mullvad VPN",
+    "/home/reed/.config/Vencord",
     "/home/reed/.config/coc",
     "/home/reed/.config/dconf",
     "/home/reed/.config/discord",
