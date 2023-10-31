@@ -146,7 +146,39 @@ in
 
   # listDirectory :: String -> List
   ########################################
-  # Given a path to a directory, return a list of everything in that directory.
+  # Given a path to a directory, return a list of everything in that directory
+  # relative to the calling nix file.
   listDirectory = path:
     builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
+
+  # mullvadExclude :: Package -> Package
+  ########################################
+  # Given a package, wrap all the non-hidden binaries in the package with mullvad-exclude.
+  mullvadExclude = package:
+  let
+    # get a list of all the binaries provided by the package
+    allBinaries = builtins.attrNames (builtins.readDir ("${package}/bin"));
+    # remove binaries which start with a .
+    binaries = builtins.filter (x: (builtins.substring 0 1 x) != ".") allBinaries;
+
+  in pkgs.symlinkJoin {
+    name = "${package.name}-mullvad-exclude";
+    paths = [ package ];
+    postBuild = ''
+      for binary in ${builtins.concatStringsSep " " binaries}; do
+        echo "Wrapping $binary with mullvad-exclude"
+        #mv "$out/bin/$binary" "$out/bin/$binary.orig"
+        rm "$out/bin/$binary"
+        cat << _EOF > $out/bin/$binary
+      #! ${pkgs.runtimeShell} -e
+      if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
+        exec /run/wrappers/bin/mullvad-exclude ${package}/bin/$binary "\$@"
+      else
+        exec ${package}/bin/$binary "\$@"
+      fi
+      _EOF
+        chmod 555 "$out/bin/$binary"
+      done
+    '';
+  };
 }

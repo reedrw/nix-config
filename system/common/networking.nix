@@ -50,9 +50,9 @@
   services.resolved.enable = true;
   services.tailscale.enable = true;
 
-  systemd.services.tailscaled.serviceConfig.ExecStart = [
+  systemd.services.tailscaled.serviceConfig.ExecStart = with pkgs; [
     ""
-    ''${pkgs.mullvad}/bin/mullvad-exclude ${pkgs.tailscale}/bin/tailscaled \
+    ''${mullvadExclude tailscale}/bin/tailscaled \
       --state=/var/lib/tailscale/tailscaled.state \
       --socket=/run/tailscale/tailscaled.sock \
       --port=''${PORT} $FLAGS''

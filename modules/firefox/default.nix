@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
+  myFirefox = with pkgs; wrapFirefox firefox-unwrapped {
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;
@@ -36,32 +36,15 @@ let
     '';
   };
 
-  # Exclude firefox from mullvad. I use the FoxyProxy extension
-  # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
-  # (because private trackers block mullvad).
-  pkg = pkgs.symlinkJoin {
-    name = "firefox";
-    paths = [ myFirefox ];
-    postBuild = ''
-      mv $out/bin/firefox $out/bin/.firefox-mullvad-unwrapped
-      cat << _EOF > $out/bin/firefox
-      #! ${pkgs.runtimeShell} -e
-      if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
-        exec /run/wrappers/bin/mullvad-exclude $out/bin/.firefox-mullvad-unwrapped "\$@"
-      else
-        exec $out/bin/.firefox-mullvad-unwrapped "\$@"
-      fi
-      _EOF
-      chmod 0755 $out/bin/firefox
-    '';
-  };
-
 in
 {
 
   programs.firefox = {
     enable = true;
-    package = (pkgs.emptyDirectory // { override = _: pkg; });
+    # Exclude firefox from mullvad. I use the FoxyProxy extension
+    # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
+    # (because private trackers block mullvad).
+    package = with pkgs; (emptyDirectory // { override = _: (mullvadExclude myFirefox); });
   };
 
 }
