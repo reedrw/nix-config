@@ -27,6 +27,14 @@
     package = pkgs.mullvad-vpn;
   };
 
+  services.autossh.sessions = let
+    mkSession = extraArguments: name: user: {
+      inherit extraArguments name user;
+    };
+  in [
+    (mkSession "-D 1337 -nNT localhost" "mullvad-socks-proxy" "reed")
+  ];
+
   systemd.services."mullvad-daemon".postStart = let
     mullvad = config.services.mullvad-vpn.package;
     dnsServers = builtins.concatStringsSep " " (lib.lists.remove "100.100.100.100" config.networking.nameservers);

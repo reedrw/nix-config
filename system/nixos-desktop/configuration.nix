@@ -124,16 +124,6 @@
     '';
   };
 
-  services.autossh.sessions = [
-    {
-      extraArguments = ''
-        -D 1337 -nNT localhost
-      '';
-      name = "ssh-socks-proxy";
-      user = "reed";
-    }
-  ];
-
   services.jellyfin = {
     enable = true;
     user = "reed";

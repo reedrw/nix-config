@@ -96,16 +96,6 @@
     '';
   };
 
-  services.autossh.sessions = [
-    {
-      extraArguments = ''
-        -D 1337 -nNT localhost
-      '';
-      name = "ssh-socks-proxy";
-      user = "reed";
-    }
-  ];
-
   programs = {
     droidcam.enable = true;
     steam.enable = true;

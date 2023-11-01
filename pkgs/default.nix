@@ -167,7 +167,6 @@ in
     postBuild = ''
       for binary in ${builtins.concatStringsSep " " binaries}; do
         echo "Wrapping $binary with mullvad-exclude"
-        #mv "$out/bin/$binary" "$out/bin/$binary.orig"
         rm "$out/bin/$binary"
         cat << _EOF > $out/bin/$binary
       #! ${pkgs.runtimeShell} -e
