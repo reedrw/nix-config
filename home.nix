@@ -42,6 +42,9 @@ let
     sshpass     # specify ssh password
     xclip       # x clipboard scripting
     xsel        # x clipbaord scripting
+    (aliasToPackage {
+      open = ''xdg-open "$@"'';
+    })
   ];
 
 in
