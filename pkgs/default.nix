@@ -9,15 +9,6 @@ in
     withVencord = true;
   };
 
-  vencord = let version = "1.6.0"; in _.versionConditionalOverride version pkgs.vencord (pkgs.vencord.overrideAttrs (old: {
-    src = pkgs.fetchFromGitHub {
-      owner = "Vendicated";
-      repo = "Vencord";
-      rev = "v${version}";
-      hash = "sha256-t4+8ybPzqcCtTSukBBgvbD7HiKG4K51WPVnJg0RQbs8=";
-    };
-  }));
-
   discord-canary = pkgs.discord-canary.override {
     nss = pkgs.nss_latest;
     withVencord = true;
