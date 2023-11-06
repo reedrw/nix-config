@@ -71,7 +71,7 @@ in
       # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
       ranger = myranger.override { imagePreviewSupport = false; };
     in
-    [ ranger pkgs.ueberzugpp ];
+    [ ranger pkgs.fromBranch.stable.ueberzugpp ];
 
   xdg.mimeApps.defaultApplications = {
     "inode/directory" = "ranger.desktop";
