@@ -22,6 +22,10 @@ in
     '';
   };
 
+  home.file.".config/gh-copilot/config.yml".source = pkgs.writeText "config.yml" (builtins.toJSON {
+    optional_analytics = false;
+  });
+
   home.file.".local/share/gh/extensions/gh-copilot/manifest.yml".source = pkgs.writeText "manifest.yml" (builtins.toJSON {
     inherit (sources) tag;
     owner = "github";
