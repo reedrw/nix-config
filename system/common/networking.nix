@@ -58,13 +58,18 @@
   services.resolved.enable = true;
   services.tailscale.enable = true;
 
-  systemd.services.tailscaled.serviceConfig.ExecStart = with pkgs; [
-    ""
-    ''${mullvadExclude tailscale}/bin/tailscaled \
-      --state=/var/lib/tailscale/tailscaled.state \
-      --socket=/run/tailscale/tailscaled.sock \
-      --port=''${PORT} $FLAGS''
-  ];
+  systemd.services.tailscaled = {
+    after = [ "mullvad-daemon.service" ];
+    serviceConfig = {
+      ExecStart = with pkgs; [
+        ""
+        ''${mullvadExclude tailscale}/bin/tailscaled \
+          --state=/var/lib/tailscale/tailscaled.state \
+          --socket=/run/tailscale/tailscaled.sock \
+          --port=''${PORT} $FLAGS''
+      ];
+    };
+  };
 
   networking.search = [ "tail3b7ba.ts.net" ];
   networking.nameservers = [
