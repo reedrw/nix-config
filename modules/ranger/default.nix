@@ -5,7 +5,7 @@ let
   '';
 
   rangercommand = pkgs.writeShellScript "rangercommand" ''
-    cd $@
+    cd "$@"
     ranger
     $SHELL
   '';
@@ -40,16 +40,12 @@ let
     zip
   ];
 
-  ranger39 = pkgs.ranger.override {
-    python3Packages = pkgs.python39Packages;
-  };
-
 in
 {
 
   home.packages =
     let
-      myranger = ranger39.overrideAttrs (_: {
+      myranger = pkgs.ranger.overrideAttrs (_: {
         buildInputs = _.buildInputs ++ [ pkgs.makeWrapper ];
         postInstall = ''
           cat << EOF > $out/share/applications/ranger.desktop
@@ -68,9 +64,9 @@ in
             --prefix PATH : ${lib.makeBinPath bins}
         '';
       });
-      # imagePreviewSupport uses w3m. I don't need this because I use ueberzug instead
       ranger = myranger.override { imagePreviewSupport = false; };
     in
+    # TODO: figure out why ueberzugpp tries to create windows
     [ ranger pkgs.fromBranch.stable.ueberzugpp ];
 
   xdg.mimeApps.defaultApplications = {
