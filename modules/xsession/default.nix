@@ -140,8 +140,11 @@ in
           "Alacritty"
           "TelegramDesktop"
           "Element"
+          "easyeffects"
           "discord"
+          "Pavucontrol"
           "Zathura"
+          ".blueman-manager-wrapped"
           ".gamescope-wrapped"
         ];
         startup = map ( command: {

@@ -69,6 +69,17 @@ with inputs.nix-colors;
       [SettingsWindow]
       geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\xc1\0\0\x1\f\0\0\x3\xa9\0\0\x3\xdb\0\0\0\xc6\0\0\x1\x11\0\0\x3\xa4\0\0\x3\xd6\0\0\0\0\0\0\0\0\a\x80\0\0\0\xc6\0\0\x1\x11\0\0\x3\xa4\0\0\x3\xd6)
     '';
+    "gtk-4.0/gtk.css".text = ''
+      window {
+        padding: 0;
+        box-shadow: none;
+      }
+    '';
+    "gtk-3.0/gtk.css".text = ''
+      decoration {
+        padding: 0;
+      }
+    '';
   };
 
   gtk = {
