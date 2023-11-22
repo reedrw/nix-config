@@ -36,6 +36,8 @@ in
     enable = true;
     config = {
       profile = "gpu-hq";
+      scale = "ewa_lanczossharp";
+      cscale = "ewa_lanczossharp";
       loop-file = "inf";
       osc = "no";
       volume = 70;
