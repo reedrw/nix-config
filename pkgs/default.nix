@@ -91,9 +91,9 @@ in
     src = sources."${name}";
     version = _.shortenRev src.rev;
   in
-    package.overrideAttrs ( _: {
+    package.overrideAttrs {
       inherit version src;
-    });
+    };
 
   # buildFromNivSourceUntilVersion :: String -> Package -> AttrSet -> Package
   ########################################

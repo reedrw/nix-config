@@ -2,8 +2,8 @@
 let
   # use https://github.com/ncmpcpp/ncmpcpp master until new release
   # this fixes the genius lyric fetcher
-  ncmpcpp = pkgs.ncmpcpp.overrideAttrs (
-    old: {
+  ncmpcpp = pkgs.versionConditionalOverride "0.9.2" pkgs.ncmpcpp (pkgs.ncmpcpp.overrideAttrs
+    (old: {
       src = inputs.ncmpcpp;
       version = inputs.ncmpcpp.shortRev;
 
@@ -16,7 +16,7 @@ let
       preConfigure = ''
         ./autogen.sh
       '';
-    }
+    })
   );
 in
 {
