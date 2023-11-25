@@ -135,7 +135,7 @@ in
       inherit name text runtimeInputs;
     };
 
-  # listDirectory :: String -> List
+  # listDirectory :: Path -> [Path]
   ########################################
   # Given a path to a directory, return a list of everything in that directory
   # relative to the calling nix file.
