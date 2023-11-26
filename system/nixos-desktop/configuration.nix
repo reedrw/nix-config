@@ -82,7 +82,7 @@
   boot.initrd = {
     availableKernelModules = [ "alx" "r8169" ];
     network = {
-      enable = lib.mkDefault false;
+      enable = lib.mkDefault true;
       ssh = {
         enable = true;
         port = 2222;
@@ -97,10 +97,10 @@
   };
 
   specialisation = {
-    "initrd-networking".configuration = {
+    "no-initrd-networking".configuration = {
       boot = {
-        loader.grub.configurationName = "initrd networking";
-        initrd.network.enable = true;
+        loader.grub.configurationName = "No initrd networking";
+        initrd.network.enable = false;
       };
     };
   };
