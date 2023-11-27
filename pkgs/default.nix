@@ -184,4 +184,25 @@ in
   # Returns:
   # { a = 1; b = 3; c = 4; }
   mergeAttrs = attrs: lib.foldl' lib.recursiveUpdate {} attrs;
+
+  # mkSimpleHMService :: String -> String -> AttrSet
+  ########################################
+  # Given a name and a command, return a simple service that runs the command.
+  mkSimpleHMService = name: ExecStart: {
+    ${name} = {
+      Unit = {
+        Description = "${name}";
+        After = [ "graphical.target" ];
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+      Service = {
+        inherit ExecStart;
+        Restart = "on-failure";
+        RestartSec = 5;
+        Type = "simple";
+      };
+    };
+  };
 }
