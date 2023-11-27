@@ -7,7 +7,7 @@ let
   exec = "exec --no-startup-id";
 
   alwaysRun = with pkgs; [
-    "${binPath feh} --bg-fill ~/.background-image"
+    "${binPath feh} --bg-fill ${./wallpaper.png}"
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
@@ -160,7 +160,6 @@ in
   };
 
   services.flameshot.enable = true;
-  home.file.".background-image".source = ./wallpaper.png;
 
   xdg.configFile = {
     "i3/workspace-1.json".source = ./workspace-1.json;
