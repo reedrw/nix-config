@@ -89,8 +89,6 @@
       inherit system;
     });
 
-    lib = pkgs.lib;
-
     # mkHost :: String -> AttrSet
     ########################################
     # Takes a hostname as argument and returns a set of flake outputs
@@ -191,7 +189,7 @@
         };
       };
     };
-  in builtins.foldl' (a: b: lib.recursiveUpdate a b) {} [
+  in pkgs.mergeAttrs [
     (mkHost "nixos-desktop")
     (mkHost "nixos-t480")
   ] // {

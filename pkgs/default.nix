@@ -171,4 +171,17 @@ in
       done
     '';
   };
+
+  # mergeAttrs :: [AttrSet] -> AttrSet
+  ########################################
+  # Takes a list of attribute sets and merges them into one using lib.recursiveUpdate
+  # Ex.
+  # mergeAttrs [
+  #   { a = 1; b = 2; };
+  #   { b = 3; c = 4; };
+  # ]
+  #
+  # Returns:
+  # { a = 1; b = 3; c = 4; }
+  mergeAttrs = attrs: lib.foldl' lib.recursiveUpdate {} attrs;
 }
