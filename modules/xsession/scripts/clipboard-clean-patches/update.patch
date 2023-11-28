@@ -693,7 +693,7 @@ index 632fc24..9551dfd 100644
 +HYMfRsCbvUOZ58SWLs5fyQ==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..e63c63f 100644
+index f2a54b1..1513d71 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -33,7 +33,8 @@
@@ -827,7 +827,15 @@ index f2a54b1..e63c63f 100644
              ]
          },
          "reddit": {
-@@ -693,7 +722,8 @@
+@@ -348,6 +377,7 @@
+                 "ref_campaign",
+                 "ref_source",
+                 "%243p",
++                "rdt",
+                 "\\$3p",
+                 "%24original_url",
+                 "\\$original_url",
+@@ -693,7 +723,8 @@
              "rules": [
                  "refId",
                  "trk",
@@ -837,7 +845,7 @@ index f2a54b1..e63c63f 100644
              ]
          },
          "LinkedIn Learning": {
-@@ -1089,19 +1119,27 @@
+@@ -1089,19 +1120,27 @@
                  "from_source",
                  "from",
                  "seid",
@@ -867,7 +875,7 @@ index f2a54b1..e63c63f 100644
              ]
          },
          "m.bilibili.com": {
-@@ -1623,6 +1661,110 @@
+@@ -1623,6 +1662,110 @@
                  "log",
                  "p"
              ]
