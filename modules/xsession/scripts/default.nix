@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+pkgs: {
   load-layouts = pkgs.writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
 
   mpv-dnd = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
@@ -9,6 +8,8 @@
   record = pkgs.writeNixShellScript "record" (builtins.readFile ./record.sh);
 
   select-term = pkgs.writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
+
+  toggle-touchpad = pkgs.writeNixShellScript "toggle-touchpad" (builtins.readFile ./toggle-touchpad.sh);
 
   volume = pkgs.writeNixShellScript "volume" (builtins.readFile ./volume.sh);
 

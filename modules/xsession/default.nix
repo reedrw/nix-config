@@ -14,9 +14,8 @@ let
     "systemctl --user restart playerctld"
     "systemctl --user import-environment PATH"
     "systemctl --user restart xdg-desktop-portal.service"
-    "xinput --disable $(xinput | grep -o 'Synaptics.*id=[0-9]*' | cut -d '=' -f 2)"
-    "xinput --disable $(xinput | grep -o 'TouchPad.*id=[0-9]*' | cut -d '=' -f 2)"
     "xset r rate 250 50"
+    "${binPath scripts.toggle-touchpad} disable --silent"
     "${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'"
     "${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'"
   ];
@@ -25,7 +24,7 @@ let
     "i3-msg workspace 1"
   ];
 
-  scripts = import ./scripts { inherit pkgs; };
+  scripts = import ./scripts pkgs;
 
 in
 {
@@ -59,6 +58,7 @@ in
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+r" = "${exec} ${binPath scripts.record}";
           "${mod}+Shift+s" = "sticky toggle";
+          "${mod}+${sup}+space" = "${exec} ${binPath scripts.toggle-touchpad}";
           "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
           "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
           "Ctrl+Down" = "${exec} ${binPath playerctl} play-pause";
@@ -79,7 +79,7 @@ in
             value = "${exec} ${binPath scripts.load-layouts} ${x}";
           }) (lib.range 0 9))
         );
-        colors = with config.colorScheme.colors; {
+        colors = with config.colorScheme.colors; let
           focused = {
             border = "#${base07}";
             childBorder = "#${base07}";
@@ -87,27 +87,18 @@ in
             text = "#${base07}";
             indicator = "#${base07}";
           };
-          focusedInactive = {
+          inactive = {
             border = "#${base03}";
             childBorder = "#${base03}";
             background = "#${base03}";
             text = "#${base03}";
             indicator = "#${base03}";
           };
-          unfocused = {
-            border = "#${base03}";
-            childBorder = "#${base03}";
-            background = "#${base03}";
-            text = "#${base03}";
-            indicator = "#${base03}";
-          };
-          urgent = {
-            border = "#${base03}";
-            childBorder = "#${base03}";
-            background = "#${base00}";
-            text = "#${base05}";
-            indicator = "#${base00}";
-          };
+        in {
+          inherit focused;
+          focusedInactive = inactive;
+          unfocused = inactive;
+          urgent = inactive;
         };
         window.commands = [
           {
