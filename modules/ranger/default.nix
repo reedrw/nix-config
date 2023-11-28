@@ -5,7 +5,7 @@ let
   '';
 
   rangercommand = pkgs.writeShellScript "rangercommand" ''
-    cd "$@"
+    cd "$*"
     ranger
     $SHELL
   '';
