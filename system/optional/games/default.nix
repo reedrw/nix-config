@@ -33,11 +33,13 @@ in
     };
   };
 
-  networking.mihoyo-telemetry.block = true;
+  programs.anime-game-launcher = {
+    enable = true;
+    package = anime-game-launcher;
+  };
 
   environment.systemPackages = with pkgs; [
     r2mod_cli
-    anime-game-launcher
     (aliasToPackage {
       gsi = "anime-game-launcher --just-run-game";
       gas = ''genshin-account-switcher "$@"'';
