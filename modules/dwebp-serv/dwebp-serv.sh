@@ -14,5 +14,5 @@ while true; do
     dwebp "$file" -o "${file%.webp}.png"
     # rm "$file"
   done
-  sleep 15
+  sleep 7
 done
