@@ -31,6 +31,7 @@ in
       "module/battery" = {
         type = "custom/script";
         exec = "${binPath bataverage}";
+        click-left = ''${libnotify}/bin/notify-send "$(acpi | sed -e 's/\%.*/\%/g')"'';
         tail = true;
       };
       "module/date" = {

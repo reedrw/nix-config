@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, ... }:
+{ inputs, config, pkgs, lib, ... }:
 let
   tmuxconf = builtins.toFile "tmuxconf" ''
     set -g status off
@@ -60,7 +60,7 @@ in
         draw_bold_text_with_bright_colors = false;
       };
       cursor.style = "Beam";
-      font = {
+      font = lib.mkDefault {
         size = 8;
         normal = {
           family = "scientifica";
