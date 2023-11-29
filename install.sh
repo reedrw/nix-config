@@ -19,10 +19,10 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --flake "$dir/.#$2" -L
+      sudo nixos-rebuild boot --flake "$dir/.#$2" -L --option eval-cache false
       ;;
     --build)
-      nixos-rebuild build --flake "$dir/.#$2" -L
+      nixos-rebuild build --flake "$dir/.#$2" -L --option eval-cache false
       ;;
     --help|-h)
       helpMessage
@@ -33,7 +33,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --flake "$dir/.#$2" -L
+      sudo nixos-rebuild switch --flake "$dir/.#$2" -L --option eval-cache false
       [[ "$USER" != "root" ]] && home-manager switch -L
       ;;
   esac

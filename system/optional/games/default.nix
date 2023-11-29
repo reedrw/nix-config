@@ -2,16 +2,6 @@
 let
   components = lib.importJSON ./components.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
-
-  aagl-unwrapped = aaglPkgs.anime-game-launcher.unwrapped;
-
-  aagl = aaglPkgs.anime-game-launcher.override {
-    unwrapped = aagl-unwrapped.override {
-      customIcon = builtins.fetchurl components.aagl.icon;
-    };
-  };
-
-  anime-game-launcher = pkgs.mullvadExclude aagl;
 in
 {
   imports = [
@@ -35,14 +25,17 @@ in
 
   programs.anime-game-launcher = {
     enable = true;
-    package = anime-game-launcher;
+    package = pkgs.mullvadExclude (aaglPkgs.anime-game-launcher.override (old: {
+      unwrapped = old.unwrapped.override {
+        customIcon = builtins.fetchurl components.aagl.icon;
+      };
+    }));
   };
 
   environment.systemPackages = with pkgs; [
     r2mod_cli
     (aliasToPackage {
-      gsi = "anime-game-launcher --just-run-game";
-      gas = ''genshin-account-switcher "$@"'';
+      gsi = "${config.programs.anime-game-launcher.package}/bin/anime-game-launcher --just-run-game";
     })
   ];
 
