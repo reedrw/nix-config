@@ -32,7 +32,7 @@ in
         };
       };
     };
-    plugins = with pkgs.fromBranch.stable.vimPlugins; [
+    plugins = with pkgs.vimPlugins; [
       ale
       base16-vim
       camelcasemotion
@@ -62,7 +62,15 @@ in
           }
         '' + builtins.readFile ./lua/galaxyline.lua;
       }
-      indent-blankline-nvim
+      {
+        plugin = indent-blankline-nvim;
+        type = "lua";
+        config = ''
+          require "ibl".setup {
+            indent = { char = '┊' },
+          }
+        '';
+      }
       suda-vim
       targets-vim
       undotree

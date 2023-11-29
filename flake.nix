@@ -3,13 +3,13 @@
 
   # {{{ Inputs
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     master.url = "github:nixos/nixpkgs";
-    stable.url = "github:nixos/nixpkgs/nixos-23.05";
+    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     NUR.url = "github:nix-community/NUR";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -70,7 +70,7 @@
   };
   # }}}
 
-  outputs = { self, nixpkgs, master, stable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
+  outputs = { self, nixpkgs, master, unstable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
     inherit (self) outputs;
     system = "x86_64-linux";
 
@@ -80,7 +80,7 @@
       nixpkgs = {
         overlays = [ (import ./pkgs) ];
         config = import ./pkgs/config.nix {
-          inherit NUR master stable;
+          inherit NUR master unstable;
         };
       };
     };

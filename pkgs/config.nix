@@ -1,6 +1,6 @@
 { NUR ? import ./nixpkgs.nix "NUR"
 , master ? import ./nixpkgs.nix "master"
-, stable ? import ./nixpkgs.nix "stable"
+, unstable ? import ./nixpkgs.nix "unstable"
 }:
 
 {
@@ -14,7 +14,7 @@
     nurPkgs = nur.repos.reedrw;
     fromBranch = {
       master = import master { inherit (pkgs) config system; };
-      stable = import stable { inherit (pkgs) config system; };
+      unstable = import unstable { inherit (pkgs) config system; };
     };
   };
 }
