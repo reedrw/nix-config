@@ -1,4 +1,4 @@
-_: pkgs:
+self: pkgs:
 let
   lib = pkgs.lib;
 in
@@ -89,7 +89,7 @@ in
   let
     name = (builtins.parseDrvName package.name).name;
     src = sources."${name}";
-    version = _.shortenRev src.rev;
+    version = self.shortenRev src.rev;
   in
     package.overrideAttrs {
       inherit version src;
@@ -102,8 +102,8 @@ in
   # Ex.
   # buildFromNivSourceUntilVersion "1.4.1" distrobox sources
   buildFromNivSourceUntilVersion = version: package: sources:
-    _.versionConditionalOverride version package
-      (_.buildFromNivSource package sources);
+    self.versionConditionalOverride version package
+      (self.buildFromNivSource package sources);
 
   # importNixpkgs :: AttrSet -> AttrSet
   ########################################
@@ -177,8 +177,8 @@ in
   # Takes a list of attribute sets and merges them into one using lib.recursiveUpdate
   # Ex.
   # mergeAttrs [
-  #   { a = 1; b = 2; };
-  #   { b = 3; c = 4; };
+  #   { a = 1; b = 2; }
+  #   { b = 3; c = 4; }
   # ]
   #
   # Returns:
