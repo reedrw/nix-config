@@ -67,17 +67,14 @@ in
       ranger = myranger.override { imagePreviewSupport = false; };
     in
     # TODO: figure out why ueberzugpp tries to create windows
-    [ ranger
-      (pkgs.ueberzugpp.overrideAttrs rec {
-        version = "2.8.7";
-        src = pkgs.fetchFromGitHub {
-          owner = "jstkdng";
-          repo = "ueberzugpp";
-          rev = "v${version}";
-          hash = "sha256-grkLsbatgezM8wFbwAatLQw35wucU0Kc6hacRefFvHw=";
-        };
-      })
-    ];
+    [ ranger (pkgs.ueberzugpp.overrideAttrs {
+      src = pkgs.fetchFromGitHub {
+        owner = "jstkdng";
+        repo = "ueberzugpp";
+        rev = "b97bee628ad4489ba0c1fd5d0eb896f929a6e4c3";
+        hash = "sha256-U6jw1VQmc/E/vXBCVvjBsmLjhVf0MFuK+FK8jnEEl1M=";
+      };
+    }) ];
 
   xdg.mimeApps.defaultApplications = {
     "inode/directory" = "ranger.desktop";
