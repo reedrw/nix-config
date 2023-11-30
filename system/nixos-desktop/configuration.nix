@@ -8,7 +8,6 @@
   imports = [
     ../boot/efi.nix
     ../users/reed.nix
-    ../optional/games
     ../optional/torrent.nix
     ../optional/btrfs-optin-persistence.nix
     ./hardware-configuration.nix
@@ -124,22 +123,22 @@
     '';
   };
 
+  custom.steam = {
+    enable = true;
+    mullvad-exclude = true;
+  };
+
+  custom.aagl = {
+    enable = true;
+    mullvad-exclude = true;
+  };
+
+
   services.jellyfin = {
     enable = true;
     user = "reed";
     group = "users";
     openFirewall = true;
-  };
-
-  programs.gamemode = {
-    enable = true;
-    settings = {
-      general = {
-        renice = 10;
-        desiredgov = "performance";
-        softrealtime = "on";
-      };
-    };
   };
 
   environment.etc."crypttab".text = ''
@@ -164,11 +163,7 @@
 
   nix.settings.cores = 8;
 
-  programs = {
-    droidcam.enable = true;
-    nix-ld.enable = true;
-    corectrl.enable = true;
-  };
+  programs.droidcam.enable = true;
 
   system.stateVersion = "22.11";
 }
