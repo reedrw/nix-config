@@ -4,6 +4,8 @@ set -e
 
 dir="$(dirname "$0")"
 
+nixCommand=(nix --experimental-features 'nix-command flakes')
+
 helpMessage(){
   local green='\033[0;32m'
   local yellow='\033[0;33m'
@@ -22,7 +24,11 @@ main(){
       sudo nixos-rebuild boot --flake "$dir/.#$2" -L --option eval-cache false
       ;;
     --build)
-      nixos-rebuild build --flake "$dir/.#$2" -L --option eval-cache false
+      if grep -q "@" <<< "$2"; then
+        "${nixCommand[@]}" build "$dir/.#homeConfigurations.$2.activationPackage" -L --option eval-cache false
+      else
+        "${nixCommand[@]}" build "$dir/.#nixosConfigurations.$2.config.system.build.toplevel" -L --option eval-cache false
+      fi
       ;;
     --help|-h)
       helpMessage

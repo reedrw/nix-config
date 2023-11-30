@@ -15,6 +15,7 @@ mkShell {
     gron
     home-manager
     jq
+    ncurses
     niv
     nix-prefetch
     pre-commit

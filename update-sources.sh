@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
-
-nix flake update
+nixCommand=(nix --experimental-features 'nix-command flakes')
+"${nixCommand[@]}" flake update
