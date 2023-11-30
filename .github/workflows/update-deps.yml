@@ -33,7 +33,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run all "update-sources.sh"
-      run: nix-shell --run "update-all"
+      run: |
+        export TERM="xterm"
+        nix-shell --run "update-all"
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v5
