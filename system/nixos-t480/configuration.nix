@@ -5,9 +5,7 @@
 { config, inputs, pkgs, ... }:
 {
   imports = [
-    ../boot/efi.nix
     ../users/reed.nix
-    ../optional/btrfs-optin-persistence.nix
     ./hardware-configuration.nix
     ./persist.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
@@ -55,17 +53,9 @@
     interval = "weekly";
   };
 
-  programs.persist-path-manager = {
-    enable = true;
-    config = {
-      activateCommand = "ldp";
-      persistJson = "/home/reed/.config/nixpkgs/system/nixos-t480/persist.json";
-      persistDir = "/persist";
-      snapper = {
-        enable = true;
-        config = "persist";
-      };
-    };
+  custom.boot = {
+    wipe.enable = true;
+    efi.enable = true;
   };
 
   services.snapper = {
@@ -96,10 +86,7 @@
     '';
   };
 
-  programs = {
-    droidcam.enable = true;
-    steam.enable = true;
-  };
+  programs.droidcam.enable = true;
 
   environment.systemPackages = with pkgs; [ acpi ];
 

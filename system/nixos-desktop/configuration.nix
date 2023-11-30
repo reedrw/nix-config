@@ -6,10 +6,7 @@
 
 {
   imports = [
-    ../boot/efi.nix
     ../users/reed.nix
-    ../optional/torrent.nix
-    ../optional/btrfs-optin-persistence.nix
     ./hardware-configuration.nix
     ./persist.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
@@ -35,24 +32,20 @@
     '';
   };
 
+  custom.boot = {
+    remote-unlock = {
+      enable = true;
+      default = false;
+    };
+    wipe.enable = true;
+    efi.enable = true;
+  };
+
   hardware.firmware = with pkgs; [ linux-firmware ];
 
   services.btrfs.autoScrub = {
     enable = true;
     interval = "weekly";
-  };
-
-  programs.persist-path-manager = {
-    enable = true;
-    config = {
-      activateCommand = "ldp";
-      persistJson = "/home/reed/.config/nixpkgs/system/nixos-desktop/persist.json";
-      persistDir = "/persist";
-      snapper = {
-        enable = true;
-        config = "persist";
-      };
-    };
   };
 
   services.snapper = {
@@ -77,38 +70,7 @@
   users.mutableUsers = false;
   users.users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
 
-  # Remote decrypt via phone shortcut
-  boot.initrd = {
-    availableKernelModules = [ "alx" "r8169" ];
-    network = {
-      enable = lib.mkDefault true;
-      ssh = {
-        enable = true;
-        port = 2222;
-        authorizedKeys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjDgwhUiKpmpjx/yAz8SMC1bo7bS7LiZ+9LumJfHufv Shortcuts on iPhone 13 mini"
-        ];
-        # sudo ssh-keygen -t ed25519 -N "" -f /persist/secrets/initrd/ssh_host_ed25519_key
-        # sudo ssh-keygen -t rsa -N "" -f /persist/secrets/initrd/ssh_host_rsa_key
-        hostKeys = [ "/persist/secrets/initrd/ssh_host_rsa_key" "/persist/secrets/initrd/ssh_host_ed25519_key" ];
-      };
-    };
-  };
-
-  specialisation = {
-    "no-initrd-networking".configuration = {
-      boot = {
-        loader.grub.configurationName = "No initrd networking";
-        initrd.network.enable = false;
-      };
-    };
-  };
-
   networking.hostName = "nixos-desktop";
-  networking.networkmanager.insertNameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
 
   time.timeZone = "America/New_York";
 
@@ -117,6 +79,11 @@
     deviceSection = ''
       Option "SWCursor" "True"
     '';
+  };
+
+  custom.torrents = {
+    enable = true;
+    allowedUsers = [ "reed" ];
   };
 
   custom.steam = {

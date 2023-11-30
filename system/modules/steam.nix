@@ -9,11 +9,7 @@ let
 in
 {
   options.custom.steam = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable Steam";
-    };
+    enable = lib.mkEnableOption "Steam";
 
     mullvad-exclude = lib.mkOption {
       type = lib.types.bool;
