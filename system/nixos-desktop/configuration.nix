@@ -114,10 +114,6 @@
 
   services.xserver = {
     videoDrivers = [ "amdgpu" ];
-    monitorSection = ''
-      Modeline "1920x1080_144.00"  452.50  1920 2088 2296 2672  1080 1083 1088 1177 -hsync +vsync
-      Option "PreferredMode" "1920x1080_144.00"
-    '';
     deviceSection = ''
       Option "SWCursor" "True"
     '';

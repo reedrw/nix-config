@@ -1,8 +1,13 @@
 { config, pkgs, lib, ... }:
-
+let
+  nameservers = lib.lists.remove "100.100.100.100" config.networking.nameservers;
+in
 {
   networking = {
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+      insertNameservers = nameservers;
+    };
     firewall.allowedTCPPorts = [
       # shairport-sync
       5000
@@ -37,7 +42,7 @@
 
   systemd.services."mullvad-daemon".postStart = let
     mullvad = config.services.mullvad-vpn.package;
-    dnsServers = builtins.concatStringsSep " " (lib.lists.remove "100.100.100.100" config.networking.nameservers);
+    dnsServers = builtins.concatStringsSep " " nameservers;
   in ''
     while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
     ${mullvad}/bin/mullvad lan set allow
