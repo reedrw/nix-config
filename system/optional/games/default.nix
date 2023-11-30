@@ -8,19 +8,9 @@ in
     inputs.aagl.nixosModules.default
   ];
 
-  programs.steam = with pkgs; {
+  custom.steam = {
     enable = true;
-    package = let
-      steam-custom = steam.override {
-        extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.opengl.package ];
-        extraPkgs = pkgs: [ mangohud ];
-      };
-      steam-mve = mullvadExclude steam-custom;
-    in emptyDirectory // {
-      override = (x: steam-mve // {
-        run = steam-custom.run;
-      });
-    };
+    mullvad-exclude = true;
   };
 
   programs.anime-game-launcher = {
