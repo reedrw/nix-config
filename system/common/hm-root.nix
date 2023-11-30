@@ -28,13 +28,13 @@
       # imports
       imports = [
         # Dark mode when running apps in sudo
-        ../../modules/styling
+        ../../home/styling
         # Nix-index cache and comma in sudo
-        ../../modules/comma
+        ../../home/comma
         # Zsh
-        ../../modules/zsh
+        ../../home/zsh
         # Neovim
-        ../../modules/nvim
+        ../../home/nvim
       ];
     };
   };

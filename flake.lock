@@ -53,23 +53,6 @@
         "type": "github"
       }
     },
-    "an-anime-game-launcher": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700078086,
-        "narHash": "sha256-s7X6qG3H2dDpFCkiA+C+Vck6y4B2Hw3FPFFyiUQqclE=",
-        "owner": "an-anime-team",
-        "repo": "an-anime-game-launcher",
-        "rev": "fad5190a2c19cfd35a9d73509ccbc070ad0e54cc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "an-anime-team",
-        "ref": "next",
-        "repo": "an-anime-game-launcher",
-        "type": "github"
-      }
-    },
     "base16-schemes": {
       "flake": false,
       "locked": {
@@ -322,7 +305,6 @@
         "NUR": "NUR",
         "aagl": "aagl",
         "alacritty": "alacritty",
-        "an-anime-game-launcher": "an-anime-game-launcher",
         "distro-grub-themes": "distro-grub-themes",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
@@ -335,25 +317,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "ranger-archives": "ranger-archives",
-        "the-honkers-railway-launcher": "the-honkers-railway-launcher",
         "unstable": "unstable"
-      }
-    },
-    "the-honkers-railway-launcher": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700080090,
-        "narHash": "sha256-MpBwfPwHmFzf9bExBbCUREQPTBolhvnuG7KdNqoo0kc=",
-        "owner": "an-anime-team",
-        "repo": "the-honkers-railway-launcher",
-        "rev": "c78e39854b20f320dd2a897cdb97b76b6605a8c3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "an-anime-team",
-        "ref": "next",
-        "repo": "the-honkers-railway-launcher",
-        "type": "github"
       }
     },
     "unstable": {

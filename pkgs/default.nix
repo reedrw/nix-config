@@ -55,7 +55,7 @@ in
   # Ex.
   # versionConditionalOverride "1.4.1" distrobox
   #   (distrobox.overrideAttrs (
-  #     old: rec {
+  #     old: {
   #       src = pkgs.fetchFromGitHub {
   #         owner = "89luca89";
   #         repo = "distrobox";
