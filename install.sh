@@ -24,10 +24,15 @@ main(){
       sudo nixos-rebuild boot --flake "$dir/.#$2" -L --option eval-cache false
       ;;
     --build)
-      if grep -q "@" <<< "$2"; then
-        "${nixCommand[@]}" build "$dir/.#homeConfigurations.$2.activationPackage" -L --option eval-cache false
+      if [ "$#" -lt 2 ]; then
+        output="$(hostname)"
       else
-        "${nixCommand[@]}" build "$dir/.#nixosConfigurations.$2.config.system.build.toplevel" -L --option eval-cache false
+        output="$2"
+      fi
+      if grep -q "@" <<< "$output"; then
+        "${nixCommand[@]}" build "$dir/.#homeConfigurations.$output.activationPackage" -L --option eval-cache false "${@:3}"
+      else
+        "${nixCommand[@]}" build "$dir/.#nixosConfigurations.$output.config.system.build.toplevel" -L --option eval-cache false "${@:3}"
       fi
       ;;
     --help|-h)
