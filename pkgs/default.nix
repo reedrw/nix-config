@@ -205,4 +205,15 @@ in
       };
     };
   };
+
+  # optionalApply :: Bool -> (a -> a) -> a -> a
+  ########################################
+  # Given a boolean, a function, and a value, apply the function to the value if the boolean is true.
+  # Ex.
+  # optionalApply true (x: x + 1) 1
+  #
+  # Returns:
+  # 2
+  optionalApply = bool: f: x:
+    if bool then f x else x;
 }

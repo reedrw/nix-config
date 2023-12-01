@@ -11,7 +11,7 @@ in
 
   options.custom.aagl = {
     enable = lib.mkEnableOption "enable AAGL";
-    mullbad-exclude = lib.mkEnableOption "exclude AAGL from Mullvad VPN";
+    mullvad-exclude = lib.mkEnableOption "exclude AAGL from Mullvad VPN";
   };
 
   config = lib.mkIf cfg.enable {
@@ -23,10 +23,7 @@ in
             customIcon = builtins.fetchurl components.aagl.icon;
           };
         });
-      in
-      if cfg.mullvad-exclude
-      then mullvadExclude aagl
-      else aagl;
+      in pkgs.optionalApply cfg.mullvad-exclude mullvadExclude aagl;
     };
 
     environment.systemPackages = with pkgs; [

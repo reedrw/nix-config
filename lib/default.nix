@@ -10,6 +10,9 @@ let
 in
 rec {
 
+  # pgksForSystem :: String -> AttrSet
+  ########################################
+  # Takes a system name as argument and returns a nixpkgs set for that system.
   pkgsForSystem = system:
     import inputs.nixpkgs (nixpkgs-options.nixpkgs // {
         inherit system;

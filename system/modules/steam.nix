@@ -21,13 +21,11 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
-      package = with pkgs; if cfg.mullvad-exclude then
-        emptyDirectory // {
-          override = (x: mullvadExclude steam-custom // {
+      package = with pkgs; emptyDirectory // {
+        override = (x: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
           run = steam-custom.run;
         });
-      }
-      else steam-custom;
+      };
     };
   };
 }
