@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, config, lib, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   imports = [
@@ -35,10 +35,25 @@
   custom.boot = {
     remote-unlock = {
       enable = true;
-      default = false;
+      default = true;
     };
     wipe.enable = true;
     efi.enable = true;
+  };
+
+  custom.torrents = {
+    enable = true;
+    allowedUsers = [ "reed" ];
+  };
+
+  custom.steam = {
+    enable = true;
+    mullvad-exclude = true;
+  };
+
+  custom.aagl = {
+    enable = true;
+    mullvad-exclude = true;
   };
 
   hardware.firmware = with pkgs; [ linux-firmware ];
@@ -80,22 +95,6 @@
       Option "SWCursor" "True"
     '';
   };
-
-  custom.torrents = {
-    enable = true;
-    allowedUsers = [ "reed" ];
-  };
-
-  custom.steam = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
-  custom.aagl = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
 
   services.jellyfin = {
     enable = true;
