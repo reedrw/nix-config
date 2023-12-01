@@ -10,17 +10,8 @@ in
   ];
 
   options.custom.aagl = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable AAGL";
-    };
-
-    mullvad-exclude = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Exclude AAGL from Mullvad VPN";
-    };
+    enable = lib.mkEnableOption "enable AAGL";
+    mullbad-exclude = lib.mkEnableOption "exclude AAGL from Mullvad VPN";
   };
 
   config = lib.mkIf cfg.enable {
