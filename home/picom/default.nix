@@ -2,7 +2,7 @@
 {
   services.picom = {
     enable = true;
-    extraArgs = [ "--legacy-backends" ];
+    backend = "egl";
     shadow = true;
     fade = true;
     fadeDelta = 3;
@@ -33,6 +33,9 @@
       shadow-radius = 20;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
+      ];
+      opacity-rule = [
+        "10:class_g != 'Polybar' && focused != 1 && _NET_WM_STATE@:32a *= '_NET_WM_STATE_STICKY'"
       ];
     };
   };
