@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1701528264,
-        "narHash": "sha256-h+U4YBiEBGohPe0//JQhhyRCMs+r1cwRuPY8gjPB/Tk=",
+        "lastModified": 1701539058,
+        "narHash": "sha256-bglFiIJINFuEJeOI09fPxdyp/ATToIEHM0wfBD/RHwc=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "e14b77401d63ba75aa9523f7ad9d327ee5085479",
+        "rev": "364e6d42c4fc455136d90aebd28f0d36b2ed06fc",
         "type": "github"
       },
       "original": {
@@ -144,11 +144,11 @@
     },
     "master": {
       "locked": {
-        "lastModified": 1701532746,
-        "narHash": "sha256-j5JJ5G+vmXjrFgWPQ3u96UNoE4zzhjSqNgOjZ35IoVY=",
+        "lastModified": 1701541424,
+        "narHash": "sha256-sqi+K4QHlpKQ5b7wGU65QjlJ3oHHnB20UM5/BhQk+MI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "2580b79ca42c46225339ad80d4d29894659e31ed",
+        "rev": "c36d884e6aafc55f1ce06cfef41f702cb16ece6f",
         "type": "github"
       },
       "original": {
@@ -223,22 +223,6 @@
         "type": "github"
       }
     },
-    "ranger-archives": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1675507175,
-        "narHash": "sha256-hSwTsWrbX+unvm9f7dkCRljc6EM9bhGOHRaLNo7ehio=",
-        "owner": "maximtrp",
-        "repo": "ranger-archives",
-        "rev": "62783ddb84c8fd25eba1be1607d3a47e8efe8b31",
-        "type": "github"
-      },
-      "original": {
-        "owner": "maximtrp",
-        "repo": "ranger-archives",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "NUR": "NUR",
@@ -251,7 +235,6 @@
         "nix-colors": "nix-colors",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "ranger-archives": "ranger-archives",
         "unstable": "unstable"
       }
     },
