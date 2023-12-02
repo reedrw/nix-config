@@ -4,6 +4,7 @@ set -e
 
 if [[ "$1" == "-x" ]]; then
   set -x
+  shift
 fi
 
 dir="$(dirname "$0")"
@@ -33,7 +34,7 @@ mergePr(){
           exit 2;;
         * )
           gh pr merge "$prNumber" -dm && git pull
-          ./install.sh
+          ./install.sh "$@"
           break;;
       esac
     fi
@@ -44,9 +45,9 @@ pushd "$dir" > /dev/null || exit
 clonedCommitSha="$(git rev-parse master)"
 upstreamCommitSha="$(curl -s "$mainUrl/branches" | jq -r '.[] | select(.name == "master") | .commit.sha')"
 if [[ "$clonedCommitSha" == "$upstreamCommitSha" ]]; then
-  mergePr
+  mergePr "$@"
 else
   git pull --rebase
-  ./install.sh
+  ./install.sh "$@"
 fi
 popd >> /dev/null || exit
