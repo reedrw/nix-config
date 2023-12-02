@@ -1,10 +1,6 @@
-{ inputs, outputs, nixpkgs-options, pkgs, ... }:
+{ inputs, outputs, nixpkgs-options, pkgs, lib, hm, ... }:
 
-{
-  imports = [
-    inputs.home-manager.nixosModules.home-manager
-  ];
-
+lib.optionalAttrs hm {
   home-manager = {
     extraSpecialArgs = { inherit inputs outputs; };
     users.root = {
@@ -28,13 +24,13 @@
       # imports
       imports = [
         # Dark mode when running apps in sudo
-        ../../home/styling
+        ../../../home/styling
         # Nix-index cache and comma in sudo
-        ../../home/comma
+        ../../../home/comma
         # Zsh
-        ../../home/zsh
+        ../../../home/zsh
         # Neovim
-        ../../home/nvim
+        ../../../home/nvim
       ];
     };
   };

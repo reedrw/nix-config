@@ -42,17 +42,19 @@ rec {
   #   common.sound.enable = true;
   # }
   #
-  # TODO: WIP - this doesn't work yet
   mkModuleFromDir = dir:
   let
     # The module name is the basename of the directory
     moduleName = builtins.baseNameOf dir;
     # Convert the directory structor into an attribute set
-    dirSet = inputs.haumea.lib.load { src = dir; };
+    dirSet = inputs.haumea.lib.load {
+      src = dir;
+      loader = inputs.haumea.lib.loaders.verbatim;
+    };
     # For each attribute of dirSet, create a NixOS option
     # which, when enabled, will import the attribute's value.
     modules = lib.mapAttrsToList (name: value:
-    { config, ... }:
+    { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
     in
@@ -63,7 +65,7 @@ rec {
         description = "Whether to enable ${moduleName}.${name}";
       };
 
-      config = lib.mkIf cfg.enable value;
+      config = lib.mkIf cfg.enable (value args);
     }) dirSet;
   in modules;
 
@@ -96,19 +98,18 @@ rec {
 
     # NixOS configuration imports, minus home-manager
     modules-noHM = let
-      commonImports = pkgs.listDirectory ../system/common;
-      # commonImports = mkModuleFromDir ../system/common;
+      commonModules = mkModuleFromDir ../system/modules/common;
+      customModules = pkgs.listDirectory ../system/modules/custom;
     in [
       (../. + "/system/${host}/configuration.nix")
       inputs.impermanence.nixosModule
-      self.nixosModules.default
       nixpkgs-options
       {
         environment.etc."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
         nix.registry.nixpkgs.flake = inputs.nixpkgs;
         nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
       }
-    ] ++ commonImports;
+    ] ++ commonModules ++ customModules;
 
     # Home-manager configuration imports
     hm.modules = let
@@ -147,10 +148,12 @@ rec {
     # The actual flake outputs for this host
     nixosConfigurations = {
       "${host}" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system modules specialArgs;
+        inherit system modules;
+        specialArgs = specialArgs // { hm = true; };
       };
       "${host}-no-home-manager" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system specialArgs;
+        inherit system;
+        specialArgs = specialArgs // { hm = false; };
         modules = modules-noHM;
       };
     };

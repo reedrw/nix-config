@@ -78,11 +78,11 @@
     "nixos-desktop"
     "nixos-t480"
   ]) // {
+    inherit (flake) lib;
+
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
     };
-
-    nixosModules.default = {...}: { imports = pkgs.listDirectory ./system/modules; };
 
     legacyPackages."${system}".default = pkgs;
   };
