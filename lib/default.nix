@@ -22,7 +22,7 @@ rec {
   pkgs = pkgsForSystem system;
   lib = pkgs.lib;
 
-  # mkModuleFromDir :: String -> AttrSet
+  # mkModuleFromDir :: String -> [AttrSet -> AttrSet]
   ########################################
   # Takes a directory name as argument and returns a NixOS module for that
   # directory. The module will be named after the directory.
@@ -53,7 +53,7 @@ rec {
     };
     # For each attribute of dirSet, create a NixOS option
     # which, when enabled, will import the attribute's value.
-    modules = lib.mapAttrsToList (name: value:
+  in lib.mapAttrsToList (name: value:
     { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
@@ -66,8 +66,8 @@ rec {
       };
 
       config = lib.mkIf cfg.enable (value args);
-    }) dirSet;
-  in modules;
+    }
+  ) dirSet;
 
   # mkHost :: String -> AttrSet
   ########################################
@@ -171,4 +171,6 @@ rec {
       };
     };
   };
+
+  mkHosts = hosts: pkgs.mergeAttrs (map mkHost hosts);
 }

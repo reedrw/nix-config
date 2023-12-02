@@ -74,10 +74,10 @@
     flake.lib = import ./lib {
       inherit inputs outputs self;
     };
-  in pkgs.mergeAttrs (map flake.lib.mkHost [
+  in flake.lib.mkHosts [
     "nixos-desktop"
     "nixos-t480"
-  ]) // {
+  ] // {
     inherit (flake) lib;
 
     devShells."${system}".default = import ./shell.nix {
