@@ -1,9 +1,6 @@
-{ inputs, ... }:
+{ ... }:
 
 {
-  imports = [
-    inputs.home-manager.nixosModules.home-manager
-  ];
   programs.dconf.enable = true;
   services.xserver = {
     enable = true;

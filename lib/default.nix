@@ -18,6 +18,55 @@ rec {
         inherit system;
     });
 
+  system = "x86_64-linux";
+  pkgs = pkgsForSystem system;
+  lib = pkgs.lib;
+
+  # mkModuleFromDir :: String -> AttrSet
+  ########################################
+  # Takes a directory name as argument and returns a NixOS module for that
+  # directory. The module will be named after the directory.
+  #
+  # Example:
+  # mkModuleFromDir "common"
+  #
+  # common/
+  # - bluetooth.nix
+  # - neworking.nix
+  # - sound.nix
+  #
+  # Will enable the following NixOS options
+  # {
+  #   common.bluetooth.enable = true;
+  #   common.networking.enable = true;
+  #   common.sound.enable = true;
+  # }
+  #
+  # TODO: WIP - this doesn't work yet
+  mkModuleFromDir = dir:
+  let
+    # The module name is the basename of the directory
+    moduleName = builtins.baseNameOf dir;
+    # Convert the directory structor into an attribute set
+    dirSet = inputs.haumea.lib.load { src = dir; };
+    # For each attribute of dirSet, create a NixOS option
+    # which, when enabled, will import the attribute's value.
+    modules = lib.mapAttrsToList (name: value:
+    { config, ... }:
+    let
+      cfg = config.${moduleName}.${name};
+    in
+    {
+      options.${moduleName}.${name}.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to enable ${moduleName}.${name}";
+      };
+
+      config = lib.mkIf cfg.enable value;
+    }) dirSet;
+  in modules;
+
   # mkHost :: String -> AttrSet
   ########################################
   # Takes a hostname as argument and returns a set of flake outputs
@@ -45,23 +94,21 @@ rec {
     # For now, repo is only set up for 1 home-manager user
     username = "reed";
 
-    system = "x86_64-linux";
-    pkgs = pkgsForSystem system;
-
     # NixOS configuration imports, minus home-manager
     modules-noHM = let
       commonImports = pkgs.listDirectory ../system/common;
-      moduleImports = pkgs.listDirectory ../system/modules;
+      # commonImports = mkModuleFromDir ../system/common;
     in [
       (../. + "/system/${host}/configuration.nix")
       inputs.impermanence.nixosModule
+      self.nixosModules.default
       nixpkgs-options
       {
         environment.etc."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
         nix.registry.nixpkgs.flake = inputs.nixpkgs;
         nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
       }
-    ] ++ commonImports ++ moduleImports;
+    ] ++ commonImports;
 
     # Home-manager configuration imports
     hm.modules = let

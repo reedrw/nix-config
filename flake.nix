@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    haumea = {
+      url = "github:nix-community/haumea/v0.2.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-colors.url = "github:misterio77/nix-colors";
 
     impermanence.url = "github:nix-community/impermanence";
@@ -76,6 +81,8 @@
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
     };
+
+    nixosModules.default = {...}: { imports = pkgs.listDirectory ./system/modules; };
 
     legacyPackages."${system}".default = pkgs;
   };
