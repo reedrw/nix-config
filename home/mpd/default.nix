@@ -1,11 +1,12 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 let
+  sources = import ./nix/sources.nix { };
   # use https://github.com/ncmpcpp/ncmpcpp master until new release
   # this fixes the genius lyric fetcher
   ncmpcpp = pkgs.versionConditionalOverride "0.9.2" pkgs.ncmpcpp (pkgs.ncmpcpp.overrideAttrs
     (old: {
-      src = inputs.ncmpcpp;
-      version = inputs.ncmpcpp.shortRev;
+      src = sources.ncmpcpp;
+      version = pkgs.shortenRev sources.ncmpcpp.rev;
 
       nativeBuildInputs = with pkgs; [
         autoconf

@@ -36,23 +36,6 @@
         "type": "github"
       }
     },
-    "alacritty": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1666814675,
-        "narHash": "sha256-FVbgQ7KDJgl3lrlJIvykus7MPBKlp5e/Gaj0UYUlg7Y=",
-        "owner": "alacritty",
-        "repo": "alacritty",
-        "rev": "578e08486dfcdee0b2cd0e7a66752ff50edc46b8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "alacritty",
-        "repo": "alacritty",
-        "rev": "578e08486dfcdee0b2cd0e7a66752ff50edc46b8",
-        "type": "github"
-      }
-    },
     "base16-schemes": {
       "flake": false,
       "locked": {
@@ -174,71 +157,6 @@
         "type": "github"
       }
     },
-    "mpv-scripts": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1695896172,
-        "narHash": "sha256-g6L31icTcKJ9TIOdQBSXqAj+H1OkDmKFCUICNx4N3oY=",
-        "owner": "ObserverOfTime",
-        "repo": "mpv-scripts",
-        "rev": "ffb516b57910ddf8a8813991c6ee7f2e5a385fef",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ObserverOfTime",
-        "repo": "mpv-scripts",
-        "type": "github"
-      }
-    },
-    "mpv-webm": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700288878,
-        "narHash": "sha256-rJamBm6FyxWcJO7VXXOUTO9piWCkPfEVdqGKGeJ/h0c=",
-        "owner": "ekisu",
-        "repo": "mpv-webm",
-        "rev": "6b5863f68275b3dc91c2507284c039ec8a4cbd97",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ekisu",
-        "repo": "mpv-webm",
-        "type": "github"
-      }
-    },
-    "mpv_thumbnail_script": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1674267785,
-        "narHash": "sha256-5mu5CFQO5Mv6bvcuf+DPSxKyUO/WcsA4ygJIHRp5A1o=",
-        "owner": "blankname",
-        "repo": "mpv_thumbnail_script",
-        "rev": "02207094b1882529268b903798a1cda0b4ebabbd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "blankname",
-        "ref": "nil-props",
-        "repo": "mpv_thumbnail_script",
-        "type": "github"
-      }
-    },
-    "ncmpcpp": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1672512759,
-        "narHash": "sha256-PjCzo3OSj/QIi2fdeV28ZjPiqLf6XAnZeNrDyjXt5wU=",
-        "owner": "ncmpcpp",
-        "repo": "ncmpcpp",
-        "rev": "9f44edf0b1d74da7cefbd498341d59bc52f6043f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ncmpcpp",
-        "repo": "ncmpcpp",
-        "type": "github"
-      }
-    },
     "nix-colors": {
       "inputs": {
         "base16-schemes": "base16-schemes",
@@ -325,16 +243,11 @@
       "inputs": {
         "NUR": "NUR",
         "aagl": "aagl",
-        "alacritty": "alacritty",
         "distro-grub-themes": "distro-grub-themes",
         "haumea": "haumea",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "master": "master",
-        "mpv-scripts": "mpv-scripts",
-        "mpv-webm": "mpv-webm",
-        "mpv_thumbnail_script": "mpv_thumbnail_script",
-        "ncmpcpp": "ncmpcpp",
         "nix-colors": "nix-colors",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",

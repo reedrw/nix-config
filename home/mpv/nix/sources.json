@@ -1,0 +1,38 @@
+{
+    "mpv-scripts": {
+        "branch": "master",
+        "description": "My personal mpv scripts",
+        "homepage": "https://observeroftime.github.io/mpv-scripts",
+        "owner": "ObserverOfTime",
+        "repo": "mpv-scripts",
+        "rev": "ffb516b57910ddf8a8813991c6ee7f2e5a385fef",
+        "sha256": "11ny1lg3f0j2162n43m4acgzw258jwa417c39iys4w0k4zbgg8l3",
+        "type": "tarball",
+        "url": "https://github.com/ObserverOfTime/mpv-scripts/archive/ffb516b57910ddf8a8813991c6ee7f2e5a385fef.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "mpv-webm": {
+        "branch": "master",
+        "description": "Simple WebM maker for mpv, with no external dependencies.",
+        "homepage": "",
+        "owner": "ekisu",
+        "repo": "mpv-webm",
+        "rev": "6b5863f68275b3dc91c2507284c039ec8a4cbd97",
+        "sha256": "0iw7gzi1k2m1fqaz2gd4c24nkvscjirmvmgf4jf1bjw5dq3ad5mc",
+        "type": "tarball",
+        "url": "https://github.com/ekisu/mpv-webm/archive/6b5863f68275b3dc91c2507284c039ec8a4cbd97.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "mpv_thumbnail_script": {
+        "branch": "nil-props",
+        "description": "A Lua script to show preview thumbnails in mpv's OSC seekbar, sans external dependencies",
+        "homepage": null,
+        "owner": "blankname",
+        "repo": "mpv_thumbnail_script",
+        "rev": "02207094b1882529268b903798a1cda0b4ebabbd",
+        "sha256": "0nh3g4d1sj02r8wc0wnnxx8b44jbrzh7ybppdvxcpr0fah4bjsz6",
+        "type": "tarball",
+        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/02207094b1882529268b903798a1cda0b4ebabbd.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

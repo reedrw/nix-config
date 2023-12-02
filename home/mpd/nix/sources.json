@@ -1,0 +1,14 @@
+{
+    "ncmpcpp": {
+        "branch": "master",
+        "description": "Featureful ncurses based MPD client inspired by ncmpc",
+        "homepage": null,
+        "owner": "ncmpcpp",
+        "repo": "ncmpcpp",
+        "rev": "9f44edf0b1d74da7cefbd498341d59bc52f6043f",
+        "sha256": "01g7xlswmhysg3chjp7snylf4cv6pifpkpb7ic4g93wjffiv6c1y",
+        "type": "tarball",
+        "url": "https://github.com/ncmpcpp/ncmpcpp/archive/9f44edf0b1d74da7cefbd498341d59bc52f6043f.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

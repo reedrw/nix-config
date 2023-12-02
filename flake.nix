@@ -22,30 +22,6 @@
 
     impermanence.url = "github:nix-community/impermanence";
 
-    # home-manager non-flake dependencies
-    ncmpcpp = {
-      url = "github:ncmpcpp/ncmpcpp";
-      flake = false;
-    };
-
-    mpv-scripts = {
-      url = "github:ObserverOfTime/mpv-scripts";
-      flake = false;
-    };
-    mpv-webm = {
-      url = "github:ekisu/mpv-webm";
-      flake = false;
-    };
-    mpv_thumbnail_script = {
-      url = "github:blankname/mpv_thumbnail_script/nil-props";
-      flake = false;
-    };
-
-    ranger-archives = {
-      url = "github:maximtrp/ranger-archives";
-      flake = false;
-    };
-
     # system
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
@@ -54,12 +30,6 @@
     # system non-flake dependencies
     distro-grub-themes = {
       url = "github:AdisonCavani/distro-grub-themes?rev=15b20532b0d443dbd118b179ac7b63cba9499511";
-      flake = false;
-    };
-
-    # https://github.com/alacritty/alacritty/issues/6884
-    alacritty = {
-      url = "github:alacritty/alacritty?rev=578e08486dfcdee0b2cd0e7a66752ff50edc46b8";
       flake = false;
     };
   };

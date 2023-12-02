@@ -1,8 +1,10 @@
-{ inputs, config, pkgs, ... }:
+{ config, pkgs, ... }:
 let
+  sources = import ./nix/sources.nix { };
+
   mpv-webm = pkgs.stdenv.mkDerivation {
     name = "mpv-webm";
-    src = inputs.mpv-webm;
+    src = sources.mpv-webm;
 
     nativeBuildInputs = with pkgs.luaPackages; [
       argparse
@@ -17,7 +19,7 @@ let
   };
   mpv_thumbnail_script = pkgs.stdenv.mkDerivation {
     name = "mpv_thumbnail_script";
-    src = inputs.mpv_thumbnail_script;
+    src = sources.mpv_thumbnail_script;
 
     nativeBuildInputs = [ pkgs.python3 ];
 
@@ -44,7 +46,7 @@ in
     };
   };
   xdg.configFile = {
-    "mpv/scripts/clipshot.lua".source = "${inputs.mpv-scripts}/clipshot.lua";
+    "mpv/scripts/clipshot.lua".source = "${sources.mpv-scripts}/clipshot.lua";
     "mpv/scripts/webm.lua".source = "${mpv-webm}/build/webm.lua";
     "mpv/scripts/mpv_thumbnail_script_client_osc.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_client_osc.lua";
     "mpv/scripts/mpv_thumbnail_script_server.lua".source = "${mpv_thumbnail_script}/mpv_thumbnail_script_server.lua";
