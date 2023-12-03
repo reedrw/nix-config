@@ -106,8 +106,13 @@ rec {
       nixpkgs-options
       {
         environment.etc."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+        environment.etc."nix/inputs/unstable".source = inputs.unstable.outPath;
         nix.registry.nixpkgs.flake = inputs.nixpkgs;
-        nix.nixPath = ["nixpkgs=/etc/nix/inputs/nixpkgs"];
+        nix.registry.unstable.flake = inputs.unstable;
+        nix.nixPath = [
+          "nixpkgs=/etc/nix/inputs/nixpkgs"
+          "unstable=/etc/nix/inputs/unstable"
+        ];
       }
     ] ++ commonModules ++ customModules;
 
@@ -123,11 +128,12 @@ rec {
       nixpkgs-options
       (args: {
         xdg.configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+        xdg.configFile."nix/inputs/unstable".source = inputs.unstable.outPath;
         home = {
           inherit username;
           homeDirectory = "/home/${username}";
           sessionVariables = {
-            NIX_PATH = "nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+            NIX_PATH = "unstable=${args.config.xdg.configHome}/nix/inputs/unstable:nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
           };
         };
         nix.registry.nixpkgs.flake = inputs.nixpkgs;
