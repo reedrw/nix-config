@@ -2,7 +2,7 @@
 {
   services.picom = {
     enable = true;
-    backend = "egl";
+    extraArgs = [ "--legacy-backends" ];
     shadow = true;
     fade = true;
     fadeDelta = 3;

@@ -25,7 +25,6 @@ let
   bins = with pkgs; [
     atool
     ccat
-    xdragon
     etouch
     ffmpegthumbnailer
     fontforge
@@ -33,12 +32,14 @@ let
     jq
     libarchive
     libreoffice
+    loupe
     mediainfo
     poppler_utils
     python3Packages.pdf2image
     tmux
     unrar
     unzip
+    xdragon
     zip
   ];
 
@@ -97,17 +98,17 @@ in
       set preview_images_method ueberzug
     '';
 
-    "ranger/rifle.conf".text = ''
+    "ranger/rifle.conf".text = with pkgs; ''
       ext doc, flag f = libreoffice "$@"
       ext docx, flag f = libreoffice "$@"
-      ext flac = mpv -- "$@"
-      ext wav = mpv -- "$@"
-      ext ogg = mpv -- "$@"
-      ext mp3 = mpv -- "$@"
-      ext gif, flag f = mpv -- "$@"
-      ext png, flag f = mpv -- "$@"
-      ext jpg, flag f = mpv -- "$@"
-      ext jpeg, flag f = mpv -- "$@"
+      ext flac = mpv --force-window -- "$@"
+      ext wav =  mpv --force-window -- "$@"
+      ext ogg =  mpv --force-window -- "$@"
+      ext mp3 =  mpv --force-window -- "$@"
+      ext gif, flag f = loupe -- "$@"
+      ext png, flag f = loupe -- "$@"
+      ext jpg, flag f = loupe -- "$@"
+      ext jpeg, flag f = loupe -- "$@"
       ext mkv, flag f = mpv -- "$@"
       ext mov, flag f = mpv -- "$@"
       ext mp4, flag f = mpv -- "$@"
