@@ -159,8 +159,9 @@ in
   };
 
   systemd.user.services = with pkgs; mergeAttrs [
-    (mkSimpleHMService "clipboard-clean" "${binPath scripts.clipboard-clean}")
     (mkSimpleHMService "autotiling" "${binPath autotiling}")
+    (mkSimpleHMService "clipboard-clean" "${binPath scripts.clipboard-clean}")
+    (mkSimpleHMService "dwebp-serv" "${binPath scripts.dwebp-serv}")
     (mkSimpleHMService "mpv-dnd" "${binPath scripts.mpv-dnd} Discord telegram-deskt")
   ];
 }
