@@ -34,6 +34,7 @@
     "/home/reed/.ssh",
     "/home/reed/downloads",
     "/home/reed/files",
+    "/home/reed/images",
     "/root/.cache/mesa_shader_cache",
     "/root/.cache/nix",
     "/root/.config/dconf",
