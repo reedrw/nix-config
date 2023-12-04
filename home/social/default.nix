@@ -2,8 +2,10 @@
 {
   home.packages = with pkgs; [
     tdesktop
-    discord
-    #element-desktop
+    (fromBranch.master.discord.override {
+      withVencord = true;
+      nss = nss_latest;
+    })
   ];
 
   xdg.configFile = {

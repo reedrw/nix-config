@@ -3,17 +3,6 @@ let
   lib = pkgs.lib;
 in
 {
-
-  discord = pkgs.discord.override {
-    nss = pkgs.nss_latest;
-    withVencord = true;
-  };
-
-  discord-canary = pkgs.discord-canary.override {
-    nss = pkgs.nss_latest;
-    withVencord = true;
-  };
-
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 
   # aliasToPackage :: AttrSet -> Package
@@ -206,7 +195,7 @@ in
     };
   };
 
-  # optionalApply :: Bool -> (a -> a) -> a -> a
+  # optionalApply :: Bool -> (a -> b) -> a -> b
   ########################################
   # Given a boolean, a function, and a value, apply the function to the value if the boolean is true.
   # Ex.
