@@ -1,11 +1,7 @@
 { nixpkgs-options, inputs, ... }:
+
 {
   inherit (nixpkgs-options) nixpkgs;
-
-  environment.etc = {
-    "nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
-    "nix/inputs/unstable".source = inputs.unstable.outPath;
-  };
 
   nix = {
     settings = {
