@@ -1,9 +1,11 @@
-{ ... }:
+{ nixpkgs-options, inputs, ... }:
 {
-  # nixpkgs = {
-  #   overlays = [ (import ../../pkgs) ];
-  #   config = import ../../config.nix;
-  # };
+  inherit (nixpkgs-options) nixpkgs;
+
+  environment.etc = {
+    "nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+    "nix/inputs/unstable".source = inputs.unstable.outPath;
+  };
 
   nix = {
     settings = {
@@ -20,5 +22,13 @@
       keep-derivations = true
       experimental-features = nix-command flakes
     '';
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs.outPath}"
+      "unstable=${inputs.unstable.outPath}"
+    ];
+    registry = {
+      unstable.flake = inputs.unstable;
+      nixpkgs.flake = inputs.nixpkgs;
+    };
   };
 }

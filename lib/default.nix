@@ -85,12 +85,6 @@ rec {
   #     "nixos-desktop-no-home-manager" = { ... };
   #   };
   # }
-  #  - `homeConfigurations` contains a home-manager configuration for ${username}@${host}
-  #  - `nixosConfigurations` contains a 2 NixOS configurations for ${host}:
-  #    - `${host}` is a NixOS configuration with home-manager enabled
-  #    - `${host}-no-home-manager` is a NixOS configuration with home-manager disabled.
-  #      This is used to build in Github Actions, to reduce unnecessary build time from
-  #      building the home-manager configuration within the NixOS configuration.
   mkHost = host:
   let
     # For now, repo is only set up for 1 home-manager user
@@ -101,19 +95,8 @@ rec {
       commonModules = mkModuleFromDir ../system/modules/common;
       customModules = pkgs.listDirectory ../system/modules/custom;
     in [
-      (../. + "/system/${host}/configuration.nix")
+      ../system/${host}/configuration.nix
       inputs.impermanence.nixosModule
-      nixpkgs-options
-      {
-        environment.etc."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
-        environment.etc."nix/inputs/unstable".source = inputs.unstable.outPath;
-        nix.registry.nixpkgs.flake = inputs.nixpkgs;
-        nix.registry.unstable.flake = inputs.unstable;
-        nix.nixPath = [
-          "nixpkgs=/etc/nix/inputs/nixpkgs"
-          "unstable=/etc/nix/inputs/unstable"
-        ];
-      }
     ] ++ commonModules ++ customModules;
 
     # Home-manager configuration imports
@@ -121,23 +104,14 @@ rec {
       # Each host has a directory for home-manager config in ./system/${host}/home.
       # Any .nix files in that directory will be imported as part of the home-manager
       # configuration for that host.
-      perHost = pkgs.listDirectory (../. + "/system/${host}/home");
+      perHost = pkgs.listDirectory ../system/${host}/home;
       hmCommon = pkgs.listDirectory ../home;
     in [
       ../home.nix
-      nixpkgs-options
-      (args: {
-        xdg.configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
-        xdg.configFile."nix/inputs/unstable".source = inputs.unstable.outPath;
-        home = {
-          inherit username;
-          homeDirectory = "/home/${username}";
-          sessionVariables = {
-            NIX_PATH = "unstable=${args.config.xdg.configHome}/nix/inputs/unstable:nixpkgs=${args.config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
-          };
-        };
-        nix.registry.nixpkgs.flake = inputs.nixpkgs;
-      })
+      (_:{ home = {
+        inherit username;
+        homeDirectory = "/home/${username}";
+      };})
     ] ++ perHost ++ hmCommon;
 
     # NixOS configuration imports, including home-manager
@@ -145,6 +119,7 @@ rec {
       inputs.home-manager.nixosModules.home-manager
       {
         home-manager.users.${username}.imports = hm.modules;
+        home-manager.extraSpecialArgs = specialArgs;
       }
     ];
 
