@@ -52,23 +52,6 @@
         "type": "github"
       }
     },
-    "distro-grub-themes": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1682572446,
-        "narHash": "sha256-OB8za/aaIcsnwGhOH2SR+2WeDi19Et67QuvK5geG9+o=",
-        "owner": "AdisonCavani",
-        "repo": "distro-grub-themes",
-        "rev": "15b20532b0d443dbd118b179ac7b63cba9499511",
-        "type": "github"
-      },
-      "original": {
-        "owner": "AdisonCavani",
-        "repo": "distro-grub-themes",
-        "rev": "15b20532b0d443dbd118b179ac7b63cba9499511",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -227,7 +210,6 @@
       "inputs": {
         "NUR": "NUR",
         "aagl": "aagl",
-        "distro-grub-themes": "distro-grub-themes",
         "haumea": "haumea",
         "home-manager": "home-manager",
         "impermanence": "impermanence",

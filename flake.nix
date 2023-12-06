@@ -8,6 +8,8 @@
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     NUR.url = "github:nix-community/NUR";
+    nix-colors.url = "github:misterio77/nix-colors";
+    impermanence.url = "github:nix-community/impermanence";
     home-manager = {
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,19 +20,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-colors.url = "github:misterio77/nix-colors";
-
-    impermanence.url = "github:nix-community/impermanence";
-
-    # system
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # system non-flake dependencies
-    distro-grub-themes = {
-      url = "github:AdisonCavani/distro-grub-themes?rev=15b20532b0d443dbd118b179ac7b63cba9499511";
-      flake = false;
     };
   };
   # }}}
