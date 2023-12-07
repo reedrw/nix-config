@@ -1,14 +1,10 @@
 { config, pkgs, lib, inputs, ... }:
 let
   cfg = config.custom.aagl;
-  components = lib.importJSON ./components.json;
+  customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
 in
 {
-  imports = [
-    inputs.aagl.nixosModules.default
-  ];
-
   options.custom.aagl = {
     enable = lib.mkEnableOption "enable AAGL";
     mullvad-exclude = lib.mkEnableOption "exclude AAGL from Mullvad VPN";
@@ -20,7 +16,7 @@ in
       package = with pkgs; let
         aagl = aaglPkgs.anime-game-launcher.override (old: {
           unwrapped = old.unwrapped.override {
-            customIcon = builtins.fetchurl components.aagl.icon;
+            inherit customIcon;
           };
         });
       in pkgs.optionalApply cfg.mullvad-exclude mullvadExclude aagl;
