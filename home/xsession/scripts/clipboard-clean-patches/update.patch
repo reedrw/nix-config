@@ -693,7 +693,7 @@ index 632fc24..9551dfd 100644
 +HYMfRsCbvUOZ58SWLs5fyQ==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..1513d71 100644
+index f2a54b1..f5b2a62 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -33,7 +33,8 @@
@@ -875,7 +875,7 @@ index f2a54b1..1513d71 100644
              ]
          },
          "m.bilibili.com": {
-@@ -1623,6 +1662,110 @@
+@@ -1623,6 +1662,134 @@
                  "log",
                  "p"
              ]
@@ -982,6 +982,30 @@ index f2a54b1..1513d71 100644
 +            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?href\\.li",
 +            "redirections": [
 +                "^https?:\\/\\/href\\.li\\/\\?(http.+)"
++            ]
++        },
++        "adform.net": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?adform\\.net",
++            "redirections": [
++                "^https?:\\/\\/track\\.adform\\.net\\/C\\/.*?ckurl=([^&]+)"
++            ]
++        },
++        "artefact.com": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?artefact\\.com",
++            "redirections": [
++                "^https?:\\/\\/.*?artefact\\.com\\/trck\\/.*?deeplinkurl=([^&]+)"
++            ]
++        },
++        "awin1.com": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?awin1\\.com",
++            "redirections": [
++                "^https?:\\/\\/.*?awin1\\.com\\/.*?ued=([^&]+)"
++            ]
++        },
++        "telekom.de": {
++            "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?telekom\\.de",
++            "redirections": [
++                "^https?:\\/\\/aaa\\.telekom\\.de\\/trck\\/.*?deeplinkurl=([^&]+)"
 +            ]
          }
      }
