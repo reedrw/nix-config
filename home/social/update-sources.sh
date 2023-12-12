@@ -4,10 +4,18 @@
 PS4=''
 set -x
 
+currentTag="$(jq -r '.vencord.rev' ./nix/sources.json)"
+
 niv init
 niv update
 
 latestTag="$(jq -r '.vencord.rev' ./nix/sources.json)"
+
+if [ "$currentTag" = "$latestTag" ]; then
+  echo "No new version found"
+  exit 0
+fi
+
 tempDir="$(mktemp -d)"
 
 pushd "$tempDir" || exit
