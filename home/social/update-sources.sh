@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p niv jq prefetch-npm-deps
+#! nix-shell -i bash -p jq niv nodejs prefetch-npm-deps
 
 PS4=''
 set -x
@@ -13,7 +13,6 @@ tempDir="$(mktemp -d)"
 pushd "$tempDir" || exit
   curl "https://raw.githubusercontent.com/Vendicated/Vencord/$latestTag/package.json" -o package.json
   npm install --legacy-peer-deps -f
-  # prefetch-npm-deps --fixup-lockfile ./package-lock.json
   npmDepsHash="$(prefetch-npm-deps ./package-lock.json)"
 popd || exit
 cp -r "$tempDir/package-lock.json" ./nix/package-lock.json

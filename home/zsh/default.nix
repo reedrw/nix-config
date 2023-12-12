@@ -169,6 +169,11 @@ in
       bindkey '^[[1~' beginning-of-line
       bindkey '^[[4~' end-of-line
 
+      # bind alt+shift+enter to open a new terminal in the current directory
+      function termwwidget() { alacritty &! }
+      zle -N termwwidget
+      bindkey '^[^M' termwwidget
+
       if [[ -f "/persist/home/$USER/.zsh_history" ]]; then
         HISTFILE="/persist/home/$USER/.zsh_history"
       else
