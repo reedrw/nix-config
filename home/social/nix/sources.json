@@ -1,15 +1,15 @@
 {
-  "vencord": {
-    "branch": "main",
-    "description": "The cutest Discord client mod",
-    "homepage": "https://vencord.dev",
-    "npmDepsHash": "sha256-4IkvG9TaLz29guRUWXKcN6Y9z6+oycpIBGDXawYdm+0=",
-    "owner": "vendicated",
-    "repo": "vencord",
-    "rev": "a9568bc0552ef0cac57c24da453af4033e692bcb",
-    "sha256": "0cjd1w6pa172ra42z5jbdmg1q414d4yzwvcwbgf3yywnkllw7kg3",
-    "type": "tarball",
-    "url": "https://github.com/vendicated/vencord/archive/a9568bc0552ef0cac57c24da453af4033e692bcb.tar.gz",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-  }
+    "vencord": {
+        "branch": "main",
+        "description": "The cutest Discord client mod",
+        "homepage": "https://vencord.dev",
+        "npmDepsHash": "sha256-4IkvG9TaLz29guRUWXKcN6Y9z6+oycpIBGDXawYdm+0=",
+        "owner": "vendicated",
+        "repo": "vencord",
+        "rev": "a9568bc0552ef0cac57c24da453af4033e692bcb",
+        "sha256": "0cjd1w6pa172ra42z5jbdmg1q414d4yzwvcwbgf3yywnkllw7kg3",
+        "type": "tarball",
+        "url": "https://github.com/vendicated/vencord/archive/a9568bc0552ef0cac57c24da453af4033e692bcb.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
 }
