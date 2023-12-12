@@ -97,8 +97,11 @@ in
   # importNixpkgs :: AttrSet -> AttrSet
   ########################################
   # Given a nixpkgs source as arugment, import it with the current config.
-  importNixpkgs = nixpkgs:
-    import nixpkgs { inherit (pkgs) config overlays system; };
+  importNixpkgs = nixpkgs: {
+    config ? pkgs.config,
+    overlays ? pkgs.overlays,
+    system ? pkgs.system }:
+    import nixpkgs { inherit config overlays system; };
 
   # writeNixShellScript :: String -> String -> Package
   ########################################
