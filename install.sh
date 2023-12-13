@@ -45,7 +45,7 @@ main(){
       ;;
     --switch|*)
       sudo nixos-rebuild switch --flake "$dir/.#$2" -L --option eval-cache false
-      [[ "$USER" != "root" ]] && home-manager switch -L
+      [[ "$USER" != "root" ]] && home-manager switch
       ;;
   esac
 }
