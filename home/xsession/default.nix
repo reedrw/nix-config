@@ -132,7 +132,7 @@ in
           "TelegramDesktop"
           "Element"
           "easyeffects"
-          "discord"
+          "VencordDesktop"
           "Pavucontrol"
           "Zathura"
           ".blueman-manager-wrapped"

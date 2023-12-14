@@ -14,7 +14,7 @@ launchPrograms(){
       (firefox &)
     ;;
     "2" )
-      (Discord &)
+      (vencorddesktop &)
       (telegram-desktop &)
     ;;
     "4" )

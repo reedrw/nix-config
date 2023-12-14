@@ -22,10 +22,13 @@ in
 {
   home.packages = with pkgs; [
     tdesktop
-    (master.discord.override {
+    # (master.discord.override {
+    #   vencord = vencord master;
+    #   withVencord = true;
+    #   nss = nss_latest;
+    # })
+    (vesktop.override {
       vencord = vencord master;
-      withVencord = true;
-      nss = nss_latest;
     })
   ];
 

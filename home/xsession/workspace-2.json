@@ -30,9 +30,8 @@
                     "percent": 0.5,
                     "swallows": [
                        {
-                           "class": "^discord$",
-                           "instance": "^discord$",
-                           "title": "^(?!.*Discord\\ Updater).*$"
+                           "class": "^VencordDesktop$",
+                           "title": "^(?!.*VencordDesktop).*$"
                        }
                     ],
                     "type": "con"
