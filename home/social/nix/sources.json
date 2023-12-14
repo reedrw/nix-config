@@ -1,16 +1,4 @@
 {
-    "pr-274124": {
-        "branch": "vesktop-fix-notifications",
-        "description": "Nix Packages collection",
-        "homepage": "",
-        "owner": "reedrw",
-        "repo": "nixpkgs",
-        "rev": "cfe3e686d0d573d374522f6c8a42ab2a3e038de7",
-        "sha256": "0nxcy3y2vqcxs21s84pkr97559k5blxwvgnjbr2hjxqmsgyf46p6",
-        "type": "tarball",
-        "url": "https://github.com/reedrw/nixpkgs/archive/cfe3e686d0d573d374522f6c8a42ab2a3e038de7.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "vencord": {
         "branch": "main",
         "description": "The cutest Discord client mod",

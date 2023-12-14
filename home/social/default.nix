@@ -18,12 +18,11 @@ let
       hash = sources.vencord.npmDepsHash;
     };
   });
-  vesktopPkgs = pkgs.importNixpkgs sources.pr-274124 {};
 in
 {
   home.packages = with pkgs; [
     tdesktop
-    (vesktopPkgs.vesktop.override {
+    (master.vesktop.override {
       vencord = vencord master;
     })
   ];
