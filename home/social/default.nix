@@ -18,12 +18,15 @@ let
       hash = sources.vencord.npmDepsHash;
     };
   });
+
+  chromium-no-apng-pkgs = pkgs.importNixpkgs sources.pr-274386 { };
 in
 {
   home.packages = with pkgs; [
     tdesktop
     (master.vesktop.override {
       vencord = vencord master;
+      electron = chromium-no-apng-pkgs.electron;
     })
   ];
 

@@ -1,4 +1,16 @@
 {
+    "pr-274386": {
+        "branch": "chromium-disable-libpng-patch",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "reedrw",
+        "repo": "nixpkgs",
+        "rev": "fcdea38355b817b86101b9bb6f717858bc96b4eb",
+        "sha256": "0ilf9r8dnws6brdqk7i5mgjjhv4jn846300g5xmigm0ykcrxa60k",
+        "type": "tarball",
+        "url": "https://github.com/reedrw/nixpkgs/archive/fcdea38355b817b86101b9bb6f717858bc96b4eb.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "vencord": {
         "branch": "main",
         "description": "The cutest Discord client mod",
