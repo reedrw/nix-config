@@ -37,6 +37,6 @@ else
   fi
 
   attr="$(rofi "$rofiArgs" -dmenu -p "Run from Nix package?" <<< "$attr")" \
-    && (nix shell "nixpkgs#$attr" -c "$cmd" "${args[@]}" &)
+    && (nix shell "unstable#$attr" -c "$cmd" "${args[@]}" &)
 fi
 
