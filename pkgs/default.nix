@@ -20,10 +20,14 @@ in
   #    ├── str -> /nix/store/bmajpd6q4j1g14s5vvg6li94rln9w3kp-str/bin/str
   #    └── tb -> /nix/store/4q5d9z7r4a1qvpd6klblksrm0racx6px-tb/bin/tb
   aliasToPackage = alias:
-    pkgs.symlinkJoin {
+    let
       name = builtins.concatStringsSep "-"  ([ "alias" ] ++ (builtins.attrNames alias));
       paths = lib.mapAttrsToList pkgs.writeShellScriptBin alias;
-    };
+      numAliases = builtins.length paths;
+    in
+    if numAliases < 2
+    then builtins.head paths
+    else pkgs.symlinkJoin { inherit name paths; };
 
   # binPath :: Package -> String
   ########################################
