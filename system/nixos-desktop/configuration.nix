@@ -56,11 +56,6 @@
     mullvad-exclude = true;
   };
 
-  custom.hrl = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
   hardware.firmware = with pkgs; [ linux-firmware ];
 
   services.btrfs.autoScrub = {
