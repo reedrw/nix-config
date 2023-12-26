@@ -1,7 +1,11 @@
 { writeShellScriptBin, runtimeShell, ... }:
 
 (writeShellScriptBin "ldp" (''
-  flakePath=/home/reed/.config/nixpkgs
+  if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
+    flakePath="$HOME/.config/nixpkgs"
+  else
+    flakePath="$(pwd)"
+  fi
 '' + builtins.readFile ../../install.sh)).overrideAttrs (old: {
   buildCommand = old.buildCommand + ''
     mkdir -p $out/share/zsh/site-functions
