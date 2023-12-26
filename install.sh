@@ -2,7 +2,8 @@
 
 set -e
 
-dir="$(dirname "$0")"
+dir="$(dirname "$(readlink -f "$0")")"
+flakePath="${flakePath:-"$dir"}"
 
 nixCommand=(nix --experimental-features 'nix-command flakes')
 
@@ -12,16 +13,18 @@ helpMessage(){
   local bold='\033[1m'
   local NC='\033[0m' # No Color
   echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--boot|--switch|--build|--help] ${NC}[HOST]"
-  echo -e "${green}  --switch       ${NC}Build and switch to the system configuration (default)"
   echo -e "${green}  --boot         ${NC}Build and add boot entry for the system configuration"
   echo -e "${green}  --build        ${NC}Build the system configuration"
   echo -e "${green}  --help         ${NC}Show this help message"
+  echo -e "${green}  --list-outputs ${NC}List the available build outputs"
+  echo -e "${green}  --switch       ${NC}Build and switch to the system configuration (default)"
+  echo -e "${green}  --verbose      ${NC}Enable verbose output"
 }
 
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --flake "$dir/.#$2" -L --option eval-cache false
+      sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -30,13 +33,22 @@ main(){
         output="$2"
       fi
       if grep -q "@" <<< "$output"; then
-        "${nixCommand[@]}" build "$dir/.#homeConfigurations.$output.activationPackage" -L --option eval-cache false "${@:3}"
+        "${nixCommand[@]}" build "$flakePath/.#homeConfigurations.$output.activationPackage" -L --option eval-cache false "${@:3}"
       else
-        "${nixCommand[@]}" build "$dir/.#nixosConfigurations.$output.config.system.build.toplevel" -L --option eval-cache false "${@:3}"
+        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" -L --option eval-cache false "${@:3}"
       fi
       ;;
     --help|-h)
       helpMessage
+      ;;
+    --list-outputs)
+      nix eval --impure --raw --expr "
+        let
+          flake = builtins.getFlake \"path:$flakePath/.\";
+          nixosConfigurations = builtins.attrNames flake.nixosConfigurations;
+          homeConfigurations = builtins.attrNames flake.homeConfigurations;
+        in
+          builtins.concatStringsSep \"\\n\" (nixosConfigurations ++ homeConfigurations) + \"\\n\""
       ;;
     --verbose|-v)
       shift;
@@ -44,7 +56,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --flake "$dir/.#$2" -L --option eval-cache false
+      sudo nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false
       [[ "$USER" != "root" ]] && home-manager switch
       ;;
   esac

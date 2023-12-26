@@ -3,6 +3,7 @@ let
   lib = pkgs.lib;
 in
 {
+  ldp = pkgs.callPackage ./ldp { };
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 
   # aliasToPackage :: AttrSet -> Package

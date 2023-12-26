@@ -14,6 +14,9 @@ let
     ripgrep    # recursive grep
     screen     # terminal multiplexer
 
+    ldp        # local deployment tool
+               # (same as ./install.sh)
+
     # global aliases
     (aliasToPackage {
       gc = ''
@@ -23,7 +26,6 @@ let
         nix-collect-garbage "$@"
       '';
       hms = "home-manager switch -L";
-      ldp = ''~/.config/nixpkgs/install.sh "$@"'';
       pai = ''~/.config/nixpkgs/pull-and-install.sh "$@"'';
     })
   ];

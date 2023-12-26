@@ -1,0 +1,27 @@
+#compdef ldp
+
+_ldp() {
+  local -a options
+  options=(
+    '--boot[Add boot entry for the system configuration]'
+    '--build[Build the system configuration]:build_outputs:_build_outputs'
+    '--help[Display help information]'
+    '--list-outputs[List the available build outputs]'
+    '--switch[Switch to the system configuration (default)]'
+    '--verbose[Show verbose output]'
+  )
+
+  _arguments $options && return 0
+}
+
+# Custom completion function for --build option
+_build_outputs() {
+  local build_outputs
+  build_outputs=($(ldp --list-outputs 2>/dev/null))
+
+  # Set the completion candidates
+  compadd "$@" -a build_outputs
+}
+
+# Using compdef to associate the completion function with your script
+compdef _ldp ldp
