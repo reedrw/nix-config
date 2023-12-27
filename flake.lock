@@ -68,27 +68,6 @@
         "type": "github"
       }
     },
-    "flake-parts": {
-      "inputs": {
-        "nixpkgs-lib": [
-          "hover",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1698579227,
-        "narHash": "sha256-KVWjFZky+gRuWennKsbo6cWyo7c/z/VgCte5pR9pEKg=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "f76e870d64779109e41370848074ac4eaa1606ec",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
     "haumea": {
       "inputs": {
         "nixpkgs": [
@@ -128,27 +107,6 @@
         "owner": "nix-community",
         "ref": "release-23.11",
         "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "hover": {
-      "inputs": {
-        "flake-parts": "flake-parts",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1699196301,
-        "narHash": "sha256-B271xWObo8IN0c019T+Z2s6IwRH5rp6HGEiQdMnnyKI=",
-        "owner": "max-privatevoid",
-        "repo": "hover",
-        "rev": "0f4348d3fc1ab75f836469bf9f2272ae0715d053",
-        "type": "github"
-      },
-      "original": {
-        "owner": "max-privatevoid",
-        "repo": "hover",
         "type": "github"
       }
     },
@@ -254,7 +212,6 @@
         "aagl": "aagl",
         "haumea": "haumea",
         "home-manager": "home-manager",
-        "hover": "hover",
         "impermanence": "impermanence",
         "master": "master",
         "nix-colors": "nix-colors",

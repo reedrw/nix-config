@@ -20,11 +20,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hover = {
-      url = "github:max-privatevoid/hover";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
