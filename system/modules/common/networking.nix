@@ -85,7 +85,7 @@ in
 
   networking.firewall.extraCommands =
     let
-      ts = pkgs.writeText "tailscale.rules" ''
+      ts = builtins.toFile "tailscale.rules" ''
         table inet excludeTraffic {
           chain excludeOutgoing {
             type route hook output priority -100; policy accept;

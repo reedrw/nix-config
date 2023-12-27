@@ -28,7 +28,7 @@ in
     package = if cfg.config == null then cfg.package else cfg.package.overrideAttrs (old: {
       text = ''
         #!${pkgs.runtimeShell}
-        PPM_CONFIG=${pkgs.writeText "config.json" (builtins.toJSON cfg.config)}
+        PPM_CONFIG=${builtins.toFile "config.json" (builtins.toJSON cfg.config)}
       '' + old.text;
     });
   in lib.mkIf cfg.enable {

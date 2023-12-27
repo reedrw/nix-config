@@ -268,7 +268,7 @@ in
       nnoremap gR gD:%s/<C-R>///gc<left><left><left>
       nnoremap <Space> za
 
-      luafile ${pkgs.writeText "generatedConfig.lua" config.programs.neovim.generatedConfigs.lua}
+      luafile ${builtins.toFile "generatedConfig.lua" config.programs.neovim.generatedConfigs.lua}
     '';
   };
 }
