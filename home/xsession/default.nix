@@ -18,6 +18,7 @@ let
     "${binPath scripts.toggle-touchpad} disable --silent"
     "${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'"
     "${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'"
+    "${binPath xorg.xmodmap} -e 'keycode 9 = Escape asciitilde Escape'"
   ];
 
   run = [
