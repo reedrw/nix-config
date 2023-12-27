@@ -1,9 +1,10 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xorg.xmodmap
+#! nix-shell -i bash -p xorg.xmodmap xorg.xset
 
 set -x
 
 while true; do
+  xset r rate 250 50
   # set page up and page down to forward and back
   xmodmap -e 'keycode 117 = XF86Forward'
   xmodmap -e 'keycode 112 = XF86Back'

@@ -14,7 +14,6 @@ let
     "systemctl --user restart playerctld"
     "systemctl --user import-environment PATH"
     "systemctl --user restart xdg-desktop-portal.service"
-    "xset r rate 250 50"
     "${binPath scripts.toggle-touchpad} disable --silent"
   ];
 
