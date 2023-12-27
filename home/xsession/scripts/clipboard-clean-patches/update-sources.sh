@@ -15,16 +15,14 @@ if [ "$old_rev" = "$rev" ]; then
   exit 0
 fi
 
-dir="$(mktemp -d)"
+dir="$(mktemp -u -d)"
 
+git clone https://github.com/AmanoTeam/Unalix "$dir"
 pushd "$dir" || exit
-  git clone https://github.com/AmanoTeam/Unalix
-  pushd Unalix || exit
-    git checkout "$rev"
-    python3 ./external/update_ca_bundle.py
-    python3 ./external/update_rules_file.py
-    git diff > ./update.patch
-  popd || exit
+  git checkout "$rev"
+  python3 ./external/update_ca_bundle.py
+  python3 ./external/update_rules_file.py
+  git diff > ./update.patch
 popd || exit
 
 cat "$dir/Unalix/update.patch" > ./update.patch
