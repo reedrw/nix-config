@@ -14,9 +14,6 @@ let
     ripgrep    # recursive grep
     screen     # terminal multiplexer
 
-    ldp        # local deployment tool
-               # (same as ./install.sh)
-
     # global aliases
     (aliasToPackage {
       gc = ''
