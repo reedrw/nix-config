@@ -16,9 +16,6 @@ let
     "systemctl --user restart xdg-desktop-portal.service"
     "xset r rate 250 50"
     "${binPath scripts.toggle-touchpad} disable --silent"
-    "${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'"
-    "${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'"
-    "${binPath xorg.xmodmap} -e 'keycode 9 = Escape asciitilde Escape'"
   ];
 
   run = [
@@ -164,5 +161,6 @@ in
     (mkSimpleHMService "clipboard-clean" "${binPath scripts.clipboard-clean}")
     (mkSimpleHMService "dwebp-serv" "${binPath scripts.dwebp-serv}")
     (mkSimpleHMService "mpv-dnd" "${binPath scripts.mpv-dnd} Discord telegram-deskt")
+    (mkSimpleHMService "keybinds" "${binPath scripts.keybinds}")
   ];
 }

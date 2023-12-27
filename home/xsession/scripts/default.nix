@@ -1,5 +1,6 @@
 pkgs: {
   dwebp-serv = pkgs.writeNixShellScript "dwebp-serv" (builtins.readFile ./dwebp-serv.sh);
+  keybinds = pkgs.writeNixShellScript "keybinds" (builtins.readFile ./keybinds.sh);
   load-layouts = pkgs.writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
   mpv-dnd = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
   pause-suspend = pkgs.writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
