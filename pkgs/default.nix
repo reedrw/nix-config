@@ -102,11 +102,22 @@ in
   # importNixpkgs :: AttrSet -> AttrSet
   ########################################
   # Given a nixpkgs source as arugment, import it with the current config.
-  importNixpkgs = nixpkgs: {
-    config ? pkgs.config,
-    overlays ? pkgs.overlays,
-    system ? pkgs.system }:
-    import nixpkgs { inherit config overlays system; };
+  importNixpkgs = nixpkgs:
+    {
+      config ? pkgs.config,
+      overlays ? pkgs.overlays,
+      system ? pkgs.system
+    } @ args: import nixpkgs args;
+
+  # matchPackage :: String -> Package
+  ########################################
+  # Given a package name, return the corresponding package from nixpkgs.
+  matchPackage = pkgName:
+    builtins.foldl' (a: x:
+      if a == ""
+      then pkgs."${x}"
+      else a."${x}"
+    ) "" (lib.splitString "." pkgName);
 
   # writeNixShellScript :: String -> String -> Package
   ########################################
@@ -126,7 +137,7 @@ in
       # Get the packages from the second line
       packageList = builtins.elemAt (lib.splitString " -p " secondLine) 1;
       # Convert the package names to nixpkgs packages
-      runtimeInputs = map (x: pkgs."${x}") (lib.splitString " " packageList);
+      runtimeInputs = map self.matchPackage (lib.splitString " " packageList);
     in
     pkgs.writeShellApplication {
       inherit name text runtimeInputs;
