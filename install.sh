@@ -16,7 +16,6 @@ helpMessage(){
   echo -e "${green}  --boot         ${NC}Build and add boot entry for the system configuration"
   echo -e "${green}  --build        ${NC}Build the system configuration"
   echo -e "${green}  --help         ${NC}Show this help message"
-  echo -e "${green}  --list-outputs ${NC}List the available build outputs"
   echo -e "${green}  --switch       ${NC}Build and switch to the system configuration (default)"
   echo -e "${green}  --verbose      ${NC}Enable verbose output"
 }
@@ -49,6 +48,14 @@ main(){
           homeConfigurations = builtins.attrNames flake.homeConfigurations;
         in
           builtins.concatStringsSep \"\\n\" (nixosConfigurations ++ homeConfigurations) + \"\\n\""
+      ;;
+    --list-systems)
+      nix eval --impure --raw --expr "
+        let
+          flake = builtins.getFlake \"path:$flakePath/.\";
+          nixosConfigurations = builtins.attrNames flake.nixosConfigurations;
+        in
+          builtins.concatStringsSep \"\\n\" nixosConfigurations + \"\\n\""
       ;;
     --verbose|-v)
       shift;

@@ -3,11 +3,10 @@
 _ldp() {
   local -a options
   options=(
-    '--boot[Add boot entry for the system configuration]'
+    '--boot[Add boot entry for the system configuration]:system_outputs:_system_outputs'
     '--build[Build the system configuration]:build_outputs:_build_outputs'
     '--help[Display help information]'
-    '--list-outputs[List the available build outputs]'
-    '--switch[Switch to the system configuration (default)]'
+    '--switch[Switch to the system configuration (default)]:system_outputs:_system_outputs'
     '--verbose[Show verbose output]'
   )
 
@@ -21,6 +20,14 @@ _build_outputs() {
 
   # Set the completion candidates
   compadd "$@" -a build_outputs
+}
+
+_system_outputs() {
+  local system_outputs
+  system_outputs=($(ldp --list-systems 2>/dev/null))
+
+  # Set the completion candidates
+  compadd "$@" -a system_outputs
 }
 
 # Using compdef to associate the completion function with your script
