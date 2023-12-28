@@ -28,6 +28,7 @@
     "/home/reed/.local/share/direnv",
     "/home/reed/.local/share/home-manager",
     "/home/reed/.local/share/ranger",
+    "/home/reed/.local/state/nix",
     "/home/reed/.local/state/wireplumber",
     "/home/reed/.mozilla",
     "/home/reed/.ssh",
