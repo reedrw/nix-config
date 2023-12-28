@@ -3,6 +3,7 @@ let
   cfg = config.custom.aagl;
   customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
+  sources = import ./nix/sources.nix {};
 in
 {
   options.custom.aagl = {
@@ -15,9 +16,19 @@ in
       enable = true;
       package = with pkgs; let
         aagl = aaglPkgs.anime-game-launcher.override (old: {
-          unwrapped = old.unwrapped.override {
+          unwrapped = (old.unwrapped.override {
             inherit customIcon;
-          };
+          }).overrideAttrs (old: {
+            src = sources.an-anime-game-launcher;
+            patches = [ ./new-fps-unlocker.patch ];
+            cargoDeps = pkgs.rustPlatform.importCargoLock {
+              lockFile = ./Cargo.lock;
+              outputHashes = {
+                "anime-game-core-1.17.4" = "sha256-zrIrlIY+Co4Ca9QfwezfVo3RMGApgwV5Xn+2ekRqp4o=";
+                "anime-launcher-sdk-1.12.4" = "sha256-hXvUECQzjdLFdwa8ZbyVbrbpjNm/TRnF35EU+I0lz0s=";
+              };
+            };
+          });
         });
       in pkgs.optionalApply cfg.mullvad-exclude mullvadExclude aagl;
     };

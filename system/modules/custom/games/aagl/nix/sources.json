@@ -1,0 +1,14 @@
+{
+    "an-anime-game-launcher": {
+        "branch": "new-fps-unlocker",
+        "description": "An Anime Game launcher for Linux with automatic patching and telemetry disabling. Our discord server: https://discord.gg/ck37X6UWBp",
+        "homepage": "",
+        "owner": "mkrsym1",
+        "repo": "an-anime-game-launcher",
+        "rev": "445f545ce8374e1d4f5d51686e737927813d1e2d",
+        "sha256": "0lpwqn9cv8jc9wpyh8lwg23r4mcqm7q5i6b6sjikwbbxwcblpi49",
+        "type": "tarball",
+        "url": "https://github.com/mkrsym1/an-anime-game-launcher/archive/445f545ce8374e1d4f5d51686e737927813d1e2d.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
