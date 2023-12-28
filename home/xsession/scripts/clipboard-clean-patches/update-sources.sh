@@ -3,17 +3,10 @@
 
 set -x
 
-old_rev="$(jq -r '.["Unalix"].rev' ./nix/sources.json)"
-
 niv init
 niv update
 
 rev="$(jq -r '.["Unalix"].rev' ./nix/sources.json)"
-
-if [ "$old_rev" = "$rev" ]; then
-  echo "No update needed"
-  exit 0
-fi
 
 dir="$(mktemp -u -d)"
 
@@ -25,6 +18,6 @@ pushd "$dir" || exit
   git diff > ./update.patch
 popd || exit
 
-cat "$dir/Unalix/update.patch" > ./update.patch
+cat "$dir/update.patch" > ./update.patch
 
 rm -rf "$dir"
