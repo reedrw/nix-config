@@ -11,6 +11,7 @@ while true; do
   # set shift+esc to tilde
   xmodmap -e 'keycode 9 = Escape asciitilde Escape'
   # unset caps lock
+  xmodmap -e 'clear Lock'
   xmodmap -e 'keycode 66 = Control_L'
   sleep 20
 done
