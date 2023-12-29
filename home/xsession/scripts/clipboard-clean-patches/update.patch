@@ -20,12 +20,12 @@ index 632fc24..d8fda7d 100644
 +## Conversion done with mk-ca-bundle.pl version 1.29.
 +## SHA256: 1970dd65858925d68498d2356aea6d03f764422523c5887deca8ce3ba9e1f845
  ##
-
-
+ 
+ 
 @@ -200,27 +200,6 @@ vGJHvOB0K7Lrfb5BG7XARsWhIstfTsEokt4YutUqKLsRixeTmJlglFwjz1onl14LBQaTNx47aTbr
  qZ5hHY8y2o4M1nQ+ewkk2gF3R8Q7zTSMmfXK4SVhM7JZG+Ju1zdXtg2pEto=
  -----END CERTIFICATE-----
-
+ 
 -Security Communication Root CA
 -==============================
 ------BEGIN CERTIFICATE-----
@@ -53,7 +53,7 @@ index 632fc24..d8fda7d 100644
 @@ -489,29 +468,6 @@ IGfE7vmLV2H0knZ9P4SNVbfo5azV8fUZVqZa+5Acr5Pr5RzUZ5ddBA6+C4OmF4O5MBKgxTMVBbkN
  +8cFduPYSo38NBejxiEovjBFMR7HeL5YYTisO+IBZQ==
  -----END CERTIFICATE-----
-
+ 
 -Network Solutions Certificate Authority
 -=======================================
 ------BEGIN CERTIFICATE-----
@@ -83,7 +83,7 @@ index 632fc24..d8fda7d 100644
 @@ -626,26 +582,6 @@ NwUASZQDhETnv0Mxz3WLJdH0pmT1kvarBes96aULNmLazAZfNou2XjG4Kvte9nHfRCaexOYNkbQu
  dZWAUWpLMKawYqGT8ZvYzsRjdT9ZR7E=
  -----END CERTIFICATE-----
-
+ 
 -Hongkong Post Root CA 1
 -=======================
 ------BEGIN CERTIFICATE-----
@@ -110,7 +110,7 @@ index 632fc24..d8fda7d 100644
 @@ -712,39 +648,6 @@ YIvDQVETI53O9zJrlAGomecsMx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7r
  kpeDMdmztcpHWD9f
  -----END CERTIFICATE-----
-
+ 
 -Autoridad de Certificacion Firmaprofesional CIF A62634068
 -=========================================================
 ------BEGIN CERTIFICATE-----
@@ -150,7 +150,7 @@ index 632fc24..d8fda7d 100644
 @@ -993,60 +896,6 @@ tnRGEmyR7jTV7JqR50S+kDFy1UkC9gLl9B/rfNmWVan/7Ir5mUf/NVoCqgTLiluHcSmRvaS0eg29
  mvVXIwAHIRc/SjnRBUkLp7Y3gaVdjKozXoEofKd9J+sAro03
  -----END CERTIFICATE-----
-
+ 
 -EC-ACC
 -======
 ------BEGIN CERTIFICATE-----
@@ -211,7 +211,7 @@ index 632fc24..d8fda7d 100644
 @@ -1338,40 +1187,6 @@ Y2XQ8xwOFvVrhlhNGNTkDY6lnVuR3HYkUD/GKvvZt5y11ubQ2egZixVxSK236thZiNSQvxaz2ems
  WWFUyBy6ysHK4bkgTI86k4mloMy/0/Z1pHWWbVY=
  -----END CERTIFICATE-----
-
+ 
 -E-Tugra Certification Authority
 -===============================
 ------BEGIN CERTIFICATE-----
@@ -252,7 +252,7 @@ index 632fc24..d8fda7d 100644
 @@ -1708,36 +1523,6 @@ uglB4Zf4+/2a4n0Sye18ZNPLBSWLVtmg515dTguDnFt2KaAJJiFqYgIwcdK1j1zqO+F4CYWodZI7
  yFz9SO8NdCKoCOJuxUnOxwy8p2Fp8fc74SrL+SvzZpA3
  -----END CERTIFICATE-----
-
+ 
 -Staat der Nederlanden EV Root CA
 -================================
 ------BEGIN CERTIFICATE-----
@@ -289,7 +289,7 @@ index 632fc24..d8fda7d 100644
 @@ -2189,87 +1974,6 @@ F8Io2c9Si1vIY9RCPqAzekYu9wogRlR+ak8x8YF+QnQ4ZXMn7sZ8uI7XpTrXmKGcjBBV09tL7ECQ
  aaApJUqlyyvdimYHFngVV3Eb7PVHhPOeMTd61X8kreS8/f3MboPoDKi3QWwH3b08hpcv0g==
  -----END CERTIFICATE-----
-
+ 
 -TrustCor RootCert CA-1
 -======================
 ------BEGIN CERTIFICATE-----
