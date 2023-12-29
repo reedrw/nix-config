@@ -1,5 +1,5 @@
 diff --git a/Cargo.lock b/Cargo.lock
-index 482e3da..54c9916 100644
+index 482e3da..6e29f3e 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
 @@ -107,7 +107,7 @@ dependencies = [
@@ -7,7 +7,7 @@ index 482e3da..54c9916 100644
  name = "anime-launcher-sdk"
  version = "1.12.4"
 -source = "git+https://github.com/an-anime-team/anime-launcher-sdk?tag=1.12.4#e3f4677a2bca0a511853a2448e54c54ceff5bbbe"
-+source = "git+https://github.com/ezKEa/anime-launcher-sdk?branch=new-fps-unlocker#5de1171442381feedfdaf7d5c591f3bb1d8fd949"
++source = "git+https://github.com/mkrsym1/anime-launcher-sdk?branch=new-fps-unlocker#5de1171442381feedfdaf7d5c591f3bb1d8fd949"
  dependencies = [
   "anime-game-core",
   "anyhow",
@@ -41,6 +41,18 @@ index 482e3da..54c9916 100644
  ]
 
  [[package]]
+@@ -541,9 +541,9 @@ dependencies = [
+
+ [[package]]
+ name = "bstr"
+-version = "1.8.0"
++version = "1.9.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "542f33a8835a0884b006a0c3df3dadd99c0c3f296ed26c2fdc8028e01ad6230c"
++checksum = "c48f0051a4b4c5e0b6d365cd04af53aeaa209e3cc15ec2cdb69e73cc87fbd0dc"
+ dependencies = [
+  "memchr",
+  "serde",
 @@ -750,21 +750,20 @@ dependencies = [
 
  [[package]]
@@ -201,6 +213,18 @@ index 482e3da..54c9916 100644
  ]
 
  [[package]]
+@@ -1915,9 +1914,9 @@ dependencies = [
+
+ [[package]]
+ name = "memchr"
+-version = "2.6.4"
++version = "2.7.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
++checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
+
+ [[package]]
+ name = "memoffset"
 @@ -2074,9 +2073,9 @@ dependencies = [
 
  [[package]]
@@ -272,10 +296,10 @@ index 482e3da..54c9916 100644
  [[package]]
  name = "sysinfo"
 -version = "0.30.0"
-+version = "0.30.1"
++version = "0.30.2"
  source = "registry+https://github.com/rust-lang/crates.io-index"
 -checksum = "c68492e7268037de59ae153d7efb79546cf94a18a9548235420d3d8d2436b4b1"
-+checksum = "01e979b637815805abbdeea72e4b6d9374dd0efce6524cc65c31e14911dbc671"
++checksum = "c856f6ee1d0241d2ebaee960aaad07080afb4daf6bdfa3b250ace3cf1b81355d"
  dependencies = [
   "cfg-if",
   "core-foundation-sys",
@@ -359,7 +383,7 @@ index 482e3da..54c9916 100644
   "wasm-bindgen-backend",
   "wasm-bindgen-shared",
  ]
-@@ -3596,9 +3595,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
+@@ -3596,18 +3595,18 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
  [[package]]
  name = "winnow"
@@ -371,6 +395,17 @@ index 482e3da..54c9916 100644
  dependencies = [
   "memchr",
  ]
+
+ [[package]]
+ name = "xattr"
+-version = "1.1.3"
++version = "1.2.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a7dae5072fe1f8db8f8d29059189ac175196e410e40ba42d5d4684ae2f750995"
++checksum = "914566e6413e7fa959cc394fb30e563ba80f3541fbd40816d4c05a0fc3f2a0f1"
+ dependencies = [
+  "libc",
+  "linux-raw-sys 0.4.12",
 @@ -3725,7 +3724,7 @@ checksum = "9ce1b18ccd8e73a9321186f97e46f9f04b778851177567b1975109d26a08d2a6"
  dependencies = [
   "proc-macro2",
@@ -381,7 +416,7 @@ index 482e3da..54c9916 100644
 
  [[package]]
 diff --git a/Cargo.toml b/Cargo.toml
-index 329c8bc..29c341d 100644
+index 329c8bc..30b5e23 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -18,8 +18,8 @@ opt-level = "s"
@@ -390,7 +425,7 @@ index 329c8bc..29c341d 100644
  [dependencies.anime-launcher-sdk]
 -git = "https://github.com/an-anime-team/anime-launcher-sdk"
 -tag = "1.12.4"
-+git = "https://github.com/ezKEa/anime-launcher-sdk"
++git = "https://github.com/mkrsym1/anime-launcher-sdk"
 +branch = "new-fps-unlocker"
  features = ["all", "genshin"]
 
