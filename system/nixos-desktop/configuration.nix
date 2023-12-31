@@ -9,28 +9,10 @@
     ../users/reed.nix
     ./hardware-configuration.nix
     ./persist.nix
+    ./fs.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
   ];
-
-  boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "ip=dhcp" ];
-    kernelModules = [
-      # Nuvoton nct6687 needs this driver
-      "nct6683"
-    ];
-    extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
-    kernel.sysctl = {
-      "net.ipv4.ip_forward" = 1;
-      "net.ipv6.conf.all.forwarding" = 1;
-      "usbcore.old_scheme_first" = 1;
-    };
-    extraModprobeConfig = ''
-      options nct6683 force=1
-      options kvm_amd avic=1
-    '';
-  };
 
   custom.boot = {
     remote-unlock = {
@@ -56,25 +38,14 @@
     mullvad-exclude = true;
   };
 
-  hardware.firmware = with pkgs; [ linux-firmware ];
-
   services.btrfs.autoScrub = {
     enable = true;
     interval = "weekly";
   };
 
-  services.snapper = {
-    configs.persist = {
-      SUBVOLUME = "/persist";
-      ALLOW_USERS = [ "reed" ];
-      TIMELINE_CREATE = true;
-      TIMELINE_CLEANUP = true;
-      TIMELINE_LIMIT_HOURLY = 168;
-      TIMELINE_LIMIT_DAILY = 365;
-      TIMELINE_LIMIT_WEEKLY = 100;
-      TIMELINE_LIMIT_MONTHLY = 36;
-      TIMELINE_LIMIT_YEARLY = 0;
-    };
+  custom.snapper = {
+    enable = true;
+    allowedUsers = [ "reed" ];
   };
 
   boot.loader.grub = {
@@ -101,24 +72,6 @@
     user = "reed";
     group = "users";
     openFirewall = true;
-  };
-
-  environment.etc."crypttab".text = ''
-    BigHD /dev/disk/by-uuid/c5d3a438-5719-4020-be28-f258a15c5ab7 /persist/secrets/crypt/BigHD.key luks
-  '';
-
-  fileSystems = {
-    "/mnt/BigHD" = {
-      fsType = "ext4";
-      device = "/dev/mapper/BigHD";
-      options = [
-        "nofail"
-      ];
-    };
-    "/var/lib/deluge/Downloads" = {
-      device = "/mnt/BigHD/torrents";
-      options = [ "bind" ];
-    };
   };
 
   services.gnome.gnome-keyring.enable = true;

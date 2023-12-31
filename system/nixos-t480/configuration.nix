@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, inputs, pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
   imports = [
     ../users/reed.nix
@@ -10,20 +10,6 @@
     ./persist.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
   ];
-
-  boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
-    extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
-    kernel.sysctl = {
-      "net.ipv4.ip_forward" = 1;
-      "net.ipv6.conf.all.forwarding" = 1;
-    };
-  };
-
-  powerManagement.resumeCommands = with pkgs; ''
-    ${binPath xorg.xmodmap} -e 'keycode 117 = XF86Forward'
-    ${binPath xorg.xmodmap} -e 'keycode 112 = XF86Back'
-  '';
 
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
@@ -58,20 +44,10 @@
     efi.enable = true;
   };
 
-  services.snapper = {
-    configs.persist = {
-      SUBVOLUME = "/persist";
-      ALLOW_USERS = [ "reed" ];
-      TIMELINE_CREATE = true;
-      TIMELINE_CLEANUP = true;
-      TIMELINE_LIMIT_HOURLY = 168;
-      TIMELINE_LIMIT_DAILY = 365;
-      TIMELINE_LIMIT_WEEKLY = 100;
-      TIMELINE_LIMIT_MONTHLY = 36;
-      TIMELINE_LIMIT_YEARLY = 0;
-    };
+  custom.snapper = {
+    enable = true;
+    allowedUsers = [ "reed" ];
   };
-
 
   services.xserver = {
     libinput = {
