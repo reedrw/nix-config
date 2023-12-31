@@ -41,6 +41,7 @@
     "nixos-t480"
   ] // {
     inherit pkgs;
+    inherit (pkgs) lib;
 
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
