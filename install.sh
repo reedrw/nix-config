@@ -63,7 +63,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false
+      sudo nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       [[ "$USER" != "root" ]] && home-manager switch
       ;;
   esac
