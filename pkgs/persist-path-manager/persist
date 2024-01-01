@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p bat coreutils eza fzf jq
+#! nix-shell -i bash -p bat eza fzf jq
 # vim: filetype=sh
 
 set -e
