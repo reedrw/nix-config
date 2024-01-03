@@ -41,11 +41,18 @@ contPrograms(){
   done
 }
 
+if [[ "$1" == "--resume" ]]; then
+  shift
+  programs=( "$@" )
+  contPrograms
+  exit 0
+fi
+
 while true; do
   if [[ "$(getActiveWindow)" == "mpv" ]]; then
     stopPrograms
     while [[ "$(getActiveWindow)" == "mpv" ]]; do
-      sleep 2
+      sleep 10
     done
     contPrograms
   else

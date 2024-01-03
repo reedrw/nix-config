@@ -21,6 +21,12 @@ let
     "i3-msg workspace 1"
   ];
 
+  # Window classes to be suspended while mpv is the active window
+  chatApps = [
+    "TelegramDesktop"
+    "VencordDesktop"
+  ];
+
   scripts = import ./scripts pkgs;
 
 in
@@ -55,6 +61,10 @@ in
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+r" = "${exec} ${binPath scripts.record}";
           "${mod}+Shift+s" = "sticky toggle";
+          "${mod}+2" = "${exec} ${binPath (writeShellScriptBin "workspace2" ''
+            i3-msg workspace 2
+            ${binPath scripts.mpv-dnd} --resume ${builtins.concatStringsSep " " chatApps}
+          '')}";
           "${mod}+${sup}+space" = "${exec} ${binPath scripts.toggle-touchpad}";
           "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
           "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
@@ -159,7 +169,7 @@ in
     (mkSimpleHMService "autotiling" "${binPath autotiling}")
     (mkSimpleHMService "clipboard-clean" "${binPath scripts.clipboard-clean}")
     (mkSimpleHMService "dwebp-serv" "${binPath scripts.dwebp-serv}")
-    (mkSimpleHMService "mpv-dnd" "${binPath scripts.mpv-dnd} Discord telegram-deskt")
+    (mkSimpleHMService "mpv-dnd" "${binPath scripts.mpv-dnd} ${builtins.concatStringsSep " " chatApps}")
     (mkSimpleHMService "keybinds" "${binPath scripts.keybinds}")
   ];
 }
