@@ -4,6 +4,7 @@
     ./bios.nix
     ./efi.nix
     ./remote-unlock.nix
+    ./keyfile-unlock.nix
     ./theme.nix
     ./wipe
   ];
