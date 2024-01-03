@@ -302,7 +302,7 @@ add() {
 
   # Activate the NixOS generations and handle activation failures
   if eval "$activateCommand" || (mountpoint "$fileArg" > /dev/null || pathExists "$fileArg"); then
-    [[ -z "$moveBack" ]] || rm -r "$fileArg.bak"
+    [[ -z "$moveBack" ]] || rm -rf "$fileArg.bak"
   else
     [[ -z "$moveBack" ]] || mv "$fileArg.bak" "$fileArg"
     echo "$oldJson" > "$persistJson"
