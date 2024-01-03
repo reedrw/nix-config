@@ -12,19 +12,32 @@ getActiveWindow(){
   xdotool getactivewindow getwindowclassname
 }
 
+# given a window class name, find the pids of all windows with that class name
+findWindowPids(){
+  ids="$(xdotool search --class "$1")"
+
+  for i in $ids; do
+    xprop -id "$i" | awk '/_NET_WM_PID/ {print $3}'
+  done
+}
+
 stopPrograms(){
   for i in "${programs[@]}"; do
-    if pgrep "$i"; then
-      pkill -STOP "$i"
-    fi
+    # shellcheck disable=SC2207
+    pids=( $(findWindowPids "$i") )
+    for pid in "${pids[@]}"; do
+      kill -STOP "$pid"
+    done
   done
 }
 
 contPrograms(){
   for i in "${programs[@]}"; do
-    if pgrep "$i"; then
-      pkill -CONT "$i"
-    fi
+    # shellcheck disable=SC2207
+    pids=( $(findWindowPids "$i") )
+    for pid in "${pids[@]}"; do
+      kill -CONT "$pid"
+    done
   done
 }
 
