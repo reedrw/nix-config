@@ -7,4 +7,6 @@
     ./theme.nix
     ./wipe
   ];
+
+  boot.initrd.systemd.enable = true;
 }

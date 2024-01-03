@@ -22,10 +22,25 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.initrd = {
-      supportedFilesystems = [ "btrfs" ];
-      postDeviceCommands = lib.mkBefore cfg.wipeScript;
+    boot.initrd.systemd.services.rollback = {
+      description = "Rollback BTRFS root subvolume to a pristine state";
+
+      wantedBy = [
+        "initrd.target"
+      ];
+      after = [
+        # LUKS/TPM process
+        "systemd-cryptsetup@enc.service"
+      ];
+      before = [
+        "sysroot.mount"
+      ];
+
+      serviceConfig.Type = "oneshot";
+
+      script = cfg.wipeScript;
     };
+
     programs.persist-path-manager = {
       enable = true;
       config = {
