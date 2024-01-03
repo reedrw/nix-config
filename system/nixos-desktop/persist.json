@@ -6,13 +6,7 @@
     "/home/reed/.config/MangoHud/MangoHud.conf",
     "/home/reed/.config/hub",
     "/home/reed/.gitconfig",
-    "/home/reed/.zsh_history",
-    "/home/reed/downloads",
-    "/home/reed/files",
-    "/home/reed/games",
-    "/home/reed/images",
-    "/home/reed/music",
-    "/home/reed/videos"
+    "/home/reed/.zsh_history"
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
@@ -51,6 +45,12 @@
     "/home/reed/.local/state/wireplumber",
     "/home/reed/.mozilla/firefox",
     "/home/reed/.ssh",
+    "/home/reed/downloads",
+    "/home/reed/files",
+    "/home/reed/games",
+    "/home/reed/images",
+    "/home/reed/music",
+    "/home/reed/videos",
     "/root/.cache/mesa_shader_cache",
     "/root/.cache/nix",
     "/var/db/sudo",

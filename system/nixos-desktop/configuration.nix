@@ -9,7 +9,6 @@
     ../users/reed.nix
     ./hardware-configuration.nix
     ./persist.nix
-    ./fs.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
   ];
@@ -22,6 +21,9 @@
     wipe.enable = true;
     efi.enable = true;
   };
+
+  boot.initrd.services.lvm.enable = true;
+  services.lvm.boot.thin.enable = true;
 
   custom.torrents = {
     enable = true;
