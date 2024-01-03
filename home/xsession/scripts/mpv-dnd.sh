@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xdotool coreutils procps
+#! nix-shell -i bash -p xdotool procps
 
 # Suspends programs while mpv player is active because I dont like notifications while I'm watching stuff
 set -x
