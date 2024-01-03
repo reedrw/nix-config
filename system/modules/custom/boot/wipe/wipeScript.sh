@@ -5,9 +5,10 @@ mkdir -p /mnt
 # so we can manipulate btrfs subvolumes.
 mount -o subvol=/ /dev/disk/by-label/nixos /mnt
 
+# Figure out the next snapshot number to put in /prev.
 # shellcheck disable=SC2012
 num="$(ls /mnt/prev | sort -n | tail -1)"
-num="$(( num + 1 ))"
+num="$((num + 1))"
 
 # While we're tempted to just delete /root and create
 # a new snapshot from /root-blank, /root is already
@@ -27,8 +28,8 @@ num="$(( num + 1 ))"
 btrfs subvolume list -o /mnt/root |
 cut -f9 -d' ' |
 while read -r subvolume; do
-echo "deleting /$subvolume subvolume..."
-btrfs subvolume delete "/mnt/$subvolume"
+  echo "deleting /$subvolume subvolume..."
+  btrfs subvolume delete "/mnt/$subvolume"
 done &&
 echo "snapshotting /root to /prev/$num" &&
 btrfs subvolume snapshot -r /mnt/root "/mnt/prev/$num" &&
