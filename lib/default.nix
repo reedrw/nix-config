@@ -28,7 +28,7 @@ rec {
   # directory. The module will be named after the directory.
   #
   # Example:
-  # mkModuleFromDir "common"
+  # mkModuleFromDir true "common"
   #
   # common/
   # - bluetooth.nix
@@ -42,7 +42,7 @@ rec {
   #   common.sound.enable = true;
   # }
   #
-  mkModuleFromDir = dir:
+  mkModuleFromDir = default: dir:
   let
     # The module name is the basename of the directory
     moduleName = builtins.baseNameOf dir;
@@ -60,8 +60,8 @@ rec {
     in
     {
       options.${moduleName}.${name}.enable = lib.mkOption {
+        inherit default;
         type = lib.types.bool;
-        default = true;
         description = "Whether to enable ${moduleName}.${name}";
       };
 
@@ -92,12 +92,14 @@ rec {
 
     # NixOS configuration imports, minus home-manager
     modules-noHM = let
-      commonModules = mkModuleFromDir ../system/modules/common;
+      commonModules = mkModuleFromDir true ../system/modules/common;
+      userModules = mkModuleFromDir false ../system/modules/users;
       customModules = pkgs.listDirectory ../system/modules/custom;
     in [
       ../system/${host}/configuration.nix
+      ../system/${host}/hardware-configuration.nix
       inputs.impermanence.nixosModule
-    ] ++ commonModules ++ customModules;
+    ] ++ commonModules ++ userModules ++ customModules;
 
     # Home-manager configuration imports
     hm.modules = let

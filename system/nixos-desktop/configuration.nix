@@ -6,8 +6,6 @@
 
 {
   imports = [
-    ../users/reed.nix
-    ./hardware-configuration.nix
     ./persist.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
@@ -26,6 +24,12 @@
 
   boot.initrd.services.lvm.enable = true;
   services.lvm.boot.thin.enable = true;
+
+  users = {
+    reed.enable = true;
+    mutableUsers = false;
+    users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
+  };
 
   custom.torrents = {
     enable = true;
@@ -56,9 +60,6 @@
     gfxmodeEfi = "1920x1080";
     gfxpayloadEfi = "keep";
   };
-
-  users.mutableUsers = false;
-  users.users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
 
   networking.hostName = "nixos-desktop";
 

@@ -5,8 +5,6 @@
 { inputs, pkgs, ... }:
 {
   imports = [
-    ../users/reed.nix
-    ./hardware-configuration.nix
     ./persist.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
   ];
@@ -14,8 +12,11 @@
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
 
-  users.mutableUsers = false;
-  users.users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
+  users = {
+    reed.enable = true;
+    mutableUsers = false;
+    users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
+  };
 
   hardware = {
     opengl = {
