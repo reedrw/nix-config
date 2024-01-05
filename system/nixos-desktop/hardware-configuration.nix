@@ -13,42 +13,42 @@
   boot.kernelModules = [ "kvm-amd"  "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" ];
   boot.extraModulePackages = [ ];
 
+  boot.initrd.luks.devices."enc".device = "/dev/vg01/nixos";
+
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/06911343-b3c6-4a86-b4ae-3fc23816a52a";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
       options = [ "subvol=root" "compress=zstd" "noatime" ];
     };
 
-  boot.initrd.luks.devices."enc".device = "/dev/disk/by-uuid/0374e53d-6e1a-4788-96c9-c6059a295056";
-
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/06911343-b3c6-4a86-b4ae-3fc23816a52a";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
       options = [ "subvol=nix" "compress=zstd" "noatime" ];
     };
 
   fileSystems."/persist" =
-    { device = "/dev/disk/by-uuid/06911343-b3c6-4a86-b4ae-3fc23816a52a";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
       options = [ "subvol=persist" "compress=zstd" "noatime" ];
       neededForBoot = true;
     };
 
   fileSystems."/var/log" =
-    { device = "/dev/disk/by-uuid/06911343-b3c6-4a86-b4ae-3fc23816a52a";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
       options = [ "subvol=log" "compress=zstd" "noatime" ];
       neededForBoot = true;
     };
 
   fileSystems."/prev" =
-    { device = "/dev/disk/by-uuid/06911343-b3c6-4a86-b4ae-3fc23816a52a";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
       options = [ "subvol=prev" "compress=zstd" "noatime" ];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/C6CE-F98C";
+    { device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
 
