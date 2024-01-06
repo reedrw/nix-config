@@ -7,21 +7,14 @@ with pkgs;
 mkShell {
   name = "nix-config";
   packages = [
-    cargo
     doppler
-    expect
-    gcc
     git
-    gron
     home-manager
-    jq
     ldp
     ncurses
     niv
-    nix-prefetch
     pre-commit
     shellcheck
-    wget
 
     (aliasToPackage {
       update-all = let

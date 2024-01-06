@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p python3 niv jq
+#! nix-shell -i bash -p gron jq niv python3
 
 set -x
 
