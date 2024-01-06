@@ -1,6 +1,6 @@
 ,*
 .direnv/
 .secrets
-nixos-vm.qcow2
+nixos.qcow2
 result
 result-*

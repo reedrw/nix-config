@@ -10,7 +10,7 @@
 
   services.mullvad-vpn.enable = false;
 
-  networking.hostName = "nixos-vm";
+  networking.hostName = "nixos";
   time.timeZone = "America/New_York";
 
   system.stateVersion = "22.11";

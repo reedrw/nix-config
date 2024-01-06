@@ -27,7 +27,7 @@ main(){
       sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
     --build-vm)
-      nixos-rebuild build-vm --flake "$flakePath/.#nixos-vm" -L --option eval-cache false "${@:3}"
+      "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.nixos-vm.config.system.build.vm" -L --option eval-cache false "${@:2}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
