@@ -12,9 +12,10 @@ helpMessage(){
   local yellow='\033[0;33m'
   local bold='\033[1m'
   local NC='\033[0m' # No Color
-  echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--boot|--switch|--build|--help] ${NC}[HOST]"
+  echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--boot|--switch|--build|--build-vm|--help] ${NC}[HOST]"
   echo -e "${green}  --boot         ${NC}Build and add boot entry for the system configuration"
   echo -e "${green}  --build        ${NC}Build the system configuration"
+  echo -e "${green}  --build-vm     ${NC}Build the virtual machine image"
   echo -e "${green}  --help         ${NC}Show this help message"
   echo -e "${green}  --switch       ${NC}Build and switch to the system configuration (default)"
   echo -e "${green}  --verbose      ${NC}Enable verbose output"
@@ -23,7 +24,10 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false
+      sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      ;;
+    --build-vm)
+      nixos-rebuild build-vm --flake "$flakePath/.#nixos-vm" -L --option eval-cache false "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then

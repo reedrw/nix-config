@@ -28,7 +28,7 @@ in
     };
   };
   services.mullvad-vpn = {
-    enable = true;
+    enable = lib.mkDefault true;
     package = pkgs.mullvad-vpn;
   };
 

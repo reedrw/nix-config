@@ -7,13 +7,10 @@
 ## Screenshot
 ![screenshot](screenshot.png)
 
-## Install
+## Try it out!
 
 ```sh
-cd ~/.config
-git clone https://github.com/reedrw/nix-config nixpkgs
-cd nixpkgs
-cachix use reedrw # Optional
-nix-shell
-home-manager switch
+git clone https://github.com/reedrw/nix-config
+cd nix-config
+./install.sh --build-vm
 ```

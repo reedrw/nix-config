@@ -46,6 +46,7 @@ rec {
   in flake.lib.mkHosts [
     "nixos-desktop"
     "nixos-t480"
+    "nixos-vm"
   ] // {
     inherit pkgs;
     inherit (pkgs) lib;
