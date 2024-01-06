@@ -1,4 +1,4 @@
-{ nixpkgs-options, inputs, ... }:
+{ nixpkgs-options, nixConfig, inputs, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
@@ -7,10 +7,7 @@
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
-      substituters = [ "https://reedrw.cachix.org" ];
-      trusted-public-keys = [
-        "reedrw.cachix.org-1:do9gZInXOYTRPYU+L/x7B90hu1usmnaSFGJl6PN7NC4="
-      ];
+      inherit (nixConfig) extra-substituters extra-trusted-public-keys;
     };
     extraOptions = ''
       builders-use-substitutes = true

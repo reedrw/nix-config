@@ -1,4 +1,4 @@
-{
+rec {
   description = "a flake for my NixOS and home-manager configs";
 
   # {{{ Inputs
@@ -27,6 +27,13 @@
   };
   # }}}
 
+  nixConfig = {
+    extra-substituters = [ "https://reedrw.cachix.org" ];
+    extra-trusted-public-keys = [
+      "reedrw.cachix.org-1:do9gZInXOYTRPYU+L/x7B90hu1usmnaSFGJl6PN7NC4="
+    ];
+  };
+
   outputs = { self, nixpkgs, master, unstable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
     inherit (self) outputs;
     system = "x86_64-linux";
@@ -34,7 +41,7 @@
     pkgs = flake.lib.pkgsForSystem system;
 
     flake.lib = import ./lib {
-      inherit inputs outputs self;
+      inherit inputs nixConfig outputs self;
     };
   in flake.lib.mkHosts [
     "nixos-desktop"

@@ -5,7 +5,7 @@ set -e
 dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
 
-nixCommand=(nix --experimental-features 'nix-command flakes')
+nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
 
 helpMessage(){
   local green='\033[0;32m'

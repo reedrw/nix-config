@@ -53,6 +53,7 @@
     "/home/reed/videos",
     "/root/.cache/mesa_shader_cache",
     "/root/.cache/nix",
+    "/root/.local/share/nix",
     "/var/db/sudo",
     "/var/lib/blueman",
     "/var/lib/bluetooth",

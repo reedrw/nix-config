@@ -1,4 +1,4 @@
-{ inputs, outputs, self, ... }:
+{ inputs, outputs, self, nixConfig, ... }:
 
 let
   nixpkgs-options.nixpkgs = {
@@ -126,7 +126,7 @@ rec {
     ];
 
     # Arguments to pass to our NixOS and home-manager configurations
-    specialArgs = { inherit inputs outputs nixpkgs-options; };
+    specialArgs = { inherit inputs outputs nixpkgs-options nixConfig; };
   in {
     # The actual flake outputs for this host
     nixosConfigurations = {
