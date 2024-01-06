@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -30,12 +30,14 @@ mergePr(){
       gh pr view "$prNumber" --comments
       read -rp "Merge and install PR? (Y/n) " yn
       case $yn in
-        [nN] )
-          exit 2;;
-        * )
+        [nN])
+          exit 2
+        ;;
+        *)
           gh pr merge "$prNumber" -dm && git pull
           ./install.sh "$@"
-          break;;
+          break
+        ;;
       esac
     fi
   done
