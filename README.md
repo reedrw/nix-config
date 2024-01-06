@@ -12,6 +12,6 @@
 ```sh
 git clone https://github.com/reedrw/nix-config
 cd nix-config
-./install.sh --build-vm
+./install.sh --build nixos-vm
 ./result/bin/run-nixos-vm
 ```

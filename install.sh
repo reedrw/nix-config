@@ -15,7 +15,6 @@ helpMessage(){
   echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--boot|--switch|--build|--build-vm|--help] ${NC}[HOST]"
   echo -e "${green}  --boot         ${NC}Build and add boot entry for the system configuration"
   echo -e "${green}  --build        ${NC}Build the system configuration"
-  echo -e "${green}  --build-vm     ${NC}Build the virtual machine image"
   echo -e "${green}  --help         ${NC}Show this help message"
   echo -e "${green}  --switch       ${NC}Build and switch to the system configuration (default)"
   echo -e "${green}  --verbose      ${NC}Enable verbose output"
@@ -26,9 +25,6 @@ main(){
     --boot)
       sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
-    --build-vm)
-      "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.nixos-vm.config.system.build.vm" -L --option eval-cache false "${@:2}"
-      ;;
     --build)
       if [ "$#" -lt 2 ]; then
         output="$(hostname)"
@@ -37,6 +33,8 @@ main(){
       fi
       if grep -q "@" <<< "$output"; then
         "${nixCommand[@]}" build "$flakePath/.#homeConfigurations.$output.activationPackage" -L --option eval-cache false "${@:3}"
+      elif grep -q "nixos-vm" <<< "$output"; then
+        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" -L --option eval-cache false "${@:3}"
       else
         "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" -L --option eval-cache false "${@:3}"
       fi

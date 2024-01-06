@@ -4,7 +4,6 @@ _ldp() {
   local -a options
   options=(
     '--boot[Add boot entry for the system configuration]:system_outputs:_system_outputs'
-    '--build-vm[Build the virtual machine image]'
     '--build[Build the system configuration]:build_outputs:_build_outputs'
     '--help[Display help information]'
     '--switch[Switch to the system configuration (default)]:system_outputs:_system_outputs'
