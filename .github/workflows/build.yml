@@ -19,6 +19,7 @@ jobs:
           - reed@nixos-t480
           - nixos-desktop-no-home-manager
           - nixos-t480-no-home-manager
+          - nixos-vm
           - nix-shell
 
     runs-on: ubuntu-latest
@@ -74,6 +75,8 @@ jobs:
         set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
           buildCommand="nix-shell --show-trace ./shell.nix --run exit"
+        elif [[ "${{ matrix.output }}" == "nixos-vm" ]]; then
+          buildCommand="./install.sh --build-vm"
         else
           buildCommand="./install.sh --build ${{ matrix.output }}"
         fi
