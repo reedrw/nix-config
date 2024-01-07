@@ -57,15 +57,17 @@ rec {
     { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
+      imports = lib.filterAttrs (n: v: n == "imports") (value args);
     in
     {
+      imports = imports.imports or [];
       options.${moduleName}.${name}.enable = lib.mkOption {
         inherit default;
         type = lib.types.bool;
         description = "Whether to enable ${moduleName}.${name}";
       };
 
-      config = lib.mkIf cfg.enable (value args);
+      config = lib.mkIf cfg.enable (lib.filterAttrs (n: v: n != "imports") (value args));
     }
   ) dirSet;
 
