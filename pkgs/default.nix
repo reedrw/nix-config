@@ -150,6 +150,36 @@ in
   listDirectory = path:
     builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
 
+  # wrapEnv :: Package -> AttrSet -> Package
+  ########################################
+  # Given a package and an attribute set containing environment variables, override the package
+  # to include the environment variables at runtime.
+  # Ex.
+  # wrapEnv hello { FOO = "bar"; }
+  wrapEnv = package: env:
+  let
+    # get a list of all the binaries provided by the package
+    allBinaries = builtins.attrNames (builtins.readDir ("${package}/bin"));
+    # remove binaries which start with a .
+    binaries = builtins.filter (x: (builtins.substring 0 1 x) != ".") allBinaries;
+  in
+  pkgs.symlinkJoin {
+    name = "${package.name}-with-env";
+    paths = [ package ];
+    postBuild = ''
+      for binary in ${builtins.concatStringsSep " " binaries}; do
+        echo "Wrapping $binary with env"
+        rm "$out/bin/$binary"
+        cat << _EOF > $out/bin/$binary
+      #! ${pkgs.runtimeShell} -e
+      ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
+      exec ${package}/bin/$binary "\$@"
+      _EOF
+        chmod 555 "$out/bin/$binary"
+      done
+    '';
+  };
+
   # mullvadExclude :: Package -> Package
   ########################################
   # Given a package, wrap all the non-hidden binaries in the package with mullvad-exclude.
