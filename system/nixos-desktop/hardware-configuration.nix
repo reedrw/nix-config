@@ -47,6 +47,12 @@
       options = [ "subvol=prev" "compress=zstd" "noatime" ];
     };
 
+  fileSystems."/mnt/subvols" =
+    { device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "compress=zstd" "noatime" ];
+    };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-label/boot";
       fsType = "vfat";
