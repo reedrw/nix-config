@@ -46,41 +46,40 @@ let
 in
 {
 
-  home.packages =
-    let
-      myranger = pkgs.ranger.overrideAttrs (_: {
-        buildInputs = _.buildInputs ++ [ pkgs.makeWrapper ];
-        postInstall = ''
-          cat << EOF > $out/share/applications/ranger.desktop
-          [Desktop Entry]
-          Type=Application
-          Name=ranger
-          Comment=Launches the ranger file manager
-          Icon=utilities-terminal
-          Exec=${rangerlaunch}
-          Categories=ConsoleOnly;System;FileTools;FileManager
-          MimeType=inode/directory;
-          Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
-          EOF
+  home.packages = let
+    ranger = myranger.override { imagePreviewSupport = false; };
+    myranger = pkgs.ranger.overrideAttrs (_: {
+      buildInputs = _.buildInputs ++ [ pkgs.makeWrapper ];
+      postInstall = ''
+        cat << EOF > $out/share/applications/ranger.desktop
+        [Desktop Entry]
+        Type=Application
+        Name=ranger
+        Comment=Launches the ranger file manager
+        Icon=utilities-terminal
+        Exec=${rangerlaunch}
+        Categories=ConsoleOnly;System;FileTools;FileManager
+        MimeType=inode/directory;
+        Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
+        EOF
 
-          wrapProgram $out/bin/ranger \
-            --prefix PATH : ${lib.makeBinPath bins}
-        '';
-      });
-      ranger = myranger.override { imagePreviewSupport = false; };
-    in
+        wrapProgram $out/bin/ranger \
+          --prefix PATH : ${lib.makeBinPath bins}
+      '';
+    });
+  in [
     # TODO: figure out why ueberzugpp tries to create windows
-    [ ranger
-      (pkgs.ueberzugpp.overrideAttrs rec {
-        version = "2.8.7";
-        src = pkgs.fetchFromGitHub {
-          owner = "jstkdng";
-          repo = "ueberzugpp";
-          rev = "v${version}";
-          hash = "sha256-grkLsbatgezM8wFbwAatLQw35wucU0Kc6hacRefFvHw=";
-        };
-      })
-    ];
+    ranger
+    (pkgs.ueberzugpp.overrideAttrs rec {
+      version = "2.8.7";
+      src = pkgs.fetchFromGitHub {
+        owner = "jstkdng";
+        repo = "ueberzugpp";
+        rev = "v${version}";
+        hash = "sha256-grkLsbatgezM8wFbwAatLQw35wucU0Kc6hacRefFvHw=";
+      };
+    })
+  ];
 
   xdg.mimeApps.defaultApplications = {
     "inode/directory" = "ranger.desktop";
@@ -98,7 +97,7 @@ in
       set preview_images_method ueberzug
     '';
 
-    "ranger/rifle.conf".text = with pkgs; ''
+    "ranger/rifle.conf".text = ''
       ext doc, flag f = libreoffice "$@"
       ext docx, flag f = libreoffice "$@"
       ext flac = mpv --force-window -- "$@"
