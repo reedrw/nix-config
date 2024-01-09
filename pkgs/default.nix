@@ -4,6 +4,7 @@ let
 in
 {
   ldp = pkgs.callPackage ./ldp { };
+  pin = pkgs.callPackage ./pin { };
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 
   # aliasToPackage :: AttrSet -> Package

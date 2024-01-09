@@ -11,6 +11,7 @@
       inherit pkgs;
       nurpkgs = pkgs;
     };
+    pinned = import ./pin/pkgs.nix pkgs;
     nurPkgs = nur.repos.reedrw;
     fromBranch = {
       master = import master { inherit (pkgs) config system; };

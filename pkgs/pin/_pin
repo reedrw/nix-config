@@ -1,0 +1,61 @@
+#compdef pin
+
+_pin() {
+  local -a options
+
+  options=(
+    '--remove[Remove a package from pinned.json]:pinned_packages:_pinned_packages'
+    '-r[Remove a package from pinned.json]:pinned_packages:_pinned_packages'
+    '--list[List all pinned packages]'
+    '-l[List all pinned packages]'
+    '--help[Show help message]'
+    '-h[Show help message]'
+    '--verbose[Show verbose output]'
+    '-v[Show verbose output]'
+  )
+
+  _arguments "$options[@]" '*: :_all_packages' && return 0
+}
+
+
+# Custom completion function for --build option
+_all_packages() {
+  # set -x
+  local all_packages
+  local rIndex
+
+  rIndex=2
+
+  if [[ $words[1] == "-v" || $words[1] == "--verbose" ]]; then
+    rIndex=$(( $rIndex + 1 ))
+  fi
+
+  # al_packages=($(pin --listAllPackages 2>/dev/null))
+  if [[ $words[$rIndex] == "-r" || $words[$rIndex] == "--remove" ]]; then
+    all_packages=($(pin --list ${words[$(( $CURRENT - 1 ))]}))
+  else
+    # if last word is a package, list versions
+    if [[ $words[$(( $CURRENT - 1 ))] == -*  ||  $words[$(( $CURRENT - 1 ))] == "pin" ]]; then
+      all_packages=($(pin --listAllPackages 2>/dev/null))
+    else
+      all_packages=($(pin --listVersions ${words[$(( $CURRENT - 1 ))]} 2>/dev/null))
+    fi
+    # all_packages=($(pin --listAllPackages 2>/dev/null))
+  fi
+
+  # set +x
+  # Set the completion candidates
+  compadd "$@" -a all_packages
+}
+
+# List all pinned packages
+_pinned_packages() {
+  local pinned_packages
+  pinned_packages=($(pin --list | cut -d ' ' -f 1 2>/dev/null))
+
+  # Set the completion candidates
+  compadd "$@" -a pinned_packages
+}
+
+# Using compdef to associate the completion function with your script
+compdef _pin pin

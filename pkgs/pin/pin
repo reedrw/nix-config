@@ -1,0 +1,200 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p fzf gron jq
+# vim: filetype=sh
+
+set -eo pipefail
+
+# Pin a package to a specific version, using devbox's search API
+# Usage: pin.sh <package-name> <version>
+
+pinnedJson="$HOME/.config/nixpkgs/pkgs/pin/pinned.json"
+
+api="https://search.devbox.sh/v1/search?q="
+
+fzfArgs=(
+  "--height=70%"
+  "--layout=reverse"
+  "--info=inline"
+  "--color=16"
+)
+
+helpMessage(){
+  local green="\033[0;32m"
+  local yellow="\033[0;33m"
+  local bold="\033[1m"
+  local nc="\033[0m"
+
+  echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--remove|--list|--help]${nc} ${bold}<package>${nc} ${bold}<version>${nc}"
+  echo -e "  ${green}-r, --remove${nc}      Remove a package from pinned.json"
+  echo -e "  ${green}-l, --list${nc}        List all pinned packages"
+  echo -e "  ${green}-h, --help${nc}        Show this help message"
+  echo -e "  ${green}-v, --verbose${nc}     Show verbose output"
+  exit 0
+}
+
+checkPinned(){
+  # if package and version is already pinned, exit
+  if [ "$(jq -r ".${package} | has(\"$version\")" "$pinnedJson" 2> /dev/null)" = "true" ]; then
+    echo "Package $package is already pinned to version $version"
+    exit 0
+  fi
+}
+
+queryApi(){
+  apiSearchResponse="$(curl -s "$api$package")"
+  packageJson="$(echo "$apiSearchResponse" | jq -r ".packages[] | select(.name == \"$package\")")"
+}
+
+remove(){
+  package="$1"
+  version="$2"
+
+  echo "Removing $package $version from pinned.json"
+
+  tmpJson="$(mktemp)"
+  gron "$pinnedJson" | grep -Ev "\\[?\"?${package}\"?\]?\\[\"$version\"\\]" | gron --ungron | jq . > "$tmpJson"
+  if [[ "$(gron "$tmpJson" | grep -cE "\\[?\"?${package}\"?\]?")" -eq 1 ]]; then
+    gron "$pinnedJson" | grep -Ev "\\[?\"?${package}\"?\]?" | gron --ungron | jq . > "$tmpJson"
+  fi
+  cat "$tmpJson" > "$pinnedJson"
+  rm "$tmpJson"
+}
+
+list(){
+  jq -r 'keys[] as $k | "\($k) \(.[$k] | keys[])"' "$pinnedJson"
+}
+
+listAllPackages(){
+  nix eval --impure --raw --expr '
+    let
+      flake = builtins.getFlake "nixpkgs";
+    in builtins.concatStringsSep "\n" (builtins.attrNames flake.legacyPackages.x86_64-linux)
+  ' 2> /dev/null
+}
+
+getAvailableVersions(){
+  echo "$packageJson" | jq -r ".versions | map(.version) | .[]"
+}
+
+main() {
+  package="${1:-}"
+  version="${2:-}"
+  case "${1:-}" in
+    --remove|-r)
+      shift
+      # use fzf to select a package to remove
+      if [ $# -ne 2 ]; then
+        toRemove="$(list | fzf "${fzfArgs[@]}" --prompt="Select a package to remove: ")"
+        if [ -z "$toRemove" ]; then
+          exit 0
+        fi
+        # shellcheck disable=SC2086
+        set -- $toRemove
+        remove "$1" "$2"
+        exit 0
+      fi
+      # remove package-version pairs until we have no more arguments
+      while [ $# -ge 2 ]; do
+        remove "$1" "$2"
+        shift 2
+      done
+      exit 0
+      ;;
+    --list|-l)
+      # if we have another argument, it's a package name
+      # so we list the pinned versions of that package
+      if [ $# -ge 2 ]; then
+        package="$2"
+        shift 2
+        list | grep "^$package " | cut -d ' ' -f 2
+        exit 0
+      fi
+      shift
+      list
+      exit 0
+      ;;
+    --listAllPackages)
+      listAllPackages
+      exit 0
+      ;;
+    --listVersions)
+      package="$2"
+      shift 2
+      queryApi
+      getAvailableVersions
+      exit 0
+      ;;
+    -v|--verbose)
+      set -x
+      shift
+      main "$@"
+      ;;
+    --help|-h)
+      helpMessage
+      ;;
+  esac
+
+  # if no arguments are given, ask for what to pin
+  if [ $# -eq 0 ]; then
+    package="$(nix eval --impure --raw --expr '
+      let
+        flake = builtins.getFlake "nixpkgs";
+      in builtins.concatStringsSep "\n" (builtins.attrNames flake.legacyPackages.x86_64-linux)
+    ' 2> /dev/null | fzf "${fzfArgs[@]}" --prompt="Select a package to pin: ")"
+  fi
+
+  # if no version is given, show available versions
+  # and ask for which one to pin
+  if [ -z "$version" ]; then
+    queryApi
+    availableVersions=( "$(getAvailableVersions)" )
+    version="$(echo "${availableVersions[@]}" | tr ' ' '\n' | fzf "${fzfArgs[@]}" --prompt="Select a version to pin: ")"
+  fi
+
+  if [ -z "$package" ] || [ -z "$version" ]; then
+    echo "Package and version must be specified"
+    exit 1
+  fi
+
+  checkPinned
+
+  # if we don't have an api response yet, query the api
+  if [ -z "${apiSearchResponse:-}" ]; then
+    queryApi
+  fi
+
+  system="$(nix eval --raw nixpkgs\#system)"
+
+  # Construct the nix expression to pin the package
+  packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
+  rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
+  sha256="$(nix-prefetch-url https://github.com/nixos/nixpkgs/archive/"$rev".tar.gz --unpack --type sha256)"
+
+  # write to pinned.json
+  if [ ! -f "$pinnedJson" ]; then
+    echo "{}" > "$pinnedJson"
+  fi
+
+  tmpJson="$(mktemp)"
+
+(
+gron "$pinnedJson"
+echo "
+json[\"$package\"][\"$version\"].rev = \"$rev\";
+json[\"$package\"][\"$version\"].sha256 = \"$sha256\";
+"
+) | gron --ungron | jq . > "$tmpJson"
+
+  cat "$tmpJson" > "$pinnedJson"
+  rm "$tmpJson"
+
+
+  purple="\033[0;35m"
+  green="\033[0;32m"
+  blue="\033[0;34m"
+  bold="\033[1m"
+  nc="\033[0m"
+  echo -e "Pinned ${blue}${bold}$package${nc} to version ${green}$version${nc} at attribute ${purple}${bold}pkgs.pinned.$package.v$(echo "$version" | tr '.' '_')${nc}"
+}
+
+main "$@"

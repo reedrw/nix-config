@@ -7,9 +7,10 @@ let
     git        # version control
     htop       # process monitor
     moreutils  # more scripting tools
-    nix-tree   # nix derivation graph browser
     niv        # painless nix dependency management
+    nix-tree   # nix derivation graph browser
     nq         # queue utility
+    pin        # easy nix package pinning
     pm2        # process manager
     ripgrep    # recursive grep
     screen     # terminal multiplexer
