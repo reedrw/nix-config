@@ -22,7 +22,7 @@ rec {
   pkgs = pkgsForSystem system;
   lib = pkgs.lib;
 
-  # mkModuleFromDir :: String -> [AttrSet -> AttrSet]
+  # mkModuleFromDir :: Bool -> String -> [AttrSet -> AttrSet]
   ########################################
   # Takes a directory name as argument and returns a NixOS module for that
   # directory. The module will be named after the directory.
@@ -61,6 +61,7 @@ rec {
     in
     {
       imports = imports.imports or [];
+
       options.${moduleName}.${name}.enable = lib.mkOption {
         inherit default;
         type = lib.types.bool;
