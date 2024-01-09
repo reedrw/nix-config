@@ -206,6 +206,21 @@ in
     '';
   };
 
+  # partitionAttrs :: (String -> a -> Bool) -> AttrSet -> AttrSet
+  ########################################
+  # Given a predicate function and an attribute set, partition the attribute set into two
+  # attribute sets, one containing the attributes that satisfy the predicate and one containing
+  # the attributes that do not.
+  # Ex.
+  # partitionAttrs (n: v: n == "foo") { foo = 1; bar = 2; }
+  #
+  # Returns:
+  # { right = { foo = 1; }; wrong = { bar = 2; }; }
+  partitionAttrs = predicate: attrs: {
+    right = lib.filterAttrs predicate attrs;
+    wrong = lib.filterAttrs (n: v: ! predicate n v) attrs;
+  };
+
   # mergeAttrs :: [AttrSet] -> AttrSet
   ########################################
   # Takes a list of attribute sets and merges them into one using lib.recursiveUpdate
