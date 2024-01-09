@@ -70,15 +70,7 @@ in
   in [
     # TODO: figure out why ueberzugpp tries to create windows
     ranger
-    (pkgs.ueberzugpp.overrideAttrs rec {
-      version = "2.8.7";
-      src = pkgs.fetchFromGitHub {
-        owner = "jstkdng";
-        repo = "ueberzugpp";
-        rev = "v${version}";
-        hash = "sha256-grkLsbatgezM8wFbwAatLQw35wucU0Kc6hacRefFvHw=";
-      };
-    })
+    pkgs.pinned.ueberzugpp.v2_8_7
   ];
 
   xdg.mimeApps.defaultApplications = {

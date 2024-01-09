@@ -1,1 +1,8 @@
-{}
+{
+  "ueberzugpp": {
+    "2.8.7": {
+      "rev": "dc2afced518559f1c962b5824599b2c99c7684e3",
+      "sha256": "1i259nxyb62l5jnq8xj3af7dc3mffchwh59kq72zdmwhi6jk1h7j"
+    }
+  }
+}
