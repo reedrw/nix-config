@@ -151,24 +151,26 @@ in
   listDirectory = path:
     builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
 
+  # listBinaries :: Package -> [String]
+  ########################################
+  # Given a package, return a list of all the non-hidden binaries provided by the package.
+  listBinaries = package: lib.pipe "${package}/bin" [
+    (builtins.readDir)
+    (builtins.attrNames)
+    (builtins.filter (x: (builtins.substring 0 1 x) != "."))
+  ];
+
   # wrapEnv :: Package -> AttrSet -> Package
   ########################################
   # Given a package and an attribute set containing environment variables, override the package
   # to include the environment variables at runtime.
   # Ex.
   # wrapEnv hello { FOO = "bar"; }
-  wrapEnv = package: env:
-  let
-    # get a list of all the binaries provided by the package
-    allBinaries = builtins.attrNames (builtins.readDir ("${package}/bin"));
-    # remove binaries which start with a .
-    binaries = builtins.filter (x: (builtins.substring 0 1 x) != ".") allBinaries;
-  in
-  pkgs.symlinkJoin {
+  wrapEnv = package: env: pkgs.symlinkJoin {
     name = "${package.name}-with-env";
     paths = [ package ];
     postBuild = ''
-      for binary in ${builtins.concatStringsSep " " binaries}; do
+      for binary in ${builtins.concatStringsSep " " (self.listBinaries package)}; do
         echo "Wrapping $binary with env"
         rm "$out/bin/$binary"
         cat << _EOF > $out/bin/$binary
@@ -184,18 +186,11 @@ in
   # mullvadExclude :: Package -> Package
   ########################################
   # Given a package, wrap all the non-hidden binaries in the package with mullvad-exclude.
-  mullvadExclude = package:
-  let
-    # get a list of all the binaries provided by the package
-    allBinaries = builtins.attrNames (builtins.readDir ("${package}/bin"));
-    # remove binaries which start with a .
-    binaries = builtins.filter (x: (builtins.substring 0 1 x) != ".") allBinaries;
-
-  in pkgs.symlinkJoin {
+  mullvadExclude = package: pkgs.symlinkJoin {
     name = "${package.name}-mullvad-exclude";
     paths = [ package ];
     postBuild = ''
-      for binary in ${builtins.concatStringsSep " " binaries}; do
+      for binary in ${builtins.concatStringsSep " " (self.listBinaries package)}; do
         echo "Wrapping $binary with mullvad-exclude"
         rm "$out/bin/$binary"
         cat << _EOF > $out/bin/$binary
