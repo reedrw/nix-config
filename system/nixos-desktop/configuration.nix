@@ -25,6 +25,8 @@
   boot.initrd.services.lvm.enable = true;
   services.lvm.boot.thin.enable = true;
 
+  boot.loader.grub.configurationLimit = 9999;
+
   users = {
     reed.enable = true;
     mutableUsers = false;
