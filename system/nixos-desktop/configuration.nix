@@ -67,12 +67,7 @@
 
   time.timeZone = "America/New_York";
 
-  services.xserver = {
-    videoDrivers = [ "amdgpu" ];
-    deviceSection = ''
-      Option "SWCursor" "True"
-    '';
-  };
+  services.xserver.videoDrivers = [ "amdgpu" ];
 
   services.jellyfin = {
     enable = true;
