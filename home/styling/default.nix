@@ -3,7 +3,7 @@
 with inputs.nix-colors;
 {
   imports = [ homeManagerModule ];
-  colorScheme = colorSchemes.tokyo-city-terminal-dark;
+  colorScheme = colorSchemes. horizon-terminal-dark;
 
   home = {
     packages = with pkgs; [

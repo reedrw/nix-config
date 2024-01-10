@@ -13,10 +13,14 @@
       open-sans
       source-code-pro
       ttf_bitstream_vera
+      (nerdfonts.override {
+        fonts = [ "FantasqueSansMono" ];
+      })
     ];
     fontconfig = {
       enable = true;
       cache32Bit = true;
+      subpixel.rgba = "rgb";
       defaultFonts = {
         monospace = [
           "Bitstream Vera Sans Mono"

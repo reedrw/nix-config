@@ -7,7 +7,7 @@ let
   exec = "exec --no-startup-id";
 
   alwaysRun = with pkgs; [
-    "${binPath feh} --bg-fill ${./wallpaper.png}"
+    "${binPath feh} --bg-fill ${./wallpaper.jpg}"
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
@@ -39,7 +39,7 @@ in
       config = {
         bars = [ ];
         gaps = {
-          inner = 5;
+          inner = 7;
         };
         window.border = 5;
         window.titlebar = false;

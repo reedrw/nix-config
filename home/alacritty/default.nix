@@ -11,9 +11,6 @@ let
   '';
 in
 {
-
-  home.packages = [ pkgs.scientifica ]; # font
-
   programs.alacritty = {
     enable = true;
     settings = {
@@ -49,23 +46,25 @@ in
         draw_bold_text_with_bright_colors = false;
       };
       cursor.style = "Beam";
-      font = lib.mkDefault {
-        size = 8;
+      font = let
+        family = "FantasqueSansM Nerd Font";
+      in lib.mkDefault {
+        size = 10;
         normal = {
-          family = "scientifica";
-          style = "Medium";
+          inherit family;
+          style = "Bold";
         };
         bold = {
-          family = "scientifica";
+          inherit family;
           style = "Bold";
         };
         italic = {
-          family = "scientifica";
+          inherit family;
           style = "Italic";
         };
         bold_italic = {
-          family = "scientifica";
-          style = "Bold";
+          inherit family;
+          style = "Bold Italic";
         };
       };
       window = {

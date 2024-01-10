@@ -6,7 +6,6 @@ let
   bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
 in
 {
-  home.packages = with pkgs; [ nurPkgs.artwiz-lemon ]; # font
   services.polybar = with pkgs; {
     enable = true;
     package = polybarFull;
@@ -25,8 +24,8 @@ in
         border-top-color = "#${base00}";
         border-bottom-size = 2;
         border-bottom-color = "#${base00}";
-        font-0 = "lemon:pixelsize=10;1";
-        font-1 = "Kochi Gothic:size=8;1";
+        font-0 = "FantasqueSansMNerdFont:size=9:weight=bold:style=Bold;1";
+        font-1 = "Kochi Gothic:style=bold:weight=bold:size=9;1";
       };
       "module/battery" = {
         type = "custom/script";

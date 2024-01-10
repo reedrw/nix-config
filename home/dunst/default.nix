@@ -15,7 +15,7 @@
         frame_width = 0;
         frame_color = "${base00}";
         separator_color = "frame";
-        font = "scientifica 8";
+        font = "FantasqueSansM Nerd Font Bold 10";
         line_height = 4;
         markup = "full";
         format = ''%s\n%b'';

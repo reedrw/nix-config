@@ -9,7 +9,7 @@ in
 
   programs.rofi = {
     enable = true;
-    font = "scientifica 8";
+    font = "FantasqueSansM Nerd Font Bold 10";
     theme = (
       import ./theme.nix {
         inherit config;
