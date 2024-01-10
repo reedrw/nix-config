@@ -52,7 +52,11 @@ remove(){
   echo "Removing $package $version from pinned.json"
 
   tmpJson="$(mktemp)"
-  gron "$pinnedJson" | grep -Ev "\\[?\"?${package}\"?\]?\\[\"$version\"\\]" | gron --ungron | jq . > "$tmpJson"
+  gron "$pinnedJson" \
+    | grep -Ev "\\[?\"?${package}\"?\]?\\[\"$version\"\\]" \
+    | gron --ungron \
+    | jq . > "$tmpJson"
+
   if [[ "$(gron "$tmpJson" | grep -cE "\\[?\"?${package}\"?\]?")" -eq 1 ]]; then
     gron "$pinnedJson" | grep -Ev "\\[?\"?${package}\"?\]?" | gron --ungron | jq . > "$tmpJson"
   fi
