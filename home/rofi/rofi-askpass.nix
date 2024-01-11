@@ -1,43 +1,44 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   programs.zsh.initExtra =
     let
       askpass-rasi = with config.colorScheme.colors; builtins.toFile "askpass.rasi" ''
         * {
-            background-color: #${base00};
-            text-color:       #${base07};
+          background-color: #${base00};
+          text-color:       #${base07};
         }
 
         #window {
-            /* Change the this according to your screen width */
-            width:      380px;
+          /* Change the this according to your screen width */
+          width:      380px;
 
-            /* Change this value according to your screen height */
-            y-offset: -5%;
+          /* Change this value according to your screen height */
+          y-offset: -5%;
 
-            /* This padding is given just for aesthetic purposes */
-            padding:    40px;
+          /* This padding is given just for aesthetic purposes */
+          padding:    40px;
         }
 
 
         #entry {
-            /*
-             * For some reason, without this option, a dash/hyphen appears
-             * at the end of the entry
-             */
-            expand: true;
+          /*
+           * For some reason, without this option, a dash/hyphen appears
+           * at the end of the entry
+           */
+          expand: true;
 
-            /* Keeping using 200px so that long passwords can be typed */
-            width: 200px;
+          /* Keeping using 200px so that long passwords can be typed */
+          width: 200px;
         }
       '';
       rofi-askpass = pkgs.writeShellScript "rofi-askpass" ''
-        rofi -dmenu\
-          -password\
-          -i\
-          -no-fixed-num-lines\
-          -p "Password: "\
+        : | rofi -dmenu \
+          -sync \
+          -password \
+          -i \
+          -no-fixed-num-lines \
+          -p "Password: " \
           -theme ${askpass-rasi} \
           2> /dev/null
       '';
