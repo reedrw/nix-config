@@ -1,155 +1,87 @@
 { config,  ... }:
 
 with config.colorScheme.colors; builtins.toFile "theme.rasi" ''
+  configuration {
+    font: "${config.programs.rofi.font}";
+
+    drun {
+      display-name: "";
+    }
+
+    run {
+      display-name: "";
+    }
+
+    window {
+      display-name: "";
+    }
+
+    ssh {
+      display-name: "";
+    }
+
+    timeout {
+      delay: 10;
+      action: "kb-cancel";
+    }
+  }
+
   * {
-    active-background: #${base00};
-    active-foreground: @foreground;
-    normal-background: @background;
-    normal-foreground: @foreground;
-    urgent-background: #${base08};
-    urgent-foreground: @foreground;
-
-    alternate-active-background: @background;
-    alternate-active-foreground: @foreground;
-    alternate-normal-background: @background;
-    alternate-normal-foreground: @foreground;
-    alternate-urgent-background: @background;
-    alternate-urgent-foreground: @foreground;
-
-    selected-active-background: #${base00};
-    selected-active-foreground: @foreground;
-    selected-normal-background: #${base01};
-    selected-normal-foreground: @foreground;
-    selected-urgent-background: #${base03};
-    selected-urgent-foreground: @foreground;
-
-    background-color: @background;
-    background: #${base00};
-    foreground: #${base07};
-    border-color: @background;
-    spacing: 4;
-  }
-
-  #window {
-    background-color: @background;
     border: 0;
-    padding: 2.5ch;
-  }
-
-  #mainbox {
-    border: 0;
+    margin: 0;
     padding: 0;
-  }
-
-  #message {
-    border: 2px 0px 0px;
-    border-color: @border-color;
-    padding: 1px;
-  }
-
-  #textbox {
-    text-color: @foreground;
-  }
-
-  #listview {
-    fixed-height: 0;
-    border: 2px 0px 0px;
-    border-color: @border-color;
-    spacing: 2px;
-    scrollbar: true;
-    padding: 2px 0px 0px;
-  }
-
-  #element {
-    border: 0;
-    padding: 1px;
-  }
-
-  #element.normal.normal {
-    background-color: @normal-background;
-    text-color: @normal-foreground;
-  }
-
-  #element.normal.urgent {
-    background-color: @urgent-background;
-    text-color: @urgent-foreground;
-  }
-
-  #element.normal.active {
-    background-color: @active-background;
-    text-color: @active-foreground;
-  }
-
-  #element.selected.normal {
-    background-color: @selected-normal-background;
-    text-color: @selected-normal-foreground;
-  }
-
-  #element.selected.urgent {
-    background-color: @selected-urgent-background;
-    text-color: @selected-urgent-foreground;
-  }
-
-  #element.selected.active {
-    background-color: @selected-active-background;
-    text-color: @selected-active-foreground;
-  }
-
-  #element.alternate.normal {
-    background-color: @alternate-normal-background;
-    text-color: @alternate-normal-foreground;
-  }
-
-  #element.alternate.urgent {
-    background-color: @alternate-urgent-background;
-    text-color: @alternate-urgent-foreground;
-  }
-
-  #element.alternate.active {
-    background-color: @alternate-active-background;
-    text-color: @alternate-active-foreground;
-  }
-
-  #scrollbar {
-    width: 4px;
-    border: 0;
-    handle-width: 8px;
-    padding: 0;
-  }
-
-  #sidebar {
-    border: 2px 0px 0px;
-    border-color: @border-color;
-  }
-
-  #button.selected {
-    background-color: @selected-normal-background;
-    text-color: @selected-normal-foreground;
-  }
-
-  #inputbar {
-    spacing: 5;
-    text-color: @normal-foreground;
-    padding: 1px;
-  }
-
-  #case-indicator {
     spacing: 0;
-    text-color: @normal-foreground;
+
+    bg: #${base00};
+    bg-alt: #${base01};
+    fg: #${base05};
+    fg-alt: #${base04};
+
+    background-color: @bg;
+    text-color: @fg;
   }
 
-  #entry {
-    spacing: 1px;
-    text-color: @normal-foreground;
+  window {
+    transparency: "real";
   }
 
-  #prompt {
-    spacing: 0;
-    text-color: @normal-foreground;
+  mainbox {
+    children: [inputbar, listview];
+  }
+
+  inputbar {
+    background-color: @bg-alt;
+    children: [prompt, entry];
+  }
+
+  entry {
+    background-color: inherit;
+    padding: 12px 3px;
+  }
+
+  prompt {
+    background-color: inherit;
+    padding: 12px;
+  }
+
+  listview {
+    lines: 8;
+  }
+
+  element {
+    children: [element-text];
+  }
+
+  element-icon {
+    padding: 10px 10px;
   }
 
   element-text {
-    background-color: inherit;
-    text-color:       inherit;
+    padding: 10px 10px;
+    text-color: @fg-alt;
+  }
+
+  element-text selected {
+    text-color: @fg;
   }
 ''

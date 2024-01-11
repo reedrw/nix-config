@@ -36,7 +36,7 @@ else
     exit 127
   fi
 
-  attr="$(rofi "$rofiArgs" -dmenu -p "Run from Nix package?" <<< "$attr")" \
+  attr="$(rofi "$rofiArgs" -dmenu -p "" <<< "$attr")" \
     && (nix shell "unstable#$attr" -c "$cmd" "${args[@]}" &)
 fi
 
