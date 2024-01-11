@@ -83,7 +83,7 @@ gls.short_line_left[1] = gls.left[2]
 
 gls.left[3] = {
   GitIcon = {
-    provider =  function() return '   ' end,
+    provider =  function() return '   ' end,
     condition = condition.check_git_workspace,
     highlight = {colors.red,colors.bg},
   }

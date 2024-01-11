@@ -98,7 +98,6 @@ in
       }
     ) sources;
     extraConfig = ''
-      let g:indentLine_char = '┊'
       let g:suda_smart_edit = 1
 
       set termguicolors
