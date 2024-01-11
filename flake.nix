@@ -34,7 +34,7 @@ rec {
     ];
   };
 
-  outputs = { self, nixpkgs, master, unstable, nixos-hardware, NUR, home-manager, nix-colors, impermanence, ... } @ inputs: let
+  outputs = { self, ... } @ inputs: let
     inherit (self) outputs;
     system = "x86_64-linux";
 
