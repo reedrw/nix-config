@@ -10,6 +10,7 @@
     Defaults use_pty
   '';
 
+  services.dbus.implementation = "broker";
   security.rtkit.enable = true;
 
   systemd = let
