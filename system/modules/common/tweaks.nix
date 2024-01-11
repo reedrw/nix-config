@@ -10,6 +10,8 @@
     Defaults use_pty
   '';
 
+  security.rtkit.enable = true;
+
   systemd = let
     extraConfig = ''
       DefaultTimeoutStartSec=30s
