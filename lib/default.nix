@@ -94,15 +94,17 @@ rec {
     username = "reed";
 
     # NixOS configuration imports, minus home-manager
-    modules-noHM = let
+    modules = let
+      userModules = mkModuleFromDir false  ../system/modules/myUsers;
       commonModules = mkModuleFromDir true ../system/modules/common;
-      userModules = mkModuleFromDir false ../system/modules/users;
-      customModules = pkgs.listDirectory ../system/modules/custom;
+      customModules = pkgs.listDirectory   ../system/modules/custom;
     in [
       ../system/${host}/configuration.nix
       ../system/${host}/hardware-configuration.nix
       inputs.impermanence.nixosModule
-    ] ++ commonModules ++ userModules ++ customModules;
+    ] ++ commonModules
+      ++ userModules
+      ++ customModules;
 
     # Home-manager configuration imports
     hm.modules = let
@@ -120,11 +122,13 @@ rec {
     ] ++ perHost ++ hmCommon;
 
     # NixOS configuration imports, including home-manager
-    modules = modules-noHM ++ [
+    modulesWithHM = modules ++ [
       inputs.home-manager.nixosModules.home-manager
       {
-        home-manager.users.${username}.imports = hm.modules;
-        home-manager.extraSpecialArgs = specialArgs;
+        home-manager = {
+          users.${username}.imports = hm.modules;
+          extraSpecialArgs = specialArgs;
+        };
       }
     ];
 
@@ -134,13 +138,13 @@ rec {
     # The actual flake outputs for this host
     nixosConfigurations = {
       "${host}" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system modules;
+        inherit system;
+        modules = modulesWithHM;
         specialArgs = specialArgs // { hm = true; };
       };
       "${host}-no-home-manager" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system;
+        inherit system modules;
         specialArgs = specialArgs // { hm = false; };
-        modules = modules-noHM;
       };
     };
     homeConfigurations = let

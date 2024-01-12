@@ -5,7 +5,7 @@
 { ... }:
 
 {
-  users.reed.enable = true;
+  myUsers.reed.enable = true;
   users.users.reed.password = "password";
 
   services.mullvad-vpn.enable = false;

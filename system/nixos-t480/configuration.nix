@@ -12,8 +12,9 @@
   networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
 
+  myUsers.reed.enable = true;
+
   users = {
-    reed.enable = true;
     mutableUsers = false;
     users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
   };

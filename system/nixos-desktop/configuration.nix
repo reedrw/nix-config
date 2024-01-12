@@ -27,8 +27,9 @@
 
   boot.loader.grub.configurationLimit = 9999;
 
+  myUsers.reed.enable = true;
+
   users = {
-    reed.enable = true;
     mutableUsers = false;
     users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
   };
