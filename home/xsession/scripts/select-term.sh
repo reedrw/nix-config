@@ -12,48 +12,48 @@ echo "$X $Y $W $H"
 terminalClass="Alacritty"
 layoutTemplate='
 {
-    "border": "pixel",
-    "floating": "auto_off",
-    "layout": "splith",
-    "marks": [],
-    "percent": null,
-    "rect": {
-       "height": HEIGHT,
-       "width": WIDTH,
-       "x": XPOS,
-       "y": YPOS
-    },
-    "type": "floating_con",
-    "nodes": [
+  "border": "pixel",
+  "floating": "auto_off",
+  "layout": "splith",
+  "marks": [],
+  "percent": null,
+  "rect": {
+    "height": HEIGHT,
+    "width": WIDTH,
+    "x": XPOS,
+    "y": YPOS
+  },
+  "type": "floating_con",
+  "nodes": [
+    {
+      "border": "pixel",
+      "current_border_width": 0,
+      "floating": "user_on",
+      "geometry": {
+        "height": HEIGHT,
+        "width": WIDTH,
+        "x": 0,
+        "y": 0
+      },
+      "marks": [],
+      "name": "terminalClass",
+      "percent": 1,
+      "swallows": [
         {
-            "border": "pixel",
-            "current_border_width": 0,
-            "floating": "user_on",
-            "geometry": {
-               "height": HEIGHT,
-               "width": WIDTH,
-               "x": 0,
-               "y": 0
-            },
-            "marks": [],
-            "name": "terminalClass",
-            "percent": 1,
-            "swallows": [
-               {
-                "class": "^terminalClass$"
-               }
-            ],
-            "type": "con"
+          "class": "^terminalClass$"
         }
-    ]
+      ],
+      "type": "con"
+    }
+  ]
 }'
 
 layout=$(echo "$layoutTemplate" | sed \
-    -e "s/terminalClass/$terminalClass/" \
-    -e "s/HEIGHT/$H/" \
-    -e "s/WIDTH/$W/" \
-    -e "s/XPOS/$X/" \
-    -e "s/YPOS/$Y/")
+  -e "s/terminalClass/$terminalClass/" \
+  -e "s/HEIGHT/$H/" \
+  -e "s/WIDTH/$W/" \
+  -e "s/XPOS/$X/" \
+  -e "s/YPOS/$Y/")
 
 layoutFile=$(mktemp --suffix=.json)
 echo "$layout" > "$layoutFile"

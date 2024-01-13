@@ -61,10 +61,10 @@ in
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
           "${mod}+r" = "${exec} ${binPath scripts.record}";
           "${mod}+Shift+s" = "sticky toggle";
-          "${mod}+2" = "${exec} ${binPath (writeShellScriptBin "workspace2" ''
+          "${mod}+2" = "${exec} ${writeShellScript "workspace2" ''
             i3-msg workspace 2
             ${binPath scripts.mpv-dnd} --resume ${builtins.concatStringsSep " " chatApps}
-          '')}";
+          ''}";
           "${mod}+${sup}+space" = "${exec} ${binPath scripts.toggle-touchpad}";
           "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
           "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";

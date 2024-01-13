@@ -248,13 +248,7 @@ parseFileArgs(){
   fi
 }
 
-pathExists(){
-  if [[ -f "$1" ]] || [[ -d "$1" ]] || [[ -L "$1" ]]; then
-    return 0
-  else
-    return 1
-  fi
-}
+pathExists(){ [[ -f "$1" ]] || [[ -d "$1" ]] || [[ -L "$1" ]]; }
 
 add() {
   # TODO: Add support for adding multiple paths at once
@@ -268,12 +262,14 @@ add() {
   # Update the JSON data based on the path type (file or directory)
   if [[ "$isDir" == "yes" ]]; then
     # Add the directory path to the JSON data and ensure uniqueness
-    jq -r ".directories[.directories | length] |= . + \"$fileArg\"" "$persistJson" |
-      jq -r '.directories |= if . then sort else empty end' | jq '.directories |= unique' > "$tmpJson"
+    jq -r ".directories[.directories | length] |= . + \"$fileArg\"" "$persistJson" \
+      | jq -r '.directories |= if . then sort else empty end' \
+      | jq '.directories |= unique' > "$tmpJson"
   else
     # Add the file path to the JSON data and ensure uniqueness
-    jq -r ".files[.files | length] |= . + \"$fileArg\"" "$persistJson" |
-      jq -r '.files |= if . then sort else empty end' | jq '.files |= unique' > "$tmpJson"
+    jq -r ".files[.files | length] |= . + \"$fileArg\"" "$persistJson" \
+      | jq -r '.files |= if . then sort else empty end' \
+      | jq '.files |= unique' > "$tmpJson"
   fi
 
   # Update the main 'persist.json' file with the updated JSON data
@@ -287,7 +283,9 @@ add() {
 
     # Copy the path to the new location and create a snapshot if enabled
     if [[ "$useSnapper" == "true" ]]; then
-      snapper -c "$snapperConfig" create --command "cp -rp --reflink '$fileArgOrigPath' '$newLoc'" -d "persist $fileArg"
+      snapper -c "$snapperConfig" create --command "
+        cp -rp --reflink '$fileArgOrigPath' '$newLoc'
+      " -d "persist $fileArg"
     else
       cp -rp --reflink "$fileArgOrigPath" "$newLoc"
     fi
@@ -301,7 +299,7 @@ add() {
   fi
 
   # Activate the NixOS generations and handle activation failures
-  if eval "$activateCommand" || (mountpoint "$fileArg" > /dev/null || pathExists "$fileArg"); then
+  if eval "$activateCommand" || mountpoint "$fileArg" > /dev/null || pathExists "$fileArg"; then
     [[ -z "$moveBack" ]] || rm -rf "$fileArg.bak"
   else
     [[ -z "$moveBack" ]] || mv "$fileArg.bak" "$fileArg"
@@ -331,13 +329,17 @@ remove(){
     )
 
     # Use fzf to select a path to remove from the persistJson file
-    fileArg="$(jq -r '.directories[] + "\n" + .files[]' "$persistJson" | sort | uniq | fzf "${fzfArgs[@]}" --preview "
-      if [[ -f {} ]]; then
-        bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never {};
-      else
-        eza -lah -s type --color=always {};
-      fi
-    ")"
+    fileArg="$(jq -r '.directories[] + "\n" + .files[]' "$persistJson" \
+      | sort \
+      | uniq \
+      | fzf "${fzfArgs[@]}" --preview "
+        if [[ -f {} ]]; then
+          bat -f --theme=base16 --style='changes,grid,snip,numbers' --paging=never {};
+        else
+          eza -lah -s type --color=always {};
+        fi
+      "
+    )"
 
     # Check if the user cancelled the fzf selection
     if [[ -z "$fileArg" ]]; then
@@ -398,7 +400,9 @@ remove(){
       # If the 'useSnapper' option is set to true, create a new snapshot and then delete the item.
       # Otherwise, directly delete the item from the persisted directory.
       if [[ "$useSnapper" == "true" ]]; then
-        snapper -c persist create --command "rm -rf ${persistLoc:?}/$(basename "${fileArg:?}")" -d "remove $fileArg"
+        snapper -c persist create --command "
+          rm -rf ${persistLoc:?}/$(basename "${fileArg:?}")
+        " -d "remove $fileArg"
       else
         rm -rf "${persistLoc:?}/$(basename "${fileArg:?}")"
       fi
