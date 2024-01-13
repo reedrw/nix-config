@@ -4,7 +4,7 @@
   hardware.firmware = with pkgs; [ linux-firmware ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_zen;
     kernelParams = [ "ip=dhcp" ];
     kernelModules = [
       # Nuvoton nct6687 needs this driver
