@@ -2,6 +2,28 @@
 {
   programs.kitty = {
     enable = true;
+    # Kitty doesn't support the -e flag.
+    # This disgusting hack is needed to keep backwards compatibility with
+    # xterm. i3-sensible-terminal uses the -e flag to execute a command.
+    package = let
+      kitty = pkgs.kitty;
+    in pkgs.symlinkJoin {
+      name = "kitty";
+      paths = [ kitty ];
+      postBuild = ''
+        rm "$out/bin/kitty"
+        cat << EOF > "$out/bin/kitty"
+        #!${pkgs.stdenv.shell}
+        if [[ "\$1" == "-e" ]]; then
+          shift
+          exec ${kitty}/bin/kitty --session=none "\$@"
+        else
+          exec ${kitty}/bin/kitty "\$@"
+        fi
+        EOF
+        chmod +x "$out/bin/kitty"
+      '';
+    };
     # shellIntegration.enableZshIntegration = true;
     settings = with config.colorScheme.colors; let
       family = "FantasqueSansM Nerd Font";
