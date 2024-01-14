@@ -14,7 +14,10 @@
       source-code-pro
       ttf_bitstream_vera
       (nerdfonts.override {
-        fonts = [ "FantasqueSansMono" ];
+        fonts = [
+          "FantasqueSansMono"
+          "CascadiaCode"
+        ];
       })
     ];
     fontconfig = {
@@ -23,6 +26,7 @@
       subpixel.rgba = "rgb";
       defaultFonts = {
         monospace = [
+          "CaskaydiaCove Nerd Font Mono"
           "Bitstream Vera Sans Mono"
           "DejaVu Sans Mono"
           "IPAGothic"
