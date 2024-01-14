@@ -65,7 +65,7 @@ remove(){
 }
 
 list(){
-  jq -r 'keys[] as $k | "\($k)-\(.[$k] | keys[])"' "$pinnedJson"
+  jq -r 'keys[] as $k | "\($k) \(.[$k] | keys[])"' "$pinnedJson"
 }
 
 listAllPackages(){
