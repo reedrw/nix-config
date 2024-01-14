@@ -23,6 +23,16 @@ in
 
     tmux = {
       enable = true;
+      extraConfig = ''
+        set -g status off
+        set -g destroy-unattached on
+        set -g mouse on
+        set -g default-terminal 'tmux-256color'
+        set -ga terminal-overrides ',kitty:RGB'
+        set -s escape-time 0
+        set -g history-limit 10000
+        set -g allow-passthrough on
+      '';
     };
   };
 
@@ -123,7 +133,7 @@ in
         fpath+=("''${(@)fpath_backup}")
 
         fpath_union+=("''${(@)fpath}")
-        if [[ "''${#fpath}" -ne "$old_fpath_len" || ''${#fpath_union} -ne "$old_fpath_len" ]]; then
+        if [[ "''${#fpath}" -ne "$old_fpath_len" || ''${#fpath_union} -ne "$old_fpath_len" ]] && [[ -n "$ANY_NIX_SHELL_PKGS" ]]; then
           compinit -D
         fi
       }
@@ -170,7 +180,7 @@ in
       bindkey '^[[4~' end-of-line
 
       # bind alt+shift+enter to open a new terminal in the current directory
-      function termwwidget() { alacritty &! }
+      function termwwidget() { $TERMINAL &! }
       zle -N termwwidget
       bindkey '^[^M' termwwidget
 

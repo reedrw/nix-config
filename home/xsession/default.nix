@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  term = "WINIT_X11_SCALE_FACTOR=1.0 alacritty";
+  term = "${config.home.sessionVariables.TERMINAL}";
 
   mod = "Mod1";
   sup = "Mod4";
@@ -133,6 +133,7 @@ in
           "firefox"
           "mpv"
           "Alacritty"
+          "kitty"
           "TelegramDesktop"
           "Element"
           "easyeffects"

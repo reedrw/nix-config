@@ -9,7 +9,7 @@ read -r X Y W H <<< "$(slop -f "%x %y %w %h" -b 1 -t 0 -q)"
 echo "$X $Y $W $H"
 
 # Create a layout file for i3.
-terminalClass="Alacritty"
+terminalClass="kitty"
 layoutTemplate='
 {
   "border": "pixel",
@@ -60,4 +60,4 @@ echo "$layout" > "$layoutFile"
 
 i3-msg "append_layout $layoutFile"
 rm "$layoutFile"
-alacritty -t float
+kitty -T float

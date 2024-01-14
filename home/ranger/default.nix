@@ -6,14 +6,12 @@ let
     ${binPath bat} --theme=base16 "$@"
   '';
 
-  rangercommand = pkgs.writeShellScript "rangercommand" ''
-    cd "$*"
-    ranger
-    $SHELL
-  '';
-
   rangerlaunch = pkgs.writeShellScript "rangerlaunch" ''
-    alacritty -e ${rangercommand} $@
+    kitty --session=none ${pkgs.writeShellScript "rangercommand" ''
+      cd "$*"
+      ranger
+      tmux
+    ''} $@
   '';
 
   etouch = pkgs.writeShellScriptBin "etouch" ''
@@ -35,19 +33,30 @@ let
     loupe
     mediainfo
     poppler_utils
-    python3Packages.pdf2image
     tmux
     unrar
     unzip
     xdragon
     zip
-  ];
+  ] ++ (with pkgs.python3Packages; [
+    pdf2image
+    pillow
+  ]);
 
 in
 {
 
   home.packages = let
-    ranger = myranger.override { imagePreviewSupport = false; };
+    ranger = myranger.overrideAttrs (old: {
+    version = "1.9.3";
+    src = pkgs.fetchFromGitHub {
+      owner = "Ethsan";
+      repo = "ranger";
+      rev = "71a06f28551611d192d3e644d95ad04023e10801";
+      sha256 = "sha256-Yjdn1oE5VtJMGnmQ2VC764UXKm1PrkIPXXQ8MzQ8u1U=";
+    };
+    propagatedBuildInputs = old.propagatedBuildInputs ++ (with pkgs.python3Packages; [ astroid pylint ]);
+  });
     myranger = pkgs.ranger.overrideAttrs (_: {
       buildInputs = _.buildInputs ++ [ pkgs.makeWrapper ];
       postInstall = ''
@@ -67,11 +76,7 @@ in
           --prefix PATH : ${lib.makeBinPath bins}
       '';
     });
-  in [
-    # TODO: figure out why ueberzugpp tries to create windows
-    ranger
-    pkgs.pinned.ueberzugpp.v2_8_7
-  ];
+  in [ ranger ];
 
   xdg.mimeApps.defaultApplications = {
     "inode/directory" = "ranger.desktop";
@@ -86,7 +91,7 @@ in
       set preview_images true
       set use_preview_script true
       set preview_script ~/.config/ranger/scope.sh
-      set preview_images_method ueberzug
+      set preview_images_method kitty
     '';
 
     "ranger/rifle.conf".text = ''
