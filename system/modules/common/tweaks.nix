@@ -11,7 +11,6 @@
   '';
 
   services.dbus.implementation = "broker";
-  security.rtkit.enable = true;
 
   systemd = let
     extraConfig = ''
