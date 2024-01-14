@@ -46,15 +46,13 @@
       window_padding_width = 10;
 
       enable_audio_bell = false;
-
       cursor_shape = "beam";
+      confirm_os_window_close = 0;
 
       background = black;
       foreground = white;
 
       selection_background = grey;
-
-      confirm_os_window_close = 0;
 
       color0 = black;
       color1 = red;
@@ -74,7 +72,7 @@
       color15 = white;
 
       startup_session = "${pkgs.writeText "launch.conf" ''
-        launch sh -c 'tmux'
+        launch tmux
       ''}";
     };
     extraConfig = ''
