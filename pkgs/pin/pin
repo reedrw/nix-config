@@ -181,13 +181,11 @@ main() {
 
   tmpJson="$(mktemp)"
 
-(
-gron "$pinnedJson"
-echo "
-json[\"$package\"][\"$version\"].rev = \"$rev\";
-json[\"$package\"][\"$version\"].sha256 = \"$sha256\";
-"
-) | gron --ungron | jq . > "$tmpJson"
+  (
+    gron "$pinnedJson"
+    echo "json[\"$package\"][\"$version\"].rev = \"$rev\";"
+    echo "json[\"$package\"][\"$version\"].sha256 = \"$sha256\";"
+  ) | gron --ungron | jq . > "$tmpJson"
 
   cat "$tmpJson" > "$pinnedJson"
   rm "$tmpJson"
