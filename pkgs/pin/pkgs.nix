@@ -10,4 +10,4 @@ pkgs: let
     ("v" + (builtins.replaceStrings ["."] ["_"] n))
     (pinnedVersionToPkg v)."${package}"
   ) a;
-in (builtins.mapAttrs (n: v: (mapToPackage n v))) json
+in builtins.mapAttrs mapToPackage json
