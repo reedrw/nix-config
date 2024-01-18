@@ -42,6 +42,12 @@
   };
 
   custom.boot = {
+    keyfile-unlock = {
+      enable = true;
+      default = true;
+      device = "enc";
+      keyFile = "/dev/disk/by-id/usb-SanDisk_Cruzer_Glide_4C530001240706109524-0:0-part2";
+    };
     wipe.enable = true;
     efi.enable = true;
   };
