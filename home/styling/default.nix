@@ -107,6 +107,7 @@ with inputs.nix-colors;
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
       gtk-xft-hintstyle= "hintmedium";
+      gtk-decoration-layout = ":";
     };
   };
 
