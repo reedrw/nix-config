@@ -48,6 +48,10 @@ in
       # Enable XInput2 for high-resolution mouse scrolling
       MOZ_USE_XINPUT2 = "1";
     }; });
+
+    profiles."default" = {
+      name = "default";
+    };
   };
 
 }
