@@ -13,7 +13,7 @@
       builders-use-substitutes = true
       keep-outputs = true
       keep-derivations = true
-      experimental-features = nix-command flakes
+      experimental-features = flakes nix-command repl-flake
     '';
     nixPath = [
       "nixpkgs=${inputs.nixpkgs.outPath}"
