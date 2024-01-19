@@ -137,7 +137,7 @@ in
           "TelegramDesktop"
           "Element"
           "easyeffects"
-          "VencordDesktop"
+          "vesktop"
           "Pavucontrol"
           "Zathura"
           ".blueman-manager-wrapped"

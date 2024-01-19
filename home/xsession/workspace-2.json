@@ -30,8 +30,8 @@
                     "percent": 0.5,
                     "swallows": [
                        {
-                           "class": "^VencordDesktop$",
-                           "title": "^(?!.*VencordDesktop).*$"
+                           "class": "^vesktop$",
+                           "title": "^(?!.*vesktop).*$"
                        }
                     ],
                     "type": "con"

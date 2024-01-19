@@ -22,7 +22,7 @@ in
 {
   home.packages = with pkgs; [
     tdesktop
-    (unstable.vesktop.override {
+    (master.vesktop.override {
       vencord = vencord master;
     })
   ];
