@@ -26,8 +26,8 @@ jobs:
     steps:
 
     # Uncomment if GitHub Actions jobs start failing from lack of space
-    # - name: Cleanup Disk
-    #   uses: jlumbroso/free-disk-space@main
+    - name: Cleanup Disk
+      uses: jlumbroso/free-disk-space@main
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v2
