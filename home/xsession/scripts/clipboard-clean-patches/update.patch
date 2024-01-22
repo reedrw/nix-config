@@ -898,10 +898,10 @@ index 632fc24..d8fda7d 100644
 +lM47ni3niAIi9G7oyOzWPPO5std3eqx7
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..0af7137 100644
+index f2a54b1..7086c5d 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1794 @@
+@@ -1,1628 +1,1819 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3003,6 +3003,12 @@ index f2a54b1..0af7137 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?cafepedagogique\\.net"
 +    },
++    "cc.loginfra.com": {
++      "redirections": [
++        "^https?:\\/\\/cc\\.loginfra\\.com\\/.*?u=([^&]+)"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?loginfra\\.com"
++    },
 +    "ccbill.com": {
 +      "redirections": [
 +        "^https?:\\/\\/refer\\.ccbill\\.com.*HTML=([^&]*)"
@@ -4017,6 +4023,12 @@ index f2a54b1..0af7137 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?swp\\.de"
 +    },
++    "t.umblr.com": {
++      "redirections": [
++        "^https?:\\/\\/t\\.umblr\\.com\\/redirect\\?z=([^&]+)"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?umblr\\.com"
++    },
 +    "taobao.com": {
 +      "rules": [
 +        "price",
@@ -4264,6 +4276,19 @@ index f2a54b1..0af7137 100644
 +        "from"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?wps\\.com"
++    },
++    "x": {
++      "exceptions": [
++        "^https?:\\/\\/x.com\\/i\\/redirect"
++      ],
++      "rules": [
++        "(?:ref_?)?src",
++        "s",
++        "cn",
++        "ref_url",
++        "t"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?x.com"
 +    },
 +    "yandex": {
 +      "rules": [
