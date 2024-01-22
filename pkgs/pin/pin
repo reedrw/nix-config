@@ -33,7 +33,6 @@ helpMessage(){
 }
 
 checkPinned(){
-  # if package and version is already pinned, exit
   if [ "$(jq -r ".${package} | has(\"$version\")" "$pinnedJson" 2> /dev/null)" = "true" ]; then
     echo "Package $package is already pinned to version $version"
     exit 0
@@ -81,8 +80,15 @@ getAvailableVersions(){
 }
 
 main() {
+  purple="\033[0;35m"
+  green="\033[0;32m"
+  blue="\033[0;34m"
+  bold="\033[1m"
+  nc="\033[0m"
+
   package="${1:-}"
   version="${2:-}"
+  rev="${3:-}"
   case "${1:-}" in
     --remove|-r)
       shift
@@ -139,7 +145,7 @@ main() {
   esac
 
   # if no arguments are given, ask for what to pin
-  if [ $# -eq 0 ]; then
+  if [ -z "$package" ]; then
     package="$(nix eval --impure --raw --expr '
       let
         flake = builtins.getFlake "nixpkgs";
@@ -160,29 +166,25 @@ main() {
     exit 1
   fi
 
+  # if package and version is already pinned, exit
   checkPinned
-
-  # if we don't have an api response yet, query the api
-  if [ -z "${apiSearchResponse:-}" ] && [ -z "${3:-}" ]; then
-    queryApi
-  fi
 
   system="$(nix eval --raw nixpkgs\#system)"
 
-  # Construct the nix expression to pin the package
-  if [ -z "${3:-}" ]; then
+  # find the commit hash for the given version
+  if [ -z "$rev" ]; then
+    # if we don't have an api response yet, query the api
+    [ -z "${apiSearchResponse:-}" ] && queryApi
     packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
     rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
-  else
-    # if we have a third argument, check whether it's a commit hash
-    # based on length of the string
-    if [ "${#3}" -eq 40 ]; then
-      rev="$3"
-    else
-      # if it's not a commit hash, assume it's a nixpkgs PR number
-      # and query the GitHub API to get the commit hash
-      rev="$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/pulls/$3" | jq -r '.head.sha')"
-    fi
+  fi
+
+  # if we have a third argument, check whether it's a commit hash
+  # based on length of the string
+  if [[ "${#rev}" != "40" ]]; then
+    # if it's not a commit hash, assume it's a nixpkgs PR number
+    # and query the GitHub API to get the commit hash
+    rev="$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/pulls/$3" | jq -r '.head.sha')"
   fi
   sha256="$(nix-prefetch-url https://github.com/nixos/nixpkgs/archive/"$rev".tar.gz --unpack --type sha256)"
 
@@ -193,6 +195,7 @@ main() {
 
   tmpJson="$(mktemp)"
 
+  # create a new entry in pinned.json
   (
     gron "$pinnedJson"
     echo "json[\"$package\"][\"$version\"].rev = \"$rev\";"
@@ -202,12 +205,6 @@ main() {
   cat "$tmpJson" > "$pinnedJson"
   rm "$tmpJson"
 
-
-  purple="\033[0;35m"
-  green="\033[0;32m"
-  blue="\033[0;34m"
-  bold="\033[1m"
-  nc="\033[0m"
   echo -e "Pinned ${blue}${bold}$package${nc} to version ${green}$version${nc} at attribute ${purple}${bold}pkgs.pinned.$package.v$(echo "$version" | tr '.' '_')${nc}"
 }
 
