@@ -163,15 +163,27 @@ main() {
   checkPinned
 
   # if we don't have an api response yet, query the api
-  if [ -z "${apiSearchResponse:-}" ]; then
+  if [ -z "${apiSearchResponse:-}" ] && [ -z "${3:-}" ]; then
     queryApi
   fi
 
   system="$(nix eval --raw nixpkgs\#system)"
 
   # Construct the nix expression to pin the package
-  packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
-  rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
+  if [ -z "${3:-}" ]; then
+    packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
+    rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
+  else
+    # if we have a third argument, check whether it's a commit hash
+    # based on length of the string
+    if [ "${#3}" -eq 40 ]; then
+      rev="$3"
+    else
+      # if it's not a commit hash, assume it's a nixpkgs PR number
+      # and query the GitHub API to get the commit hash
+      rev="$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/pulls/$3" | jq -r '.head.sha')"
+    fi
+  fi
   sha256="$(nix-prefetch-url https://github.com/nixos/nixpkgs/archive/"$rev".tar.gz --unpack --type sha256)"
 
   # write to pinned.json
