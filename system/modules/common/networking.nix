@@ -32,6 +32,9 @@ in
     package = pkgs.mullvad-vpn;
   };
 
+  # This is how I access mullvad in Firefox, allowing me to use the
+  # foxyproxy extension to switch between mullvad and my normal
+  # connection and set per-domain rules.
   services.autossh.sessions = let
     mkSession = extraArguments: name: user: {
       inherit extraArguments name user;
