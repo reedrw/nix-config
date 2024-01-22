@@ -1,1 +1,8 @@
-{}
+{
+  "adwsteamgtk": {
+    "0.6.9": {
+      "rev": "f804b66996ed675e88f2c18d3026a1e47335e193",
+      "sha256": "1r77mqka784diin3k510jq4fx3cyvy8y59w0x17nbvymp0cgy70m"
+    }
+  }
+}

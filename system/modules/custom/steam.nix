@@ -32,6 +32,9 @@ in
       };
     };
     # https://github.com/ValveSoftware/Source-1-Games/issues/5043
-    environment.systemPackages = with pkgs; [ pkgsi686Linux.gperftools ];
+    environment.systemPackages = with pkgs; [
+      pkgsi686Linux.gperftools
+      pinned.adwsteamgtk.v0_6_9
+    ];
   };
 }
