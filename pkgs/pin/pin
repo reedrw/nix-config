@@ -45,8 +45,8 @@ queryApi(){
 }
 
 remove(){
-  package="$1"
-  version="$2"
+  local package="$1"
+  local version="$2"
 
   echo "Removing $package $version from pinned.json"
 
@@ -80,15 +80,16 @@ getAvailableVersions(){
 }
 
 main() {
-  purple="\033[0;35m"
-  green="\033[0;32m"
-  blue="\033[0;34m"
-  bold="\033[1m"
-  nc="\033[0m"
+  local purple="\033[0;35m"
+  local green="\033[0;32m"
+  local blue="\033[0;34m"
+  local bold="\033[1m"
+  local nc="\033[0m"
 
   package="${1:-}"
   version="${2:-}"
   rev="${3:-}"
+
   case "${1:-}" in
     --remove|-r)
       shift
