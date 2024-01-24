@@ -23,7 +23,7 @@ let
         fi
         nix-collect-garbage "$@"
       '';
-      hms = "home-manager switch -L";
+      hms = ''home-manager switch -L "$@"'';
       pai = ''~/.config/nixpkgs/pull-and-install.sh "$@"'';
     })
   ];
