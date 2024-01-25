@@ -41,6 +41,11 @@
     interval = "weekly";
   };
 
+  custom = {
+    persistDir = "/var/persist";
+    prevDir = "/var/prev";
+  };
+
   custom.boot = {
     keyfile-unlock = {
       enable = true;
