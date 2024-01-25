@@ -7,6 +7,13 @@ flakePath="${flakePath:-"$dir"}"
 
 nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
 
+# if SUDO_ASKPASS is set, use sudo -A
+if [ -n "$SUDO_ASKPASS" ]; then
+  sudo() {
+    SUDO_ASKPASS="$SUDO_ASKPASS" command sudo -A "$@"
+  }
+fi
+
 helpMessage(){
   local green='\033[0;32m'
   local yellow='\033[0;33m'
@@ -23,7 +30,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo -A nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -65,7 +72,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo -A nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
   esac
 }
