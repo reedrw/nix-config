@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 let
   cfg = config.custom.snapper;
 in
@@ -16,7 +16,7 @@ in
   config = lib.mkIf cfg.enable {
     services.snapper = {
       configs.persist = {
-        SUBVOLUME = "/persist";
+        SUBVOLUME = "${config.custom.persistDir}";
         ALLOW_USERS = cfg.allowedUsers;
         TIMELINE_CREATE = true;
         TIMELINE_CLEANUP = true;

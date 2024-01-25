@@ -138,6 +138,7 @@ parseConfig(){
         "activateCommand": "",
         "persistJson": "$(dirname "$configJson")/persist.json",
         "persistDir": "/var/persist",
+        "prevDir": "/var/prev",
         "snapper": {
           "enable": false,
           "config": "persist"
@@ -150,6 +151,7 @@ EOF
   activateCommand="$(jq -r '.activateCommand' "$configJson")"
   persistJson="$(jq -r '.persistJson' "$configJson")"
   persistDir="$(jq -r '.persistDir' "$configJson")"
+  prevDir="$(jq -r '.prevDir' "$configJson")"
   useSnapper="$(jq -r '.snapper.enable' "$configJson")"
   snapperConfig="$(jq -r '.snapper.config' "$configJson")"
 
@@ -216,8 +218,8 @@ parseFileArgs(){
   # This step allows the user to persist files directly from their file paths
   # within snapshots or previous boots, while still maintaining the correct
   # relative directory structure within "/persist".
-  if [[ "$fileArg" == /prev/* ]]; then
-    removalSubstring='s|/prev/[0-9]\+||g'
+  if [[ "$fileArg" == "$prevDir/*" ]]; then
+    removalSubstring="s|$prevDir/[0-9]\+||g"
     fileArg="$(echo "$fileArg" | sed "$removalSubstring")"
     newLoc="$(dirname "$persistDir$fileArg")"
   elif [[ "$fileArg" == "$persistDir/.snapshots/"* ]]; then

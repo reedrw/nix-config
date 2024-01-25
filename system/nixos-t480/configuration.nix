@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, config, ... }:
 {
   imports = [
     ./persist.nix
@@ -16,7 +16,7 @@
 
   users = {
     mutableUsers = false;
-    users.reed.hashedPasswordFile = "/persist/secrets/reed-passwordFile";
+    users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
   };
 
   hardware = {

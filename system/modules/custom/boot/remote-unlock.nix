@@ -22,7 +22,7 @@ in
           ];
           # sudo ssh-keygen -t ed25519 -N "" -f /persist/secrets/initrd/ssh_host_ed25519_key
           # sudo ssh-keygen -t rsa -N "" -f /persist/secrets/initrd/ssh_host_rsa_key
-          hostKeys = [ "/persist/secrets/initrd/ssh_host_rsa_key" "/persist/secrets/initrd/ssh_host_ed25519_key" ];
+          hostKeys = [ "${config.custom.persistDir}/secrets/initrd/ssh_host_rsa_key" "${config.custom.persistDir}/secrets/initrd/ssh_host_ed25519_key" ];
         };
       };
     };

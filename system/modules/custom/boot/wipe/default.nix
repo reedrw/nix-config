@@ -44,9 +44,9 @@ in
     programs.persist-path-manager = {
       enable = true;
       config = {
+        inherit (config.custom) persistDir prevDir;
         activateCommand = "ldp";
         persistJson = "/home/reed/.config/nixpkgs/system/${config.networking.hostName}/persist.json";
-        persistDir = "/persist";
         snapper = {
           enable = true;
           config = "persist";

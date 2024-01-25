@@ -1,4 +1,4 @@
-{ config, lib, inputs, ... }:
+{ config, osConfig, lib, inputs, ... }:
 let
   homeDir = config.home.homeDirectory;
   json = builtins.fromJSON (builtins.readFile ../persist.json);
@@ -17,7 +17,7 @@ in
     inputs.impermanence.nixosModules.home-manager.impermanence
   ];
 
-  home.persistence."/persist/${homeDir}" = {
+  home.persistence."${osConfig.custom.persistDir}/${homeDir}" = {
     allowOther = true;
     files = [] ++ files;
     directories = [] ++ directories;

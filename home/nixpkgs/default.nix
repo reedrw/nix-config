@@ -17,6 +17,7 @@
 
     settings = {
       inherit (nixConfig) extra-substituters extra-trusted-public-keys;
+      use-xdg-base-directories = true;
     };
   };
 

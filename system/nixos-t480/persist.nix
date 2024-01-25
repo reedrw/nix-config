@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 let
   homeDir = "/home/reed";
   json = (builtins.fromJSON (builtins.readFile ./persist.json));
@@ -9,7 +9,7 @@ in
 {
   programs.fuse.userAllowOther = true;
 
-  environment.persistence."/persist" = {
+  environment.persistence."${config.custom.persistDir}" = {
     hideMounts = true;
     directories = [] ++ directories;
   };

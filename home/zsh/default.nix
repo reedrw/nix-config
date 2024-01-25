@@ -1,4 +1,4 @@
-{ config, inputs, lib, pkgs, ... }:
+{ config, osConfig, inputs, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
 in
@@ -184,8 +184,8 @@ in
       zle -N termwwidget
       bindkey '^[^M' termwwidget
 
-      if [[ -f "/persist/home/$USER/.zsh_history" ]]; then
-        HISTFILE="/persist/home/$USER/.zsh_history"
+      if [[ -f "${osConfig.custom.persistDir}/home/$USER/.zsh_history" ]]; then
+        HISTFILE="${osConfig.custom.persistDir}/home/$USER/.zsh_history"
       else
         HISTFILE="$HOME/.zsh_history"
       fi

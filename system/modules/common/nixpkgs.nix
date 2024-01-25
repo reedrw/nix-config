@@ -11,8 +11,9 @@
     };
     extraOptions = ''
       builders-use-substitutes = true
-      keep-outputs = true
       keep-derivations = true
+      keep-outputs = true
+      use-xdg-base-directories = true
       experimental-features = flakes nix-command repl-flake
     '';
     nixPath = [

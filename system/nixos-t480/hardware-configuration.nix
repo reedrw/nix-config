@@ -27,7 +27,7 @@
       options = [ "subvol=nix" "compress=zstd" "noatime" ];
     };
 
-  fileSystems."/persist" =
+  fileSystems."${config.custom.persistDir}" =
     { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=persist" "compress=zstd" "noatime" ];
@@ -41,13 +41,13 @@
       neededForBoot = true;
     };
 
-  fileSystems."/prev" =
+  fileSystems."${config.custom.prevDir}" =
     { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=prev" "compress=zstd" "noatime" ];
     };
 
-  fileSystems."/mnt/subvols" =
+  fileSystems."/var/subvols" =
     { device = "/dev/mapper/enc";
       fsType = "btrfs";
     };
