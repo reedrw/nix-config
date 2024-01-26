@@ -18,7 +18,7 @@ launchPrograms(){
       (telegram-desktop &)
     ;;
     "4" )
-      (blueman-manager &)
+      (blueberry &)
       (pavucontrol &)
       (easyeffects &)
     ;;
@@ -61,7 +61,7 @@ main(){
     launchPrograms 4
 
     until windowExists \
-      .blueman-manager-wrapped \
+      blueberry.py \
       Pavucontrol \
       easyeffects
     do
