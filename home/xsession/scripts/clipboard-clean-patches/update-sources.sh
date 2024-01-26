@@ -10,7 +10,7 @@ rev="$(jq -r '.["Unalix"].rev' ./nix/sources.json)"
 
 dir="$(mktemp -u -d)"
 
-git clone https://github.com/AmanoTeam/Unalix "$dir"
+git clone https://gitlab.com/AmanoTeam/Unalix "$dir"
 pushd "$dir" || exit
   git checkout "$rev"
   python3 ./external/update_ca_bundle.py
