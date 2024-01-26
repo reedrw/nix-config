@@ -1,7 +1,7 @@
 {
     "Unalix": {
         "branch": "master",
-        "repo": "https://gitlab.com/AmanoTeam/Unalix.git",
+        "repo": "https://codeberg.org/reedrw/Unalix.git",
         "rev": "3dd238df093185390cd5ce9adc5d77aa1ee93d31",
         "type": "git"
     }
