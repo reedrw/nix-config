@@ -88,7 +88,7 @@ in
       source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
       source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null
 
-      export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
+      export NIX_PATH=$HOME/.local/state/nix/defexpr/channels:/nix/var/nix/profiles/per-user/root/channels''${NIX_PATH:+:$NIX_PATH}
 
       if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
