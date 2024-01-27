@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   calnotify = pkgs.writeNixShellScript "calnotify" (builtins.readFile ./calnotify.sh);
   screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
@@ -29,14 +29,14 @@ in
       };
       "module/battery" = {
         type = "custom/script";
-        exec = "${binPath bataverage}";
+        exec = "${lib.getExe bataverage}";
         click-left = ''${libnotify}/bin/notify-send "$(acpi | sed -e 's/\%.*/\%/g')"'';
         tail = true;
       };
       "module/date" = {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
-        label = "%{A1:${binPath calnotify} ${base0B}:}%date%%{A}";
+        label = "%{A1:${lib.getExe calnotify} ${base0B}:}%date%%{A}";
         format = "<label>";
         label-padding = 4;
       };
@@ -50,13 +50,13 @@ in
       };
       "module/mpris" = {
         type = "custom/script";
-        exec = "${binPath playerctl} metadata -F --format '{{ artist }} - {{ title }}'";
-        click-left = "${binPath playerctl} play-pause";
+        exec = "${lib.getExe playerctl} metadata -F --format '{{ artist }} - {{ title }}'";
+        click-left = "${lib.getExe playerctl} play-pause";
         tail = true;
       };
       "module/screen" = {
         type = "custom/script";
-        exec = "${binPath screenthing}";
+        exec = "${lib.getExe screenthing}";
         click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
         label-padding = 4;
         tail = true;

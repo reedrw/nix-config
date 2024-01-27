@@ -1,8 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   programs.kitty = {
     enable = true;
-    # Kitty doesn't support the -e flag.
+    # The -e flag doesn't work when a startup_session is specified.
     # This disgusting hack is needed to keep backwards compatibility with
     # xterm. i3-sensible-terminal uses the -e flag to execute a command.
     package = let
@@ -16,9 +16,9 @@
         #!${pkgs.stdenv.shell}
         if [[ "\$1" == "-e" ]]; then
           shift
-          exec ${kitty}/bin/kitty --session=none "\$@"
+          exec ${lib.getExe kitty} --session=none "\$@"
         else
-          exec ${kitty}/bin/kitty "\$@"
+          exec ${lib.getExe kitty} "\$@"
         fi
         EOF
         chmod +x "$out/bin/kitty"

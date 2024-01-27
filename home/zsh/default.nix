@@ -192,8 +192,8 @@ in
 
       c(){
         [[ -p /dev/stdin ]] && \
-          ${binPath xclip} -i -selection clipboard || \
-          ${binPath xclip} -o -selection clipboard
+          ${lib.getExe xclip} -i -selection clipboard || \
+          ${lib.getExe xclip} -o -selection clipboard
       }
 
       git(){
@@ -235,17 +235,17 @@ in
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
-      bmount = "${binPath bashmount}";
-      cat = "${binPath bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+      bmount = "${lib.getExe bashmount}";
+      cat = "${lib.getExe bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
       cp = "cp -riv";
-      df = "${pydf}/bin/pydf";
+      df = "${lib.getExe pydf}";
       gcd = "sudo gc -d";
       ln = "ln -v";
-      ls = "${binPath eza} -lh --git -s type";
+      ls = "${lib.getExe eza} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       n = "cd ~/.config/nixpkgs";
-      ping = "${binPath prettyping} --nolegend";
+      ping = "${lib.getExe prettyping} --nolegend";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
@@ -254,8 +254,8 @@ in
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
-      watch = "${binPath viddy}";
-      wget = "${binPath wget} --progress=dot:giga";
+      watch = "${lib.getExe viddy}";
+      wget = "${lib.getExe wget} --progress=dot:giga";
       x = "exit";
     };
   };

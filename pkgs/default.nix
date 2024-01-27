@@ -7,6 +7,28 @@ in
   pin = pkgs.callPackage ./pin { };
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 
+  prettyping = if self.hasMainProgram pkgs.prettyping
+    then pkgs.prettyping
+    else pkgs.pinned.prettyping.v1_0_1;
+
+  pydf = if self.hasMainProgram pkgs.pydf
+    then pkgs.pydf
+    else pkgs.pinned.pydf.v12;
+
+  bashmount = if self.hasMainProgram pkgs.bashmount
+    then pkgs.bashmount
+    else pkgs.pinned.bashmount.v4_3_2;
+
+  # hasMainProgram :: Package -> Bool
+  ########################################
+  # Given a package, return true if the package has a meta.mainProgram attribute.
+  # Ex.
+  # hasMainProgram hello
+  #
+  # Returns:
+  # true
+  hasMainProgram = x: (x.meta.mainProgram or null) != null;
+
   # aliasToPackage :: AttrSet -> Package
   ########################################
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
@@ -142,6 +164,7 @@ in
     in
     pkgs.writeShellApplication {
       inherit name text runtimeInputs;
+      meta.mainProgram = name;
     };
 
   # listDirectory :: Path -> [Path]

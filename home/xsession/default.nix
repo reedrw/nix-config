@@ -7,14 +7,14 @@ let
   exec = "exec --no-startup-id";
 
   alwaysRun = with pkgs; [
-    "${binPath feh} --bg-fill ${./wallpaper.jpg}"
+    "${lib.getExe feh} --bg-fill ${./wallpaper.jpg}"
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
     "systemctl --user restart playerctld"
     "systemctl --user import-environment PATH"
     "systemctl --user restart xdg-desktop-portal.service"
-    "${binPath scripts.toggle-touchpad} disable --silent"
+    "${lib.getExe scripts.toggle-touchpad} disable --silent"
   ];
 
   run = [
@@ -49,9 +49,9 @@ in
         terminal = "${term}";
         keybindings = with pkgs; lib.mkOptionDefault ({
           "Print" = "${exec} flameshot gui";
-          "${mod}+Escape" = "${exec} ${binPath scripts.pause-suspend}";
+          "${mod}+Escape" = "${exec} ${lib.getExe scripts.pause-suspend}";
           "${mod}+Return" = "${exec} ${term}";
-          "${sup}+Return" = "${exec} ${binPath scripts.select-term}";
+          "${sup}+Return" = "${exec} ${lib.getExe scripts.select-term}";
           "${mod}+d" = "focus child";
           "${mod}+o" = "open";
           "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
@@ -59,28 +59,28 @@ in
           "${sup}+Down" = "resize grow height 5 px or 5 ppt";
           "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
           "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
-          "${mod}+r" = "${exec} ${binPath scripts.record}";
+          "${mod}+r" = "${exec} ${lib.getExe scripts.record}";
           "${mod}+Shift+s" = "sticky toggle";
           "${mod}+2" = "${exec} ${writeShellScript "workspace2" ''
             i3-msg workspace 2
-            ${binPath scripts.mpv-dnd} --resume ${builtins.concatStringsSep " " chatApps}
+            ${lib.getExe scripts.mpv-dnd} --resume ${builtins.concatStringsSep " " chatApps}
           ''}";
-          "${mod}+${sup}+space" = "${exec} ${binPath scripts.toggle-touchpad}";
-          "XF86MonBrightnessUp" = "${exec} ${binPath brightnessctl} s 10%+";
-          "XF86MonBrightnessDown" = "${exec} ${binPath brightnessctl} s 10%-";
-          "Ctrl+Down" = "${exec} ${binPath playerctl} play-pause";
-          "Ctrl+Left" = "${exec} ${binPath playerctl} previous";
-          "Ctrl+Right" = "${exec} ${binPath playerctl} next";
-          "XF86AudioPause" = "${exec} ${binPath playerctl} play-pause";
-          "XF86AudioPlay" = "${exec} ${binPath playerctl} play-pause";
-          "XF86AudioPrev" = "${exec} ${binPath playerctl} previous";
-          "XF86AudioNext" = "${exec} ${binPath playerctl} next";
-          "XF86AudioMute" = "${exec} ${binPath scripts.volume} mute";
-          "XF86AudioRaiseVolume" = "${exec} ${binPath scripts.volume} up 5";
-          "XF86AudioLowerVolume" = "${exec} ${binPath scripts.volume} down 5";
+          "${mod}+${sup}+space" = "${exec} ${lib.getExe scripts.toggle-touchpad}";
+          "XF86MonBrightnessUp" = "${exec} ${lib.getExe brightnessctl} s 10%+";
+          "XF86MonBrightnessDown" = "${exec} ${lib.getExe brightnessctl} s 10%-";
+          "Ctrl+Down" = "${exec} ${lib.getExe playerctl} play-pause";
+          "Ctrl+Left" = "${exec} ${lib.getExe playerctl} previous";
+          "Ctrl+Right" = "${exec} ${lib.getExe playerctl} next";
+          "XF86AudioPause" = "${exec} ${lib.getExe playerctl} play-pause";
+          "XF86AudioPlay" = "${exec} ${lib.getExe playerctl} play-pause";
+          "XF86AudioPrev" = "${exec} ${lib.getExe playerctl} previous";
+          "XF86AudioNext" = "${exec} ${lib.getExe playerctl} next";
+          "XF86AudioMute" = "${exec} ${lib.getExe scripts.volume} mute";
+          "XF86AudioRaiseVolume" = "${exec} ${lib.getExe scripts.volume} up 5";
+          "XF86AudioLowerVolume" = "${exec} ${lib.getExe scripts.volume} down 5";
         } // lib.pipe (lib.range 0 9) [
           (map toString)
-          (map (n: {"${mod}+ctrl+${n}" = "${exec} ${binPath scripts.load-layouts} ${n}";}))
+          (map (n: {"${mod}+ctrl+${n}" = "${exec} ${lib.getExe scripts.load-layouts} ${n}";}))
           (mergeAttrs)
         ]);
         colors = with config.colorScheme.colors; let
@@ -164,10 +164,10 @@ in
   };
 
   systemd.user.services = with pkgs; mergeAttrs [
-    (mkSimpleHMService "autotiling" "${binPath autotiling}")
-    (mkSimpleHMService "clipboard-clean" "${binPath scripts.clipboard-clean}")
-    (mkSimpleHMService "dwebp-serv" "${binPath scripts.dwebp-serv}")
-    (mkSimpleHMService "mpv-dnd" "${binPath scripts.mpv-dnd} ${builtins.concatStringsSep " " chatApps}")
-    (mkSimpleHMService "keybinds" "${binPath scripts.keybinds}")
+    (mkSimpleHMService "autotiling" "${lib.getExe autotiling}")
+    (mkSimpleHMService "clipboard-clean" "${lib.getExe scripts.clipboard-clean}")
+    (mkSimpleHMService "dwebp-serv" "${lib.getExe scripts.dwebp-serv}")
+    (mkSimpleHMService "mpv-dnd" "${lib.getExe scripts.mpv-dnd} ${builtins.concatStringsSep " " chatApps}")
+    (mkSimpleHMService "keybinds" "${lib.getExe scripts.keybinds}")
   ];
 }

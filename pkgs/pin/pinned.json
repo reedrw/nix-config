@@ -4,5 +4,23 @@
       "rev": "1f278f9d7e09f06e1db4b21faacb47162b2f3520",
       "sha256": "1s1dzhsp4lwr3bhvx5nv7pcd1nixaznrs53agvpyksnbvscj31xq"
     }
+  },
+  "bashmount": {
+    "4.3.2": {
+      "rev": "0090978b2a60fdce4feb24cce3afb2f33de3d44e",
+      "sha256": "1qqc98gvx203d3lsq8l2pym7w59l88k4yzr5h6as0kbzsg8zggh7"
+    }
+  },
+  "prettyping": {
+    "1.0.1": {
+      "rev": "6e4b590ddd04d6c5d9da86451ce21c8967fa11b5",
+      "sha256": "1zx66n8v3j1qz1ciyipsd6mgaw15rq7gvildqgps3hg990gh6im6"
+    }
+  },
+  "pydf": {
+    "12": {
+      "rev": "8b1a8efe45cc80c931dda2e7fbf51bd86806d492",
+      "sha256": "0b4djqdi14cli6p3j3fbj5shvz3xkg4vzf8q6c47wnh920xfdc66"
+    }
   }
 }

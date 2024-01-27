@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   roficomma = pkgs.writeNixShellScript "roficomma" (builtins.readFile ./roficomma.sh);
 in
@@ -17,7 +17,7 @@ in
     );
   };
 
-  xdg.configFile = with pkgs; {
-    "rofi/roficomma.sh".source = "${binPath roficomma}";
+  xdg.configFile = {
+    "rofi/roficomma.sh".source = "${lib.getExe roficomma}";
   };
 }

@@ -63,7 +63,7 @@ with pkgs; ''
         return 127
       fi
 
-      attr="$(echo "$attr" | ${binPath fzf} --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
+      attr="$(echo "$attr" | ${lib.getExe fzf} --color=16 --layout=reverse --info=hidden --height 40%)" || return 130
       attr="''${attr%.*}"
 
       export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
