@@ -48,6 +48,7 @@ in
     dnsServers = builtins.concatStringsSep " " nameservers;
   in ''
     while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
+    ${mullvad}/bin/mullvad lockdown-mode set off
     ${mullvad}/bin/mullvad lan set allow
     ${mullvad}/bin/mullvad auto-connect set on
     ${mullvad}/bin/mullvad dns set custom ${dnsServers}
