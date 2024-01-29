@@ -67,19 +67,6 @@ in
   services.resolved.enable = true;
   services.tailscale.enable = true;
 
-  systemd.services.tailscaled = {
-    after = [ "mullvad-daemon.service" ];
-    serviceConfig = {
-      ExecStart = with pkgs; [
-        ""
-        ''${mullvadExclude tailscale}/bin/tailscaled \
-          --state=/var/lib/tailscale/tailscaled.state \
-          --socket=/run/tailscale/tailscaled.sock \
-          --port=''${PORT} $FLAGS''
-      ];
-    };
-  };
-
   networking.search = [ "tail3b7ba.ts.net" ];
   networking.nameservers = [
     "100.100.100.100"
@@ -87,22 +74,19 @@ in
     "8.8.8.8"
   ];
 
-  networking.firewall.extraCommands =
-    let
-      ts = builtins.toFile "tailscale.rules" ''
-        table inet excludeTraffic {
-          chain excludeOutgoing {
-            type route hook output priority -100; policy accept;
-            ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
-          }
-          chain excludeIncoming {
-            type filter hook input priority -100; policy accept;
-            ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
-          }
+  networking.nftables = {
+    enable = true;
+    ruleset = ''
+      table inet excludeTraffic {
+        chain excludeOutgoing {
+          type route hook output priority -100; policy accept;
+          ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
         }
-      '';
-    in
-    ''
-      ${pkgs.nftables}/bin/nft -f ${ts}
+        chain excludeIncoming {
+          type filter hook input priority -100; policy accept;
+          ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+        }
+      }
     '';
+  };
 }
