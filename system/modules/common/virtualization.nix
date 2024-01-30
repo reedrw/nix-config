@@ -15,6 +15,5 @@
 
   environment.systemPackages = with pkgs; [
     virt-manager
-    distrobox
   ];
 }
