@@ -2,7 +2,10 @@
 
 let
   nixpkgs-options.nixpkgs = {
-    overlays = [ (import ../pkgs) ];
+    overlays = [
+      (import ../pkgs)
+      (import ../pkgs/pin/overlay.nix)
+    ];
     config = import ../pkgs/config.nix {
       inherit (inputs) NUR master unstable;
     };
