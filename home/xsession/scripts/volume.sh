@@ -41,7 +41,7 @@ runCommand(){
 
 # Get the output device from easyeffects
 outputdev="$(gsettings \
-  --schemadir ~/.nix-profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
+  --schemadir ~/.local/state/nix/profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
   get com.github.wwmm.easyeffects.streamoutputs output-device | cut -f2 -d\')"
 
 main(){
