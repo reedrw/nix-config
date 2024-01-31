@@ -44,7 +44,7 @@ in
       {
         plugin = galaxyline-nvim;
         type = "lua";
-        config = with config.colorScheme.colors; ''
+        config = with config.colorScheme.palette; ''
           local colors = {
             blank = '#${base00}',
             bg = '#${base01}',

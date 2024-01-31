@@ -131,6 +131,7 @@ rec {
         home-manager = {
           users.${username}.imports = hm.modules;
           extraSpecialArgs = specialArgs;
+          useGlobalPkgs = true;
         };
       }
     ];

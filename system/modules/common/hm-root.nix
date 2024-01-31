@@ -1,11 +1,9 @@
-{ inputs, outputs, nixpkgs-options, pkgs, lib, hm, ... }:
+{ inputs, outputs, pkgs, lib, hm, ... }:
 
 lib.optionalAttrs hm {
   home-manager = {
     extraSpecialArgs = { inherit inputs outputs; };
     users.root = {
-      # nixpkgs options
-      inherit (nixpkgs-options) nixpkgs;
 
       home = {
         username = "root";

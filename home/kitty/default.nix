@@ -25,7 +25,7 @@
       '';
     };
     # shellIntegration.enableZshIntegration = true;
-    settings = with config.colorScheme.colors; let
+    settings = with config.colorScheme.palette; let
       family = "FantasqueSansM Nerd Font";
 
       black   = "#${base00}";

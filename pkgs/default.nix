@@ -7,16 +7,6 @@ in
   pin = pkgs.callPackage ./pin { };
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 
-  prettyping = if self.hasMainProgram pkgs.prettyping
-    then lib.warn "prettyping in nixpkgs has a mainProgram attribute. Remove this override."
-         pkgs.prettyping
-    else pkgs.pinned.prettyping.v1_0_1;
-
-  pydf = if self.hasMainProgram pkgs.pydf
-    then lib.warn "pydf in nixpkgs has a mainProgram attribute. Remove this override."
-         pkgs.pydf
-    else pkgs.pinned.pydf.v12;
-
   bashmount = if self.hasMainProgram pkgs.bashmount
     then lib.warn "bashmount in nixpkgs has a mainProgram attribute. Remove this override."
          pkgs.bashmount

@@ -1,8 +1,6 @@
-{ nixpkgs-options, nixConfig, inputs, osConfig, lib, ... }:
+{ nixConfig, inputs, osConfig, lib, ... }:
 
 {
-  inherit (nixpkgs-options) nixpkgs;
-
   home.sessionVariables = {
     NIX_PATH = "unstable=${inputs.unstable.outPath}:nixpkgs=${inputs.nixpkgs.outPath}$\{NIX_PATH:+:$NIX_PATH}";
   };

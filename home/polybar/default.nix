@@ -9,7 +9,7 @@ in
   services.polybar = with pkgs; {
     enable = true;
     package = polybarFull;
-    config = with config.colorScheme.colors; {
+    config = with config.colorScheme.palette; {
       "bar/main" = {
         background = "#${base00}";
         foreground = "#${base05}";

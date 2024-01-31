@@ -36,7 +36,7 @@ in
         modifier = "Mod1";
         terminal = config.home.sessionVariables.TERMINAL;
         keybindings = lib.mkOptionDefault (import ./keybinds.nix args);
-        colors = with config.colorScheme.colors; let
+        colors = with config.colorScheme.palette; let
           focused = {
             border = "#${base07}";
             childBorder = "#${base07}";

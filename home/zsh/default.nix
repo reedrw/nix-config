@@ -62,7 +62,7 @@ in
       size = 99999;
     };
     initExtra = let
-      inherit (config.colorScheme.colors) base02;
+      inherit (config.colorScheme.palette) base02;
     in
     with pkgs;
     ''

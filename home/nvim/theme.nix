@@ -1,6 +1,6 @@
 { config,  ... }:
 
-with config.colorScheme.colors; builtins.toFile "theme.vim" ''
+with config.colorScheme.palette; builtins.toFile "theme.vim" ''
   " vi:syntax=vim
 
   " base16-vim (https://github.com/chriskempson/base16-vim)

@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     prismlauncher
   ];
-  home.file = with config.colorscheme.colors; {
+  home.file = with config.colorscheme.palette; {
     ".local/share/PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
       colors = {
         AlternateBase = "#${base02}";
