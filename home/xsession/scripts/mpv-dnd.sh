@@ -41,12 +41,12 @@ contPrograms(){
   done
 }
 
-if [[ "$1" == "--resume" ]]; then
-  shift
-  programs=( "$@" )
-  contPrograms
-  exit 0
-fi
+for i in "${programs[@]}"; do
+  if [[ "$i" == *"--resume"* ]]; then
+    contPrograms
+    exit 0
+  fi
+done
 
 while true; do
   if [[ "$(getActiveWindow)" == "mpv" ]]; then

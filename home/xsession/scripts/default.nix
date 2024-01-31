@@ -1,8 +1,17 @@
-pkgs: {
+pkgs: let inherit (pkgs) lib; in {
   dwebp-serv = pkgs.writeNixShellScript "dwebp-serv" (builtins.readFile ./dwebp-serv.sh);
   keybinds = pkgs.writeNixShellScript "keybinds" (builtins.readFile ./keybinds.sh);
   load-layouts = pkgs.writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
-  mpv-dnd = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
+  mpv-dnd = let
+    unwrapped = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
+    # Window classes to be suspended while mpv is the active window
+    chatApps = [
+      "TelegramDesktop"
+      "vesktop"
+    ];
+  in pkgs.writeShellScriptBin "mpv-dnd" ''
+    ${lib.getExe unwrapped} ${builtins.concatStringsSep " " chatApps} "$@"
+  '';
   pause-suspend = pkgs.writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
   record = pkgs.writeNixShellScript "record" (builtins.readFile ./record.sh);
   select-term = pkgs.writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
