@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xorg.xmodmap xorg.xset
+#! nix-shell -i bash -p xorg.xmodmap xorg.xset xdotool
 
 set -x
 
@@ -13,5 +13,9 @@ while true; do
   # unset caps lock
   xmodmap -e 'clear Lock'
   xmodmap -e 'keycode 66 = Control_L'
+  # make sure caps lock is off
+  if [ "$(xset q | grep Caps | awk '{print $4}')" = "on" ]; then
+    xdotool key Caps_Lock
+  fi
   sleep 20
 done
