@@ -1,7 +1,5 @@
 { config, lib, pkgs, ... }@args:
 let
-  term = "${config.home.sessionVariables.TERMINAL}";
-
   alwaysRun = with pkgs; [
     "${lib.getExe feh} --bg-fill ${./wallpaper.jpg}"
     "systemctl --user restart picom"
@@ -36,7 +34,7 @@ in
         floating.border = 5;
         floating.titlebar = false;
         modifier = "Mod1";
-        terminal = "${term}";
+        terminal = config.home.sessionVariables.TERMINAL;
         keybindings = lib.mkOptionDefault (import ./keybinds.nix args);
         colors = with config.colorScheme.colors; let
           focused = {
