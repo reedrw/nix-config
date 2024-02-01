@@ -191,10 +191,10 @@ in
     lib.warn ''wrapPackage: package "${package.name}" does not have the meta.mainProgram attribute.''
     (builtins.parseDrvName package.name).name);
   in pkgs.symlinkJoin {
-    name = "${package.name}-wrapped";
+    name = "${package.name}";
     paths = [ package ];
     postBuild = ''
-      echo "Wrapping ${package.name}"
+      echo "Wrapping ${binary}"
       rm "$out/bin/${binary}"
       cat << _EOF > $out/bin/${binary}
       ${f "${package}/bin/${binary}"}
