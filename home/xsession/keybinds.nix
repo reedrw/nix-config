@@ -1,7 +1,7 @@
 { config, pkgs, lib,  ... }:
 let
   term = "${config.home.sessionVariables.TERMINAL}";
-  scripts = import ./scripts pkgs;
+  scripts = pkgs.callPackage ./scripts { };
 
   mod = config.xsession.windowManager.i3.config.modifier;
   sup = "Mod4";

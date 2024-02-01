@@ -1,18 +1,21 @@
-pkgs: let inherit (pkgs) lib; in {
-  dwebp-serv = pkgs.writeNixShellScript "dwebp-serv" (builtins.readFile ./dwebp-serv.sh);
-  keybinds = pkgs.writeNixShellScript "keybinds" (builtins.readFile ./keybinds.sh);
-  load-layouts = pkgs.writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
-  pause-suspend = pkgs.writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
-  record = pkgs.writeNixShellScript "record" (builtins.readFile ./record.sh);
-  select-term = pkgs.writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
-  toggle-touchpad = pkgs.writeNixShellScript "toggle-touchpad" (builtins.readFile ./toggle-touchpad.sh);
-  volume = pkgs.writeNixShellScript "volume" (builtins.readFile ./volume.sh);
+{ lib, pkgs, ... }:
+
+with pkgs;
+{
+  dwebp-serv = writeNixShellScript "dwebp-serv" (builtins.readFile ./dwebp-serv.sh);
+  keybinds = writeNixShellScript "keybinds" (builtins.readFile ./keybinds.sh);
+  load-layouts = writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
+  pause-suspend = writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
+  record = writeNixShellScript "record" (builtins.readFile ./record.sh);
+  select-term = writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
+  toggle-touchpad = writeNixShellScript "toggle-touchpad" (builtins.readFile ./toggle-touchpad.sh);
+  volume = writeNixShellScript "volume" (builtins.readFile ./volume.sh);
 
   clipboard-clean = let
-    unalix = pkgs.callPackage ./unalix { };
-  in pkgs.writeShellApplication {
+    unalix = callPackage ./unalix { };
+  in writeShellApplication {
     name = "clipboard-clean";
-    runtimeInputs = with pkgs; [
+    runtimeInputs = [
       coreutils
       xclip
       (python3.withPackages(ps: [ unalix ]))
@@ -21,7 +24,7 @@ pkgs: let inherit (pkgs) lib; in {
   };
 
   mpv-dnd = let
-    unwrapped = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
+    unwrapped = writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
     # Window classes to be suspended while mpv is the active window
     chatApps = [
       "TelegramDesktop"

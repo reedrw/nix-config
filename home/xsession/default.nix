@@ -15,7 +15,7 @@ let
     "i3-msg workspace 1"
   ];
 
-  scripts = import ./scripts pkgs;
+  scripts = pkgs.callPackage ./scripts { };
 
 in
 {
