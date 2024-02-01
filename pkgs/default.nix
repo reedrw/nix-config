@@ -176,51 +176,55 @@ in
     (builtins.filter (x: (builtins.substring 0 1 x) != "."))
   ];
 
+  # wrapPackage :: Package -> (String -> String) -> Package
+  ########################################
+  # Given a package and a function that takes a string and returns a string, override the package
+  # to wrap all the main program in the package with the string transformation function.
+  # The string argument to the inner function is the path to the unwrapped binary.
+  # Ex.
+  # wrapPackage hello (x: "echo $x")
+  wrapPackage = package: f: let
+    binary = package.meta.mainProgram or (
+    lib.warn ''wrapPackage: package "${package.name}" does not have the meta.mainProgram attribute.''
+    (builtins.parseDrvName package.name).name);
+  in pkgs.symlinkJoin {
+    name = "${package.name}-wrapped";
+    paths = [ package ];
+    postBuild = ''
+      echo "Wrapping ${package.name}"
+      rm "$out/bin/${binary}"
+      cat << _EOF > $out/bin/${binary}
+      ${f "${package}/bin/${binary}"}
+      _EOF
+      chmod 555 "$out/bin/${binary}"
+    '';
+
+    meta.mainProgram = binary;
+  };
+
   # wrapEnv :: Package -> AttrSet -> Package
   ########################################
   # Given a package and an attribute set containing environment variables, override the package
   # to include the environment variables at runtime.
   # Ex.
   # wrapEnv hello { FOO = "bar"; }
-  wrapEnv = package: env: pkgs.symlinkJoin {
-    name = "${package.name}-with-env";
-    paths = [ package ];
-    postBuild = ''
-      for binary in ${builtins.concatStringsSep " " (self.listBinaries package)}; do
-        echo "Wrapping $binary with env"
-        rm "$out/bin/$binary"
-        cat << _EOF > $out/bin/$binary
-      #! ${pkgs.runtimeShell} -e
-      ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
-      exec ${package}/bin/$binary "\$@"
-      _EOF
-        chmod 555 "$out/bin/$binary"
-      done
-    '';
-  };
+  wrapEnv = package: env: self.wrapPackage package (x: ''
+    #! ${pkgs.runtimeShell} -e
+    ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
+    exec ${x} "$@"
+  '');
 
   # mullvadExclude :: Package -> Package
   ########################################
-  # Given a package, wrap all the non-hidden binaries in the package with mullvad-exclude.
-  mullvadExclude = package: pkgs.symlinkJoin {
-    name = "${package.name}-mullvad-exclude";
-    paths = [ package ];
-    postBuild = ''
-      for binary in ${builtins.concatStringsSep " " (self.listBinaries package)}; do
-        echo "Wrapping $binary with mullvad-exclude"
-        rm "$out/bin/$binary"
-        cat << _EOF > $out/bin/$binary
-      #! ${pkgs.runtimeShell} -e
-      if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
-        exec /run/wrappers/bin/mullvad-exclude ${package}/bin/$binary "\$@"
-      else
-        exec ${package}/bin/$binary "\$@"
-      fi
-      _EOF
-        chmod 555 "$out/bin/$binary"
-      done
-    '';
-  };
+  # Given a package, wrap the package with mullvad-exclude.
+  mullvadExclude = package: self.wrapPackage package (x: ''
+    #! ${pkgs.runtimeShell} -e
+    if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
+      exec /run/wrappers/bin/mullvad-exclude ${x} "$@"
+    else
+      exec ${x} "$@"
+    fi
+  '');
 
   # partitionAttrs :: (String -> a -> Bool) -> AttrSet -> AttrSet
   ########################################
