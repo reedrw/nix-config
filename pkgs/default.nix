@@ -214,7 +214,7 @@ in
   wrapEnv = package: env: self.wrapPackage package (x: ''
     #! ${pkgs.runtimeShell} -e
     ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
-    exec ${x} "$@"
+    exec ${x} "\$@"
   '');
 
   # mullvadExclude :: Package -> Package
@@ -223,9 +223,9 @@ in
   mullvadExclude = package: self.wrapPackage package (x: ''
     #! ${pkgs.runtimeShell} -e
     if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
-      exec /run/wrappers/bin/mullvad-exclude ${x} "$@"
+      exec /run/wrappers/bin/mullvad-exclude ${x} "\$@"
     else
-      exec ${x} "$@"
+      exec ${x} "\$@"
     fi
   '');
 
