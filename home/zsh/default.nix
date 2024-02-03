@@ -45,6 +45,7 @@ in
   in
   {
     enable = true;
+    dotDir = ".local/share/zsh";
     plugins = with pkgs; [
       (mkZshPlugin { pkg = zsh-autosuggestions; })
       (mkZshPlugin {
@@ -184,8 +185,8 @@ in
       zle -N termwwidget
       bindkey '^[^M' termwwidget
 
-      if [[ -f "${osConfig.custom.persistDir}/home/$USER/.zsh_history" ]]; then
-        HISTFILE="${osConfig.custom.persistDir}/home/$USER/.zsh_history"
+      if [[ -f "${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history" ]]; then
+        HISTFILE="${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history"
       else
         HISTFILE="$HOME/.zsh_history"
       fi
