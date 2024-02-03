@@ -132,6 +132,7 @@ rec {
           users.${username}.imports = hm.modules;
           extraSpecialArgs = specialArgs;
           useGlobalPkgs = true;
+          backupFileExtension = "backup";
         };
       }
     ];
