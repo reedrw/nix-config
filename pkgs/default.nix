@@ -94,7 +94,8 @@ in
   versionConditionalOverride = version: package: override:
     if builtins.compareVersions package.version version < 1
     then override
-    else package;
+    else lib.warn "versionConditionalOverride: ${package.name} is already at version ${package.version}. No override applied."
+         package;
 
   # shortenRev :: String -> String
   ########################################
