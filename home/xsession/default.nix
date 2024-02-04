@@ -22,8 +22,8 @@ in
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;
-    profilePath = ".local/share/X11/xprofile";
-    scriptPath = ".local/share/X11/xsession";
+    profilePath = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/X11/xprofile";
+    scriptPath = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/X11/xsession";
     windowManager.i3 = {
       enable = true;
       package = pkgs.i3;

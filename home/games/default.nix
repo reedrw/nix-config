@@ -5,7 +5,7 @@
     prismlauncher
   ];
   home.file = with config.colorscheme.palette; {
-    ".local/share/PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
+    "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
       colors = {
         AlternateBase = "#${base02}";
         Base = "#${base00}";
@@ -27,9 +27,9 @@
       qssFilePath = "themeStyle.css";
       widgets = "Fusion";
     };
-    ".local/share/PrismLauncher/themes/base16/themeStyle.css".text = ''
+    "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/themeStyle.css".text = ''
       QToolTip { color: #ffffff; background-color: #${base0D}; border: 1px solid white; }
     '';
-    ".local/share/PrismLauncher/themes/base16/resources".source = pkgs.emptyDirectory;
+    "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/resources".source = pkgs.emptyDirectory;
   };
 }

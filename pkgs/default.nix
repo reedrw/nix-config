@@ -22,6 +22,23 @@ in
   # true
   hasMainProgram = x: (x.meta.mainProgram or null) != null;
 
+  # removeHomeDirPrefix :: String -> String
+  ########################################
+  # Given a path, remove the home directory prefix from the path.
+  # Ex.
+  # removeHomeDirPrefix "/home/user/foo"
+  #
+  # Returns:
+  # "foo"
+  removeHomeDirPrefix = path:
+    if lib.hasPrefix "/home" path
+    then lib.pipe path [
+      (lib.splitString "/")
+      (lib.drop 3)
+      (lib.concatStringsSep "/")
+    ]
+    else path;
+
   # aliasToPackage :: AttrSet -> Package
   ########################################
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
