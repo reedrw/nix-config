@@ -17,7 +17,7 @@
         {
           manage = "desktop";
           name = "xsession";
-          start = ''exec $HOME/.xsession'';
+          start = ''exec $HOME/.local/share/X11/xsession'';
         }
       ];
     };
