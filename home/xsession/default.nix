@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }@args:
 let
   alwaysRun = with pkgs; [
-    "${lib.getExe feh} --bg-fill ${./wallpaper.jpg}"
+    "${lib.getExe feh} --bg-fill ${./wallpaper.jpg} --no-fehbg"
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
