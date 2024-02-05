@@ -1,16 +1,16 @@
 { lib, pkgs, ... }:
 
 with pkgs;
-{
-  dwebp-serv = writeNixShellScript "dwebp-serv" (builtins.readFile ./dwebp-serv.sh);
-  keybinds = writeNixShellScript "keybinds" (builtins.readFile ./keybinds.sh);
-  load-layouts = writeNixShellScript "load-layouts" (builtins.readFile ./load-layouts.sh);
-  pause-suspend = writeNixShellScript "pause-suspend" (builtins.readFile ./pause-suspend.sh);
-  record = writeNixShellScript "record" (builtins.readFile ./record.sh);
-  select-term = writeNixShellScript "select-term" (builtins.readFile ./select-term.sh);
-  toggle-touchpad = writeNixShellScript "toggle-touchpad" (builtins.readFile ./toggle-touchpad.sh);
-  volume = writeNixShellScript "volume" (builtins.readFile ./volume.sh);
-
+lib.genAttrs [
+  "dwebp-serv"
+  "keybinds"
+  "load-layouts"
+  "pause-suspend"
+  "record"
+  "select-term"
+  "toggle-touchpad"
+  "volume"
+] (name: writeNixShellScript name (builtins.readFile (./. + "/${name}.sh"))) // {
   clipboard-clean = let
     unalix = callPackage ./unalix { };
   in writeShellApplication {
