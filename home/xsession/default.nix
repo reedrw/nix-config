@@ -13,6 +13,15 @@ let
 
   run = [
     "i3-msg workspace 1"
+    "${pkgs.writeShellScript "remove-xsession-errors" ''
+      #!/usr/bin/env bash
+      sleep 5
+      for i in ~/.xsession-errors*; do
+        if [[ "$(stat -c%s "$i")" == "0" ]]; then
+          rm "$i"
+        fi
+      done
+    ''}"
   ];
 
   scripts = pkgs.callPackage ./scripts { };
