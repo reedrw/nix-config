@@ -16,17 +16,5 @@
       "rev": "8dbf48036f8231b3acdd95fcdeed367239cc63e4",
       "sha256": "0l5c20jkdalwd980cc1qw928lz77qghxr0k43xgvd5vgmd5g01dy"
     }
-  },
-  "prettyping": {
-    "1.0.1": {
-      "rev": "6e4b590ddd04d6c5d9da86451ce21c8967fa11b5",
-      "sha256": "1zx66n8v3j1qz1ciyipsd6mgaw15rq7gvildqgps3hg990gh6im6"
-    }
-  },
-  "pydf": {
-    "12": {
-      "rev": "8b1a8efe45cc80c931dda2e7fbf51bd86806d492",
-      "sha256": "0b4djqdi14cli6p3j3fbj5shvz3xkg4vzf8q6c47wnh920xfdc66"
-    }
   }
 }
