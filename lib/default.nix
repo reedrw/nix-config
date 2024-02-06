@@ -4,6 +4,8 @@ let
   nixpkgs-options.nixpkgs = {
     overlays = [
       (import ../pkgs)
+      (import ../pkgs/alias.nix)
+      (import ../pkgs/functions.nix)
       (import ../pkgs/pin/overlay.nix)
     ];
     config = import ../pkgs/config.nix {
