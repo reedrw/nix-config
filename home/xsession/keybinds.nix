@@ -1,4 +1,4 @@
-{ config, pkgs, lib,  ... }:
+{ config, osConfig, pkgs, lib,  ... }:
 let
   term = "${config.home.sessionVariables.TERMINAL}";
   scripts = pkgs.callPackage ./scripts { };
@@ -20,6 +20,7 @@ with pkgs; {
   "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
   "${sup}+space" = "${exec} ~/.config/rofi/roficomma.sh -lines 10 -width 40";
   "${mod}+r" = "${exec} ${lib.getExe scripts.record}";
+  "${mod}+v" = "${exec} ${osConfig.services.mullvad-vpn.package}/bin/mullvad reconnect";
   "${mod}+Shift+s" = "sticky toggle";
   "${mod}+2" = "${exec} ${writeShellScript "workspace2" ''
     i3-msg workspace 2
