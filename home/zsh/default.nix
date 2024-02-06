@@ -247,6 +247,7 @@ in
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       n = "cd ~/.config/nixpkgs";
+      nr = "nix repl ~/.config/nixpkgs";
       ping = "${lib.getExe prettyping} --nolegend";
       rm = "rm -v";
       rr = "ranger_cd";
