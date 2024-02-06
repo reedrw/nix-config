@@ -120,12 +120,18 @@ in
     };
   };
 
-  services.flameshot.enable = true;
-
   xdg.configFile = {
     "i3/workspace-1.json".source = ./workspace-1.json;
     "i3/workspace-2.json".source = ./workspace-2.json;
     "i3/workspace-4.json".source = ./workspace-4.json;
+  };
+
+  services = {
+    flameshot.enable = true;
+    parcellite = {
+      enable = true;
+      package = pkgs.clipit;
+    };
   };
 
   systemd.user.services = with pkgs; mergeAttrs [
