@@ -48,10 +48,8 @@ in
     # dotDir = ".local/share/zsh";
     dotDir = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/zsh";
     plugins = with pkgs; [
+      (mkZshPlugin { pkg = fzf-tab; })
       (mkZshPlugin { pkg = zsh-autosuggestions; })
-      (mkZshPlugin {
-        pkg = zsh-fzf-tab;
-        file = "fzf-tab.plugin.zsh"; })
       (mkZshPlugin { pkg = zsh-syntax-highlighting; })
     ] ++ lib.attrsets.mapAttrsToList (name: src: {
       inherit name src;
