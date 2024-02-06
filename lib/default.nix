@@ -5,8 +5,8 @@ let
     overlays = [
       (import ../pkgs)
       (import ../pkgs/alias.nix)
-      (import ../pkgs/functions.nix)
       (import ../pkgs/pin/overlay.nix)
+      (import ../pkgs/functions.nix)
     ];
     config = import ../pkgs/config.nix {
       inherit (inputs) NUR master unstable;
