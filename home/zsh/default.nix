@@ -190,12 +190,6 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      c(){
-        [[ -p /dev/stdin ]] && \
-          ${lib.getExe xclip} -i -selection clipboard || \
-          ${lib.getExe xclip} -o -selection clipboard
-      }
-
       git(){
         case "$1" in
           ~)
@@ -237,6 +231,7 @@ in
       "\\$" = "";
       bmount = "${lib.getExe bashmount}";
       cat = "${lib.getExe bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+      c = "${lib.getExe config.services.parcellite.package} -c";
       cp = "cp -riv";
       df = "${lib.getExe pydf}";
       gcd = "sudo gc -d";
