@@ -3,9 +3,9 @@
   config = import ./config.nix;
   overlays = [
     (import ./pkgs)
-    (import ../pkgs/alias.nix)
-    (import ../pkgs/pin/overlay.nix)
-    (import ../pkgs/functions.nix)
+    (import ./pkgs/alias.nix)
+    (import ./pkgs/pin/overlay.nix)
+    (import ./pkgs/functions.nix)
   ];
 } }:
 
