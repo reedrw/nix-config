@@ -191,7 +191,7 @@ in
   # passed as the second argument. The function is passed the path to the unwrapped binary.
   #
   # Ex.
-  # wrapPackage hello (x: "Store path: $x")
+  # wrapPackage hello (x: "echo Store path: ${x}")
   #
   # $ hello
   # Store path: /nix/store/qyfq3ivjq7xl0kaqg4lrhcfh9zbjkqsc-hello-2.12.1/bin/hello
