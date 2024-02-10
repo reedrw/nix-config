@@ -5,12 +5,6 @@
       "sha256": "1s1dzhsp4lwr3bhvx5nv7pcd1nixaznrs53agvpyksnbvscj31xq"
     }
   },
-  "bashmount": {
-    "4.3.2": {
-      "rev": "0090978b2a60fdce4feb24cce3afb2f33de3d44e",
-      "sha256": "1qqc98gvx203d3lsq8l2pym7w59l88k4yzr5h6as0kbzsg8zggh7"
-    }
-  },
   "clipit": {
     "1.4.5": {
       "rev": "8dbf48036f8231b3acdd95fcdeed367239cc63e4",
