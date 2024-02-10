@@ -6,7 +6,7 @@
 {
   allowUnfree = true;
   allowBroken = true;
-  packageOverrides = pkgs: rec {
+  packageOverrides = pkgs: (rec {
     nur = import NUR {
       inherit pkgs;
       nurpkgs = pkgs;
@@ -17,5 +17,5 @@
       master = import master { inherit (pkgs) config system; };
       unstable = import unstable { inherit (pkgs) config system; };
     };
-  };
+  }) // import ./pin/overlay.nix pkgs pkgs;
 }
