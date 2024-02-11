@@ -1,4 +1,4 @@
-{ nixpkgs-options, nixConfig, inputs, ... }:
+{ nixpkgs-options, nixConfig, inputs, config, lib, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
@@ -24,5 +24,16 @@
       unstable.flake = inputs.unstable;
       nixpkgs.flake = inputs.nixpkgs;
     };
+  };
+
+  # exclude nix-daemon from mullvad-vpn
+  systemd.services.nix-daemon = let
+    cfg = config.services.mullvad-vpn;
+  in lib.mkIf cfg.enable {
+    after = [ "mullvad-daemon.service" ];
+    serviceConfig.ExecStart = [
+      ""
+      "${cfg.package}/bin/mullvad-exclude ${config.nix.package}/bin/nix-daemon --daemon"
+    ];
   };
 }
