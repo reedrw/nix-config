@@ -3,7 +3,6 @@ let
   cfg = config.custom.aagl;
   customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
-  sources = import ./nix/sources.nix {};
 in
 {
   options.custom.aagl = {
