@@ -7,7 +7,7 @@ let
   sup = "Mod4";
   exec = "exec --no-startup-id";
 in
-with pkgs; {
+{ xsession.windowManager.i3.config.keybindings = with pkgs; lib.mkOptionDefault ({
   "Print" = "${exec} flameshot gui";
   "${mod}+Escape" = "${exec} ${lib.getExe scripts.pause-suspend}";
   "${mod}+Return" = "${exec} ${term}";
@@ -43,4 +43,4 @@ with pkgs; {
   (map toString)
   (map (n: {"${mod}+ctrl+${n}" = "${exec} ${lib.getExe scripts.load-layouts} ${n}";}))
   (mergeAttrs)
-]
+]); }

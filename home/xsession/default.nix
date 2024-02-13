@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }@args:
+{ config, lib, pkgs, ... }:
 let
   alwaysRun = with pkgs; [
     "${lib.getExe feh} --bg-fill ${./wallpaper.jpg} --no-fehbg"
@@ -14,7 +14,6 @@ let
   run = [
     "i3-msg workspace 1"
     "${pkgs.writeShellScript "remove-xsession-errors" ''
-      #!/usr/bin/env bash
       sleep 5
       for i in ~/.xsession-errors*; do
         if [[ "$(stat -c%s "$i")" == "0" ]]; then
@@ -28,6 +27,10 @@ let
 
 in
 {
+  imports = [
+    ./keybinds.nix
+  ];
+
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;
@@ -47,22 +50,13 @@ in
         floating.titlebar = false;
         modifier = "Mod1";
         terminal = config.home.sessionVariables.TERMINAL;
-        keybindings = lib.mkOptionDefault (import ./keybinds.nix args);
         colors = with config.colorScheme.palette; let
-          focused = {
-            border = "#${base07}";
-            childBorder = "#${base07}";
-            background = "#${base07}";
-            text = "#${base07}";
-            indicator = "#${base07}";
-          };
-          inactive = {
-            border = "#${base03}";
-            childBorder = "#${base03}";
-            background = "#${base03}";
-            text = "#${base03}";
-            indicator = "#${base03}";
-          };
+          focused = lib.genAttrs [
+            "border" "childBorder" "background" "text" "indicator"
+          ] (_: "#${base07}");
+          inactive = lib.genAttrs [
+            "border" "childBorder" "background" "text" "indicator"
+          ] (_: "#${base03}");
         in {
           inherit focused;
           focusedInactive = inactive;
