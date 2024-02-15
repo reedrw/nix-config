@@ -4,11 +4,5 @@
       "rev": "4e949b80155c45de77ea8e0b4fb34fced07ced75",
       "sha256": "08gvizryfjzglpnp1f7wi508rxp90sdhg22yfpdfp531cz3pk7ki"
     }
-  },
-  "clipit": {
-    "1.4.5": {
-      "rev": "8dbf48036f8231b3acdd95fcdeed367239cc63e4",
-      "sha256": "0l5c20jkdalwd980cc1qw928lz77qghxr0k43xgvd5vgmd5g01dy"
-    }
   }
 }

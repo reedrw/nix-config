@@ -215,6 +215,14 @@ in
         done
       }
 
+      c(){
+        if [[ -p /dev/stdin ]]; then
+          xclip -i -selection clipboard
+        else
+          xclip -o -selection clipboard
+        fi
+      }
+
       ??(){
         gh copilot suggest -t shell "$*"
       }
@@ -226,14 +234,12 @@ in
       gh?(){
        gh copilot suggest -t gh "$*"
       }
-
     '' + import ./command-not-found.nix { inherit config inputs pkgs; };
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
       bmount = "${lib.getExe bashmount}";
       cat = "${lib.getExe bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
-      c = "${lib.getExe config.services.parcellite.package} -c";
       cp = "cp -riv";
       df = "${lib.getExe pydf}";
       gcd = "sudo gc -d";
