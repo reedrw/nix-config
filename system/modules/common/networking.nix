@@ -43,15 +43,19 @@ in
     (mkSession "-D 1337 -nNT localhost" "mullvad-socks-proxy" "reed")
   ];
 
-  systemd.services."mullvad-daemon".postStart = let
-    mullvad = config.services.mullvad-vpn.package;
-    dnsServers = builtins.concatStringsSep " " nameservers;
-  in ''
-    while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
-    ${mullvad}/bin/mullvad lan set allow
-    ${mullvad}/bin/mullvad auto-connect set on
-    ${mullvad}/bin/mullvad dns set custom ${dnsServers}
-  '';
+  systemd.services.mullvad-daemon = {
+    after = [ "nix-daemon.service" ];
+    postStart = let
+      mullvad = config.services.mullvad-vpn.package;
+      dnsServers = builtins.concatStringsSep " " nameservers;
+    in ''
+      while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
+      ${mullvad}/bin/mullvad lan set allow
+      ${mullvad}/bin/mullvad auto-connect set on
+      ${mullvad}/bin/mullvad dns set custom ${dnsServers}
+      ${mullvad}/bin/mullvad split-tunnel add "$(${pkgs.procps}/bin/pidof nix-daemon)"
+    '';
+  };
 
   services.avahi = {
     enable = true;
