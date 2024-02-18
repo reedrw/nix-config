@@ -5,7 +5,6 @@ let
     cachix    # binary cache
     expect    # interactive automation
     git       # version control
-    htop      # process monitor
     moreutils # more scripting tools
     niv       # painless nix dependency management
     nix-tree  # nix derivation graph browser
