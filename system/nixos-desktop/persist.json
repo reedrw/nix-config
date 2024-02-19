@@ -42,6 +42,7 @@
     "/home/reed/.local/share/home-manager",
     "/home/reed/.local/share/nix",
     "/home/reed/.local/share/ranger",
+    "/home/reed/.local/share/zoxide",
     "/home/reed/.local/state/nix",
     "/home/reed/.local/state/wireplumber",
     "/home/reed/.mozilla/firefox",

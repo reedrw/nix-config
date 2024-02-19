@@ -21,6 +21,11 @@ in
       enableZshIntegration = true;
     };
 
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     tmux = {
       enable = true;
       extraConfig = ''
@@ -240,6 +245,7 @@ in
       "\\$" = "";
       bmount = "${lib.getExe bashmount}";
       cat = "${lib.getExe bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+      cd = "z";
       cp = "cp -riv";
       df = "${lib.getExe pydf}";
       gcd = "sudo gc -d";
@@ -247,7 +253,6 @@ in
       ls = "${lib.getExe eza} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
-      n = "cd ~/.config/nixpkgs";
       nr = "nix repl ~/.config/nixpkgs";
       ping = "${lib.getExe prettyping} --nolegend";
       rm = "rm -v";
