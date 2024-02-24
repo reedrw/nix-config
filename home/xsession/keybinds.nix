@@ -1,7 +1,7 @@
-{ config, osConfig, pkgs, lib,  ... }:
+{ config, osConfig, pkgs, lib,  ... } @ args:
 let
   term = "${config.home.sessionVariables.TERMINAL}";
-  scripts = pkgs.callPackage ./scripts { };
+  scripts = pkgs.callPackage ./scripts args;
 
   mod = config.xsession.windowManager.i3.config.modifier;
   sup = "Mod4";

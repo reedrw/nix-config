@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, osConfig, ... }:
 
 with pkgs;
 lib.genAttrs [
@@ -21,6 +21,12 @@ lib.genAttrs [
       (python3.withPackages(ps: [ unalix ]))
     ];
     text = (builtins.readFile ./clipboard-clean.sh);
+  };
+
+  droidcam-fix = pkgs.writeShellApplication {
+    name = "droidcam-fix";
+    runtimeInputs = [ osConfig.boot.kernelPackages.v4l2loopback.bin ];
+    text = (builtins.readFile ./droidcam-fix.sh);
   };
 
   mpv-dnd = let

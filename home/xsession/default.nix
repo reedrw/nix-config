@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, ... } @ args:
 let
   alwaysRun = with pkgs; [
     "${lib.getExe feh} --bg-fill ${./wallpaper.jpg} --no-fehbg"
@@ -23,7 +23,7 @@ let
     ''}"
   ];
 
-  scripts = pkgs.callPackage ./scripts { };
+  scripts = pkgs.callPackage ./scripts args;
 
 in
 {
@@ -134,5 +134,6 @@ in
     (mkSimpleHMService "dwebp-serv" "${lib.getExe scripts.dwebp-serv}")
     (mkSimpleHMService "mpv-dnd" "${lib.getExe scripts.mpv-dnd}")
     (mkSimpleHMService "keybinds" "${lib.getExe scripts.keybinds}")
+    (mkSimpleHMService "droidcam-fix" "${lib.getExe scripts.droidcam-fix}")
   ];
 }
