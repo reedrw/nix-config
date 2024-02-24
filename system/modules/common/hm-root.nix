@@ -1,8 +1,8 @@
-{ inputs, outputs, pkgs, lib, hm, ... }:
+{ inputs, pkgs, lib, hm, ... }:
 
 lib.optionalAttrs hm {
   home-manager = {
-    extraSpecialArgs = { inherit inputs outputs; };
+    extraSpecialArgs = { inherit inputs; };
     users.root = {
 
       home = {

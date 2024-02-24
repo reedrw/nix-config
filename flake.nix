@@ -35,13 +35,12 @@ rec {
   };
 
   outputs = { self, ... } @ inputs: let
-    inherit (self) outputs;
     system = "x86_64-linux";
 
     pkgs = flake.lib.pkgsForSystem system;
 
     flake.lib = import ./lib {
-      inherit inputs nixConfig outputs self;
+      inherit inputs nixConfig;
     };
   in flake.lib.mkHosts [
     "nixos-desktop"

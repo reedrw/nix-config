@@ -1,4 +1,4 @@
-{ inputs, outputs, self, nixConfig, ... }:
+{ inputs, nixConfig, ... }:
 
 let
   nixpkgs-options.nixpkgs = {
@@ -140,7 +140,7 @@ rec {
     ];
 
     # Arguments to pass to our NixOS and home-manager configurations
-    specialArgs = { inherit inputs outputs nixpkgs-options nixConfig; };
+    specialArgs = { inherit inputs nixpkgs-options nixConfig; };
   in {
     # The actual flake outputs for this host
     nixosConfigurations = {
@@ -159,7 +159,7 @@ rec {
         # When used as a NixOS module, home-manager sets the parameter `osConfig` to the NixOS
         # configuration that is importing it. We need to set this parameter manually when
         # building a standalone home-manager generation.
-        osConfig = self.nixosConfigurations."${host}".config;
+        osConfig = inputs.self.nixosConfigurations."${host}".config;
       };
     in {
       "${username}@${host}" = inputs.home-manager.lib.homeManagerConfiguration {
