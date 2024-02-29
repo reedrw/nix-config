@@ -21,7 +21,9 @@ let
 in
 {
   home.packages = with pkgs; [
-    tdesktop
+    (wrapEnv tdesktop {
+      XDG_CURRENT_DESKTOP = "gnome";
+    })
     (unstable.vesktop.override {
       vencord = vencord unstable;
     })
