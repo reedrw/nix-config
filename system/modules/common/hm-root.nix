@@ -29,6 +29,8 @@ lib.optionalAttrs hm {
         ../../../home/zsh
         # Neovim
         ../../../home/nvim
+        # Nixpkgs
+        ../../../home/nixpkgs
       ];
     };
   };

@@ -50,8 +50,7 @@ in
   in
   {
     enable = true;
-    # dotDir = ".local/share/zsh";
-    dotDir = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/zsh";
+    dotDir = ".local/share/zsh";
     plugins = with pkgs; [
       (mkZshPlugin { pkg = zsh-autosuggestions; })
       (mkZshPlugin {
