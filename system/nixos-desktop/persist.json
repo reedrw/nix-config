@@ -6,7 +6,6 @@
     "/home/reed/.config/MangoHud/MangoHud.conf",
     "/home/reed/.config/clipit/clipitrc",
     "/home/reed/.config/hub",
-    "/home/reed/.gitconfig",
     "/home/reed/.local/share/zsh/.zcompdump",
     "/home/reed/.local/share/zsh/zsh_history"
   ],
@@ -30,6 +29,7 @@
     "/home/reed/.config/dconf",
     "/home/reed/.config/easyeffects",
     "/home/reed/.config/gh",
+    "/home/reed/.config/git",
     "/home/reed/.config/github-copilot",
     "/home/reed/.config/nixpkgs",
     "/home/reed/.config/obs-studio",
