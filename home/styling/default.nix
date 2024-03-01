@@ -92,9 +92,12 @@ with inputs.nix-colors;
     cursorTheme = {
       inherit (config.home.pointerCursor) name package size;
     };
-    gtk2.extraConfig = ''
-      gtk-application-prefer-dark-theme = true
-    '';
+    gtk2 = {
+      configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc-2.0";
+      extraConfig = ''
+        gtk-application-prefer-dark-theme = true
+      '';
+    };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
       gtk-xft-antialias = 1;
