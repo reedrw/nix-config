@@ -37,6 +37,9 @@ in
     };
   };
 
+  home.sessionVariables.ZDOTDIR = "$HOME/${config.programs.zsh.dotDir}";
+  home.file.".zshenv".enable = false;
+
   programs.zsh = let
     mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: {
       name = pkg.pname;
