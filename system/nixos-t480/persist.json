@@ -2,7 +2,6 @@
   "files": [
     "/home/reed/.cache/rofi-3.runcache",
     "/home/reed/.config/clipit/clipitrc",
-    "/home/reed/.gitconfig",
     "/home/reed/.local/share/zsh/.zcompdump",
     "/home/reed/.local/share/zsh/zsh_history"
   ],
@@ -23,6 +22,7 @@
     "/home/reed/.config/coc",
     "/home/reed/.config/dconf",
     "/home/reed/.config/gh",
+    "/home/reed/.config/git",
     "/home/reed/.config/github-copilot",
     "/home/reed/.config/nixpkgs",
     "/home/reed/.config/vesktop",
