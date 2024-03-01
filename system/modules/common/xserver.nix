@@ -12,6 +12,9 @@
       lightdm = {
         enable = true;
         greeter.enable = false;
+        extraConfig = ''
+          user-authority-in-system-dir = true
+        '';
       };
       session = [
         {
