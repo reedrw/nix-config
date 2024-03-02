@@ -13,7 +13,4 @@
     packages = with pkgs; [ home-manager ];
     shell = pkgs.zsh;
   };
-
-  programs.zsh.enable = true;
-  environment.pathsToLink = [ "/share/zsh" ];
 }

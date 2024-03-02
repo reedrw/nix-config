@@ -37,12 +37,9 @@ in
     };
   };
 
-  home.sessionVariables.ZDOTDIR = "${config.home.homeDirectory}/${config.programs.zsh.dotDir}";
+  # We set ZDOTDIR at system level, so we don't need
+  # to bootstrap the the zsh environment like this.
   home.file.".zshenv".enable = false;
-
-  home.file.".ssh/environment".text = ''
-    ZDOTDIR=${config.home.sessionVariables.ZDOTDIR}
-  '';
 
   programs.zsh = let
     mkZshPlugin = { pkg, file ? "${pkg.pname}.plugin.zsh" }: {
