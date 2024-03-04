@@ -103,7 +103,7 @@ with inputs.nix-colors;
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
       gtk-xft-hintstyle= "hintmedium";
-      gtk-decoration-layout = ":";
+      gtk-decoration-layout = ":close";
     };
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
@@ -111,7 +111,7 @@ with inputs.nix-colors;
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
       gtk-xft-hintstyle= "hintmedium";
-      gtk-decoration-layout = ":";
+      gtk-decoration-layout = ":close";
     };
   };
 
