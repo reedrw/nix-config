@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.journald.extraConfig = "SystemMaxUse=500M";
@@ -20,6 +20,16 @@
   in {
     inherit extraConfig;
     user = { inherit extraConfig; };
+  };
+
+  system.activationScripts.diff = {
+    supportsDryActivation = true;
+    text = ''
+      ${lib.getExe pkgs.nvd} \
+        --color=always \
+        --nix-bin-dir=${config.nix.package}/bin \
+        diff /run/current-system "$systemConfig"
+    '';
   };
 
   # Fix xdg-open in FHS sandbox
