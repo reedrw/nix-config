@@ -102,7 +102,7 @@ ${green}${bold}Examples:${reset}
 ${green}${bold}Description:${reset}
   This script for NixOS systems with ephemeral root allows you to manage
   persistent files and directories. When given a path as an argument, it
-  will be copied to the '/persist' directory, added to the 'persist.json'
+  will be copied to the '/var/persist' directory, added to the 'persist.json'
   file, and (if enabled) a snapshot will be created using the 'snapper' tool.
 
   Nix can then parse the 'persist.json' file using the 'builtins.fromJSON'
@@ -116,7 +116,7 @@ ${purple}let${reset}
   ${red}json${reset} = (${cyan}builtins.fromJSON${reset} (${cyan}builtins.readFile${blue} ./persist.json${reset}));
 ${purple}in${reset}
 {
-  environment.persistence.${red}"${green}/persist${red}"${reset} = {
+  environment.persistence.${red}"${green}/var/persist${red}"${reset} = {
     ${red}files${reset} = json.files;
     ${red}directories${reset} = json.directories;
   };
