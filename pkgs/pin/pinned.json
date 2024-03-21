@@ -1,1 +1,8 @@
-{}
+{
+  "i3lock-fancy": {
+    "unstable-2023-04-28": {
+      "rev": "e590ffd9a4161fc223321f058ef43ed55b3f9f88",
+      "sha256": "1sg26qnwy7q0w6h7g2b238l0jgqwldpbf83ssv6fd5j6v4vz1yzy"
+    }
+  }
+}

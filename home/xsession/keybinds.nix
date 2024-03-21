@@ -6,6 +6,12 @@ let
   mod = config.xsession.windowManager.i3.config.modifier;
   sup = "Mod4";
   exec = "exec --no-startup-id";
+
+  # https://github.com/NixOS/nixpkgs/pull/297859
+  i3lock-fancy = if pkgs.hasMainProgram pkgs.i3lock-fancy
+                 then lib.warn "i3lock-fancy update is merged now!!" pkgs.i3lock-fancy
+                 else pkgs.pinned.i3lock-fancy.vunstable-2023-04-28;
+
 in
 { xsession.windowManager.i3.config.keybindings = with pkgs; lib.mkOptionDefault ({
   "Print" = "${exec} flameshot gui";
@@ -14,7 +20,7 @@ in
   "${sup}+Return" = "${exec} ${lib.getExe scripts.select-term}";
   "${mod}+d" = "focus child";
   "${mod}+o" = "open";
-  "${mod}+l" = "${exec} ${pkgs.i3lock-fancy}/bin/i3lock";
+  "${mod}+l" = "${exec} ${lib.getExe i3lock-fancy}";
   "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
   "${sup}+Right" = "resize grow width 5 px or 5 ppt";
   "${sup}+Down" = "resize grow height 5 px or 5 ppt";
