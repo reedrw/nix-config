@@ -3,8 +3,8 @@ let
   lib = pkgs.lib;
 in
 {
-  # clipit = if self.hasMainProgram pkgs.clipit
-  #   then lib.warn "clipit in nixpkgs has a mainProgram attribute. Remove this override."
-  #        pkgs.clipit
-  #   else pkgs.pinned.clipit.v1_4_5;
+  # https://github.com/NixOS/nixpkgs/pull/297859
+  i3lock-fancy = if pkgs.hasMainProgram pkgs.i3lock-fancy
+                 then lib.warn "i3lock-fancy update is merged now!!" pkgs.i3lock-fancy
+                 else pkgs.pinned.i3lock-fancy.vunstable-2023-04-28;
 }
