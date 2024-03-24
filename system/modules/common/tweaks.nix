@@ -20,6 +20,20 @@
   in {
     inherit extraConfig;
     user = { inherit extraConfig; };
+    services."lock-before-suspend" = {
+      description = "Lock the screen before suspending";
+      wantedBy = [ "suspend.target" ];
+      before = [ "systemd-suspend.service" ];
+      environment = {
+        DISPLAY = ":0";
+        XAUTHORITY = "/var/run/lightdm/reed/xauthority";
+      };
+      serviceConfig = {
+        Type = "forking";
+        User = "reed";
+        ExecStart = "${lib.getExe pkgs.i3lock-fancy}";
+      };
+    };
   };
 
   system.activationScripts.diff = {
