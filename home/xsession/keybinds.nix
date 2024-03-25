@@ -15,7 +15,7 @@ in
   "${sup}+Return" = "${exec} ${lib.getExe scripts.select-term}";
   "${mod}+d" = "focus child";
   "${mod}+o" = "open";
-  "${mod}+l" = "${exec} ${lib.getExe i3lock-fancy}";
+  "${mod}+l" = "${exec} ${lib.getExe lockProgram}";
   "${sup}+Left" = "resize shrink width 5 px or 5 ppt";
   "${sup}+Right" = "resize grow width 5 px or 5 ppt";
   "${sup}+Down" = "resize grow height 5 px or 5 ppt";

@@ -31,6 +31,8 @@ in
     ./keybinds.nix
   ];
 
+  home.packages = [ pkgs.lockProgram ];
+
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;

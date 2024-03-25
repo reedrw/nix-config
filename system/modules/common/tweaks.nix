@@ -31,7 +31,7 @@
       serviceConfig = {
         Type = "forking";
         User = "reed";
-        ExecStart = "${lib.getExe pkgs.i3lock-fancy}";
+        ExecStart = "${lib.getExe pkgs.lockProgram}";
       };
     };
   };
