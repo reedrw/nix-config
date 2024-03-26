@@ -31,10 +31,27 @@ in
         });
       };
     };
-    # https://github.com/ValveSoftware/Source-1-Games/issues/5043
-    environment.systemPackages = with pkgs; [
-      pkgsi686Linux.gperftools
+    environment.systemPackages = let
+      # games to make available on the command line
+      games = [
+        [ "elden-ring" "1234520" ]
+        [ "noita"      "881100" ]
+        [ "tf2"        "440" ]
+      ];
+    in with pkgs; [
       adwsteamgtk
+      # https://github.com/ValveSoftware/Source-1-Games/issues/5043
+      pkgsi686Linux.gperftools
+
+      # game aliases
+      (lib.pipe games [
+        (map (game: {
+          name = builtins.elemAt game 0;
+          value = "steam -nochatui -nofriendsui -silent steam://rungameid/${builtins.elemAt game 1}";
+        }))
+        (lib.listToAttrs)
+        (aliasToPackage)
+      ])
     ];
   };
 }
