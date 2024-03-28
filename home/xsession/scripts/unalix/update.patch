@@ -945,10 +945,10 @@ index 632fc24..f78a610 100644
 +o82bNSQ3+pCTE4FCxpgmdTdmQRCsu/WU48IxK63nI1bMNSWSs1A=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..f557c7e 100644
+index f2a54b1..37518c0 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1840 @@
+@@ -1,1628 +1,1851 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -2806,7 +2806,9 @@ index f2a54b1..f557c7e 100644
 +        "camp",
 +        "creative",
 +        "s",
-+        "content-id"
++        "content-id",
++        "dib",
++        "dib_tag"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}"
 +    },
@@ -3247,7 +3249,8 @@ index f2a54b1..f557c7e 100644
 +        "action_history",
 +        "tracking",
 +        "referral_code",
-+        "referral_story_type"
++        "referral_story_type",
++        "mibextid"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com"
 +    },
@@ -3628,7 +3631,8 @@ index f2a54b1..f557c7e 100644
 +        ".*u=([^&]*)"
 +      ],
 +      "rules": [
-+        "igshid"
++        "igshid",
++        "igsh"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?instagram\\.com"
 +    },
@@ -3803,6 +3807,13 @@ index f2a54b1..f557c7e 100644
 +        "sid"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?mozillazine\\.org"
++    },
++    "msn": {
++      "rules": [
++        "cvid",
++        "ocid"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?msn\\.com"
 +    },
 +    "mysku.ru": {
 +      "redirections": [
