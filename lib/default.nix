@@ -9,7 +9,7 @@ let
       (import ../pkgs/alias.nix)
     ];
     config = import ../pkgs/config.nix {
-      inherit (inputs) NUR master unstable;
+      inherit (inputs) NUR unstable;
     };
   };
 in

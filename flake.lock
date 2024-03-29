@@ -125,21 +125,6 @@
         "type": "github"
       }
     },
-    "master": {
-      "locked": {
-        "lastModified": 1711667705,
-        "narHash": "sha256-RLdedCsCCDzTW7nffZXXUqctNdUAb9eSZYKkq23a/cY=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "445b78480fd4e99fa276837714f9cdd0f0fbc3f1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nix-colors": {
       "inputs": {
         "base16-schemes": "base16-schemes",
@@ -213,7 +198,6 @@
         "haumea": "haumea",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
-        "master": "master",
         "nix-colors": "nix-colors",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",

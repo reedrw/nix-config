@@ -1,5 +1,4 @@
 { NUR ? import ./nixpkgs.nix "NUR"
-, master ? import ./nixpkgs.nix "master"
 , unstable ? import ./nixpkgs.nix "unstable"
 }:
 
@@ -14,7 +13,6 @@
     pinned = import ./pin/pkgs.nix pkgs;
     nurPkgs = nur.repos.reedrw;
     fromBranch = {
-      master = import master { inherit (pkgs) config system; };
       unstable = import unstable { inherit (pkgs) config system; };
     };
   }) // import ./pin/overlay.nix pkgs pkgs;

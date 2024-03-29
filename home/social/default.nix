@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  inherit (pkgs.fromBranch) master unstable;
+  inherit (pkgs.fromBranch) unstable;
 
   sources = import ./nix/sources.nix { };
   vencord = p: p.vencord.overrideAttrs (old: rec {
