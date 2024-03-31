@@ -26,7 +26,19 @@ in
     programs.steam = {
       enable = true;
       package = with pkgs; emptyDirectory // {
-        override = (x: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
+        override = (_: optionalApply cfg.mullvad-exclude mullvadExclude (wrapPackage steam-custom (steam: ''
+          #!${pkgs.runtimeShell}
+          postSteamCleanup() {
+            # clean up unneeded steam directories
+            [[ -L ~/.steampath ]] && rm ~/.steampath
+            [[ -L ~/.steampid ]] && rm ~/.steampid
+            [[ -d ~/.steam ]] && rm -rf ~/.steam
+          }
+
+          ${steam} "\$@"
+
+          postSteamCleanup
+        '')) // {
           run = steam-custom.run;
         });
       };
@@ -47,7 +59,7 @@ in
       (lib.pipe games [
         (map (game: {
           name = builtins.elemAt game 0;
-          value = "steam -nochatui -nofriendsui -silent steam://rungameid/${builtins.elemAt game 1}";
+          value = "${steam-custom}/bin/steam -nochatui -nofriendsui -silent steam://rungameid/${builtins.elemAt game 1}";
         }))
         (lib.listToAttrs)
         (aliasToPackage)
