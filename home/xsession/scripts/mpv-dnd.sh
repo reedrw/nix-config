@@ -6,10 +6,21 @@ set -x
 
 export DISPLAY=:0
 
+# programs to suspend
 programs=( "$@" )
 
-getActiveWindow(){
-  xdotool getactivewindow getwindowclassname
+# active window classes to trigger suspension
+highPrio=( "mpv" "Zathura" )
+
+# check if the active window is one of the high priority window classes
+isHighPrio(){
+  activeWindow="$(xdotool getactivewindow getwindowclassname)"
+  for i in "${highPrio[@]}"; do
+    if [[ "$activeWindow" == "$i" ]]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 # given a window class name, find the pids of all windows with that class name
@@ -49,9 +60,9 @@ for i in "${programs[@]}"; do
 done
 
 while true; do
-  if [[ "$(getActiveWindow)" == "mpv" ]]; then
+  if isHighPrio; then
     stopPrograms
-    while [[ "$(getActiveWindow)" == "mpv" ]]; do
+    while isHighPrio; do
       sleep 10
     done
     contPrograms
