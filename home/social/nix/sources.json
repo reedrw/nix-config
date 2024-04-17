@@ -6,10 +6,10 @@
         "npmDepsHash": "sha256-zJ4jsCfrDh4vjPfGlHVRQorBtFKpsZF9cL/cumo9zFI=",
         "owner": "vendicated",
         "repo": "vencord",
-        "rev": "538b87062a9f45ab88e4acb54e33ef0e48159be8",
-        "sha256": "07n60wqqsz2a5p65ilz36s6ynjl4nkkw9hy7r6ajfdzlia2k9da6",
+        "rev": "89c82e2cd173b26b0eee938022afad5684e174cd",
+        "sha256": "1gfp3mbsda0badrnrdvaibpvix0f6aph4gianq6qhwl4c3z11fiz",
         "type": "tarball",
-        "url": "https://github.com/vendicated/vencord/archive/538b87062a9f45ab88e4acb54e33ef0e48159be8.tar.gz",
+        "url": "https://github.com/vendicated/vencord/archive/89c82e2cd173b26b0eee938022afad5684e174cd.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
