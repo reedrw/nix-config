@@ -27,6 +27,7 @@ in
     (pinned.vesktop.v1_5_1.override {
       vencord = vencord unstable;
     })
+    cinny-desktop
   ];
 
   xdg.configFile = {
