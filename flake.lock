@@ -23,15 +23,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1713628584,
-        "narHash": "sha256-F0MgPLeCfKgnhr35Yz08ODZHfmSGD+6loishrCYqUuU=",
+        "lastModified": 1713627314,
+        "narHash": "sha256-aQuc/ysjsQ7M+twkys4g4GHH6+sUWm96ujpZWM7zeSE=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "bce9deff1f9e479dfe0f05d55011aac5097bc33d",
+        "rev": "96568c283572aff09b522d127caa9d3a8e54e6b9",
         "type": "github"
       },
       "original": {
         "owner": "ezKEa",
+        "ref": "release-23.11",
         "repo": "aagl-gtk-on-nix",
         "type": "github"
       }

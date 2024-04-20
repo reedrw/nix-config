@@ -20,7 +20,7 @@ rec {
     };
 
     aagl = {
-      url = "github:ezKEa/aagl-gtk-on-nix";
+      url = "github:ezKEa/aagl-gtk-on-nix/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
