@@ -51,6 +51,9 @@ in
 
     profiles."default" = {
       name = "default";
+      userChrome = ''
+        .tab-text { font-size: 14px !important; }
+      '';
     };
   };
 
