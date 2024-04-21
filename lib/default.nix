@@ -107,6 +107,7 @@ rec {
       ../system/${host}/configuration.nix
       ../system/${host}/hardware-configuration.nix
       inputs.impermanence.nixosModule
+      (_: { networking.hostName = "${host}"; })
     ] ++ commonModules
       ++ userModules
       ++ customModules;

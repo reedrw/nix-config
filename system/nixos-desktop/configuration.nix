@@ -73,8 +73,6 @@
     gfxpayloadEfi = "keep";
   };
 
-  networking.hostName = "nixos-desktop";
-
   time.timeZone = "America/New_York";
 
   services.xserver.videoDrivers = [ "amdgpu" ];

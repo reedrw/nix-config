@@ -9,7 +9,6 @@
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
   ];
 
-  networking.hostName = "nixos-t480";
   time.timeZone = "America/New_York";
 
   myUsers.reed.enable = true;
