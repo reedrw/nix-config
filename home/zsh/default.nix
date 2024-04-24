@@ -33,6 +33,7 @@ in
         set -s escape-time 0
         set -g history-limit 10000
         set -g allow-passthrough on
+        # set -g popup-border-lines none
       '';
     };
   };
@@ -76,10 +77,9 @@ in
       save = 99999;
       size = 99999;
     };
-    initExtra = let
-      inherit (config.colorScheme.palette) base02;
-    in
+    initExtra =
     with pkgs;
+    with config.colorScheme.palette;
     ''
       while read -r i; do
         autoload -Uz "$i"
@@ -164,6 +164,10 @@ in
         --layout=reverse
         --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
         --info=hidden
+        # --color=bg+:#${base02},bg:#${base01},spinner:#${base0C},hl:#${base0B}
+        # --color=fg:#${base04},header:#${base0D},info:#${base0A},pointer:#${base02}
+        # --color=marker:#${base0C},fg+:#${base06},prompt:#${base08},hl+:#${base0B}
+        # --color=gutter:#${base01}
       )
 
       FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"

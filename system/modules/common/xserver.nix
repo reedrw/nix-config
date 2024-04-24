@@ -1,7 +1,13 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   programs.dconf.enable = true;
+  # programs.sway = {
+  #   enable = true;
+  #   package = pkgs.swayfx.overrideAttrs (oldAttrs: {
+  #     passthru.providedSessions = [ "sway" ];
+  #   });
+  # };
   services.xserver = {
     enable = true;
     displayManager = {
