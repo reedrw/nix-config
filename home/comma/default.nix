@@ -1,13 +1,13 @@
-{ lib, pkgs, ... }:
-let
+{ pkgs, inputs, ... }:
 
-  indexCache = builtins.fetchurl (lib.importJSON ./source.json);
-
-in
 {
+
+  imports = [ inputs.nix-index-database.hmModules.nix-index ];
 
   home.packages = with pkgs; [ comma ];
 
-  home.file.".cache/nix-index/files".source = indexCache;
-
+  programs.nix-index = {
+    symlinkToCacheHome = true;
+    enable = false;
+  };
 }
