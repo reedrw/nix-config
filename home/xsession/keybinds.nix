@@ -44,5 +44,5 @@ in
 } // lib.pipe (lib.range 0 9) [
   (map toString)
   (map (n: {"${mod}+ctrl+${n}" = "${exec} ${lib.getExe scripts.load-layouts} ${n}";}))
-  (mergeAttrs)
+  mergeAttrs
 ]); }

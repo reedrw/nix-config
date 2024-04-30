@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  lib' = if (lib.packagesFromDirectoryRecursive or null) != null
+  lib' = if (builtins.hasAttr "packagesFromDirectoryRecursive" lib)
     then lib.warn "lib.packagesFromDirectoryRecursive is in nixpkgs now, remove this line from mpv configuration" lib
     else pkgs.fromBranch.unstable.lib;
 

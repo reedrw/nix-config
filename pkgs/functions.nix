@@ -11,7 +11,7 @@ in
   #
   # Returns:
   # true
-  hasMainProgram = x: (x.meta.mainProgram or null) != null;
+  hasMainProgram = x: builtins.hasAttr "mainProgram" x.meta;
 
   # removeHomeDirPrefix :: String -> String
   ########################################
@@ -200,7 +200,7 @@ in
     lib.warn ''wrapPackage: package "${package.name}" does not have the meta.mainProgram attribute.''
     (builtins.parseDrvName package.name).name);
   in pkgs.symlinkJoin {
-    name = "${package.name}";
+    inherit (package) name;
     paths = [ package ];
     postBuild = ''
       echo "Wrapping ${binary}"

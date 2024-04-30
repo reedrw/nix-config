@@ -45,12 +45,14 @@ in
 
       # game aliases
       (lib.pipe games [
-        (map (game: {
+        (map (game: let
           name = builtins.elemAt game 0;
-          value = "steam -nochatui -nofriendsui -silent steam://rungameid/${builtins.elemAt game 1}";
+          id = builtins.elemAt game 1;
+        in {
+          "${name}" = "steam -nochatui -nofriendsui -silent steam://rungameid/${id}";
         }))
-        (lib.listToAttrs)
-        (aliasToPackage)
+        mergeAttrs
+        aliasToPackage
       ])
     ];
   };
