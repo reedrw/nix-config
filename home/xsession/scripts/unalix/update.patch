@@ -945,10 +945,10 @@ index 632fc24..f78a610 100644
 +o82bNSQ3+pCTE4FCxpgmdTdmQRCsu/WU48IxK63nI1bMNSWSs1A=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..37518c0 100644
+index f2a54b1..28f88d1 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1851 @@
+@@ -1,1628 +1,1882 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3250,6 +3250,15 @@ index f2a54b1..37518c0 100644
 +        "tracking",
 +        "referral_code",
 +        "referral_story_type",
++        "eav",
++        "sfnsn",
++        "idorvanity",
++        "wtsid",
++        "rdc",
++        "rdr",
++        "paipv",
++        "_nc_x",
++        "_rdr",
 +        "mibextid"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?facebook\\.com"
@@ -3652,17 +3661,25 @@ index f2a54b1..37518c0 100644
 +      ],
 +      "urlPattern": "^https?://(?:[a-z0-9-]+\\.)*?kahoot\\.it"
 +    },
-+    "lazada.com.my": {
++    "lazada": {
 +      "rules": [
++        "clickTrackInfo",
++        "abid",
++        "pvid",
 +        "ad_src",
-+        "did",
++        "spm",
++        "src",
++        "from",
++        "scm",
 +        "pa",
++        "pid_pvid",
++        "did",
 +        "mp",
-+        "impsrc",
 +        "cid",
++        "impsrc",
 +        "pos"
 +      ],
-+      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lazada\\.com\\.my"
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?lazada\\.(com|co\\.th|co\\.id|com\\.my|com\\.ph|sg|vn)"
 +    },
 +    "linksynergy.com": {
 +      "redirections": [
@@ -3918,6 +3935,12 @@ index f2a54b1..37518c0 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?ozon\\.ru"
 +    },
++    "pantip.com": {
++      "rawRules": [
++        "#lead.*"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?pantip\\.com"
++    },
 +    "partner-ads.com": {
 +      "redirections": [
 +        "^https?:\\/\\/.*?partner-ads\\.com\\/.*?htmlurl=([^&]+)"
@@ -4015,6 +4038,14 @@ index f2a54b1..37518c0 100644
 +        "seq_no"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?seznamzpravy\\.cz"
++    },
++    "shopee": {
++      "rules": [
++        "publish_id",
++        "sp_atk",
++        "xptdk"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?shopee\\.(com|co\\.th)"
 +    },
 +    "shutterstock.com": {
 +      "rules": [
