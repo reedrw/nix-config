@@ -6,9 +6,9 @@
     }
   },
   "vesktop": {
-    "1.5.1": {
-      "rev": "c726225724e681b3626acc941c6f95d2b0602087",
-      "sha256": "08jkx1y0lmwdr2paz1vhckkhgwdnsn376smpyx6sif53aj6v86yv"
+    "1.5.2": {
+      "rev": "ca8001fe8bd5a98a948e93ca01fa1a753935ea56",
+      "sha256": "1490h5vr00ms8w2kwsz2n2rn5s58wlal3x22y3q65fp47dz4xzpc"
     }
   }
 }
