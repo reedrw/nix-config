@@ -57,6 +57,10 @@ in
     '';
   };
 
+  systemd.services.avahi-daemon = lib.mkIf config.services.mullvad-vpn.enable {
+    after = [ "mullvad-daemon.service" ];
+  };
+
   services.avahi = {
     enable = true;
     nssmdns = true;
