@@ -25,6 +25,7 @@ let
       defaultPref("general.autoScroll", true);
       defaultPref("gfx.webrender.all", true);
       defaultPref("media.videocontrols.picture-in-picture.video-toggle.enabled", false)
+      defaultPref("media.cubeb_latency_playback_ms", 10);
       defaultPref("widget.content.allow-gtk-dark-theme", false);
       defaultPref("browser.proton.contextmenus.enabled", false);
       defaultPref("browser.proton.doorhangers.enabled", false);
