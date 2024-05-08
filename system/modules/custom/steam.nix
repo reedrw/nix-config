@@ -26,7 +26,7 @@ in
     programs.steam = {
       enable = true;
       package = with pkgs; emptyDirectory // {
-        override = (x: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
+        override = (x: lib.optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
           run = steam-custom.run;
         });
       };
@@ -51,7 +51,7 @@ in
         in {
           "${name}" = "steam -nochatui -nofriendsui -silent steam://rungameid/${id}";
         }))
-        mergeAttrs
+        lib.mergeAttrs
         aliasToPackage
       ])
     ];

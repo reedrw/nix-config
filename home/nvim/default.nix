@@ -91,7 +91,7 @@ in
     ] ++ lib.attrsets.mapAttrsToList (name: src:
       let
         pname = name;
-        version = pkgs.shortenRev src.rev;
+        version = lib.shortenRev src.rev;
       in
       pkgs.vimUtils.buildVimPlugin {
         inherit pname version src;

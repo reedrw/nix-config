@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   sources = import ./nix/sources.nix { };
   # use https://github.com/ncmpcpp/ncmpcpp master until new release
@@ -6,7 +6,7 @@ let
   ncmpcpp = pkgs.versionConditionalOverride "0.9.2" pkgs.ncmpcpp (pkgs.ncmpcpp.overrideAttrs
     (old: {
       src = sources.ncmpcpp;
-      version = pkgs.shortenRev sources.ncmpcpp.rev;
+      version = lib.shortenRev sources.ncmpcpp.rev;
 
       nativeBuildInputs = with pkgs; [
         autoconf

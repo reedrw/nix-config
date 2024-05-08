@@ -13,23 +13,6 @@ in
   # true
   hasMainProgram = x: builtins.hasAttr "mainProgram" x.meta;
 
-  # removeHomeDirPrefix :: String -> String
-  ########################################
-  # Given a path, remove the home directory prefix from the path.
-  # Ex.
-  # removeHomeDirPrefix "/home/user/foo"
-  #
-  # Returns:
-  # "foo"
-  removeHomeDirPrefix = path:
-    if lib.hasPrefix "/home" path
-    then lib.pipe path [
-      (lib.splitString "/")
-      (lib.drop 3)
-      (lib.concatStringsSep "/")
-    ]
-    else path;
-
   # aliasToPackage :: AttrSet -> Package
   ########################################
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
@@ -54,19 +37,6 @@ in
     then builtins.head paths
     else pkgs.symlinkJoin { inherit name paths; };
 
-  # binPath :: Package -> String
-  ########################################
-  # Takes a package as input and returns the path to the binary with the same name.
-  # Ex.
-  # binPath bat
-  #
-  # Returns:
-  # "/nix/store/vkbfya4qhmzykw6fqs409q5ajdrnhzlq-bat-0.22.1/bin/bat"
-  binPath = package: let
-    name = (builtins.parseDrvName package.name).name;
-  in
-    "${package}/bin/${name}";
-
   # versionConditionalOverride :: String -> Package -> Package -> Package
   ########################################################################
   # Override a package until next release. Takes current version, package, and override as arguments.
@@ -87,52 +57,6 @@ in
     then override
     else lib.warn "versionConditionalOverride: ${package.name} is already at version ${package.version}. No override applied."
          package;
-
-  # shortenRev :: String -> String
-  ########################################
-  # Shortens a git commit hash to the first 7 characters
-  # Ex.
-  # shortenRev "acb36a427a35f451b42dd5d0f29f1c4e2fe447b9"
-  #
-  # Returns:
-  # "acb36a4"
-  shortenRev = rev: builtins.substring 0 7 rev;
-
-  # buildFromNivSource :: Package -> AttrSet -> Package
-  ########################################################
-  # Given a package an niv sources set, overrides package to build from niv source with same name.
-  # Ex.
-  # `buildFromNivSource i3 sources`
-  # will build i3 from sources.i3
-  buildFromNivSource = package: sources:
-  let
-    name = (builtins.parseDrvName package.name).name;
-    src = sources."${name}";
-    version = self.shortenRev src.rev;
-  in
-    package.overrideAttrs {
-      inherit version src;
-    };
-
-  # buildFromNivSourceUntilVersion :: String -> Package -> AttrSet -> Package
-  ########################################################################
-  # Given the current version of a package, the package itsef, and a niv sources set, build from
-  # niv sources until the version of the package is newer than the specified version.
-  # Ex.
-  # buildFromNivSourceUntilVersion "1.4.1" distrobox sources
-  buildFromNivSourceUntilVersion = version: package: sources:
-    self.versionConditionalOverride version package
-      (self.buildFromNivSource package sources);
-
-  # importNixpkgs :: AttrSet -> AttrSet
-  ########################################
-  # Given a nixpkgs source as arugment, import it with the current config.
-  importNixpkgs = nixpkgs:
-    {
-      config ? pkgs.config,
-      overlays ? pkgs.overlays,
-      system ? pkgs.system
-    } @ args: import nixpkgs args;
 
   # matchPackage :: String -> Package
   ########################################
@@ -168,22 +92,6 @@ in
       inherit name text runtimeInputs;
       meta.mainProgram = name;
     };
-
-  # listDirectory :: Path -> [Path]
-  ########################################
-  # Given a path to a directory, return a list of everything in that directory
-  # relative to the calling nix file.
-  listDirectory = path:
-    builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
-
-  # listBinaries :: Package -> [String]
-  ########################################
-  # Given a package, return a list of all the non-hidden binaries provided by the package.
-  listBinaries = package: lib.pipe "${package}/bin" [
-    (builtins.readDir)
-    (builtins.attrNames)
-    (builtins.filter (x: (builtins.substring 0 1 x) != "."))
-  ];
 
   # wrapPackage :: Package -> (String -> String) -> Package
   ##########################################################
@@ -238,34 +146,6 @@ in
     fi
   '');
 
-  # partitionAttrs :: (String -> a -> Bool) -> AttrSet -> AttrSet
-  #################################################################
-  # Given a predicate function and an attribute set, partition the attribute set into two
-  # attribute sets, one containing the attributes that satisfy the predicate and one containing
-  # the attributes that do not.
-  # Ex.
-  # partitionAttrs (n: v: n == "foo") { foo = 1; bar = 2; }
-  #
-  # Returns:
-  # { right = { foo = 1; }; wrong = { bar = 2; }; }
-  partitionAttrs = predicate: attrs: {
-    right = lib.filterAttrs predicate attrs;
-    wrong = lib.filterAttrs (n: v: ! predicate n v) attrs;
-  };
-
-  # mergeAttrs :: [AttrSet] -> AttrSet
-  ########################################
-  # Takes a list of attribute sets and merges them into one using lib.recursiveUpdate
-  # Ex.
-  # mergeAttrs [
-  #   { a = 1; b = 2; }
-  #   { b = 3; c = 4; }
-  # ]
-  #
-  # Returns:
-  # { a = 1; b = 3; c = 4; }
-  mergeAttrs = attrs: lib.foldl' lib.recursiveUpdate {} attrs;
-
   # mkSimpleHMService :: String -> String -> AttrSet
   ########################################################
   # Given a name and a command, return a simple service that runs the command.
@@ -286,15 +166,4 @@ in
       };
     };
   };
-
-  # optionalApply :: Bool -> (a -> b) -> a -> b
-  #############################################
-  # Given a boolean, a function, and a value, apply the function to the value if the boolean is true.
-  # Ex.
-  # optionalApply true (x: x + 1) 1
-  #
-  # Returns:
-  # 2
-  optionalApply = bool: f: x:
-    if bool then f x else x;
 }

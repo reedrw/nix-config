@@ -36,8 +36,8 @@ in
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;
-    profilePath = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/X11/xprofile";
-    scriptPath = "${pkgs.removeHomeDirPrefix config.xdg.dataHome}/X11/xsession";
+    profilePath = "${lib.removeHomeDirPrefix config.xdg.dataHome}/X11/xprofile";
+    scriptPath = "${lib.removeHomeDirPrefix config.xdg.dataHome}/X11/xsession";
     windowManager.i3 = {
       enable = true;
       package = pkgs.i3;
@@ -130,12 +130,12 @@ in
     };
   };
 
-  systemd.user.services = with pkgs; mergeAttrs [
-    (mkSimpleHMService "autotiling" "${lib.getExe autotiling}")
-    (mkSimpleHMService "clipboard-clean" "${lib.getExe scripts.clipboard-clean}")
-    (mkSimpleHMService "dwebp-serv" "${lib.getExe scripts.dwebp-serv}")
-    (mkSimpleHMService "mpv-dnd" "${lib.getExe scripts.mpv-dnd}")
-    (mkSimpleHMService "keybinds" "${lib.getExe scripts.keybinds}")
-    (mkSimpleHMService "droidcam-fix" "${lib.getExe scripts.droidcam-fix}")
+  systemd.user.services = with lib; mergeAttrs [
+    (pkgs.mkSimpleHMService "autotiling" "${getExe pkgs.autotiling}")
+    (pkgs.mkSimpleHMService "clipboard-clean" "${getExe scripts.clipboard-clean}")
+    (pkgs.mkSimpleHMService "dwebp-serv" "${getExe scripts.dwebp-serv}")
+    (pkgs.mkSimpleHMService "mpv-dnd" "${getExe scripts.mpv-dnd}")
+    (pkgs.mkSimpleHMService "keybinds" "${getExe scripts.keybinds}")
+    (pkgs.mkSimpleHMService "droidcam-fix" "${getExe scripts.droidcam-fix}")
   ];
 }

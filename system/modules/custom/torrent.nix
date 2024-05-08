@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 let
   cfg = config.custom.torrents;
 in
@@ -20,7 +20,7 @@ in
       web.enable = true;
     };
 
-    users.users = pkgs.mergeAttrs (map (name: {
+    users.users = lib.mergeAttrs (map (name: {
       ${name}.extraGroups = [ "deluge" ];
     }) cfg.allowedUsers);
   };

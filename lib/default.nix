@@ -104,7 +104,7 @@ rec {
     modules = let
       userModules = mkModuleFromDir false  ../system/modules/myUsers;
       commonModules = mkModuleFromDir true ../system/modules/common;
-      customModules = pkgs.listDirectory   ../system/modules/custom;
+      customModules = lib.listDirectory   ../system/modules/custom;
     in [
       ../system/${host}/configuration.nix
       ../system/${host}/hardware-configuration.nix
@@ -119,8 +119,8 @@ rec {
       # Each host has a directory for home-manager config in ./system/${host}/home.
       # Any .nix files in that directory will be imported as part of the home-manager
       # configuration for that host.
-      perHost = pkgs.listDirectory ../system/${host}/home;
-      hmCommon = pkgs.listDirectory ../home;
+      perHost = lib.listDirectory ../system/${host}/home;
+      hmCommon = lib.listDirectory ../home;
     in [
       ../home.nix
       (_:{ home = {
@@ -172,5 +172,5 @@ rec {
     };
   };
 
-  mkHosts = hosts: pkgs.mergeAttrs (map mkHost hosts);
+  mkHosts = hosts: lib.mergeAttrs (map mkHost hosts);
 }

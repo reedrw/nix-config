@@ -19,7 +19,7 @@ in
             inherit customIcon;
           });
         });
-      in pkgs.optionalApply cfg.mullvad-exclude mullvadExclude aagl;
+      in lib.optionalApply cfg.mullvad-exclude mullvadExclude aagl;
     };
 
     environment.systemPackages = with pkgs; [
