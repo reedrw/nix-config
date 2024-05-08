@@ -1,19 +1,19 @@
 { config, pkgs, ... }:
 {
-programs.kitty = {
-  enable = true;
-  # The -e flag doesn't work when a startup_session is specified.
-  # This disgusting hack is needed to keep backwards compatibility with
-  # xterm. i3-sensible-terminal uses the -e flag to execute a command.
-  package = pkgs.wrapPackage pkgs.kitty (kitty: ''
-    #!${pkgs.stdenv.shell}
-    if [[ "\$1" == "-e" ]]; then
-      shift
-      exec ${kitty} --session=none "\$@"
-    else
-      exec ${kitty} "\$@"
-    fi
-  '');
+  programs.kitty = {
+    enable = true;
+    # The -e flag doesn't work when a startup_session is specified.
+    # This disgusting hack is needed to keep backwards compatibility with
+    # xterm. i3-sensible-terminal uses the -e flag to execute a command.
+    package = pkgs.wrapPackage pkgs.kitty (kitty: ''
+      #!${pkgs.stdenv.shell}
+      if [[ "\$1" == "-e" ]]; then
+        shift
+        exec ${kitty} --session=none "\$@"
+      else
+        exec ${kitty} "\$@"
+      fi
+    '');
     # shellIntegration.enableZshIntegration = true;
     settings = with config.colorScheme.palette; let
       family = "FantasqueSansM Nerd Font";
