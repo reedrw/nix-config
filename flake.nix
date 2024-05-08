@@ -9,6 +9,7 @@ rec {
     NUR.url = "github:nix-community/NUR";
     nix-colors.url = "github:misterio77/nix-colors";
     impermanence.url = "github:nix-community/impermanence";
+    flake-compat.url = "github:edolstra/flake-compat";
     home-manager = {
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";

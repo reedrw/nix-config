@@ -4,12 +4,14 @@ let
   nixpkgs-options.nixpkgs = {
     overlays = [
       (import ../pkgs)
+      (import ../pkgs/branches.nix inputs)
       (import ../pkgs/pin/overlay.nix)
       (import ../pkgs/functions.nix)
       (import ../pkgs/alias.nix)
+      (import ../pkgs/lib.nix)
     ];
     config = import ../pkgs/config.nix {
-      inherit (inputs) NUR unstable;
+      inherit inputs;
     };
   };
 in
@@ -146,12 +148,12 @@ rec {
     # The actual flake outputs for this host
     nixosConfigurations = {
       "${host}" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system;
+        inherit system lib;
         modules = modulesWithHM;
         specialArgs = specialArgs // { hm = true; };
       };
       "${host}-no-home-manager" = inputs.nixpkgs.lib.nixosSystem {
-        inherit system modules;
+        inherit system modules lib;
         specialArgs = specialArgs // { hm = false; };
       };
     };

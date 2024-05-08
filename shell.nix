@@ -1,13 +1,4 @@
-# TODO: think of a better way to do this
-{ pkgs ? import (import ./pkgs/nixpkgs.nix "nixpkgs") {
-  config = import ./config.nix;
-  overlays = [
-    (import ./pkgs)
-    (import ./pkgs/alias.nix)
-    (import ./pkgs/pin/overlay.nix)
-    (import ./pkgs/functions.nix)
-  ];
-} }:
+{ pkgs ? (import ./lib/compat.nix).pkgs }:
 
 with pkgs;
 mkShell {

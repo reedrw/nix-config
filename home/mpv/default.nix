@@ -1,11 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  lib' = if (builtins.hasAttr "packagesFromDirectoryRecursive" lib)
-    then lib.warn "lib.packagesFromDirectoryRecursive is in nixpkgs now, remove this line from mpv configuration" lib
-    else pkgs.fromBranch.unstable.lib;
-
-  plugins = (import ./nix/sources.nix { }) // lib'.packagesFromDirectoryRecursive {
+  plugins = (import ./nix/sources.nix { }) // lib.packagesFromDirectoryRecursive {
     callPackage = pkgs.callPackage;
     directory = ./plugins;
   };
