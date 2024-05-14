@@ -16,6 +16,7 @@
     extraConfig = ''
       DefaultTimeoutStartSec=30s
       DefaultTimeoutStopSec=15s
+      DefaultLimitNOFILE=2048:1048576
     '';
   in {
     inherit extraConfig;
