@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, config, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   imports = [
@@ -79,6 +79,8 @@
 
   services.jellyfin = {
     enable = true;
+    # remove this line when upgrading to 24.05
+    package = pkgs.fromBranch.unstable.jellyfin;
     user = "reed";
     group = "users";
     openFirewall = true;
