@@ -20,18 +20,18 @@ in
     listDirectory = path:
       builtins.map (x: path + "/${x}") (builtins.attrNames (builtins.readDir path));
 
-    # mergeAttrs :: [AttrSet] -> AttrSet
+    # mergeAttrsListRecursive :: [AttrSet] -> AttrSet
     ########################################
     # Takes a list of attribute sets and merges them into one using lib.recursiveUpdate
     # Ex.
-    # mergeAttrs [
+    # mergeAttrsListRecursive [
     #   { a = 1; b = 2; }
     #   { b = 3; c = 4; }
     # ]
     #
     # Returns:
     # { a = 1; b = 3; c = 4; }
-    mergeAttrs = attrs: lib.foldl' lib.recursiveUpdate {} attrs;
+    mergeAttrsListRecursive = attrs: lib.foldl' lib.recursiveUpdate {} attrs;
 
     # optionalApply :: Bool -> (a -> b) -> a -> b
     #############################################
@@ -91,6 +91,6 @@ in
     "packagesFromDirectoryRecursive"
   ] [
     (map (f: { ${f} = fromLibUnstable f; }))
-    (prev.mergeAttrs)
+    (prev.mergeAttrsListRecursive)
   ]);
 }

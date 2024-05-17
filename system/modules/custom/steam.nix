@@ -44,7 +44,7 @@ in
         in {
           "${name}" = "steam -nochatui -nofriendsui -silent steam://rungameid/${id}";
         }))
-        lib.mergeAttrs
+        lib.mergeAttrsListRecursive
         aliasToPackage
       ])
     ];

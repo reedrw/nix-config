@@ -172,5 +172,5 @@ rec {
     };
   };
 
-  mkHosts = hosts: lib.mergeAttrs (map mkHost hosts);
+  mkHosts = hosts: lib.mergeAttrsListRecursive (map mkHost hosts);
 }

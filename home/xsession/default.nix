@@ -148,7 +148,7 @@ in
         };
       };
     };
-  in with lib; mergeAttrs [
+  in with lib; mergeAttrsListRecursive [
     (mkSimpleService "autotiling" "${getExe pkgs.autotiling}")
     (mkSimpleService "clipboard-clean" "${getExe scripts.clipboard-clean}")
     (mkSimpleService "dwebp-serv" "${getExe scripts.dwebp-serv}")
