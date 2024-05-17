@@ -25,11 +25,11 @@
   boot.initrd.services.lvm.enable = true;
   services.lvm.boot.thin.enable = true;
 
-  services.foldingathome = {
-    enable = true;
-    user = "reed";
-    extraArgs = [ "--power" "light" ];
-  };
+  # services.foldingathome = {
+  #   enable = true;
+  #   user = "reed";
+  #   extraArgs = [ "--power" "light" ];
+  # };
 
   myUsers.reed.enable = true;
 
