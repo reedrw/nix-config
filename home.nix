@@ -68,6 +68,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
       TERMINAL = "kitty";
+      GNUPGHOME = "${config.xdg.dataHome}/gnupg";
       XDG_CONFIG_HOME = config.xdg.configHome;
       XDG_CACHE_HOME = config.xdg.cacheHome;
       XDG_DATA_HOME = config.xdg.dataHome;
