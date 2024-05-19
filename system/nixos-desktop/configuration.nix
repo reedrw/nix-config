@@ -50,7 +50,7 @@
 
   custom.steam = {
     enable = true;
-    mullvad-exclude = true;
+    mullvad-exclude = false;
   };
 
   custom.aagl = {
