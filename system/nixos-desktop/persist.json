@@ -7,7 +7,8 @@
     "/home/reed/.config/clipit/clipitrc",
     "/home/reed/.config/hub",
     "/home/reed/.local/share/zsh/.zcompdump",
-    "/home/reed/.local/share/zsh/zsh_history"
+    "/home/reed/.local/share/zsh/zsh_history",
+    "/home/reed/.steam/registry.vdf"
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
