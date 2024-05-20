@@ -17,6 +17,9 @@ launchPrograms(){
       (vesktop &)
       (telegram-desktop &)
     ;;
+    "3")
+      (steam &)
+    ;;
     "4" )
       (blueberry &)
       (pavucontrol &)
