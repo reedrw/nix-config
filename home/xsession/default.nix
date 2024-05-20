@@ -40,7 +40,6 @@ in
     scriptPath = "${lib.removeHomeDirPrefix config.xdg.dataHome}/X11/xsession";
     windowManager.i3 = {
       enable = true;
-      package = pkgs.i3;
       config = {
         bars = [ ];
         gaps = {
@@ -116,11 +115,13 @@ in
     };
   };
 
-  xdg.configFile = {
-    "i3/workspace-1.json".source = ./workspace-1.json;
-    "i3/workspace-2.json".source = ./workspace-2.json;
-    "i3/workspace-4.json".source = ./workspace-4.json;
-  };
+  # link all json files (saved workspaces) in the current directory to ~/.config/i3/
+  xdg.configFile = lib.pipe (lib.listDirectory ./.) [
+    (builtins.filter (lib.hasSuffix ".json"))
+    (map (x: lib.last (lib.splitString "/" (toString x))))
+    (map (x: { "i3/${x}".source = ./. + "/${x}"; }))
+    (lib.mergeAttrsList)
+  ];
 
   services = {
     flameshot.enable = true;
@@ -148,7 +149,7 @@ in
         };
       };
     };
-  in with lib; mergeAttrsListRecursive [
+  in with lib; mergeAttrsList [
     (mkSimpleService "autotiling" "${getExe pkgs.autotiling}")
     (mkSimpleService "clipboard-clean" "${getExe scripts.clipboard-clean}")
     (mkSimpleService "dwebp-serv" "${getExe scripts.dwebp-serv}")
