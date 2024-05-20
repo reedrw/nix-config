@@ -1,9 +1,10 @@
-{ nixpkgs-options, nixConfig, inputs, ... }:
+{ nixpkgs-options, nixConfig, inputs, pkgs, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
 
   nix = {
+    package = pkgs.fromBranch.unstable.lixVersions.stable;
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
