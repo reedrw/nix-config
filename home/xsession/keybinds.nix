@@ -45,5 +45,5 @@ with pkgs;
 } // pipe (range 0 9) [
   (map toString)
   (map (n: {"${mod}+ctrl+${n}" = "${exec} ${getExe scripts.load-layouts} ${n}";}))
-  mergeAttrsListRecursive
+  mergeAttrsList
 ]); }

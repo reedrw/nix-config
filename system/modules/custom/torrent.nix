@@ -20,7 +20,7 @@ in
       web.enable = true;
     };
 
-    users.users = lib.mergeAttrsListRecursive (map (name: {
+    users.users = lib.mergeAttrsList (map (name: {
       ${name}.extraGroups = [ "deluge" ];
     }) cfg.allowedUsers);
   };

@@ -88,6 +88,7 @@ in
 
     # }}}
   })).extend (final: prev: lib.pipe [
+    "mergeAttrsList"
     "packagesFromDirectoryRecursive"
   ] [
     (map (f: { ${f} = fromLibUnstable f; }))
