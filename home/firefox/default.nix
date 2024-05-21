@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  myFirefox = with pkgs; wrapFirefox firefox-unwrapped {
+  myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;
