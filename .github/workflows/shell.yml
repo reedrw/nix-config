@@ -46,7 +46,7 @@ jobs:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Cachix
-      uses: cachix/cachix-action@v14
+      uses: cachix/cachix-action@v15
       with:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
