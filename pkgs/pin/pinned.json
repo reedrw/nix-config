@@ -4,11 +4,5 @@
       "rev": "5e9ce01f9b583b4deee3994072c5f7d5a16e1b77",
       "sha256": "0p7w8lx6jqann33mcapyvgadxzd5qfk20rk8i2alvrb3xqv9yqjw"
     }
-  },
-  "vesktop": {
-    "1.5.2": {
-      "rev": "ca8001fe8bd5a98a948e93ca01fa1a753935ea56",
-      "sha256": "1490h5vr00ms8w2kwsz2n2rn5s58wlal3x22y3q65fp47dz4xzpc"
-    }
   }
 }

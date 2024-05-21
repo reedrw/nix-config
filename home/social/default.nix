@@ -24,7 +24,7 @@ in
     (wrapEnv tdesktop {
       XDG_CURRENT_DESKTOP = "gnome";
     })
-    (pinned.vesktop.v1_5_2.override {
+    (fromBranch.unstable.vesktop.override {
       vencord = vencord unstable;
     })
     cinny-desktop
