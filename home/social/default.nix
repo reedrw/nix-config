@@ -27,6 +27,7 @@ in
     (fromBranch.unstable.vesktop.override {
       vencord = vencord unstable;
     })
+    discord
     cinny-desktop
   ];
 
