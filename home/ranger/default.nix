@@ -118,6 +118,7 @@ in
       ext json = ''${VISUAL:-$EDITOR} -- "$@"
       ext nix = ''${VISUAL:-$EDITOR} -- "$@"
       ext sh = ''${VISUAL:-$EDITOR} -- "$@"
+      ext rs = ''${VISUAL:-$EDITOR} -- "$@"
       ext hs = ''${VISUAL:-$EDITOR} -- "$@"
       mime ^text,  label editor = $EDITOR -- "$@"
     '';
