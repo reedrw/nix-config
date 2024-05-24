@@ -28,7 +28,6 @@ in
       vencord = vencord unstable;
     })
     discord
-    cinny-desktop
   ];
 
   xdg.configFile = {
