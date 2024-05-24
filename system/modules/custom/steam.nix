@@ -25,11 +25,11 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
-      package = with pkgs; emptyDirectory // {
-        override = (x: lib.optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
-          run = steam-custom.run;
-        });
-      };
+      # package = with pkgs; emptyDirectory // {
+      #   override = (x: lib.optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
+      #     run = steam-custom.run;
+      #   });
+      # };
     };
     environment.systemPackages = let
       # games to make available on the command line
