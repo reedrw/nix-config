@@ -34,7 +34,7 @@ in
     };
     plugins = with pkgs.vimPlugins; [
       ale
-      base16-vim
+      base16-nvim
       camelcasemotion
       caw-vim
       coc-pyright
@@ -101,7 +101,6 @@ in
       let g:suda_smart_edit = 1
 
       set termguicolors
-      source ${import ./theme.nix { inherit config; } }
       let base16colorspace=256
 
       let g:fugitive_dynamic_colors = 0
@@ -119,6 +118,8 @@ in
       set numberwidth=5
       set cursorline
       set inccommand=nosplit
+
+      colorscheme base16-${config.colorScheme.slug}
 
       " Make line wrapping nicer
       set breakindent
