@@ -79,8 +79,6 @@
 
   services.jellyfin = {
     enable = true;
-    # remove this line when upgrading to 24.05
-    package = pkgs.fromBranch.unstable.jellyfin;
     user = "reed";
     group = "users";
     openFirewall = true;

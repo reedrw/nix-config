@@ -1,8 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "tty";
+    pinentryPackage = pkgs.pinentry-curses;
   };
 }

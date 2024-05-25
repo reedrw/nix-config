@@ -24,8 +24,8 @@ in
     (wrapEnv tdesktop {
       XDG_CURRENT_DESKTOP = "gnome";
     })
-    (fromBranch.unstable.vesktop.override {
-      vencord = vencord unstable;
+    (vesktop.override {
+      vencord = vencord pkgs;
     })
     discord
   ];

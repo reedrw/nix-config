@@ -99,6 +99,7 @@ in
 
       unsetopt nomatch
 
+      source ${oh-my-zsh.src}/lib/async_prompt.zsh
       source ${oh-my-zsh.src}/lib/git.zsh
       source ${oh-my-zsh.src}/plugins/sudo/sudo.plugin.zsh
       source ${ranger.src}/examples/shell_automatic_cd.sh 2> /dev/null

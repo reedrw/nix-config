@@ -71,7 +71,7 @@ in
           }
         '';
       }
-      suda-vim
+      vim-suda
       targets-vim
       undotree
       vim-dirvish

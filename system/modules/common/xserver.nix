@@ -8,13 +8,13 @@
   #     passthru.providedSessions = [ "sway" ];
   #   });
   # };
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "reed";
+  };
   services.xserver = {
     enable = true;
     displayManager = {
-      autoLogin = {
-        enable = true;
-        user = "reed";
-      };
       lightdm = {
         enable = true;
         greeter.enable = false;

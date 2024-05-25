@@ -4,7 +4,7 @@
   inherit (nixpkgs-options) nixpkgs;
 
   nix = {
-    package = pkgs.fromBranch.unstable.lixVersions.stable;
+    package = pkgs.lixVersions.stable;
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];

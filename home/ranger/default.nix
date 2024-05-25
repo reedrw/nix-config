@@ -47,7 +47,7 @@ in
 {
 
   home.packages = let
-    ranger = pkgs.versionConditionalOverride "1.9.3" myranger
+    ranger = #pkgs.versionConditionalOverride "1.9.3" myranger
       # https://github.com/ranger/ranger/pull/2856
       myranger.overrideAttrs (old: {
         version = "1.9.3";
