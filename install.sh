@@ -30,7 +30,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -72,7 +72,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
       ;;
   esac
 }
