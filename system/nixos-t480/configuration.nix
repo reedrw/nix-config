@@ -61,18 +61,17 @@
     allowedUsers = [ "reed" ];
   };
 
-  services.xserver = {
-    libinput = {
-      enable = true;
-      mouse = {
-        accelProfile = "flat";
-        accelSpeed = "10";
-      };
+  services.libinput = {
+    enable = true;
+    mouse = {
+      accelProfile = "flat";
+      accelSpeed = "10";
     };
-    displayManager.sessionCommands = ''
-      xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Accel Speed" 1
-    '';
   };
+
+  services.xserver.displayManager.sessionCommands = ''
+    xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Accel Speed" 1
+  '';
 
   programs.droidcam.enable = true;
 
