@@ -54,7 +54,7 @@
   };
 
   custom.aagl = {
-    enable = false;
+    enable = true;
     mullvad-exclude = true;
   };
 
