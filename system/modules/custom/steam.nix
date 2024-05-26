@@ -25,6 +25,7 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
+      package = steam-custom;
       # package = with pkgs; emptyDirectory // {
       #   override = (x: lib.optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
       #     run = steam-custom.run;
