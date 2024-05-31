@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   services.journald.extraConfig = "SystemMaxUse=500M";
@@ -11,6 +11,20 @@
   '';
 
   services.dbus.implementation = "broker";
+
+  # set console colors
+  console.colors = with inputs.nix-colors.colorSchemes.horizon-terminal-light.palette; let
+    black   = base00;
+    blue    = base0D;
+    cyan    = base0C;
+    green   = base0B;
+    grey    = base03;
+    magenta = base0E;
+    red     = base08;
+    white   = base05;
+    yellow  = base0A;
+  in [ black red green yellow blue magenta cyan white
+        grey red green yellow blue magenta cyan white ];
 
   systemd = let
     extraConfig = ''
