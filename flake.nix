@@ -52,7 +52,7 @@ rec {
     "nixos-t480"
     "nixos-vm"
   ] // {
-    inherit pkgs;
+    inherit pkgs inputs;
     inherit (pkgs) lib;
 
     devShells."${system}".default = import ./shell.nix {
