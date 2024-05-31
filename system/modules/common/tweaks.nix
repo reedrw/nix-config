@@ -13,7 +13,7 @@
   services.dbus.implementation = "broker";
 
   # set console colors
-  console.colors = with inputs.nix-colors.colorSchemes.horizon-terminal-light.palette; let
+  console.colors = with inputs.nix-colors.colorSchemes.horizon-terminal-dark.palette; let
     black   = base00;
     blue    = base0D;
     cyan    = base0C;
