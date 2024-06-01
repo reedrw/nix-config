@@ -17,8 +17,10 @@ jobs:
         output:
           - reed@nixos-desktop
           - reed@nixos-t480
+          - reed@nixos-t400
           - nixos-desktop-no-home-manager
           - nixos-t480-no-home-manager
+          - nixos-t400-no-home-manager
           - nixos-vm
           - nix-shell
 

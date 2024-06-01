@@ -8,9 +8,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.loader.grub = {
-      enable = true;
-      version = 2;
-    };
+    custom.boot.theme.enable = true;
+    boot.loader.grub.enable = true;
   };
 }
