@@ -36,12 +36,12 @@ in
   # foxyproxy extension to switch between mullvad and my normal
   # connection and set per-domain rules.
   services.autossh.sessions = let
-    mkSession = extraArguments: name: user: {
-      inherit extraArguments name user;
-    };
-  in [
-    (mkSession "-D 1337 -nNT localhost" "mullvad-socks-proxy" "reed")
-  ];
+    mullvadEnabled = config.services.mullvad-vpn.enable;
+  in (lib.optionals mullvadEnabled [{
+    extraArguments = "-D 1337 -nNT localhost";
+    name = "mullvad-socks-proxy";
+    user = "reed";
+  }]);
 
   systemd.services.mullvad-daemon = {
     after = [ "nix-daemon.service" ];
