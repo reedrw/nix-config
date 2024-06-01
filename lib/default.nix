@@ -137,7 +137,10 @@ rec {
       # Any .nix files in that directory will be imported as part of the home-manager
       # configuration for that host.
       perHost = lib.listDirectory ../system/${host}/home;
-      hmCommon = lib.listDirectory ../home;
+      hmCommon = mkModuleFromDir {
+        dir = ../home;
+        moduleName = "common";
+      };
     in [
       ../home.nix
       (_:{ home = {
