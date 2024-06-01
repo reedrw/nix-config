@@ -1,16 +1,21 @@
-{ lib, ... }:
+{ ... }:
 
 {
-  programs.firefox.enable = lib.mkForce false;
-  programs.kitty.enable = lib.mkForce false;
-  programs.mpv.enable = lib.mkForce false;
-  programs.obs-studio.enable = lib.mkForce false;
-  programs.rofi.enable = lib.mkForce false;
-  programs.zathura.enable = lib.mkForce false;
-  services.dunst.enable = lib.mkForce false;
-  services.easyeffects.enable = lib.mkForce false;
-  services.mpd.enable = lib.mkForce false;
-  services.picom.enable = lib.mkForce false;
-  services.polybar.enable = lib.mkForce false;
-  xsession.enable = lib.mkForce false;
+  common.dunst.enable = false;
+  common.easyeffects.enable = false;
+  common.firefox.enable = false;
+  common.games.enable = false;
+  common.gh.enable = false;
+  common.kitty.enable = false;
+  common.lorri.enable = false;
+  common.mpd.enable = false;
+  common.mpv.enable = false;
+  common.obs-studio.enable = false;
+  common.picom.enable = false;
+  common.polybar.enable = false;
+  common.rofi.enable = false;
+  common.shairport-sync.enable = false;
+  common.social.enable = false;
+  common.xsession.enable = false;
+  common.zathura.enable = false;
 }
