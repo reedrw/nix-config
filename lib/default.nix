@@ -29,13 +29,19 @@ rec {
   pkgs = pkgsForSystem system;
   lib = pkgs.lib;
 
-  # mkModuleFromDir :: Bool -> String -> [AttrSet -> AttrSet]
+  # mkModuleFromDir :: AttrSet -> [AttrSet -> AttrSet]
   ########################################
   # Takes a directory name as argument and returns a NixOS module for that
   # directory. The module will be named after the directory.
   #
+  # Available arguments:
+  # - dir (Path): The directory to create a module from
+  # - default (Boolean): Whether the modules in this directory should be enabled by default
+  # - moduleName (String): The attribute name under which the option should be created,
+  #   defaults to the base name of the directory
+  #
   # Example:
-  # mkModuleFromDir true "common"
+  # mkModuleFromDir { dir = ./common; }
   #
   # common/
   # - bluetooth.nix
@@ -48,16 +54,24 @@ rec {
   #   common.networking.enable = true;
   #   common.sound.enable = true;
   # }
-  #
-  mkModuleFromDir = default: dir:
-  let
-    # The module name is the basename of the directory
-    moduleName = builtins.baseNameOf dir;
+  mkModuleFromDir = {
+    dir,
+    default ? true,
+    moduleName ? builtins.baseNameOf dir
+  }: let
     # Convert the directory structor into an attribute set
-    dirSet = inputs.haumea.lib.load {
-      src = dir;
-      loader = inputs.haumea.lib.loaders.verbatim;
-    };
+    dirSet = let
+      dirSet = inputs.haumea.lib.load {
+        src = dir;
+        loader = inputs.haumea.lib.loaders.verbatim;
+      };
+    in builtins.mapAttrs (name: value:
+      # if there is a default.nix file in the directory, use it as the default value
+      if (builtins.isAttrs value && builtins.hasAttr "default" value)
+      then value.default
+      else value
+    ) dirSet;
+
     # For each attribute of dirSet, create a NixOS option
     # which, when enabled, will import the attribute's value.
   in lib.mapAttrsToList (name: value:
@@ -102,8 +116,11 @@ rec {
 
     # NixOS configuration imports, minus home-manager
     modules = let
-      userModules = mkModuleFromDir false  ../system/modules/myUsers;
-      commonModules = mkModuleFromDir true ../system/modules/common;
+      userModules = mkModuleFromDir {
+        default = false;
+        dir =  ../system/modules/myUsers;
+      };
+      commonModules = mkModuleFromDir { dir = ../system/modules/common; };
       customModules = lib.listDirectory   ../system/modules/custom;
     in [
       ../system/${host}/configuration.nix
