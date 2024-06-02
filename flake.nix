@@ -25,6 +25,8 @@ rec {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    attic.url = "github:zhaofengli/attic";
+
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
