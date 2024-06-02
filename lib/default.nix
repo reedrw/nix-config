@@ -54,7 +54,7 @@ rec {
   #   common.networking.enable = true;
   #   common.sound.enable = true;
   # }
-  mkModuleFromDir = {
+  mkModulesFromDir = {
     dir,
     default ? true,
     moduleName ? builtins.baseNameOf dir
@@ -78,10 +78,9 @@ rec {
     { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
-      imports = lib.filterAttrs (n: v: n == "imports") (value args);
     in
     {
-      imports = imports.imports or [];
+      imports = (value args).imports or [];
 
       options.${moduleName}.${name}.enable = lib.mkOption {
         inherit default;
@@ -116,11 +115,11 @@ rec {
 
     # NixOS configuration imports, minus home-manager
     modules = let
-      userModules = mkModuleFromDir {
+      userModules = mkModulesFromDir {
         default = false;
         dir =  ../system/modules/myUsers;
       };
-      commonModules = mkModuleFromDir { dir = ../system/modules/common; };
+      commonModules = mkModulesFromDir { dir = ../system/modules/common; };
       customModules = lib.listDirectory   ../system/modules/custom;
     in [
       ../system/${host}/configuration.nix
@@ -137,7 +136,7 @@ rec {
       # Any .nix files in that directory will be imported as part of the home-manager
       # configuration for that host.
       perHost = lib.listDirectory ../system/${host}/home;
-      hmCommon = mkModuleFromDir {
+      hmCommon = mkModulesFromDir {
         dir = ../home;
         moduleName = "common";
       };
