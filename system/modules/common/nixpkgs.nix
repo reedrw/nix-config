@@ -8,7 +8,14 @@
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
-      inherit (nixConfig) extra-substituters extra-trusted-public-keys;
+      # inherit (nixConfig) extra-substituters extra-trusted-public-keys;
+      extra-substituters = nixConfig.extra-substituters ++ [
+        "http://nixos-t400.local:8080/systems"
+        "http://nixos-t400:8080/systems"
+      ];
+      extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [
+        "systems:xe/C0+RBLlFLDcVGeDMuvekYsRkvb9I8p929M2nylzc="
+      ];
     };
     extraOptions = ''
       builders-use-substitutes = true

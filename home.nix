@@ -13,6 +13,7 @@ let
     pm2       # process manager
     ripgrep   # recursive grep
     screen    # terminal multiplexer
+    attic-client # self-hosted binary cache
 
     # global aliases
     (aliasToPackage {
