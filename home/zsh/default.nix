@@ -242,15 +242,7 @@ in
       }
 
       ??(){
-        gh copilot suggest -t shell "$*"
-      }
-
-      git?(){
-        gh copilot suggest -t git "$*"
-      }
-
-      gh?(){
-       gh copilot suggest -t gh "$*"
+        mods "$@"
       }
     '' + import ./command-not-found.nix { inherit config inputs pkgs; };
     shellAliases = with pkgs; {
