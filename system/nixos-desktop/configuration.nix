@@ -25,6 +25,11 @@
   boot.initrd.services.lvm.enable = true;
   services.lvm.boot.thin.enable = true;
 
+  services.ollama = {
+    enable = true;
+    acceleration = "rocm";
+  };
+
   # services.foldingathome = {
   #   enable = true;
   #   user = "reed";
