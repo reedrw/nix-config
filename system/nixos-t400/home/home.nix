@@ -5,7 +5,6 @@
   common.easyeffects.enable = false;
   common.firefox.enable = false;
   common.games.enable = false;
-  common.gh.enable = false;
   common.kitty.enable = false;
   common.lorri.enable = false;
   common.mpd.enable = false;
