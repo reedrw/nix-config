@@ -165,6 +165,7 @@ in
         --layout=reverse
         --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
         --info=hidden
+        --no-separator
         # --color=bg+:#${base02},bg:#${base01},spinner:#${base0C},hl:#${base0B}
         # --color=fg:#${base04},header:#${base0D},info:#${base0A},pointer:#${base02}
         # --color=marker:#${base0C},fg+:#${base06},prompt:#${base08},hl+:#${base0B}
