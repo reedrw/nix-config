@@ -2,6 +2,7 @@
 
 with pkgs;
 lib.genAttrs [
+  "brightness"
   "dwebp-serv"
   "keybinds"
   "load-layouts"

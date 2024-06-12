@@ -30,8 +30,8 @@ with pkgs;
     ${getExe scripts.mpv-dnd} --resume
   ''}";
   "${mod}+${sup}+space" = "${exec} ${getExe scripts.toggle-touchpad}";
-  "XF86MonBrightnessUp" = "${exec} ${getExe brightnessctl} s 10%+";
-  "XF86MonBrightnessDown" = "${exec} ${getExe brightnessctl} s 10%-";
+  "XF86MonBrightnessUp" = "${exec} ${getExe scripts.brightness} up 15";
+  "XF86MonBrightnessDown" = "${exec} ${getExe scripts.brightness} down 15";
   "Ctrl+Down" = "${exec} ${getExe playerctl} play-pause";
   "Ctrl+Left" = "${exec} ${getExe playerctl} previous";
   "Ctrl+Right" = "${exec} ${getExe playerctl} next";
