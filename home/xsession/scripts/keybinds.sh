@@ -17,5 +17,9 @@ while true; do
   if [ "$(xset q | grep Caps | awk '{print $4}')" = "on" ]; then
     xdotool key Caps_Lock
   fi
+  # enable "natural scrolling"
+  if id="$(xinput list | grep -o 'Synaptics.*id=[0-9]*' | cut -d= -f2)"; then
+    xinput set-prop "$id" "libinput Natural Scrolling Enabled" 1
+  fi
   sleep 20
 done
