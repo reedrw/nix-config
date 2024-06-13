@@ -35,7 +35,7 @@ upStep(){
   local out;
   x="$current"
   p="$percentage"
-  out="$(bc <<< "scale=10;f=((100*$x)/(100-$p));scale=0;f/1")"
+  out="$(bc <<< "scale=10;f=($x/(1-($p/100)));scale=0;f/1")"
   if [[ "$out" == "$current" ]]; then
     out=$((current+$((percentage/10))))
   fi
