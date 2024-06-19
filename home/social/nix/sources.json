@@ -3,13 +3,13 @@
         "branch": "dev",
         "description": "The cutest Discord client mod",
         "homepage": "https://vencord.dev",
-        "npmDepsHash": "sha256-l50IgyAUyHlRUTJhiRTlpJI3qo1AduWglXHer6VJnZw=",
+        "npmDepsHash": "sha256-S/ZKi/TOmw3hBdrKOmr0z/ADHoXYn2gpTzsihC7Tbhk=",
         "owner": "vendicated",
         "repo": "vencord",
-        "rev": "098124175fa28935824300f55cff3964aaf5ebb0",
-        "sha256": "1jzxgxkr411nmyamspc12rkas9v3giw61shvngmyr5pw0svqffwq",
+        "rev": "63c4b2304fabba58eaae69f7a3a9fa0778dfeb3b",
+        "sha256": "0pjqybq7za38908bsc4ipzfdrvvlck8ma13zyywxq3j9gd680agb",
         "type": "tarball",
-        "url": "https://github.com/vendicated/vencord/archive/098124175fa28935824300f55cff3964aaf5ebb0.tar.gz",
+        "url": "https://github.com/vendicated/vencord/archive/63c4b2304fabba58eaae69f7a3a9fa0778dfeb3b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
