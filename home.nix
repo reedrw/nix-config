@@ -37,7 +37,7 @@ let
     libnotify   # notification library
     libreoffice # free office suite
     ngrok       # port tunneling
-    pavucontrol # volume control
+    pwvucontrol # volume control
     pipr        # interactive pipeline builder
     sshpass     # specify ssh password
     xclip       # x clipboard scripting

@@ -22,7 +22,7 @@ launchPrograms(){
     ;;
     "4" )
       (blueberry &)
-      (pavucontrol &)
+      (pwvucontrol &)
       (easyeffects &)
     ;;
   esac

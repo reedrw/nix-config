@@ -51,8 +51,8 @@
                     "percent": 0.5,
                     "swallows": [
                         {
-                           "class": "^Pavucontrol$",
-                           "instance": "^pavucontrol$"
+                           "class": "^pwvucontrol$",
+                           "instance": "^pwvucontrol$"
                         }
                     ],
                     "type": "con"
