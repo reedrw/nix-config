@@ -55,7 +55,8 @@ main(){
       show_help
       ;;
     -l|--list)
-      list
+      shift
+      list "$@"
       ;;
     -v|--verbose)
       set -x
@@ -178,6 +179,12 @@ EOF
 list(){
   files=$(jq -r '.files[]' "$persistJson")
   directories=$(jq -r '.directories[]' "$persistJson")
+
+  # --json to print the persist.json file
+  if [[ "${1:-""}" == "--json" ]]; then
+    jq . "$persistJson"
+    return
+  fi
 
   if [[ -n "$files" ]]; then
     echo "${bold}Persistent Files:${reset}"
