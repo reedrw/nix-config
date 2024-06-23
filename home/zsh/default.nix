@@ -211,9 +211,6 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      # newline as IFS delimiter makes for loops more predictable
-      export IFS=$'\n'
-
       git(){
         case "$1" in
           ~)
