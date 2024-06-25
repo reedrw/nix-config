@@ -4,7 +4,6 @@
 set -x
 
 x11vnc \
-  -ncache 10 \
   -forever \
   -display :0 \
   -auth /var/run/lightdm/reed/xauthority \
