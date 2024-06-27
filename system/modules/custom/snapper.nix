@@ -20,11 +20,11 @@ in
         ALLOW_USERS = cfg.allowedUsers;
         TIMELINE_CREATE = true;
         TIMELINE_CLEANUP = true;
-        TIMELINE_LIMIT_HOURLY = 168;
-        TIMELINE_LIMIT_DAILY = 365;
-        TIMELINE_LIMIT_WEEKLY = 100;
-        TIMELINE_LIMIT_MONTHLY = 36;
-        TIMELINE_LIMIT_YEARLY = 0;
+        TIMELINE_LIMIT_HOURLY = "168";
+        TIMELINE_LIMIT_DAILY = "365";
+        TIMELINE_LIMIT_WEEKLY = "100";
+        TIMELINE_LIMIT_MONTHLY = "36";
+        TIMELINE_LIMIT_YEARLY = "0";
       };
     };
   };
