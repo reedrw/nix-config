@@ -17,23 +17,23 @@
     notification = false;
   }) run;
 
-  systemd.user.services = let
-    mkSimpleService = name: ExecStart: {
-      ${name} = {
-        Unit = {
-          Description = "${name}";
-          After = [ "graphical.target" ];
-        };
-        Install = {
-          WantedBy = [ "default.target" ];
-        };
-        Service = {
-          inherit ExecStart;
-          Restart = "on-failure";
-          RestartSec = 5;
-          Type = "simple";
-        };
-      };
-    };
-  in mkSimpleService "x11vnc" "${pkgs.writeNixShellScript "x11vnc" (builtins.readFile ./scripts/x11vnc.sh)}/bin/x11vnc";
+  # systemd.user.services = let
+  #   mkSimpleService = name: ExecStart: {
+  #     ${name} = {
+  #       Unit = {
+  #         Description = "${name}";
+  #         After = [ "graphical.target" ];
+  #       };
+  #       Install = {
+  #         WantedBy = [ "default.target" ];
+  #       };
+  #       Service = {
+  #         inherit ExecStart;
+  #         Restart = "on-failure";
+  #         RestartSec = 5;
+  #         Type = "simple";
+  #       };
+  #     };
+  #   };
+  # in mkSimpleService "x11vnc" "${pkgs.writeNixShellScript "x11vnc" (builtins.readFile ./scripts/x11vnc.sh)}/bin/x11vnc";
 }
