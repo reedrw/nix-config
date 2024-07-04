@@ -48,7 +48,7 @@ in
         activateCommand = "ldp";
         persistJson = "/home/reed/.config/nixpkgs/system/${config.networking.hostName}/persist.json";
         snapper = {
-          enable = true;
+          enable = builtins.hasAttr "persist" config.services.snapper.configs;
           config = "persist";
         };
       };
