@@ -84,6 +84,12 @@ in
               class = "The Honkers Railway Launcher";
             };
           }
+          {
+            command = "floating enable";
+            criteria = {
+              class = "Sleepy Launcher";
+            };
+          }
         ] ++ map ( class: {
           command = "border pixel 0";
           criteria = {

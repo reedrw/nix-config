@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, config, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   imports = [
@@ -59,6 +59,11 @@
   };
 
   custom.aagl = {
+    enable = true;
+    mullvad-exclude = true;
+  };
+
+  custom.zzz = {
     enable = true;
     mullvad-exclude = true;
   };
