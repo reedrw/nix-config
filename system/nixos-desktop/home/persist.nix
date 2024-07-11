@@ -17,9 +17,9 @@ in
     inputs.impermanence.nixosModules.home-manager.impermanence
   ];
 
-  home.persistence."${osConfig.custom.persistDir}/${homeDir}" = {
-    allowOther = true;
-    files = [] ++ files;
-    directories = [] ++ directories;
-  };
+  # home.persistence."${osConfig.custom.persistDir}/${homeDir}" = {
+  #   allowOther = true;
+  #   files = [] ++ files;
+  #   directories = [] ++ directories;
+  # };
 }
