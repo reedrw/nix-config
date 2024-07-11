@@ -44,7 +44,7 @@ in
       {
         plugin = galaxyline-nvim;
         type = "lua";
-        config = with config.colorScheme.palette; ''
+        config = with config.lib.stylix.scheme; ''
           local colors = {
             blank = '#${base00}',
             bg = '#${base01}',
@@ -119,7 +119,7 @@ in
       set cursorline
       set inccommand=nosplit
 
-      colorscheme base16-${config.colorScheme.slug}
+      colorscheme base16-${config.lib.stylix.scheme.scheme-slug}
 
       " Make line wrapping nicer
       set breakindent

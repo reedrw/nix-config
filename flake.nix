@@ -7,9 +7,9 @@ rec {
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     NUR.url = "github:nix-community/NUR";
-    nix-colors.url = "github:misterio77/nix-colors";
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
+    stylix.url = "github:danth/stylix";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";

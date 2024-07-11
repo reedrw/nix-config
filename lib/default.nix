@@ -154,7 +154,7 @@ rec {
       {
         home-manager = {
           users.${username}.imports = hm.modules;
-          extraSpecialArgs = specialArgs;
+          extraSpecialArgs = specialArgs // { asNixosModule = true; };
           useGlobalPkgs = true;
           backupFileExtension = "backup";
         };
@@ -182,6 +182,7 @@ rec {
         # configuration that is importing it. We need to set this parameter manually when
         # building a standalone home-manager generation.
         osConfig = inputs.self.nixosConfigurations."${host}".config;
+        asNixosModule = false;
       };
     in {
       "${username}@${host}" = inputs.home-manager.lib.homeManagerConfiguration {

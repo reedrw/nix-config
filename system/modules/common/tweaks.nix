@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.journald.extraConfig = "SystemMaxUse=500M";
@@ -13,18 +13,7 @@
   services.dbus.implementation = "broker";
 
   # set console colors
-  console.colors = with inputs.nix-colors.colorSchemes.horizon-terminal-dark.palette; let
-    black   = base00;
-    blue    = base0D;
-    cyan    = base0C;
-    green   = base0B;
-    grey    = base03;
-    magenta = base0E;
-    red     = base08;
-    white   = base05;
-    yellow  = base0A;
-  in [ black red green yellow blue magenta cyan white
-        grey red green yellow blue magenta cyan white ];
+  stylix.targets.console.enable = true;
 
   systemd = let
     extraConfig = ''

@@ -1,6 +1,6 @@
 { config,  ... }:
 
-with config.colorScheme.palette; builtins.toFile "theme.rasi" ''
+with config.lib.stylix.scheme; builtins.toFile "theme.rasi" ''
   configuration {
     font: "${config.programs.rofi.font}";
 

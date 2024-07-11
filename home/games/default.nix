@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     prismlauncher
   ];
-  home.file = with config.colorscheme.palette; {
+  home.file = with config.lib.stylix.scheme; {
     "${lib.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
       colors = {
         AlternateBase = "#${base02}";

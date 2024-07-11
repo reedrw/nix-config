@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... } @ args:
 let
   alwaysRun = with pkgs; [
-    "${lib.getExe feh} --bg-fill ${./wallpaper.jpg} --no-fehbg"
+    "${lib.getExe feh} --bg-fill ${config.stylix.image} --no-fehbg"
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
@@ -33,6 +33,8 @@ in
 
   home.packages = [ pkgs.lockProgram ];
 
+  stylix.targets.i3.enable = true;
+
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;
@@ -51,19 +53,6 @@ in
         floating.titlebar = false;
         modifier = "Mod1";
         terminal = config.home.sessionVariables.TERMINAL;
-        colors = with config.colorScheme.palette; let
-          focused = lib.genAttrs [
-            "border" "childBorder" "background" "text" "indicator"
-          ] (_: "#${base07}");
-          inactive = lib.genAttrs [
-            "border" "childBorder" "background" "text" "indicator"
-          ] (_: "#${base03}");
-        in {
-          inherit focused;
-          focusedInactive = inactive;
-          unfocused = inactive;
-          urgent = inactive;
-        };
         window.commands = [
           {
             command = "floating enable";

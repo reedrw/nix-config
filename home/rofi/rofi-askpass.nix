@@ -2,7 +2,7 @@
 
 {
   programs.zsh.initExtra = let
-    askpass-rasi = with config.colorScheme.palette; builtins.toFile "askpass.rasi" ''
+    askpass-rasi = with config.lib.stylix.scheme; builtins.toFile "askpass.rasi" ''
       * {
         background-color: #${base01};
         text-color:       #${base07};

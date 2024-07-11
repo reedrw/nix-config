@@ -40,6 +40,8 @@ let
 in
 {
 
+  stylix.targets.firefox.enable = true;
+
   programs.firefox = {
     enable = true;
     # Exclude firefox from mullvad. I use the FoxyProxy extension

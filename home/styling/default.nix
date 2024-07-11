@@ -1,9 +1,20 @@
-{ inputs, config, pkgs, ... }:
+{ inputs, config, osConfig, asNixosModule, pkgs, lib, ... }:
 
-with inputs.nix-colors;
 {
-  imports = [ homeManagerModule ];
-  colorScheme = colorSchemes.horizon-terminal-dark;
+  imports = lib.optionals (!asNixosModule) [
+    inputs.stylix.homeManagerModules.stylix
+    {
+      stylix = {
+        inherit (osConfig.stylix)
+          enable
+          autoEnable
+          base16Scheme
+          image
+        ;
+      };
+    }
+  ];
+
 
   home = {
     packages = with pkgs; [
@@ -22,20 +33,18 @@ with inputs.nix-colors;
     };
   };
 
-  home.pointerCursor = {
-    name = "Adwaita";
-    package = pkgs.gnome.adwaita-icon-theme;
-    # name = "Vanilla-DMZ-AA";
-    # package = pkgs.vanilla-dmz;
-    size = 24;
-    # name = "Quintom_Ink";
-    # package = pkgs.quintom-cursor-theme;
-    gtk.enable = true;
-    x11 = {
-      enable = true;
-      #defaultCursor = "Vanilla-DMZ-AA";
-      defaultCursor = "Adwaita";
-    };
+  stylix.targets.gtk = {
+    enable = true;
+    extraCss = ''
+      window {
+        padding: 0;
+        box-shadow: none;
+      }
+      decoration {
+        padding: 0;
+        border: 0px;
+      }
+    '';
   };
 
   xdg.configFile = {
@@ -104,28 +113,14 @@ with inputs.nix-colors;
       force_raster_widgets=1
       ignored_applications=@Invalid()
     '';
-    "gtk-4.0/gtk.css".text = ''
-      window {
-        padding: 0;
-        box-shadow: none;
-      }
-    '';
-    "gtk-3.0/gtk.css".text = ''
-      decoration {
-        padding: 0;
-      }
-    '';
   };
 
   gtk = {
     enable = true;
-    theme.name = "Adwaita-dark";
+    # theme.name = "Adwaita-dark";
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
-    };
-    cursorTheme = {
-      inherit (config.home.pointerCursor) name package size;
     };
     gtk2 = {
       configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc-2.0";
