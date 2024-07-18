@@ -3,39 +3,37 @@ let
   sources = import ./nix/sources.nix { };
 in
 {
-  programs = {
-    direnv = {
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv = {
       enable = true;
-      enableZshIntegration = true;
-      nix-direnv = {
-        enable = true;
-      };
     };
+  };
 
-    fzf = {
-      enable = true;
-      enableZshIntegration = true;
-    };
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
-    zoxide = {
-      enable = true;
-      enableZshIntegration = true;
-    };
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
-    tmux = {
-      enable = true;
-      extraConfig = ''
-        set -g status off
-        set -g destroy-unattached on
-        set -g mouse on
-        set -g default-terminal 'tmux-256color'
-        set -ga terminal-overrides ',kitty:RGB'
-        set -s escape-time 0
-        set -g history-limit 10000
-        set -g allow-passthrough on
-        # set -g popup-border-lines none
-      '';
-    };
+  programs.tmux = {
+    enable = true;
+    extraConfig = ''
+      set -g status off
+      set -g destroy-unattached on
+      set -g mouse on
+      set -g default-terminal 'tmux-256color'
+      set -ga terminal-overrides ',kitty:RGB'
+      set -s escape-time 0
+      set -g history-limit 10000
+      set -g allow-passthrough on
+      # set -g popup-border-lines none
+    '';
   };
 
   # We set ZDOTDIR at system level, so we don't need
@@ -166,10 +164,6 @@ in
         --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
         --info=hidden
         --no-separator
-        # --color=bg+:#${base02},bg:#${base01},spinner:#${base0C},hl:#${base0B}
-        # --color=fg:#${base04},header:#${base0D},info:#${base0A},pointer:#${base02}
-        # --color=marker:#${base0C},fg+:#${base06},prompt:#${base08},hl+:#${base0B}
-        # --color=gutter:#${base01}
       )
 
       FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
