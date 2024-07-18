@@ -44,7 +44,6 @@
     "/home/reed/.local/share/direnv",
     "/home/reed/.local/share/gnupg",
     "/home/reed/.local/share/home-manager",
-    "/home/reed/.local/share/mods",
     "/home/reed/.local/share/nix",
     "/home/reed/.local/share/ranger",
     "/home/reed/.local/share/sleepy-launcher",
@@ -71,7 +70,6 @@
     "/var/lib/libvirt",
     "/var/lib/nixos",
     "/var/lib/private/foldingathome",
-    "/var/lib/private/ollama",
     "/var/lib/systemd",
     "/var/lib/tailscale"
   ]
