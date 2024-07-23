@@ -31,6 +31,8 @@
   #   extraArgs = [ "--power" "light" ];
   # };
 
+  programs.honkers-launcher.enable = true;
+
   myUsers.reed.enable = true;
 
   custom = {
