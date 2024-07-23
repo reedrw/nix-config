@@ -13,13 +13,13 @@ let
   directories = builtins.map (v: builtins.substring (builtins.stringLength homeDir) 999999999 v) homeDirs;
 in
 {
-  imports = [
-    inputs.impermanence.nixosModules.home-manager.impermanence
-  ];
-
-  home.persistence."${osConfig.custom.persistDir}/${homeDir}" = {
-    allowOther = true;
-    files = [] ++ files;
-    directories = [] ++ directories;
-  };
+  # imports = [
+  #   inputs.impermanence.nixosModules.home-manager.impermanence
+  # ];
+  #
+  # home.persistence."${osConfig.custom.persistDir}/${homeDir}" = {
+  #   allowOther = true;
+  #   files = [] ++ files;
+  #   directories = [] ++ directories;
+  # };
 }
