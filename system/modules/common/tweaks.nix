@@ -43,10 +43,28 @@
   system.activationScripts.diff = {
     supportsDryActivation = true;
     text = ''
-      ${lib.getExe pkgs.nvd} \
-        --color=always \
-        --nix-bin-dir=${config.nix.package}/bin \
-        diff /run/current-system "$systemConfig"
+      if [[ -e /run/current-system ]]; then
+        echo
+        ${lib.getExe pkgs.nushell} -c "
+          let diff_closure = ${lib.getExe pkgs.nix} store diff-closures /run/current-system '$systemConfig';
+          if \$diff_closure != \"\" {
+            let table = \$diff_closure
+            | lines
+            | where \$it =~ KiB
+            | where \$it =~ →
+            | parse -r '^(?<Package>\S+): (?<Old_Version>[^,]+)(?:.*) → (?<New_Version>[^,]+)(?:.*, )(?<DiffBin>.*)$'
+            | insert Diff {
+              get DiffBin
+              | ansi strip
+              | str trim -l -c '+'
+              | into filesize
+            }
+            | reject DiffBin
+            | sort-by -r Diff; print \$table; \$table
+            | math sum
+          }
+        "
+      fi
     '';
   };
 
