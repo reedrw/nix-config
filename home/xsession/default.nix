@@ -61,42 +61,28 @@ in
               title = "float";
             };
           }
-          {
-            command = "floating enable";
-            criteria = {
-              class = "An Anime Game Launcher";
-            };
-          }
-          {
-            command = "floating enable";
-            criteria = {
-              class = "The Honkers Railway Launcher";
-            };
-          }
-          {
-            command = "floating enable";
-            criteria = {
-              class = "Sleepy Launcher";
-            };
-          }
+        ] ++ map ( class: {
+          command = "floating enable";
+          criteria.class = class;
+        }) [
+          # Window classes that should float by default
+          "An Anime Game Launcher"
+          "The Honkers Railway Launcher"
+          "Sleepy Launcher"
         ] ++ map ( class: {
           command = "border pixel 0";
           criteria = {
             inherit class;
           };
         }) [
+          # Window classes that should have no border
           "firefox"
           "mpv"
-          "Alacritty"
           "kitty"
           "TelegramDesktop"
-          "Element"
           "easyeffects"
           "vesktop"
-          "Pavucontrol"
           "Zathura"
-          ".blueman-manager-wrapped"
-          ".gamescope-wrapped"
         ];
         startup = map ( command: {
           inherit command;
