@@ -3,6 +3,9 @@
 {
   home.packages = with pkgs; [
     prismlauncher
+    (aliasToPackage {
+      quake = "${lib.getExe ironwail} -basedir ~/.local/share/Steam/steamapps/common/Quake";
+    })
   ];
   xdg.dataFile = with config.lib.stylix.scheme; {
     "PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
