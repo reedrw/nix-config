@@ -44,7 +44,6 @@
     supportsDryActivation = true;
     text = ''
       if [[ -e /run/current-system ]]; then
-        echo
         ${lib.getExe pkgs.nushell} -c "
           let diff_closure = ${lib.getExe pkgs.nix} store diff-closures /run/current-system '$systemConfig';
           if \$diff_closure != \"\" {
