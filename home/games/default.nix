@@ -4,8 +4,8 @@
   home.packages = with pkgs; [
     prismlauncher
   ];
-  home.file = with config.lib.stylix.scheme; {
-    "${lib.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
+  xdg.dataFile = with config.lib.stylix.scheme; {
+    "PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
       colors = {
         AlternateBase = "#${base02}";
         Base = "#${base00}";
@@ -27,9 +27,9 @@
       qssFilePath = "themeStyle.css";
       widgets = "Fusion";
     };
-    "${lib.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/themeStyle.css".text = ''
+    "PrismLauncher/themes/base16/themeStyle.css".text = ''
       QToolTip { color: #ffffff; background-color: #${base0D}; border: 1px solid white; }
     '';
-    "${lib.removeHomeDirPrefix config.xdg.dataHome}/PrismLauncher/themes/base16/resources".source = pkgs.emptyDirectory;
+    "PrismLauncher/themes/base16/resources".source = pkgs.emptyDirectory;
   };
 }
