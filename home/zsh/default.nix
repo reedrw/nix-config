@@ -1,4 +1,4 @@
-{ config, osConfig, inputs, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
 in
@@ -239,7 +239,7 @@ in
       ??(){
         mods "$@"
       }
-    '' + import ./command-not-found.nix { inherit config inputs pkgs; };
+    '';
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
