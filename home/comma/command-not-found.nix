@@ -18,6 +18,7 @@ in
         alias leave="noglob exit"
         alias exit="kill -9 $(ps -o ppid="" | sed -n 2p | xargs)"
         color="yellow"
+        force_draw=1
       else
         color="green"
       fi

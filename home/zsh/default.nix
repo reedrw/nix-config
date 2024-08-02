@@ -119,6 +119,8 @@ in
         PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
       fi
 
+      PROMPT_ORIG=$PROMPT
+
       ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
       ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
       ZSH_THEME_GIT_PROMPT_DIRTY=" *"
@@ -155,6 +157,28 @@ in
       fpath_backup=("''${(@)fpath}")
       add-zsh-hook precmd set-completions-from-path
       add-zsh-hook chpwd set-completions-from-path
+
+      # Draw a horizontal line between commands
+      first_command_sent=0
+      line_not_drawn=1
+      force_draw=0
+      function draw-separator-line() {
+        if [[ $first_command_sent -eq 1 || force_draw -eq 1 ]] && [[ $line_not_drawn -eq 1 ]]; then
+          PROMPT=$'%{%F{#${base02}}%}%{\e(0%}''${(r:$COLUMNS::q:)}%{\e(B%}'$PROMPT
+          line_not_drawn=0
+        fi
+        first_command_sent=1
+      }
+
+      function clear() {
+        PROMPT="$PROMPT_ORIG"
+        first_command_sent=0
+        line_not_drawn=1
+        force_draw=0
+        command clear
+      }
+
+      add-zsh-hook precmd draw-separator-line
 
       FZF_TAB_FLAGS=(
         -i
