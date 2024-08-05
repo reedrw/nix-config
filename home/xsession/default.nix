@@ -53,29 +53,30 @@ in
         floating.titlebar = false;
         modifier = "Mod1";
         terminal = config.home.sessionVariables.TERMINAL;
-        window.commands = [
-          {
-            command = "floating enable";
-            criteria = {
-              class = "Alacritty";
-              title = "float";
-            };
-          }
-        ] ++ map ( class: {
+        window.commands = let
+          commandForWindows = { command }: map (window: {
+            inherit command;
+            criteria = if builtins.isAttrs window
+              then window else {
+                class = window;
+              };
+          });
+        in [ ]
+        ++ commandForWindows {
           command = "floating enable";
-          criteria.class = class;
-        }) [
-          # Window classes that should float by default
+        } [
           "An Anime Game Launcher"
           "The Honkers Railway Launcher"
+          "Honkers Launcher"
           "Sleepy Launcher"
-        ] ++ map ( class: {
+          {
+            class = "Alacritty";
+            title = "float";
+          }
+        ]
+        ++ commandForWindows {
           command = "border pixel 0";
-          criteria = {
-            inherit class;
-          };
-        }) [
-          # Window classes that should have no border
+        } [
           "firefox"
           "mpv"
           "kitty"
@@ -83,6 +84,15 @@ in
           "easyeffects"
           "vesktop"
           "Zathura"
+        ]
+        ++ commandForWindows {
+          command = "fullscreen enable";
+        } [
+          "mpv"
+          {
+            class = "TelegramDesktop";
+            title = "Media viewer";
+          }
         ];
         startup = map ( command: {
           inherit command;
