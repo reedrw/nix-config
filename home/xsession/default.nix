@@ -29,6 +29,7 @@ in
 {
   imports = [
     ./keybinds.nix
+    ./xdgApps.nix
   ];
 
   home.packages = [ pkgs.lockProgram ];
