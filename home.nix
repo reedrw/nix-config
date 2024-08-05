@@ -36,6 +36,7 @@ let
     jq          # json processor
     libnotify   # notification library
     libreoffice # free office suite
+    loupe       # image viewer
     ngrok       # port tunneling
     pwvucontrol # volume control
     pipr        # interactive pipeline builder

@@ -29,8 +29,6 @@ let
     imagemagick
     jq
     libarchive
-    libreoffice
-    loupe
     mediainfo
     poppler_utils
     tmux
@@ -97,29 +95,6 @@ in
     '';
 
     "ranger/rifle.conf".text = ''
-      ext doc, flag f = libreoffice "$@"
-      ext docx, flag f = libreoffice "$@"
-      ext flac = mpv --force-window -- "$@"
-      ext wav =  mpv --force-window -- "$@"
-      ext ogg =  mpv --force-window -- "$@"
-      ext mp3 =  mpv --force-window -- "$@"
-      ext gif, flag f = loupe -- "$@"
-      ext png, flag f = loupe -- "$@"
-      ext jpg, flag f = loupe -- "$@"
-      ext jpeg, flag f = loupe -- "$@"
-      ext mkv, flag f = mpv -- "$@"
-      ext mov, flag f = mpv -- "$@"
-      ext mp4, flag f = mpv -- "$@"
-      ext pdf, flag f = zathura -- "$@"
-      ext webm, flag f = mpv -- "$@"
-      ext js = ''${VISUAL:-$EDITOR} -- "$@"
-      ext yaml = ''${VISUAL:-$EDITOR} -- "$@"
-      ext yml = ''${VISUAL:-$EDITOR} -- "$@"
-      ext json = ''${VISUAL:-$EDITOR} -- "$@"
-      ext nix = ''${VISUAL:-$EDITOR} -- "$@"
-      ext sh = ''${VISUAL:-$EDITOR} -- "$@"
-      ext rs = ''${VISUAL:-$EDITOR} -- "$@"
-      ext hs = ''${VISUAL:-$EDITOR} -- "$@"
       mime ^text,  label editor = $EDITOR -- "$@"
     '';
 
