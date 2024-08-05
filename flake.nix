@@ -5,11 +5,16 @@ rec {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
     NUR.url = "github:nix-community/NUR";
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
-    stylix.url = "github:danth/stylix";
+
+    stylix = {
+      url = "github:danth/stylix/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +30,7 @@ rec {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    attic.url = "github:zhaofengli/attic";
+    # attic.url = "github:zhaofengli/attic";
 
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
