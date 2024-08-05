@@ -229,7 +229,7 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      git(){
+      function git(){
         case "$1" in
           ~)
             cd "$(command git rev-parse --show-toplevel)"
@@ -243,7 +243,7 @@ in
         esac
       }
 
-      touch(){
+      function touch(){
         for file in "$@"; do
           if [[ "$file" = */* ]]; then
             mkdir -p "''${file%/*}"
@@ -252,23 +252,19 @@ in
         done
       }
 
-      c(){
+      function c(){
         if [[ -p /dev/stdin ]]; then
           xclip -i -selection clipboard
         else
           xclip -o -selection clipboard
         fi
       }
-
-      ??(){
-        mods "$@"
-      }
     '';
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
       bmount = "${lib.getExe bashmount}";
-      cat = "${lib.getExe bat} --theme=base16 --style='changes,grid,snip,numbers' --paging=never";
+      cat = "${lib.getExe bat} --theme=base16 --style='changes,snip,numbers' --paging=never --wrap=never";
       cd = "z";
       cp = "cp -riv";
       df = "${lib.getExe pydf}";
