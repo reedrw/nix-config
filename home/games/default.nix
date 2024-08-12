@@ -1,11 +1,16 @@
-{ config, pkgs, lib, ... }:
-
+{ config, pkgs, ... }:
+let
+  quakeDir = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/Quake";
+  quake = pkgs.wrapPackage pkgs.ironwail (x: ''
+    pushd ${quakeDir}
+      ${x} "\$@"
+    popd
+  '');
+in
 {
   home.packages = with pkgs; [
     prismlauncher
-    (aliasToPackage {
-      quake = "${lib.getExe ironwail} -basedir ~/.local/share/Steam/steamapps/common/Quake";
-    })
+    quake
   ];
   xdg.dataFile = with config.lib.stylix.scheme; {
     "PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
