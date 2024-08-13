@@ -45,10 +45,10 @@
     users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
   };
 
-  custom.torrents = {
-    enable = true;
-    allowedUsers = [ "reed" ];
-  };
+  # custom.torrents = {
+  #   enable = true;
+  #   allowedUsers = [ "reed" ];
+  # };
 
   custom.steam = {
     enable = true;
