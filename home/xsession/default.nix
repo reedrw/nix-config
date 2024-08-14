@@ -34,6 +34,12 @@ in
 
   home.packages = [ pkgs.lockProgram ];
 
+  home.activation = {
+    reloadI3 = config.lib.dag.entryAfter ["writeBoundary"] ''
+      run i3-msg restart
+    '';
+  };
+
   stylix.targets.i3.enable = true;
 
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
