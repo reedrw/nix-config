@@ -11,6 +11,9 @@ in
     firewall.allowedTCPPorts = [
       # shairport-sync
       5000
+
+      # qbittorrent
+      43173
     ];
     firewall.allowedUDPPortRanges = [
       # shairport-sync
