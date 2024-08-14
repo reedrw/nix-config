@@ -61,16 +61,6 @@ in
     }) sources;
     autocd = true;
     defaultKeymap = "emacs";
-    completionInit = let
-      dumpFile = "${osConfig.custom.persistDir}${config.xdg.dataHome}/zsh/.zcompdump";
-    in ''
-      autoload -U compinit
-      if [[ -f ${dumpFile} ]]; then
-        compinit -d ${dumpFile}
-      else
-        compinit
-      fi
-    '';
     history = {
       save = 99999;
       size = 99999;
