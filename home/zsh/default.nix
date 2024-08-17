@@ -253,11 +253,11 @@ in
     shellAliases = with pkgs; {
       ":q" = "exit";
       "\\$" = "";
-      bmount = "${lib.getExe bashmount}";
+      bmount = lib.getExe bashmount;
       cat = "${lib.getExe bat} --theme=base16 --style='changes,snip,numbers' --paging=never --wrap=never";
       cd = "z";
       cp = "cp -riv";
-      df = "${lib.getExe pydf}";
+      df = lib.getExe pydf;
       gcd = "sudo gc -d";
       ln = "ln -v";
       ls = "${lib.getExe eza} -lh --git -s type";
@@ -273,7 +273,7 @@ in
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
-      watch = "${lib.getExe viddy}";
+      watch = lib.getExe viddy;
       wget = "${lib.getExe wget} --progress=dot:giga";
       x = "exit";
     };

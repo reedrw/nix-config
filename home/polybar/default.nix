@@ -29,7 +29,7 @@ in
       };
       "module/battery" = {
         type = "custom/script";
-        exec = "${lib.getExe bataverage}";
+        exec = lib.getExe bataverage;
         click-left = ''${libnotify}/bin/notify-send "$(acpi | sed -e 's/\%.*/\%/g')"'';
         tail = true;
       };
@@ -56,7 +56,7 @@ in
       };
       "module/screen" = {
         type = "custom/script";
-        exec = "${lib.getExe screenthing}";
+        exec = lib.getExe screenthing;
         click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
         label-padding = 4;
         tail = true;

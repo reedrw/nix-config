@@ -17,7 +17,5 @@ in
     );
   };
 
-  xdg.configFile = {
-    "rofi/roficomma.sh".source = "${lib.getExe roficomma}";
-  };
+  xdg.configFile."rofi/roficomma.sh".source = lib.getExe roficomma;
 }
