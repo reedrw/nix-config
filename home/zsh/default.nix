@@ -11,9 +11,23 @@ in
     };
   };
 
+  stylix.targets.fzf.enable = true;
+
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    defaultOptions = [
+      "--ansi"
+      "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
+      "--border=rounded"
+      "--cycle"
+      "--ignore-case"
+      "--info=hidden"
+      "--layout=reverse"
+      "--multi"
+      "--no-separator"
+      "--tiebreak=begin"
+    ];
   };
 
   programs.zoxide = {
@@ -32,7 +46,7 @@ in
       set -s escape-time 0
       set -g history-limit 10000
       set -g allow-passthrough on
-      # set -g popup-border-lines none
+      set -g popup-border-lines none
     '';
   };
 
@@ -170,23 +184,9 @@ in
 
       add-zsh-hook precmd draw-separator-line
 
-      FZF_TAB_FLAGS=(
-        -i
-        --ansi   # Enable ANSI color support, necessary for showing groups
-        --color=16
-        --layout=reverse
-        --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-        --info=hidden
-        --no-separator
-      )
-
-      FZF_DEFAULT_OPTS="$FZF_TAB_FLAGS"
-
       if [[ "$USER" != "root" ]] && [[ "$TMUX" == *"tmux"* ]]; then
         zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
       fi
-
-      zstyle ':fzf-tab:*' fzf-flags $FZF_TAB_FLAGS
 
       zstyle ':completion:*' sort false
       zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
@@ -269,7 +269,7 @@ in
       rr = "ranger_cd";
       rsync = "rsync --old-args";
       snapper = "snapper -c persist";
-      taskdone = "${libnotify}/bin/notify-send 'Task finished.' && exit";
+      taskdone = "${lib.getExe libnotify} 'Task finished.' && exit";
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
