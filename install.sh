@@ -30,7 +30,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" -L "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -39,11 +39,11 @@ main(){
         output="$2"
       fi
       if grep -q "@" <<< "$output"; then
-        "${nixCommand[@]}" build "$flakePath/.#homeConfigurations.$output.activationPackage" -L --option eval-cache false "${@:3}"
+        "${nixCommand[@]}" build "$flakePath/.#homeConfigurations.$output.activationPackage" -L "${@:3}"
       elif grep -q "nixos-vm" <<< "$output"; then
-        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" -L --option eval-cache false "${@:3}"
+        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" -L "${@:3}"
       else
-        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" -L --option eval-cache false "${@:3}"
+        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" -L "${@:3}"
       fi
       ;;
     --help|-h)
@@ -72,7 +72,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" -L --option eval-cache false "${@:3}"
+      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" -L "${@:3}"
       ;;
   esac
 }
