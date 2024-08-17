@@ -25,9 +25,7 @@ in
       "--info=hidden"
       "--layout=reverse"
       "--multi"
-      "--no-separator"
       "--tiebreak=begin"
-      "--height=-1"
     ];
   };
 
