@@ -1,33 +1,26 @@
 { config, lib, pkgs, ... } @ args:
 let
-  wallpaper-colored = pkgs.stdenv.mkDerivation {
-    name = "wallpaper-colored";
-    buildInputs = [ pkgs.lutgen ];
-    phases = "buildPhase";
-    buildPhase = let
-      fileType = lib.pipe config.stylix.image [
-        (lib.splitString ".")
-        lib.last
-      ];
-      filename = "./wallpaper.${fileType}";
-      colorScheme = lib.pipe config.lib.stylix.colors [
-        (lib.getAttrs [
-          "base00"
-          "base01" "base02" "base03" # "base04"
-          # "base05" "base06" "base07"
-          # "base08" "base09" "base0A" "base0B"
-          # "base0C" "base0D" "base0E" "base0F"
-        ])
-        builtins.attrValues
-        (builtins.concatStringsSep " ")
-      ];
-    in ''
-      cp ${config.stylix.image} ${filename};
-      lutgen apply ${filename} -- ${colorScheme}
-      mkdir -p $out
-      cp ./custom/${filename} $out
-    '';
-  };
+
+  wallpaper-colored = let
+    fileType = lib.pipe config.stylix.image [
+      (lib.splitString ".")
+      lib.last
+    ];
+    filename = "wallpaper.${fileType}";
+    colorScheme = lib.pipe config.lib.stylix.colors [
+      (lib.getAttrs [
+        "base00"
+        "base01" "base02" "base03" # "base04"
+        # "base05" "base06" "base07"
+        # "base08" "base09" "base0A" "base0B"
+        # "base0C" "base0D" "base0E" "base0F"
+      ])
+      builtins.attrValues
+      (builtins.concatStringsSep " ")
+    ];
+  in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
+    lutgen apply -s 36 ${config.stylix.image} -o $out -- ${colorScheme}
+  '';
 
   alwaysRun = with pkgs; [
     "${lib.getExe feh} --bg-fill ${wallpaper-colored} --no-fehbg"
