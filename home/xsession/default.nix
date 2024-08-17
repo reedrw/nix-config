@@ -159,30 +159,12 @@ in
     };
   };
 
-  systemd.user.services = let
-    mkSimpleService = name: ExecStart: {
-      ${name} = {
-        Unit = {
-          Description = "${name}";
-          After = [ "graphical.target" ];
-        };
-        Install = {
-          WantedBy = [ "default.target" ];
-        };
-        Service = {
-          inherit ExecStart;
-          Restart = "on-failure";
-          RestartSec = 5;
-          Type = "simple";
-        };
-      };
-    };
-  in with lib; mergeAttrsList [
-    (mkSimpleService "autotiling" "${getExe pkgs.autotiling}")
-    (mkSimpleService "clipboard-clean" "${getExe scripts.clipboard-clean}")
-    (mkSimpleService "dwebp-serv" "${getExe scripts.dwebp-serv}")
-    (mkSimpleService "mpv-dnd" "${getExe scripts.mpv-dnd}")
-    (mkSimpleService "keybinds" "${getExe scripts.keybinds}")
-    (mkSimpleService "droidcam-fix" "${getExe scripts.droidcam-fix}")
+  systemd.user.services = with lib; mergeAttrsList [
+    (simpleHMService "autotiling" (getExe pkgs.autotiling))
+    (simpleHMService "clipboard-clean" (getExe scripts.clipboard-clean))
+    (simpleHMService "dwebp-serv" (getExe scripts.dwebp-serv))
+    (simpleHMService "mpv-dnd" (getExe scripts.mpv-dnd))
+    (simpleHMService "keybinds" (getExe scripts.keybinds))
+    (simpleHMService "droidcam-fix" (getExe scripts.droidcam-fix))
   ];
 }
