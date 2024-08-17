@@ -27,6 +27,7 @@ in
       "--multi"
       "--no-separator"
       "--tiebreak=begin"
+      "--height=-1"
     ];
   };
 
