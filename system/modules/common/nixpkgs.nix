@@ -1,31 +1,26 @@
-{ nixpkgs-options, nixConfig, inputs, pkgs, ... }:
+{ nixpkgs-options, nixConfig, inputs, pkgs, lib, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
+
+  environment.etc = lib.mapAttrs' (n: v:
+    lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })
+  ) inputs;
 
   nix = {
     package = pkgs.lixVersions.stable;
     settings = {
       auto-optimise-store = true;
-      trusted-users = [ "root" "@wheel" ];
-      # inherit (nixConfig) extra-substituters extra-trusted-public-keys;
+      builders-use-substitutes = true;
+      experimental-features = [ "flakes" "nix-command" "repl-flake" ];
       extra-substituters = nixConfig.extra-substituters ++ [ ];
       extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [ ];
+      keep-derivations = true;
+      keep-outputs = true;
+      trusted-users = [ "root" "@wheel" ];
+      use-xdg-base-directories = true;
     };
-    extraOptions = ''
-      builders-use-substitutes = true
-      keep-derivations = true
-      keep-outputs = true
-      use-xdg-base-directories = true
-      experimental-features = flakes nix-command repl-flake
-    '';
-    nixPath = [
-      "nixpkgs=${inputs.nixpkgs.outPath}"
-      "unstable=${inputs.unstable.outPath}"
-    ];
-    registry = {
-      unstable.flake = inputs.unstable;
-      nixpkgs.flake = inputs.nixpkgs;
-    };
+    nixPath = lib.mapAttrsToList (n: v: "${n}=/etc/nix/inputs/${n}") inputs;
+    registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
   };
 }
