@@ -40,9 +40,13 @@ rec {
   # }}}
 
   nixConfig = {
-    extra-substituters = [ "https://reedrw.cachix.org" ];
+    extra-substituters = [
+      "https://reedrw.cachix.org"
+      "https://ezkea.cachix.org"
+    ];
     extra-trusted-public-keys = [
       "reedrw.cachix.org-1:do9gZInXOYTRPYU+L/x7B90hu1usmnaSFGJl6PN7NC4="
+      "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
     ];
   };
 
