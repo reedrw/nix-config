@@ -1,5 +1,10 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
+  stylix.targets.kitty = {
+    enable = true;
+    variant256Colors = true;
+  };
+
   programs.kitty = {
     enable = true;
     # The -e flag doesn't work when a startup_session is specified.
@@ -15,18 +20,8 @@
       fi
     '');
     # shellIntegration.enableZshIntegration = true;
-    settings = with config.lib.stylix.scheme; let
+    settings = let
       family = "FantasqueSansM Nerd Font";
-
-      black   = "#${base00}";
-      blue    = "#${base0D}";
-      cyan    = "#${base0C}";
-      green   = "#${base0B}";
-      grey    = "#${base03}";
-      magenta = "#${base0E}";
-      red     = "#${base08}";
-      white   = "#${base05}";
-      yellow  = "#${base0A}";
     in {
       font_size = 10;
       font_family = "${family} Bold";
@@ -38,28 +33,6 @@
       enable_audio_bell = false;
       cursor_shape = "beam";
       confirm_os_window_close = 0;
-
-      background = black;
-      foreground = white;
-
-      selection_background = grey;
-
-      color0 = black;
-      color1 = red;
-      color2 = green;
-      color3 = yellow;
-      color4 = blue;
-      color5 = magenta;
-      color6 = cyan;
-      color7 = white;
-      color8 = grey;
-      color9 = red;
-      color10 = green;
-      color11 = yellow;
-      color12 = blue;
-      color13 = magenta;
-      color14 = cyan;
-      color15 = white;
 
       startup_session = "${pkgs.writeText "launch.conf" ''
         launch tmux
