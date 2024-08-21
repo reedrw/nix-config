@@ -262,7 +262,7 @@ in
       ls = "${lib.getExe eza} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
-      nr = "nix repl ~/.config/nixpkgs";
+      nr = "nix repl self";
       ping = "${lib.getExe prettyping} --nolegend";
       rm = "rm -v";
       rr = "ranger_cd";
