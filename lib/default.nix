@@ -78,9 +78,19 @@ rec {
     { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
+      removeImports = lib.filterAttrs (n: v: n != "imports");
+      conditionalImportPathsRecursive = map (x:
+        if builtins.isPath x
+        then {...}: {
+          config = lib.mkIf cfg.enable (removeImports (import x args));
+          imports = conditionalImportPathsRecursive ((import x args).imports or []);
+        }
+        else if builtins.isFunction x
+        then x args
+        else x);
     in
     {
-      imports = (value args).imports or [];
+      imports = conditionalImportPathsRecursive ((value args).imports or []);
 
       options.${moduleName}.${name}.enable = lib.mkOption {
         inherit default;
@@ -88,7 +98,7 @@ rec {
         description = "Whether to enable ${moduleName}.${name}";
       };
 
-      config = lib.mkIf cfg.enable (lib.filterAttrs (n: v: n != "imports") (value args));
+      config = lib.mkIf cfg.enable (removeImports (value args));
     }
   ) dirSet;
 
