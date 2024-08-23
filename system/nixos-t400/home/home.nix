@@ -1,5 +1,3 @@
-{ ... }:
-
 {
   common.dunst.enable = false;
   common.easyeffects.enable = false;
