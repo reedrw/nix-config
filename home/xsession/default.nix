@@ -151,12 +151,12 @@ in
     };
   };
 
-  systemd.user.services = with lib; mergeAttrsList [
-    (simpleHMService "autotiling" (getExe pkgs.autotiling))
-    (simpleHMService "clipboard-clean" (getExe scripts.clipboard-clean))
-    (simpleHMService "dwebp-serv" (getExe scripts.dwebp-serv))
-    (simpleHMService "mpv-dnd" (getExe scripts.mpv-dnd))
-    (simpleHMService "keybinds" (getExe scripts.keybinds))
-    (simpleHMService "droidcam-fix" (getExe scripts.droidcam-fix))
+  systemd.user.services = with config.lib.custom; lib.mergeAttrsList [
+    (mkSimpleService "autotiling" (lib.getExe pkgs.autotiling))
+    (mkSimpleService "clipboard-clean" (lib.getExe scripts.clipboard-clean))
+    (mkSimpleService "dwebp-serv" (lib.getExe scripts.dwebp-serv))
+    (mkSimpleService "mpv-dnd" (lib.getExe scripts.mpv-dnd))
+    (mkSimpleService "keybinds" (lib.getExe scripts.keybinds))
+    (mkSimpleService "droidcam-fix" (lib.getExe scripts.droidcam-fix))
   ];
 }
