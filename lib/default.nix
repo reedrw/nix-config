@@ -29,8 +29,10 @@ rec {
   pkgs = pkgsForSystem system;
   lib = pkgs.lib;
 
-  # mkModuleFromDir :: AttrSet -> [AttrSet -> AttrSet]
+  # mkModulesFromDir :: AttrSet -> [AttrSet -> AttrSet]
   ########################################
+  # WARNING: VERY CURSED CODE AHEAD
+  #
   # Takes a directory name as argument and returns a NixOS module for that
   # directory. The module will be named after the directory.
   #
@@ -78,27 +80,38 @@ rec {
     { config, pkgs, ... } @ args:
     let
       cfg = config.${moduleName}.${name};
-      removeImports = lib.filterAttrs (n: v: n != "imports");
+      module = importAppropriately value;
+
+      # Recursively import the module and its dependencies
+      # this allows submodules to be disabled if the generated
+      # NixOS module is not enabled
       conditionalImportPathsRecursive = map (x:
-        if builtins.isPath x
-        then {...}: {
-          config = lib.mkIf cfg.enable (removeImports (import x args));
-          imports = conditionalImportPathsRecursive ((import x args).imports or []);
+        let
+          module = importAppropriately x;
+        in { ... }: {
+          config = lib.mkIf cfg.enable (getConfig module);
+          imports = conditionalImportPathsRecursive (module.imports or []);
+          options = module.options or {};
         }
-        else if builtins.isFunction x
-        then x args
-        else x);
+      );
+      getConfig = module: (module.config or {}) // (lib.removeAttrs module [ "config" "imports" "options" "_file"]);
+      importAppropriately = module: if (builtins.isPath module || builtins.isString module)
+        then importAppropriately (import module)
+        else if builtins.isFunction module
+          then module args
+          # otherwise, assume it's a set
+          else module;
     in
     {
-      imports = conditionalImportPathsRecursive ((value args).imports or []);
-
-      options.${moduleName}.${name}.enable = lib.mkOption {
-        inherit default;
-        type = lib.types.bool;
-        description = "Whether to enable ${moduleName}.${name}";
-      };
-
-      config = lib.mkIf cfg.enable (removeImports (value args));
+      config = lib.mkIf cfg.enable (getConfig module);
+      imports = conditionalImportPathsRecursive (module.imports or []);
+      options = {
+        ${moduleName}.${name}.enable = lib.mkOption {
+          inherit default;
+          type = lib.types.bool;
+          description = "Whether to enable ${moduleName}.${name}";
+        };
+      } // (module.options or {});
     }
   ) dirSet;
 
