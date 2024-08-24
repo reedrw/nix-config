@@ -6,6 +6,7 @@ dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
 
 nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
+logFormat=(--log-format bar-with-logs -v)
 
 # if SUDO_ASKPASS is set, use sudo -A
 if [ -n "$SUDO_ASKPASS" ]; then
@@ -30,7 +31,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" -L "${@:3}"
+      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" "${logFormat[@]}" "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -39,11 +40,11 @@ main(){
         output="$2"
       fi
       if grep -q "@" <<< "$output"; then
-        "${nixCommand[@]}" build "$flakePath/.#homeConfigurations.$output.activationPackage" -L "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#homeConfigurations.$output.activationPackage" "${@:3}"
       elif grep -q "nixos-vm" <<< "$output"; then
-        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" -L "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" "${@:3}"
       else
-        "${nixCommand[@]}" build "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" -L "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" "${@:3}"
       fi
       ;;
     --help|-h)
@@ -72,7 +73,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" -L "${@:3}"
+      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" "${logFormat[@]}" "${@:3}"
       ;;
   esac
 }
