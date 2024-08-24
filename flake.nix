@@ -30,8 +30,6 @@ rec {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # attic.url = "github:zhaofengli/attic";
-
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -53,7 +51,7 @@ rec {
   outputs = { self, ... } @ inputs: let
     system = "x86_64-linux";
 
-    pkgs = flake.lib.pkgsForSystem system;
+    pkgs = flake.lib.pkgsForSystem inputs.nixpkgs system;
 
     flake.lib = import ./lib {
       inherit inputs nixConfig;
@@ -65,7 +63,7 @@ rec {
     "nixos-vm"
   ] // {
     inherit pkgs inputs;
-    inherit (pkgs) lib;
+    inherit (pkgs) pkgs-unstable lib;
 
     devShells."${system}".default = import ./shell.nix {
       inherit pkgs;
