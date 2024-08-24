@@ -30,6 +30,9 @@ rec {
   pkgs-unstable = pkgsForSystem inputs.unstable system;
   lib = pkgs.lib;
 
+  versionSuffix = "${builtins.substring 0 8 (inputs.self.lastModifiedDate or inputs.self.lastModified)
+	          }_${inputs.self.shortRev or "dirty"}";
+
   # mkModulesFromDir :: AttrSet -> [AttrSet -> AttrSet]
   ########################################
   # WARNING: VERY CURSED CODE AHEAD
@@ -186,7 +189,7 @@ rec {
     ];
 
     # Arguments to pass to our NixOS and home-manager configurations
-    specialArgs = { inherit inputs nixpkgs-options nixConfig pkgs-unstable; };
+    specialArgs = { inherit inputs nixpkgs-options nixConfig pkgs-unstable versionSuffix; };
   in {
     # The actual flake outputs for this host
     nixosConfigurations = {
