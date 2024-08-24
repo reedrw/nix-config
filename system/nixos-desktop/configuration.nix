@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, config, pkgs, ... }:
+{ inputs, config, ... }:
 
 {
   imports = [
@@ -44,11 +44,6 @@
     mutableUsers = false;
     users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
   };
-
-  # custom.torrents = {
-  #   enable = true;
-  #   allowedUsers = [ "reed" ];
-  # };
 
   custom.steam = {
     enable = true;
