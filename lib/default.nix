@@ -20,13 +20,14 @@ rec {
   # pgksForSystem :: String -> AttrSet
   ########################################
   # Takes a system name as argument and returns a nixpkgs set for that system.
-  pkgsForSystem = system:
-    import inputs.nixpkgs (nixpkgs-options.nixpkgs // {
+  pkgsForSystem = src: system:
+    import src (nixpkgs-options.nixpkgs // {
         inherit system;
     });
 
   system = "x86_64-linux";
-  pkgs = pkgsForSystem system;
+  pkgs = pkgsForSystem inputs.nixpkgs system;
+  pkgs-unstable = pkgsForSystem inputs.unstable system;
   lib = pkgs.lib;
 
   # mkModulesFromDir :: AttrSet -> [AttrSet -> AttrSet]
@@ -185,7 +186,7 @@ rec {
     ];
 
     # Arguments to pass to our NixOS and home-manager configurations
-    specialArgs = { inherit inputs nixpkgs-options nixConfig; };
+    specialArgs = { inherit inputs nixpkgs-options nixConfig pkgs-unstable; };
   in {
     # The actual flake outputs for this host
     nixosConfigurations = {

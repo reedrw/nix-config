@@ -6,7 +6,5 @@ _: pkgs:
     nurpkgs = pkgs;
   };
   pinned = import ./pin/pkgs.nix pkgs;
-  fromBranch = {
-    unstable = import inputs.unstable { inherit (pkgs) config system; };
-  };
+  pkgs-unstable = import inputs.unstable { inherit (pkgs) config system; };
 }

@@ -1,7 +1,5 @@
 { pkgs, lib, ... }:
 let
-  inherit (pkgs.fromBranch) unstable;
-
   sources = import ./nix/sources.nix { };
   vencord = p: p.vencord.overrideAttrs (old: rec {
     version = lib.shortenRev sources.vencord.rev;
