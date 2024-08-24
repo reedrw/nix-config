@@ -10,6 +10,7 @@ mkShell {
     ldp
     ncurses
     niv
+    nix
     pre-commit
     shellcheck
 
