@@ -1,4 +1,4 @@
-{ nixpkgs-options, nixConfig, inputs, pkgs, lib, ... }:
+{ nixpkgs-options, nixConfig, inputs, lib, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
@@ -8,7 +8,6 @@
   ) inputs;
 
   nix = {
-    package = pkgs.lixVersions.stable;
     settings = {
       auto-optimise-store = true;
       builders-use-substitutes = true;

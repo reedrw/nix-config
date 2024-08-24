@@ -10,6 +10,8 @@ rec {
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
 
+    lix.url = "github:lix-project/lix";
+
     stylix = {
       url = "github:danth/stylix/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
