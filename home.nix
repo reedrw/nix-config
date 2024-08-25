@@ -4,6 +4,7 @@ let
     # utilities
     cachix    # binary cache
     expect    # interactive automation
+    gc        # garbage collection script
     git       # version control
     gh        # github cli
     moreutils # more scripting tools
@@ -17,12 +18,6 @@ let
 
     # global aliases
     (aliasToPackage {
-      gc = ''
-        if type -P lorri &> /dev/null; then
-          lorri gc rm
-        fi
-        nix-collect-garbage "$@"
-      '';
       hms = ''home-manager switch -L "$@"'';
       pai = ''~/.config/nixpkgs/pull-and-install.sh "$@"'';
     })

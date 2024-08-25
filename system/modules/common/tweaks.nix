@@ -2,6 +2,7 @@
 
 {
   boot.loader.grub.configurationName = lib.mkDefault "Default - ${versionSuffix}";
+  environment.etc."nixos/tree-version".text = versionSuffix;
   services.journald.extraConfig = "SystemMaxUse=500M";
   services.udisks2.enable = true;
 

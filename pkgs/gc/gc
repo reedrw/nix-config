@@ -1,0 +1,56 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p nix
+# vim: filetype=sh
+
+gc() {
+  if type -P lorri &> /dev/null; then
+    lorri gc rm
+  fi
+  nix-collect-garbage "$@"
+}
+
+# Find the NixOS generations which were built from
+# a dirty git tree. My configs link a version file to
+# /etc/nixos/tree-version, which ends with either a
+# git commit hash, or "_dirty".
+findDirty() {
+  local dirty;
+  dirty=();
+
+  # shellcheck disable=SC2010
+  for gen in $(ls /nix/var/nix/profiles | grep -E "system-" | grep -v "$(readlink /nix/var/nix/profiles/system)"); do
+    if [[ ! -f "/nix/var/nix/profiles/$gen/etc/nixos/tree-version" ]]; then
+      continue
+    else
+      local version;
+      version=$(cat "/nix/var/nix/profiles/$gen/etc/nixos/tree-version")
+      if [[ "$version" == *"_dirty" ]]; then
+        dirty+=("$gen")
+      fi
+    fi
+  done
+
+  # echo "${dirty[@]}"
+  for gen in "${dirty[@]}"; do
+    echo "Deleting $gen"
+    rm "/nix/var/nix/profiles/$gen"
+  done
+}
+
+main() {
+  case "${1:-}" in
+    -v|--verbose)
+      set -x
+      shift
+      main "$@"
+    ;;
+    --delete-dirty)
+      findDirty
+    ;;
+    *)
+      gc "$@"
+    ;;
+  esac
+}
+
+main "$@"
