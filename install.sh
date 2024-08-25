@@ -6,7 +6,7 @@ dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
 
 nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
-logFormat=(--log-format bar-with-logs -v)
+logFormat=(--log-format bar-with-logs)
 
 # if SUDO_ASKPASS is set, use sudo -A
 if [ -n "$SUDO_ASKPASS" ]; then
