@@ -50,7 +50,7 @@ rec {
     ];
   };
 
-  outputs = { self, ... } @ inputs: let
+  outputs = { ... } @ inputs: let
     system = "x86_64-linux";
 
     pkgs = flake.lib.pkgsForSystem inputs.nixpkgs system;
