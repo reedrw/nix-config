@@ -10,6 +10,7 @@
           autoEnable
           base16Scheme
           image
+          cursor
         ;
       };
     }
@@ -49,7 +50,6 @@
 
   xdg.configFile = {
     "Trolltech.conf".source = ./Trolltech.conf;
-    #"gtk-3.0/settings.ini".source = ./settings.ini;
     "qt5ct/qt5ct.conf".text = ''
       [Appearance]
       color_scheme_path=${pkgs.qt5ct}/share/qt5ct/colors/airy.conf

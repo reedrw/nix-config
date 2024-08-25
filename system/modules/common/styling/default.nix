@@ -13,8 +13,8 @@
   };
 
   stylix.cursor = {
-    package = pkgs.gnome.adwaita-icon-theme;
-    name = "Adwaita";
+    package = pkgs.openzone-cursors;
+    name = "OpenZone_Black";
     size = 24;
   };
 
