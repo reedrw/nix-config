@@ -1,4 +1,4 @@
-{ writeNixShellScript, ... }:
+{ writeNixShellScript }:
 
 (writeNixShellScript "pin" (builtins.readFile ./pin)).overrideAttrs (old: {
   buildCommand = old.buildCommand + ''

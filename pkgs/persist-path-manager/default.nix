@@ -1,4 +1,4 @@
-{ writeNixShellScript, ... }:
+{ writeNixShellScript }:
 
 (writeNixShellScript "persist" (builtins.readFile ./persist)).overrideAttrs (old: {
   buildCommand = old.buildCommand + ''

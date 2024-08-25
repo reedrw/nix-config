@@ -1,4 +1,4 @@
-{ writeShellScriptBin, ... }:
+{ writeShellScriptBin }:
 
 (writeShellScriptBin "ldp" (''
   if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
