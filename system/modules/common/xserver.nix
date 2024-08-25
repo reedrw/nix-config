@@ -1,5 +1,3 @@
-{ pkgs, ... }:
-
 {
   programs.dconf.enable = true;
   # programs.sway = {
