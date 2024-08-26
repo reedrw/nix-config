@@ -15,6 +15,7 @@ in
       cscale = "ewa_lanczossharp";
       osc = "no";
       volume = 70;
+      screenshot-directory = "~/";
     };
   };
   xdg.configFile = {
