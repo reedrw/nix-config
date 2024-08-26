@@ -6,9 +6,9 @@ let
       (import ../pkgs)
       (import ../pkgs/branches.nix inputs)
       (import ../pkgs/pin/overlay.nix)
-      (import ../pkgs/functions.nix)
       (import ../pkgs/alias.nix inputs)
       (import ../pkgs/lib.nix)
+      (import ../pkgs/functions.nix)
     ];
     config = import ../pkgs/config.nix {
       inherit inputs;
