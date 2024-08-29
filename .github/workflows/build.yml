@@ -56,7 +56,8 @@ jobs:
     - name: Install Nix
       uses: DeterminateSystems/nix-installer-action@v13
       with:
-        source-url: "https://install.lix.systems/lix"
+        source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
+        logger: pretty
 
     - name: Install Cachix
       uses: cachix/cachix-action@v15
