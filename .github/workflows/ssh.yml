@@ -37,16 +37,11 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.inputs.ref }}
 
-    - name: Get nixpkgs commit
-      run: |
-        rev="$(jq -r '.nodes.nixpkgs.locked.rev' ./flake.lock)"
-        echo "nixpkgs-commit=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz" >> $GITHUB_ENV
-
     - name: Install Nix
-      uses: cachix/install-nix-action@V27
+      uses: DeterminateSystems/nix-installer-action@v13
       with:
-        nix_path: nixpkgs=${{ env.nixpkgs-commit }}
-        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+        source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
+        logger: pretty
 
     - name: Install Cachix
       uses: cachix/cachix-action@v15
@@ -54,13 +49,6 @@ jobs:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
-
-    - name: Setup NIX_PATH
-      run: |
-        cat << EOF >> ~/.bash_profile
-        export NIX_PATH=nixpkgs=${{ env.nixpkgs-commit }}
-        source ~/.bashrc
-        EOF
 
     - name: Start SSH via tmate
       uses: P3TERX/ssh2actions@v1.0.0
@@ -93,15 +81,11 @@ jobs:
       with:
         ref: ${{ github.event.inputs.ref }}
 
-    - name: Get nixpkgs commit
-      run: |
-        rev="$(jq -r '.nodes.nixpkgs.locked.rev' ./flake.lock)"
-        echo "nixpkgs-commit=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz" >> $GITHUB_ENV
-
     - name: Install Nix
-      uses: cachix/install-nix-action@V27
+      uses: DeterminateSystems/nix-installer-action@v13
       with:
-        nix_path: nixpkgs=${{ env.nixpkgs-commit }}
+        source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
+        logger: pretty
 
     - name: Install Cachix
       uses: cachix/cachix-action@v15
@@ -109,13 +93,6 @@ jobs:
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
-
-    - name: Setup NIX_PATH
-      run: |
-        cat << EOF >> ~/.bash_profile
-        export NIX_PATH=nixpkgs=${{ env.nixpkgs-commit }}
-        source ~/.bashrc
-        EOF
 
     - name: Start SSH via ngrok
       uses: P3TERX/ssh2actions@v1.0.0
