@@ -35,10 +35,7 @@
     acpilight.enable = true;
   };
 
-  services.btrfs.autoScrub = {
-    enable = true;
-    interval = "weekly";
-  };
+  services.btrfs.autoScrub.enable = true;
 
   custom = {
     persistDir = "/var/persist";

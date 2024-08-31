@@ -60,10 +60,7 @@
     mullvad-exclude = true;
   };
 
-  services.btrfs.autoScrub = {
-    enable = true;
-    interval = "weekly";
-  };
+  services.btrfs.autoScrub.enable = true;
 
   custom.snapper = {
     enable = true;
