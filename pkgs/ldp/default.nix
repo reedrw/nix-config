@@ -1,8 +1,10 @@
-{ writeShellScriptBin }:
+{ writeShellScriptBin
+, flakePath ? ""
+}:
 
 (writeShellScriptBin "ldp" (''
-  if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
-    flakePath="$HOME/.config/nixpkgs"
+  if [ -f "${flakePath}/flake.nix" ]; then
+    flakePath="${flakePath}"
   else
     flakePath="$(pwd)"
   fi
