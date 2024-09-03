@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "ncmpcpp",
         "repo": "ncmpcpp",
-        "rev": "510e28c65ab8dce0d157fca4634b46ce88a7a110",
-        "sha256": "06v324yjrm8y033311v5sjnrwzg331kbf7cyygj45gr6lz051199",
+        "rev": "1d7d5152c64eddab0eb8ebbfcbfd892a12ba3966",
+        "sha256": "1diq5hc1xmi0ghs0rl56iml1cddljn7jrra38bsi7wwhhgw504hx",
         "type": "tarball",
-        "url": "https://github.com/ncmpcpp/ncmpcpp/archive/510e28c65ab8dce0d157fca4634b46ce88a7a110.tar.gz",
+        "url": "https://github.com/ncmpcpp/ncmpcpp/archive/1d7d5152c64eddab0eb8ebbfcbfd892a12ba3966.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
