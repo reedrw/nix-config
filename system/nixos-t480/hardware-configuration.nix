@@ -19,7 +19,10 @@
       options = [ "subvol=root" "compress=zstd" "noatime" ];
     };
 
-  boot.initrd.luks.devices."enc".device = "/dev/disk/by-uuid/577f875c-fd58-4e61-92bf-25c45a057b9d";
+  boot.initrd.luks.devices."enc" = {
+    device = "/dev/disk/by-uuid/577f875c-fd58-4e61-92bf-25c45a057b9d";
+    allowDiscards = true;
+  };
 
   fileSystems."/nix" =
     { device = "/dev/mapper/enc";
