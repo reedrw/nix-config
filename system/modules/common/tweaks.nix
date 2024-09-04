@@ -13,6 +13,8 @@
   '';
 
   services.dbus.implementation = "broker";
+  services.irqbalance.enable = true;
+  services.fstrim.enable = true;
 
   # set console colors
   stylix.targets.console.enable = true;
