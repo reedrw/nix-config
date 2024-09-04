@@ -7,6 +7,7 @@ in
     networkmanager = {
       enable = true;
       insertNameservers = nameservers;
+      wifi.backend = "iwd";
     };
     firewall.allowedTCPPorts = [
       # shairport-sync
