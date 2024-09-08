@@ -23,16 +23,28 @@
         "url": "https://github.com/ekisu/mpv-webm/archive/64844ec52b7a17d621ddceacf77e1e933f856b3c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "mpv_thumbnail_script": {
-        "branch": "nil-props",
-        "description": "A Lua script to show preview thumbnails in mpv's OSC seekbar, sans external dependencies",
-        "homepage": null,
-        "owner": "blankname",
-        "repo": "mpv_thumbnail_script",
-        "rev": "02207094b1882529268b903798a1cda0b4ebabbd",
-        "sha256": "0nh3g4d1sj02r8wc0wnnxx8b44jbrzh7ybppdvxcpr0fah4bjsz6",
+    "thumbfast": {
+        "branch": "master",
+        "description": "High-performance on-the-fly thumbnailer script for mpv",
+        "homepage": "",
+        "owner": "po5",
+        "repo": "thumbfast",
+        "rev": "f1fdf10b17f394f2d42520d0e9bf22feaa20a9f4",
+        "sha256": "0wxcbq4ji6qbbml37w5pdhg43k3mixfn6p3hapf7wc0gxmzhna3k",
         "type": "tarball",
-        "url": "https://github.com/blankname/mpv_thumbnail_script/archive/02207094b1882529268b903798a1cda0b4ebabbd.tar.gz",
+        "url": "https://github.com/po5/thumbfast/archive/f1fdf10b17f394f2d42520d0e9bf22feaa20a9f4.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vanilla-osc": {
+        "branch": "vanilla-osc",
+        "description": "High-performance on-the-fly thumbnailer script for mpv",
+        "homepage": "",
+        "owner": "po5",
+        "repo": "thumbfast",
+        "rev": "5fefc9b8e995cf5e663666aa10649af799e60186",
+        "sha256": "05al2c7mns3lhbg779x0qdmczsfql2ghisp768a39k2gvcwh4wpa",
+        "type": "tarball",
+        "url": "https://github.com/po5/thumbfast/archive/5fefc9b8e995cf5e663666aa10649af799e60186.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
