@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1725882298,
-        "narHash": "sha256-pj3q7WxoSOknlKoGyJ9M9NawuMC0+IF1amd3jsbppdU=",
+        "lastModified": 1725972245,
+        "narHash": "sha256-bMGEPUm5cd7Y7nMelH4Js0Q7YFj4dlZxiBoPfdvWvig=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "3713baa0b8578637f15e1a76cf60be33d60a71db",
+        "rev": "4cd6f7152651683de525856a1ebbc61e67d1f94c",
         "type": "github"
       },
       "original": {
@@ -334,11 +334,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1725846500,
-        "narHash": "sha256-8tzJO3PllVPc0RYE0OfXVWlgTiJxKH1nzXsQLGyFRJ4=",
+        "lastModified": 1725927421,
+        "narHash": "sha256-tiQ9OxiuTb/02xEU2ceo9MIxWBS5Rm/IAhv6QshH8K0=",
         "owner": "lix-project",
         "repo": "lix",
-        "rev": "c14486ae8d3bbc862c625d948a6b2f4dc0927d5b",
+        "rev": "cc183fdbc14ce105a5661d646983f791978b9d5c",
         "type": "github"
       },
       "original": {
@@ -432,11 +432,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1725693463,
-        "narHash": "sha256-ZPzhebbWBOr0zRWW10FfqfbJlan3G96/h3uqhiFqmwg=",
+        "lastModified": 1725826545,
+        "narHash": "sha256-L64N1rpLlXdc94H+F6scnrbuEu+utC03cDDVvvJGOME=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "68e7dce0a6532e876980764167ad158174402c6f",
+        "rev": "f4c846aee8e1e29062aa8514d5e0ab270f4ec2f9",
         "type": "github"
       },
       "original": {
