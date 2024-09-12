@@ -19,7 +19,7 @@
       trusted-users = [ "root" "@wheel" ];
       use-xdg-base-directories = true;
     };
-    nixPath = lib.mapAttrsToList (n: v: "${n}=/etc/nix/inputs/${n}") inputs;
+    nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
     registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
   };
 }
