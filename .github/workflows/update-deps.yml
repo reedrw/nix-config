@@ -36,7 +36,7 @@ jobs:
     - name: Run all "update-sources.sh"
       run: |
         export TERM="xterm"
-        nix-shell --run "update-all"
+        nix develop -L --option accept-flake-config true -c "update-all"
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v7
