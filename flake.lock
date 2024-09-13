@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1726051637,
-        "narHash": "sha256-1qfp/Lu7bZD6mST4V23VFv9IOqxEvpCSFWhDlUE4mto=",
+        "lastModified": 1726230880,
+        "narHash": "sha256-M0MDfCagMMjf9J38N1x2MMzBiGP8ea8w4H4puiJXn3I=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "39e2fc04c9a1b54721b06ed335ff5765ac2a2e1b",
+        "rev": "92b20bfe3eafe2bf4b29acbd8a0f5682511cb542",
         "type": "github"
       },
       "original": {
@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1725308061,
-        "narHash": "sha256-lTGO3P9Ir2ofgOqr0LxZ31IqXS9b3YbAGzVRjgw0Rjo=",
+        "lastModified": 1726146587,
+        "narHash": "sha256-PO0mCOxEdG/DT8zLd2JxeKwyKkgl8GeQWHGWOBx5KGI=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "1645aa494fa5f409360bfeba99f6eaf807f83ed4",
+        "rev": "5ffea71f63aba9d9c868678a14c60c123126ebf4",
         "type": "github"
       },
       "original": {
@@ -334,11 +334,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1726016547,
-        "narHash": "sha256-tB4Y3Rrv67ZdEo3HJzxYL5XX9wqtvWwIX1z8k399W0s=",
+        "lastModified": 1726121662,
+        "narHash": "sha256-SEAWoCiTJUkhWiCx8jj+eWeJhrVk6/NMZIHlILjaYJk=",
         "owner": "lix-project",
         "repo": "lix",
-        "rev": "24db81eaf28259ab8f8334ccd6368673a26ed422",
+        "rev": "b2fc007811a5afc473bf116fe8d38688b3699e25",
         "type": "github"
       },
       "original": {
