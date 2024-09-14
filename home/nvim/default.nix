@@ -195,6 +195,9 @@ in
       autocmd VimEnter * hi Folded cterm=bold ctermfg=DarkBlue ctermbg=none
       autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
 
+      aunmenu PopUp.How-to\ disable\ mouse
+      aunmenu PopUp.-1-
+
       hi CocSearch ctermfg=DarkBlue
 
       " https://stackoverflow.com/questions/1327978/sorting-words-not-lines-in-vim/1328421#1328421
