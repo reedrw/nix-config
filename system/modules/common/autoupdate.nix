@@ -32,7 +32,7 @@ in
         Unit = "autoUpdate.service";
         WakeSystem = true;
         Persistent = false;
-        OnCalendar = "*-*-* 01:25";
+        OnCalendar = "*-*-* 01:40";
       };
       wantedBy = [ "timers.target" ];
     };
@@ -50,7 +50,7 @@ in
 
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${updateScript}/bin/updateScript";
+        ExecStart = "systemd-inhibit --what=handle-lid-switch --why=update ${updateScript}/bin/updateScript";
       };
     };
   };
