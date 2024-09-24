@@ -5,6 +5,7 @@ let
     runtimeInputs = with pkgs; [ git ldp coreutils ];
     text = ''
       set -x
+      sleep 100
       export PATH="/run/wrappers/bin:$PATH"
       export PATH="/run/current-system/sw/bin:$PATH"
       git(){
