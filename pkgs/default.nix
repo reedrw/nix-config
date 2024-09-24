@@ -1,9 +1,8 @@
 self: pkgs:
 {
+  flakePath = "/home/reed/.config/nixpkgs";
   gc = pkgs.callPackage ./gc { };
-  ldp = pkgs.callPackage ./ldp {
-    flakePath = "$HOME/.config/nixpkgs";
-  };
+  ldp = self.callPackage ./ldp { };
   pin = pkgs.callPackage ./pin { };
   persist-path-manager = pkgs.callPackage ./persist-path-manager { };
 }
