@@ -3,10 +3,13 @@ let
   updateScript = pkgs.writeShellApplication {
     name = "updateScript";
     runtimeInputs = with pkgs; [ git ldp coreutils ];
+    runtimeEnv = {
+      PATH = "/run/wrappers/bin:$PATH";
+    };
     text = ''
       set -x
       git(){
-        /run/wrappers/bin/su reed -c "git $*"
+        su reed -c "git $*"
       }
       pushd ${pkgs.flakePath}
         git fetch
@@ -30,7 +33,7 @@ in
         Unit = "autoUpdate.service";
         WakeSystem = true;
         Persistent = false;
-        OnCalendar = "*-*-* 00:35";
+        OnCalendar = "*-*-* 00:45";
       };
       wantedBy = [ "timers.target" ];
     };
