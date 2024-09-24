@@ -1,28 +1,30 @@
 diff --git a/unalix/package_data/ca/ca-bundle.crt b/unalix/package_data/ca/ca-bundle.crt
-index 632fc24..86d6cd8 100644
+index 632fc24..f2c24a5 100644
 --- a/unalix/package_data/ca/ca-bundle.crt
 +++ b/unalix/package_data/ca/ca-bundle.crt
-@@ -1,7 +1,7 @@
+@@ -1,7 +1,9 @@
  ##
  ## Bundle of CA Root Certificates
  ##
 -## Certificate data from Mozilla as of: Tue Feb  1 04:12:05 2022 GMT
-+## Certificate data from Mozilla as of: Tue Jul  2 03:12:04 2024 GMT
++## Certificate data from Mozilla as of: Tue Sep 24 03:12:04 2024 GMT
++##
++## Find updated versions here: https://curl.se/docs/caextract.html
  ##
  ## This is a bundle of X.509 certificates of public Certificate Authorities
  ## (CA). These were automatically extracted from Mozilla's root certificates
-@@ -13,8 +13,8 @@
+@@ -13,8 +15,8 @@
  ## an Apache+mod_ssl webserver for SSL client authentication.
  ## Just configure this file as the SSLCACertificateFile.
  ##
 -## Conversion done with mk-ca-bundle.pl version 1.28.
 -## SHA256: 187ef9dc231135324fe78830cf4462f1ecdeab3e6c9d5e38d623391e88dc5d3c
 +## Conversion done with mk-ca-bundle.pl version 1.29.
-+## SHA256: 456ff095dde6dd73354c5c28c73d9c06f53b61a803963414cb91a1d92945cdd3
++## SHA256: 36105b01631f9fc03b1eca779b44a30a1a5890b9bf8dc07ccb001a07301e01cf
  ##
  
  
-@@ -200,27 +200,6 @@ vGJHvOB0K7Lrfb5BG7XARsWhIstfTsEokt4YutUqKLsRixeTmJlglFwjz1onl14LBQaTNx47aTbr
+@@ -200,27 +202,6 @@ vGJHvOB0K7Lrfb5BG7XARsWhIstfTsEokt4YutUqKLsRixeTmJlglFwjz1onl14LBQaTNx47aTbr
  qZ5hHY8y2o4M1nQ+ewkk2gF3R8Q7zTSMmfXK4SVhM7JZG+Ju1zdXtg2pEto=
  -----END CERTIFICATE-----
  
@@ -50,7 +52,7 @@ index 632fc24..86d6cd8 100644
  XRamp Global CA Root
  ====================
  -----BEGIN CERTIFICATE-----
-@@ -489,29 +468,6 @@ IGfE7vmLV2H0knZ9P4SNVbfo5azV8fUZVqZa+5Acr5Pr5RzUZ5ddBA6+C4OmF4O5MBKgxTMVBbkN
+@@ -489,29 +470,6 @@ IGfE7vmLV2H0knZ9P4SNVbfo5azV8fUZVqZa+5Acr5Pr5RzUZ5ddBA6+C4OmF4O5MBKgxTMVBbkN
  +8cFduPYSo38NBejxiEovjBFMR7HeL5YYTisO+IBZQ==
  -----END CERTIFICATE-----
  
@@ -80,7 +82,7 @@ index 632fc24..86d6cd8 100644
  COMODO ECC Certification Authority
  ==================================
  -----BEGIN CERTIFICATE-----
-@@ -626,26 +582,6 @@ NwUASZQDhETnv0Mxz3WLJdH0pmT1kvarBes96aULNmLazAZfNou2XjG4Kvte9nHfRCaexOYNkbQu
+@@ -626,26 +584,6 @@ NwUASZQDhETnv0Mxz3WLJdH0pmT1kvarBes96aULNmLazAZfNou2XjG4Kvte9nHfRCaexOYNkbQu
  dZWAUWpLMKawYqGT8ZvYzsRjdT9ZR7E=
  -----END CERTIFICATE-----
  
@@ -107,7 +109,7 @@ index 632fc24..86d6cd8 100644
  SecureSign RootCA11
  ===================
  -----BEGIN CERTIFICATE-----
-@@ -712,39 +648,6 @@ YIvDQVETI53O9zJrlAGomecsMx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7r
+@@ -712,39 +650,6 @@ YIvDQVETI53O9zJrlAGomecsMx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7r
  kpeDMdmztcpHWD9f
  -----END CERTIFICATE-----
  
@@ -147,7 +149,7 @@ index 632fc24..86d6cd8 100644
  Izenpe.com
  ==========
  -----BEGIN CERTIFICATE-----
-@@ -993,60 +896,6 @@ tnRGEmyR7jTV7JqR50S+kDFy1UkC9gLl9B/rfNmWVan/7Ir5mUf/NVoCqgTLiluHcSmRvaS0eg29
+@@ -993,60 +898,6 @@ tnRGEmyR7jTV7JqR50S+kDFy1UkC9gLl9B/rfNmWVan/7Ir5mUf/NVoCqgTLiluHcSmRvaS0eg29
  mvVXIwAHIRc/SjnRBUkLp7Y3gaVdjKozXoEofKd9J+sAro03
  -----END CERTIFICATE-----
  
@@ -208,7 +210,7 @@ index 632fc24..86d6cd8 100644
  Actalis Authentication Root CA
  ==============================
  -----BEGIN CERTIFICATE-----
-@@ -1338,40 +1187,6 @@ Y2XQ8xwOFvVrhlhNGNTkDY6lnVuR3HYkUD/GKvvZt5y11ubQ2egZixVxSK236thZiNSQvxaz2ems
+@@ -1338,40 +1189,6 @@ Y2XQ8xwOFvVrhlhNGNTkDY6lnVuR3HYkUD/GKvvZt5y11ubQ2egZixVxSK236thZiNSQvxaz2ems
  WWFUyBy6ysHK4bkgTI86k4mloMy/0/Z1pHWWbVY=
  -----END CERTIFICATE-----
  
@@ -249,7 +251,7 @@ index 632fc24..86d6cd8 100644
  T-TeleSec GlobalRoot Class 2
  ============================
  -----BEGIN CERTIFICATE-----
-@@ -1708,36 +1523,6 @@ uglB4Zf4+/2a4n0Sye18ZNPLBSWLVtmg515dTguDnFt2KaAJJiFqYgIwcdK1j1zqO+F4CYWodZI7
+@@ -1708,36 +1525,6 @@ uglB4Zf4+/2a4n0Sye18ZNPLBSWLVtmg515dTguDnFt2KaAJJiFqYgIwcdK1j1zqO+F4CYWodZI7
  yFz9SO8NdCKoCOJuxUnOxwy8p2Fp8fc74SrL+SvzZpA3
  -----END CERTIFICATE-----
  
@@ -286,7 +288,7 @@ index 632fc24..86d6cd8 100644
  IdenTrust Commercial Root CA 1
  ==============================
  -----BEGIN CERTIFICATE-----
-@@ -2189,87 +1974,6 @@ F8Io2c9Si1vIY9RCPqAzekYu9wogRlR+ak8x8YF+QnQ4ZXMn7sZ8uI7XpTrXmKGcjBBV09tL7ECQ
+@@ -2189,87 +1976,6 @@ F8Io2c9Si1vIY9RCPqAzekYu9wogRlR+ak8x8YF+QnQ4ZXMn7sZ8uI7XpTrXmKGcjBBV09tL7ECQ
  aaApJUqlyyvdimYHFngVV3Eb7PVHhPOeMTd61X8kreS8/f3MboPoDKi3QWwH3b08hpcv0g==
  -----END CERTIFICATE-----
  
@@ -374,7 +376,7 @@ index 632fc24..86d6cd8 100644
  SSL.com Root Certification Authority RSA
  ========================================
  -----BEGIN CERTIFICATE-----
-@@ -2896,36 +2600,6 @@ vLtoURMMA/cVi4RguYv/Uo7njLwcAjA8+RHUjE7AwWHCFUyqqx0LMV87HOIAl0Qx5v5zli/altP+
+@@ -2896,36 +2602,6 @@ vLtoURMMA/cVi4RguYv/Uo7njLwcAjA8+RHUjE7AwWHCFUyqqx0LMV87HOIAl0Qx5v5zli/altP+
  CAezNIm8BZ/3Hobui3A=
  -----END CERTIFICATE-----
  
@@ -411,7 +413,7 @@ index 632fc24..86d6cd8 100644
  ANF Secure Server Root CA
  =========================
  -----BEGIN CERTIFICATE-----
-@@ -3309,3 +2983,586 @@ PsVq8JQdjDAKBggqhkjOPQQDAwNpADBmAjEA6ED/g94D9J+uHXqnLrmvT/aDHQ4thQEd0dlq7A/C
+@@ -3309,3 +2985,682 @@ PsVq8JQdjDAKBggqhkjOPQQDAwNpADBmAjEA6ED/g94D9J+uHXqnLrmvT/aDHQ4thQEd0dlq7A/C
  r8deVl5c1RxYIigL9zC2L7F8AjEA8GE8p/SgguMh1YQdc4acLa/KNJvxn7kjNuK8YAOdgLOaVsjh
  4rsUecrNIdSUtUlD
  -----END CERTIFICATE-----
@@ -997,6 +999,102 @@ index 632fc24..86d6cd8 100644
 +/wQEAwIBBjAKBggqhkjOPQQDAwNoADBlAjAdfKR7w4l1M+E7qUW/Runpod3JIha3RxEL2Jq68cgL
 +cFBTApFwhVmpHqTm6iMxoAACMQD94vizrxa5HnPEluPBMBnYfubDl94cT7iJLzPrSA8Z94dGXSaQ
 +pYXFuXqUPoeovQA=
++-----END CERTIFICATE-----
++
++TWCA CYBER Root CA
++==================
++-----BEGIN CERTIFICATE-----
++MIIFjTCCA3WgAwIBAgIQQAE0jMIAAAAAAAAAATzyxjANBgkqhkiG9w0BAQwFADBQMQswCQYDVQQG
++EwJUVzESMBAGA1UEChMJVEFJV0FOLUNBMRAwDgYDVQQLEwdSb290IENBMRswGQYDVQQDExJUV0NB
++IENZQkVSIFJvb3QgQ0EwHhcNMjIxMTIyMDY1NDI5WhcNNDcxMTIyMTU1OTU5WjBQMQswCQYDVQQG
++EwJUVzESMBAGA1UEChMJVEFJV0FOLUNBMRAwDgYDVQQLEwdSb290IENBMRswGQYDVQQDExJUV0NB
++IENZQkVSIFJvb3QgQ0EwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDG+Moe2Qkgfh1s
++Ts6P40czRJzHyWmqOlt47nDSkvgEs1JSHWdyKKHfi12VCv7qze33Kc7wb3+szT3vsxxFavcokPFh
++V8UMxKNQXd7UtcsZyoC5dc4pztKFIuwCY8xEMCDa6pFbVuYdHNWdZsc/34bKS1PE2Y2yHer43CdT
++o0fhYcx9tbD47nORxc5zb87uEB8aBs/pJ2DFTxnk684iJkXXYJndzk834H/nY62wuFm40AZoNWDT
++Nq5xQwTxaWV4fPMf88oon1oglWa0zbfuj3ikRRjpJi+NmykosaS3Om251Bw4ckVYsV7r8Cibt4LK
++/c/WMw+f+5eesRycnupfXtuq3VTpMCEobY5583WSjCb+3MX2w7DfRFlDo7YDKPYIMKoNM+HvnKkH
++IuNZW0CP2oi3aQiotyMuRAlZN1vH4xfyIutuOVLF3lSnmMlLIJXcRolftBL5hSmO68gnFSDAS9TM
++fAxsNAwmmyYxpjyn9tnQS6Jk/zuZQXLB4HCX8SS7K8R0IrGsayIyJNN4KsDAoS/xUgXJP+92ZuJF
++2A09rZXIx4kmyA+upwMu+8Ff+iDhcK2wZSA3M2Cw1a/XDBzCkHDXShi8fgGwsOsVHkQGzaRP6AzR
++wyAQ4VRlnrZR0Bp2a0JaWHY06rc3Ga4udfmW5cFZ95RXKSWNOkyrTZpB0F8mAwIDAQABo2MwYTAO
++BgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAWgBSdhWEUfMFib5do5E83
++QOGt4A1WNzAdBgNVHQ4EFgQUnYVhFHzBYm+XaORPN0DhreANVjcwDQYJKoZIhvcNAQEMBQADggIB
++AGSPesRiDrWIzLjHhg6hShbNcAu3p4ULs3a2D6f/CIsLJc+o1IN1KriWiLb73y0ttGlTITVX1olN
++c79pj3CjYcya2x6a4CD4bLubIp1dhDGaLIrdaqHXKGnK/nZVekZn68xDiBaiA9a5F/gZbG0jAn/x
++X9AKKSM70aoK7akXJlQKTcKlTfjF/biBzysseKNnTKkHmvPfXvt89YnNdJdhEGoHK4Fa0o635yDR
++IG4kqIQnoVesqlVYL9zZyvpoBJ7tRCT5dEA7IzOrg1oYJkK2bVS1FmAwbLGg+LhBoF1JSdJlBTrq
++/p1hvIbZv97Tujqxf36SNI7JAG7cmL3c7IAFrQI932XtCwP39xaEBDG6k5TY8hL4iuO/Qq+n1M0R
++FxbIQh0UqEL20kCGoE8jypZFVmAGzbdVAaYBlGX+bgUJurSkquLvWL69J1bY73NxW0Qz8ppy6rBe
++Pm6pUlvscG21h483XjyMnM7k8M4MZ0HMzvaAq07MTFb1wWFZk7Q+ptq4NxKfKjLji7gh7MMrZQzv
++It6IKTtM1/r+t+FHvpw+PoP7UV31aPcuIYXcv/Fa4nzXxeSDwWrruoBa3lwtcHb4yOWHh8qgnaHl
++IhInD0Q9HWzq1MKLL295q39QpsQZp6F6t5b5wR9iWqJDB0BeJsas7a5wFsWqynKKTbDPAYsDP27X
++-----END CERTIFICATE-----
++
++SecureSign Root CA12
++====================
++-----BEGIN CERTIFICATE-----
++MIIDcjCCAlqgAwIBAgIUZvnHwa/swlG07VOX5uaCwysckBYwDQYJKoZIhvcNAQELBQAwUTELMAkG
++A1UEBhMCSlAxIzAhBgNVBAoTGkN5YmVydHJ1c3QgSmFwYW4gQ28uLCBMdGQuMR0wGwYDVQQDExRT
++ZWN1cmVTaWduIFJvb3QgQ0ExMjAeFw0yMDA0MDgwNTM2NDZaFw00MDA0MDgwNTM2NDZaMFExCzAJ
++BgNVBAYTAkpQMSMwIQYDVQQKExpDeWJlcnRydXN0IEphcGFuIENvLiwgTHRkLjEdMBsGA1UEAxMU
++U2VjdXJlU2lnbiBSb290IENBMTIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC6OcE3
++emhFKxS06+QT61d1I02PJC0W6K6OyX2kVzsqdiUzg2zqMoqUm048luT9Ub+ZyZN+v/mtp7JIKwcc
++J/VMvHASd6SFVLX9kHrko+RRWAPNEHl57muTH2SOa2SroxPjcf59q5zdJ1M3s6oYwlkm7Fsf0uZl
++fO+TvdhYXAvA42VvPMfKWeP+bl+sg779XSVOKik71gurFzJ4pOE+lEa+Ym6b3kaosRbnhW70CEBF
++EaCeVESE99g2zvVQR9wsMJvuwPWW0v4JhscGWa5Pro4RmHvzC1KqYiaqId+OJTN5lxZJjfU+1Uef
++NzFJM3IFTQy2VYzxV4+Kh9GtxRESOaCtAgMBAAGjQjBAMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0P
++AQH/BAQDAgEGMB0GA1UdDgQWBBRXNPN0zwRL1SXm8UC2LEzZLemgrTANBgkqhkiG9w0BAQsFAAOC
++AQEAPrvbFxbS8hQBICw4g0utvsqFepq2m2um4fylOqyttCg6r9cBg0krY6LdmmQOmFxv3Y67ilQi
++LUoT865AQ9tPkbeGGuwAtEGBpE/6aouIs3YIcipJQMPTw4WJmBClnW8Zt7vPemVV2zfrPIpyMpce
++mik+rY3moxtt9XUa5rBouVui7mlHJzWhhpmA8zNL4WukJsPvdFlseqJkth5Ew1DgDzk9qTPxpfPS
++vWKErI4cqc1avTc7bgoitPQV55FYxTpE05Uo2cBl6XLK0A+9H7MV2anjpEcJnuDLN/v9vZfVvhga
++aaI5gdka9at/yOPiZwud9AzqVN/Ssq+xIvEg37xEHA==
++-----END CERTIFICATE-----
++
++SecureSign Root CA14
++====================
++-----BEGIN CERTIFICATE-----
++MIIFcjCCA1qgAwIBAgIUZNtaDCBO6Ncpd8hQJ6JaJ90t8sswDQYJKoZIhvcNAQEMBQAwUTELMAkG
++A1UEBhMCSlAxIzAhBgNVBAoTGkN5YmVydHJ1c3QgSmFwYW4gQ28uLCBMdGQuMR0wGwYDVQQDExRT
++ZWN1cmVTaWduIFJvb3QgQ0ExNDAeFw0yMDA0MDgwNzA2MTlaFw00NTA0MDgwNzA2MTlaMFExCzAJ
++BgNVBAYTAkpQMSMwIQYDVQQKExpDeWJlcnRydXN0IEphcGFuIENvLiwgTHRkLjEdMBsGA1UEAxMU
++U2VjdXJlU2lnbiBSb290IENBMTQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDF0nqh
++1oq/FjHQmNE6lPxauG4iwWL3pwon71D2LrGeaBLwbCRjOfHw3xDG3rdSINVSW0KZnvOgvlIfX8xn
++bacuUKLBl422+JX1sLrcneC+y9/3OPJH9aaakpUqYllQC6KxNedlsmGy6pJxaeQp8E+BgQQ8sqVb
++1MWoWWd7VRxJq3qdwudzTe/NCcLEVxLbAQ4jeQkHO6Lo/IrPj8BGJJw4J+CDnRugv3gVEOuGTgpa
++/d/aLIJ+7sr2KeH6caH3iGicnPCNvg9JkdjqOvn90Ghx2+m1K06Ckm9mH+Dw3EzsytHqunQG+bOE
++kJTRX45zGRBdAuVwpcAQ0BB8b8VYSbSwbprafZX1zNoCr7gsfXmPvkPx+SgojQlD+Ajda8iLLCSx
++jVIHvXiby8posqTdDEx5YMaZ0ZPxMBoH064iwurO8YQJzOAUbn8/ftKChazcqRZOhaBgy/ac18iz
++ju3Gm5h1DVXoX+WViwKkrkMpKBGk5hIwAUt1ax5mnXkvpXYvHUC0bcl9eQjs0Wq2XSqypWa9a4X0
++dFbD9ed1Uigspf9mR6XU/v6eVL9lfgHWMI+lNpyiUBzuOIABSMbHdPTGrMNASRZhdCyvjG817XsY
++AFs2PJxQDcqSMxDxJklt33UkN4Ii1+iW/RVLApY+B3KVfqs9TC7XyvDf4Fg/LS8EmjijAQIDAQAB
++o0IwQDAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUBpOjCl4oaTeq
++YR3r6/wtbyPk86AwDQYJKoZIhvcNAQEMBQADggIBAJaAcgkGfpzMkwQWu6A6jZJOtxEaCnFxEM0E
++rX+lRVAQZk5KQaID2RFPeje5S+LGjzJmdSX7684/AykmjbgWHfYfM25I5uj4V7Ibed87hwriZLoA
++ymzvftAj63iP/2SbNDefNWWipAA9EiOWWF3KY4fGoweITedpdopTzfFP7ELyk+OZpDc8h7hi2/Ds
++Hzc/N19DzFGdtfCXwreFamgLRB7lUe6TzktuhsHSDCRZNhqfLJGP4xjblJUK7ZGqDpncllPjYYPG
++FrojutzdfhrGe0K22VoF3Jpf1d+42kd92jjbrDnVHmtsKheMYc2xbXIBw8MgAGJoFjHVdqqGuw6q
++nsb58Nn4DSEC5MUoFlkRudlpcyqSeLiSV5sI8jrlL5WwWLdrIBRtFO8KvH7YVdiI2i/6GaX7i+B/
++OfVyK4XELKzvGUWSTLNhB9xNH27SgRNcmvMSZ4PPmz+Ln52kuaiWA3rF7iDeM9ovnhp6dB7h7sxa
++OgTdsxoEqBRjrLdHEoOabPXm6RUVkRqEGQ6UROcSjiVbgGcZ3GOTEAtlLor6CZpO2oYofaphNdgO
++pygau1LgePhsumywbrmHXumZNTfxPWQrqaA0k89jL9WB365jJ6UeTo3cKXhZ+PmhIIynJkBugnLN
++eLLIjzwec+fBH7/PzqUqm9tEZDKgu39cJRNItX+S
++-----END CERTIFICATE-----
++
++SecureSign Root CA15
++====================
++-----BEGIN CERTIFICATE-----
++MIICIzCCAamgAwIBAgIUFhXHw9hJp75pDIqI7fBw+d23PocwCgYIKoZIzj0EAwMwUTELMAkGA1UE
++BhMCSlAxIzAhBgNVBAoTGkN5YmVydHJ1c3QgSmFwYW4gQ28uLCBMdGQuMR0wGwYDVQQDExRTZWN1
++cmVTaWduIFJvb3QgQ0ExNTAeFw0yMDA0MDgwODMyNTZaFw00NTA0MDgwODMyNTZaMFExCzAJBgNV
++BAYTAkpQMSMwIQYDVQQKExpDeWJlcnRydXN0IEphcGFuIENvLiwgTHRkLjEdMBsGA1UEAxMUU2Vj
++dXJlU2lnbiBSb290IENBMTUwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAQLUHSNZDKZmbPSYAi4Io5G
++dCx4wCtELW1fHcmuS1Iggz24FG1Th2CeX2yF2wYUleDHKP+dX+Sq8bOLbe1PL0vJSpSRZHX+AezB
++2Ot6lHhWGENfa4HL9rzatAy2KZMIaY+jQjBAMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQD
++AgEGMB0GA1UdDgQWBBTrQciu/NWeUUj1vYv0hyCTQSvT9DAKBggqhkjOPQQDAwNoADBlAjEA2S6J
++fl5OpBEHvVnCB96rMjhTKkZEBhd6zlHp4P9mLQlO4E/0BdGF9jVg3PVys0Z9AjBEmEYagoUeYWmJ
++SwdLZrWeqrqgHkHZAXQ6bkU6iYAZezKYVWOr62Nuk22rGwlgMU4=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
 index f2a54b1..28f88d1 100644
