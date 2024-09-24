@@ -3,11 +3,9 @@ let
   updateScript = pkgs.writeShellApplication {
     name = "updateScript";
     runtimeInputs = with pkgs; [ git ldp coreutils ];
-    runtimeEnv = {
-      PATH = "/run/wrappers/bin:$PATH";
-    };
     text = ''
       set -x
+      export PATH="/run/wrappers/bin:$PATH"
       git(){
         su reed -c "git $*"
       }
