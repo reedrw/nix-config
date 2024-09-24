@@ -31,7 +31,7 @@ in
         Unit = "autoUpdate.service";
         WakeSystem = true;
         Persistent = false;
-        OnCalendar = "*-*-* 00:45";
+        OnCalendar = "*-*-* 01:05";
       };
       wantedBy = [ "timers.target" ];
     };
