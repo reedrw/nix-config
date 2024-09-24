@@ -6,6 +6,7 @@ let
     text = ''
       set -x
       export PATH="/run/wrappers/bin:$PATH"
+      export PATH="/run/current-system/sw/bin:$PATH"
       git(){
         su reed -c "git $*"
       }
@@ -31,7 +32,7 @@ in
         Unit = "autoUpdate.service";
         WakeSystem = true;
         Persistent = false;
-        OnCalendar = "*-*-* 01:05";
+        OnCalendar = "*-*-* 01:18";
       };
       wantedBy = [ "timers.target" ];
     };
