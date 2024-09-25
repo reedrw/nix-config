@@ -1,16 +1,20 @@
-{ pkgs , ...}:
+{ pkgs, lib, ...}:
 let
-  updateScript = pkgs.writeShellApplication {
+  updateScript = pkgs.writeShellApplication rec {
     name = "updateScript";
+    meta.mainProgram = name;
     runtimeInputs = with pkgs; [ git ldp coreutils ];
     text = ''
       set -x
       sleep 120
+
       export PATH="/run/wrappers/bin:$PATH"
       export PATH="/run/current-system/sw/bin:$PATH"
+
       git(){
         su reed -c "git $*"
       }
+
       pushd ${pkgs.flakePath}
         git fetch
         if [[ -z "$(git status -s)" ]] \
@@ -48,7 +52,7 @@ in
 
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "systemd-inhibit --what=handle-lid-switch --why=update ${updateScript}/bin/updateScript";
+      ExecStart = "systemd-inhibit --what=handle-lid-switch --why=update ${lib.getExe updateScript}";
     };
   };
 }
