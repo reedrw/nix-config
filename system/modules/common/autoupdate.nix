@@ -5,7 +5,7 @@ let
     runtimeInputs = with pkgs; [ git ldp coreutils ];
     text = ''
       set -x
-      sleep 150
+      sleep 120
       export PATH="/run/wrappers/bin:$PATH"
       export PATH="/run/current-system/sw/bin:$PATH"
       git(){
@@ -33,7 +33,7 @@ in
         Unit = "autoUpdate.service";
         WakeSystem = true;
         Persistent = false;
-        OnCalendar = "*-*-* *:0/10:0";
+        OnCalendar = "*-*-* 03:00:00";
       };
       wantedBy = [ "multi-user.target" ];
     };
