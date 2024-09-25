@@ -25,34 +25,30 @@ let
   };
 in
 {
-  systemd.timers = {
-    autoUpdate = {
-      enable = true;
-      description = "Update the system every night";
-      timerConfig = {
-        Unit = "autoUpdate.service";
-        WakeSystem = true;
-        Persistent = false;
-        OnCalendar = "*-*-* 03:00:00";
-      };
-      wantedBy = [ "multi-user.target" ];
+  systemd.timers.autoUpdate = {
+    enable = true;
+    description = "Update the system every night";
+    timerConfig = {
+      Unit = "autoUpdate.service";
+      WakeSystem = true;
+      Persistent = false;
+      OnCalendar = "*-*-* 03:00:00";
     };
+    wantedBy = [ "multi-user.target" ];
   };
 
-  systemd.services = {
-    autoUpdate = {
-      enable = true;
-      description = "Update the system";
-      unitConfig = {
-        Wants = "network-online.target";
-        After = "network-online.target";
-        ConditionACPower = true;
-      };
+  systemd.services.autoUpdate = {
+    enable = true;
+    description = "Update the system";
+    unitConfig = {
+      Wants = "network-online.target";
+      After = "network-online.target";
+      ConditionACPower = true;
+    };
 
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "systemd-inhibit --what=handle-lid-switch --why=update ${updateScript}/bin/updateScript";
-      };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "systemd-inhibit --what=handle-lid-switch --why=update ${updateScript}/bin/updateScript";
     };
   };
 }
