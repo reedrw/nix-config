@@ -18,7 +18,7 @@ let
         && [[ "$(git log HEAD..origin/master | wc -l)" -gt 0 ]];
         then
           git pull
-          ldp --boot
+          ldp
         fi
       popd
     '';
