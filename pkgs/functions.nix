@@ -62,11 +62,7 @@ in
   ########################################
   # Given a package name, return the corresponding package from nixpkgs.
   matchPackage = pkgName:
-    builtins.foldl' (a: x:
-      if a == ""
-      then pkgs."${x}"
-      else a."${x}"
-    ) "" (lib.splitString "." pkgName);
+    builtins.foldl' (a: x: a."${x}") pkgs (lib.splitString "." pkgName);
 
   # writeNixShellScript :: String -> String -> Package
   ########################################################
