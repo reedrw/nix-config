@@ -204,6 +204,15 @@ in
       " sort words in line with SortLine
       command -nargs=0 -range SortLine <line1>,<line2>call setline('.',join(sort(split(getline('.'),' ')),' '))
 
+      " https://vi.stackexchange.com/questions/454/whats-the-simplest-way-to-strip-trailing-whitespace-from-all-lines-in-a-file
+      fun! TrimWhitespace()
+          let l:save = winsaveview()
+          keeppatterns %s/\s\+$//e
+          call winrestview(l:save)
+      endfun
+
+      command! TrimWhitespace call TrimWhitespace()
+
       " command mode completion navigation
       cnoremap <Up> <C-p>
       cnoremap <Down> <C-n>
