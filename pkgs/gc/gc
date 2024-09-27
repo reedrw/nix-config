@@ -35,7 +35,7 @@ findDirty() {
   done
 
   # shellcheck disable=SC2010
-  for gen in $(ls ~/.local/state/nix/profiles | grep -E "home-manager-" | grep -v "$(readlink ~/.local/state/nix/profiles/home-manager)"); do
+  for gen in $(ls ~/.local/state/nix/profiles 2> /dev/null | grep -E "home-manager-" | grep -v "$(readlink ~/.local/state/nix/profiles/home-manager)"); do
     if [[ ! -f "$HOME/.local/share/home-manager/tree-version" ]]; then
       continue
     else
