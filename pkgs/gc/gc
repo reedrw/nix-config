@@ -22,7 +22,7 @@ findDirty() {
   fi
 
   # shellcheck disable=SC2010
-  for gen in $(ls /nix/var/nix/profiles | grep -E "system-" | grep -v "$(readlink /nix/var/nix/profiles/system)"); do
+  [[ $USER == "root" ]] && for gen in $(ls /nix/var/nix/profiles | grep -E "system-" | grep -v "$(readlink /nix/var/nix/profiles/system)"); do
     if [[ ! -f "/nix/var/nix/profiles/$gen/etc/nixos/tree-version" ]]; then
       continue
     else
