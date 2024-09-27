@@ -22,12 +22,17 @@ findDirty() {
   fi
 
   # shellcheck disable=SC2010
-  [[ $USER == "root" ]] && for gen in $(ls /nix/var/nix/profiles | grep -E "system-" | grep -v "$(readlink /nix/var/nix/profiles/system)"); do
-    if [[ ! -f "/nix/var/nix/profiles/$gen/etc/nixos/tree-version" ]]; then
+  [[ $USER == "root" ]] && for gen in $(ls -rt -d -1 "/nix/var/nix/profiles"/* \
+    | grep -E "system-" \
+    | grep -v "$(readlink /nix/var/nix/profiles/system)"
+  ); do
+    local versionFile;
+    versionFile="$gen/etc/nixos/tree-version"
+    if [[ ! -f "$versionFile" ]]; then
       continue
     else
       local version;
-      version=$(cat "/nix/var/nix/profiles/$gen/etc/nixos/tree-version")
+      version=$(cat "$versionFile")
       if [[ "$version" == *"_dirty" ]]; then
         dirty+=("$gen")
       fi
@@ -35,12 +40,17 @@ findDirty() {
   done
 
   # shellcheck disable=SC2010
-  for gen in $(ls ~/.local/state/nix/profiles 2> /dev/null | grep -E "home-manager-" | grep -v "$(readlink ~/.local/state/nix/profiles/home-manager)"); do
-    if [[ ! -f "$HOME/.local/share/home-manager/tree-version" ]]; then
+  for gen in $( ls -rt -d -1 "$HOME/.local/state/nix/profiles"/* 2> /dev/null \
+    | grep -E "home-manager-" \
+    | grep -v "$(readlink ~/.local/state/nix/profiles/home-manager)"
+  ); do
+    local versionFile;
+    versionFile="$gen/home-files/.local/share/home-manager/tree-version"
+    if [[ ! -f "$versionFile" ]]; then
       continue
     else
       local version;
-      version=$(cat "$HOME/.local/share/home-manager/tree-version")
+      version=$(cat "$versionFile")
       if [[ "$version" == *"_dirty" ]]; then
         dirty+=("$gen")
       fi
@@ -48,8 +58,8 @@ findDirty() {
   done
 
   for gen in "${dirty[@]}"; do
-    echo "Deleting $gen"
-    [[ -z ${dry_run:-} ]] && rm "/nix/var/nix/profiles/$gen"
+    echo "Deleting $(basename "$gen")"
+    [[ -z ${dry_run:-} ]] && rm "$gen"
   done
 }
 
