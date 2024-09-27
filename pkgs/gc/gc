@@ -34,6 +34,19 @@ findDirty() {
     fi
   done
 
+  # shellcheck disable=SC2010
+  for gen in $(ls ~/.local/state/nix/profiles | grep -E "home-manager-" | grep -v "$(readlink ~/.local/state/nix/profiles/home-manager)"); do
+    if [[ ! -f "$HOME/.local/share/home-manager/tree-version" ]]; then
+      continue
+    else
+      local version;
+      version=$(cat "$HOME/.local/share/home-manager/tree-version")
+      if [[ "$version" == *"_dirty" ]]; then
+        dirty+=("$gen")
+      fi
+    fi
+  done
+
   for gen in "${dirty[@]}"; do
     echo "Deleting $gen"
     [[ -z ${dry_run:-} ]] && rm "/nix/var/nix/profiles/$gen"
