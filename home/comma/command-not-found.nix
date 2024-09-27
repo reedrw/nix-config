@@ -65,7 +65,13 @@ in
 
         export ANY_NIX_SHELL_PKGS="$ANY_NIX_SHELL_PKGS $attr"
         export IN_AUTO_SHELL="yes"
-        __nix shell "unstable#$attr" -c sh -c "$argv0 $*; >&2 exec zsh"
+        timeout 0.25 nix eval "nixpkgs#$attr" 2> /dev/null
+        if [[ "$?" -eq 124 ]]; then
+          branch="nixpkgs"
+        else
+          branch="unstable"
+        fi
+        __nix shell "$branch#$attr" -c sh -c "$argv0 $*; >&2 exec zsh"
       fi
     }
 
