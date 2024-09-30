@@ -36,7 +36,13 @@ else
     exit 127
   fi
 
-  attr="$(rofi "$rofiArgs" -dmenu -p "" <<< "$attr")" \
-    && (nix shell "unstable#$attr" -c "$cmd" "${args[@]}" &)
+  attr="$(rofi "$rofiArgs" -dmenu -p "" <<< "$attr")"
+  timeout 0.30 nix eval "nixpkgs#$attr" &>/dev/null \
+    || if [[ "$?" -eq 124 ]]; then
+      branch="nixpkgs"
+    else
+      branch="unstable"
+    fi
+  (nix shell "$branch#$attr" -c "$cmd" "${args[@]}" &)
 fi
 
