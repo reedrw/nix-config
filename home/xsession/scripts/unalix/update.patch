@@ -1097,10 +1097,10 @@ index 632fc24..f2c24a5 100644
 +SwdLZrWeqrqgHkHZAXQ6bkU6iYAZezKYVWOr62Nuk22rGwlgMU4=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..28f88d1 100644
+index f2a54b1..5f8de3d 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1882 @@
+@@ -1,1628 +1,1888 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -4248,6 +4248,12 @@ index f2a54b1..28f88d1 100644
 +        "scm"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?sohu\\.com"
++    },
++    "space.bilibili.com": {
++      "rules": [
++        "spm_id_from"
++      ],
++      "urlPattern": "^https?:\\/\\/space\\.bilibili\\.com"
 +    },
 +    "spotify.com": {
 +      "rules": [
