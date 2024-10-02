@@ -67,7 +67,6 @@
     "/var/lib/jellyfin",
     "/var/lib/libvirt",
     "/var/lib/nixos",
-    "/var/lib/private/foldingathome",
     "/var/lib/systemd",
     "/var/lib/tailscale"
   ]
