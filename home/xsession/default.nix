@@ -56,9 +56,19 @@ in
 
   home.packages = [ pkgs.lockProgram ];
 
-  home.activation = {
+  home.activation = let
+    restartScript = pkgs.writeShellScript "restart" ''
+      restartFunc() {
+        while pidof i3lock > /dev/null; do
+          sleep 1
+        done
+        i3-msg restart
+      }
+      restartFunc &
+    '';
+  in {
     reloadI3 = config.lib.dag.entryAfter ["writeBoundary"] ''
-      run i3-msg restart
+      run ${restartScript}
     '';
   };
 
