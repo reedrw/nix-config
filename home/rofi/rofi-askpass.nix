@@ -1,7 +1,9 @@
-{ config, pkgs, ... }:
-
+{ config, pkgs, lib, ... }:
+let
+  inherit (config.lib) scripts;
+in
 {
-  programs.zsh.initExtra = let
+  lib.scripts.rofi-askpass = let
     askpass-rasi = with config.lib.stylix.scheme; builtins.toFile "askpass.rasi" ''
       * {
         background-color: #${base01};
@@ -30,21 +32,21 @@
         width: 200px;
       }
     '';
+  in pkgs.writeShellScriptBin "rofi-askpass" ''
+    : | rofi -dmenu \
+      -sync \
+      -password \
+      -i \
+      -no-fixed-num-lines \
+      -p "Password: " \
+      -theme ${askpass-rasi} \
+      2> /dev/null
+  '';
 
-    rofi-askpass = pkgs.writeShellScript "rofi-askpass" ''
-      : | rofi -dmenu \
-        -sync \
-        -password \
-        -i \
-        -no-fixed-num-lines \
-        -p "Password: " \
-        -theme ${askpass-rasi} \
-        2> /dev/null
-    '';
-  in ''
+  programs.zsh.initExtra = ''
     if [[ ! -z $DISPLAY ]]; then
-      export SSH_ASKPASS="${rofi-askpass}"
-      export SUDO_ASKPASS="${rofi-askpass}"
+      export SSH_ASKPASS="${lib.getExe scripts.rofi-askpass}"
+      export SUDO_ASKPASS="${lib.getExe scripts.rofi-askpass}"
       alias sudo='sudo -A'
     fi
   '';

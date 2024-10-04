@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... }:
 let
+  inherit (config.lib) scripts;
 
   wallpaper-colored = let
     fileType = lib.pipe config.stylix.image [
@@ -44,9 +45,6 @@ let
       done
     ''}"
   ];
-
-  scripts = config.lib.scripts;
-
 in
 {
   imports = [

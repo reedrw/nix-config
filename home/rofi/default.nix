@@ -15,5 +15,5 @@
     );
   };
 
-  lib.scripts.roficomma = pkgs.writeNixShellScript "roficomma" (builtins.readFile ./roficomma.sh);
+  lib.scripts.rofi-comma = pkgs.writeNixShellScript "rofi-comma" (builtins.readFile ./rofi-comma.sh);
 }

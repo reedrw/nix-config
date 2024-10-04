@@ -1,7 +1,7 @@
 { config, osConfig, pkgs, lib,  ... }:
 let
+  inherit (config.lib) scripts;
   term = "${config.home.sessionVariables.TERMINAL}";
-  scripts = config.lib.scripts;
 
   mod = config.xsession.windowManager.i3.config.modifier;
   sup = "Mod4";
@@ -21,7 +21,7 @@ with pkgs;
   "${sup}+Right" = "resize grow width 5 px or 5 ppt";
   "${sup}+Down" = "resize grow height 5 px or 5 ppt";
   "${sup}+Up" = "resize shrink height 5 px or 5 ppt";
-  "${sup}+space" = "${exec} ${getExe scripts.roficomma} -lines 10 -width 40";
+  "${sup}+space" = "${exec} ${getExe scripts.rofi-comma} -lines 10 -width 40";
   "${mod}+r" = "${exec} ${getExe scripts.record}";
   "${mod}+n" = "${exec} ${osConfig.services.mullvad-vpn.package}/bin/mullvad reconnect";
   "${mod}+Shift+s" = "sticky toggle";

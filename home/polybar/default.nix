@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  scripts = config.lib.scripts;
+  inherit (config.lib) scripts;
 in
 {
   lib.scripts = {
