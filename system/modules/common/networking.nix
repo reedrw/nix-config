@@ -6,6 +6,7 @@ in
   networking = {
     networkmanager = {
       enable = true;
+      dns = "systemd-resolved";
       insertNameservers = nameservers;
     };
     firewall.allowedTCPPorts = [
