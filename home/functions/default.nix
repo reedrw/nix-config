@@ -24,7 +24,7 @@
   #     };
   #   };
   # }
-  lib.custom.mkSimpleService = name: ExecStart: {
+  lib.functions.mkSimpleService = name: ExecStart: {
     ${name} = {
       Unit = {
         Description = "${name}";

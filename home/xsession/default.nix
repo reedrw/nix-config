@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... } @ args:
+{ config, lib, pkgs, ... }:
 let
 
   wallpaper-colored = let
@@ -45,13 +45,14 @@ let
     ''}"
   ];
 
-  scripts = pkgs.callPackage ./scripts args;
+  scripts = config.lib.scripts;
 
 in
 {
   imports = [
     ./keybinds.nix
     ./xdgApps.nix
+    ./scripts
   ];
 
   home.packages = [ pkgs.lockProgram ];
@@ -161,7 +162,7 @@ in
     };
   };
 
-  systemd.user.services = with config.lib.custom; lib.mergeAttrsList [
+  systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
     (mkSimpleService "autotiling" (lib.getExe pkgs.autotiling))
     (mkSimpleService "clipboard-clean" (lib.getExe scripts.clipboard-clean))
     (mkSimpleService "dwebp-serv" (lib.getExe scripts.dwebp-serv))

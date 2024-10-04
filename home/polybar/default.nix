@@ -1,11 +1,15 @@
 { config, pkgs, lib, ... }:
 let
-  calnotify = pkgs.writeNixShellScript "calnotify" (builtins.readFile ./calnotify.sh);
-  screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
-  # Average battery capacities together cuz my laptop has 2 internal batteries
-  bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
+  scripts = config.lib.scripts;
 in
 {
+  lib.scripts = {
+    calnotify = pkgs.writeNixShellScript "calnotify" (builtins.readFile ./calnotify.sh);
+    screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
+    # Average battery capacities together cuz my laptop has 2 internal batteries
+    bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
+  };
+
   services.polybar = with pkgs; {
     enable = true;
     package = polybarFull;
@@ -29,14 +33,14 @@ in
       };
       "module/battery" = {
         type = "custom/script";
-        exec = lib.getExe bataverage;
+        exec = lib.getExe scripts.bataverage;
         click-left = ''${libnotify}/bin/notify-send "$(acpi | sed -e 's/\%.*/\%/g')"'';
         tail = true;
       };
       "module/date" = {
         type = "internal/date";
         date = "%I:%M %p    %a %b %d";
-        label = "%{A1:${lib.getExe calnotify} ${base0B}:}%date%%{A}";
+        label = "%{A1:${lib.getExe scripts.calnotify} ${base0B}:}%date%%{A}";
         format = "<label>";
         label-padding = 4;
       };
@@ -56,7 +60,7 @@ in
       };
       "module/screen" = {
         type = "custom/script";
-        exec = lib.getExe screenthing;
+        exec = lib.getExe scripts.screenthing;
         click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
         label-padding = 4;
         tail = true;

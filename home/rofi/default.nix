@@ -1,7 +1,5 @@
 { config, pkgs, lib, ... }:
-let
-  roficomma = pkgs.writeNixShellScript "roficomma" (builtins.readFile ./roficomma.sh);
-in
+
 {
   imports = [
     ./rofi-askpass.nix
@@ -17,5 +15,5 @@ in
     );
   };
 
-  xdg.configFile."rofi/roficomma.sh".source = lib.getExe roficomma;
+  lib.scripts.roficomma = pkgs.writeNixShellScript "roficomma" (builtins.readFile ./roficomma.sh);
 }
