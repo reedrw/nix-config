@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1728060885,
-        "narHash": "sha256-A7hTpGXe3uX3zxAIGZ0Mq4GSzh37rBWT0Mh8aTXlhFM=",
+        "lastModified": 1728064328,
+        "narHash": "sha256-wn4cosi9N1bOV0q4RdIuZXnyNeOskQIoosFPL0y1v5I=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "6d40a1f2e2fe9e912497232558012e72ff862897",
+        "rev": "78bfcc800a41f0e459d1953ed4fff6575386c346",
         "type": "github"
       },
       "original": {
@@ -334,11 +334,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1728059780,
-        "narHash": "sha256-1g2JMM19QlusrqoczHVM8nLTK1DXzFc8EeEdw9XjtU4=",
+        "lastModified": 1728064197,
+        "narHash": "sha256-ndCJysqcQan1+8KFQHu1d9TY2TKPwf7dUUOLsiutl9I=",
         "owner": "lix-project",
         "repo": "lix",
-        "rev": "0b29859cfe00e321875d87d7305c99f2d301a475",
+        "rev": "5b1715e63349541c1d021f6426b2ad67a0bf518f",
         "type": "github"
       },
       "original": {
