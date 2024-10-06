@@ -12,11 +12,12 @@ let
         autoconf
         automake
         libtool
+        autoreconfHook
       ] ++ old.nativeBuildInputs;
 
-      preConfigure = ''
-        ./autogen.sh
-      '';
+      # preConfigure = ''
+      #   ./autogen.sh
+      # '';
     })
   );
 in
