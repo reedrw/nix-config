@@ -54,8 +54,8 @@ in
         src = pkgs.fetchFromGitHub {
           owner = "Ethsan";
           repo = "ranger";
-          rev = "71a06f28551611d192d3e644d95ad04023e10801";
-          sha256 = "sha256-Yjdn1oE5VtJMGnmQ2VC764UXKm1PrkIPXXQ8MzQ8u1U=";
+          rev = "c73ffcbad20c6fef688ad0deb8d133ee5826e518";
+          sha256 = "sha256-10DyzWdnpXjwsmPEw6V7BTRmYIu+mXHk3sXy4Emn8Nk=";
         };
         propagatedBuildInputs = old.propagatedBuildInputs ++ (with pkgs.python3Packages; [ astroid pylint ]);
       });
