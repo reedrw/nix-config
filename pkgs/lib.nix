@@ -69,11 +69,10 @@ in
     # "foo"
     removeHomeDirPrefix = path:
       if lib.hasPrefix "/home" path
-      then lib.pipe path [
-        (lib.splitString "/")
-        (lib.drop 3)
-        (lib.concatStringsSep "/")
-      ]
+      then path
+        |> lib.splitString "/"
+        |> lib.drop 3
+        |> lib.concatStringsSep "/"
       else path;
 
     # shortenRev :: String -> String
@@ -87,10 +86,10 @@ in
     shortenRev = rev: builtins.substring 0 7 rev;
 
     # }}}
-  })).extend (final: prev: lib.pipe [
+  })).extend (final: prev: [
     # Put lib functions here to grab from unstable
-  ] [
-    (map (f: { ${f} = fromLibUnstable f; }))
-    (prev.mergeAttrsListRecursive)
-  ]);
+  ]
+    |> map (f: { ${f} = fromLibUnstable f; })
+    |> prev.mergeAttrsListRecursive
+  );
 }

@@ -14,6 +14,10 @@ rec {
     # repl: tab-complete quoted attribute names
     lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/8";
 
+    # https://github.com/oxalica/nil/pull/152
+    # add pipe operator
+    nil.url = "github:q60/nil/pipe-operator-support";
+
     stylix = {
       url = "github:danth/stylix/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,6 +54,7 @@ rec {
       "reedrw.cachix.org-1:do9gZInXOYTRPYU+L/x7B90hu1usmnaSFGJl6PN7NC4="
       "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
     ];
+    experimental-features = "flakes nix-command pipe-operator";
   };
 
   outputs = { ... } @ inputs: let

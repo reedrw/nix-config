@@ -42,8 +42,8 @@ with pkgs;
   "XF86AudioMute" = "${exec} ${getExe scripts.volume} mute";
   "XF86AudioRaiseVolume" = "${exec} ${getExe scripts.volume} up 5";
   "XF86AudioLowerVolume" = "${exec} ${getExe scripts.volume} down 5";
-} // pipe (range 0 9) [
-  (map toString)
-  (map (n: {"${mod}+ctrl+${n}" = "${exec} ${getExe scripts.load-layouts} ${n}";}))
-  mergeAttrsList
-]); }
+} // (range 0 9
+  |> map toString
+  |> map (n: {"${mod}+ctrl+${n}" = "${exec} ${getExe scripts.load-layouts} ${n}";})
+  |> mergeAttrsList
+)); }

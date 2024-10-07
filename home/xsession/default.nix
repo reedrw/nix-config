@@ -3,21 +3,20 @@ let
   inherit (config.lib) scripts;
 
   wallpaper-colored = let
-    fileType = lib.pipe config.stylix.image [
-      (lib.splitString ".")
-      lib.last
-    ];
+    fileType = config.stylix.image
+      |> lib.splitString "."
+      |> lib.last;
     filename = "wallpaper.${fileType}";
-    colorScheme = lib.pipe config.lib.stylix.colors [
-      (lib.getAttrs [
+    colorScheme = config.lib.stylix.colors
+      |> lib.getAttrs [
         "base00" "base01" "base02" "base03"
         # "base04" "base05" "base06" "base07"
         # "base08" "base09" "base0A" "base0B"
         # "base0C" "base0D" "base0E" "base0F"
-      ])
-      builtins.attrValues
-      (builtins.concatStringsSep " ")
-    ];
+      ]
+      |> builtins.attrValues
+      |> builtins.concatStringsSep " "
+    ;
   in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
     lutgen apply -s 36 ${config.stylix.image} -o $out -- ${colorScheme}
   '';
@@ -145,12 +144,11 @@ in
   };
 
   # link all json files (saved workspaces) in the current directory to ~/.config/i3/
-  xdg.configFile = lib.pipe (lib.listDirectory ./.) [
-    (builtins.filter (lib.hasSuffix ".json"))
-    (map (x: lib.last (lib.splitString "/" (toString x))))
-    (map (x: { "i3/${x}".source = ./. + "/${x}"; }))
-    (lib.mergeAttrsList)
-  ];
+  xdg.configFile = lib.listDirectory ./.
+    |> builtins.filter (lib.hasSuffix ".json")
+    |> map (x: lib.last (lib.splitString "/" (toString x)))
+    |> map (x: { "i3/${x}".source = ./. + "/${x}"; })
+    |> lib.mergeAttrsList;
 
   services = {
     flameshot.enable = true;

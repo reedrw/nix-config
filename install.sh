@@ -5,7 +5,7 @@ set -e
 dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
 
-nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
+nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
 logFormat=(--log-format bar-with-logs)
 
 # if SUDO_ASKPASS is set, use sudo -A
@@ -31,7 +31,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -73,7 +73,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
   esac
 }

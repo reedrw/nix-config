@@ -45,16 +45,16 @@ in
       pkgsi686Linux.gperftools
 
       # game aliases
-      (lib.pipe games [
-        (map (game: let
+      (games
+        |> (map (game: let
           name = builtins.elemAt game 0;
           id = builtins.elemAt game 1;
         in {
           "${name}" = "steam -nochatui -nofriendsui -silent steam://rungameid/${id}";
         }))
-        lib.mergeAttrsList
-        aliasToPackage
-      ])
+        |> lib.mergeAttrsList
+        |> aliasToPackage
+      )
     ];
   };
 }

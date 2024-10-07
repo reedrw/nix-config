@@ -11,7 +11,7 @@
     settings = {
       auto-optimise-store = true;
       builders-use-substitutes = true;
-      experimental-features = [ "flakes" "nix-command" "repl-flake" ];
+      experimental-features = [ "flakes" "nix-command" "repl-flake" "pipe-operator" ];
       extra-substituters = nixConfig.extra-substituters ++ [ ];
       extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [ ];
       keep-derivations = true;
