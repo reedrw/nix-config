@@ -10,7 +10,9 @@ rec {
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
 
-    lix.url = "github:lix-project/lix";
+    # https://gerrit.lix.systems/c/lix/+/1783
+    # repl: tab-complete quoted attribute names
+    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/8";
 
     stylix = {
       url = "github:danth/stylix/release-24.05";

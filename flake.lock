@@ -334,17 +334,18 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1728163191,
-        "narHash": "sha256-SW0IEBsPN1EysqzvfDT+8Kimtzy03O1BxQQm7ZB6fRY=",
-        "owner": "lix-project",
-        "repo": "lix",
-        "rev": "ed9b7f4f84fd60ad8618645cc1bae2d686ff0db6",
-        "type": "github"
+        "lastModified": 1728227369,
+        "narHash": "sha256-DSd9VdIDah+WcJ+ATxyTYGJ65qk9i+i7uKEtgKC63gw=",
+        "ref": "refs/changes/83/1783/8",
+        "rev": "e7310e5516325a1c51bfa3a6369ab4b0111b8c08",
+        "revCount": 16324,
+        "type": "git",
+        "url": "https://gerrit.lix.systems/lix"
       },
       "original": {
-        "owner": "lix-project",
-        "repo": "lix",
-        "type": "github"
+        "ref": "refs/changes/83/1783/8",
+        "type": "git",
+        "url": "https://gerrit.lix.systems/lix"
       }
     },
     "nix-index-database": {
