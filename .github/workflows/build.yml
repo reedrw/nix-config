@@ -74,7 +74,7 @@ jobs:
       run: |
         set -x
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
-          buildCommand="nix-shell --show-trace ./shell.nix --run exit"
+          buildCommand="nix develop --accept-flake-config --show-trace --command bash -c 'exit'"
         else
           buildCommand="./install.sh --build ${{ matrix.output }}"
         fi
