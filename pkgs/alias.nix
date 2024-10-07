@@ -5,6 +5,7 @@ let
 in
 {
   nix = inputs.lix.packages.x86_64-linux.nix;
+
   lockProgram = self.i3lock-fancy.override {
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
