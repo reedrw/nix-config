@@ -1,6 +1,5 @@
-{ lib, config, ... }:
+{ config, ... }:
 let
-  homeDir = "/home/reed";
   json = (builtins.fromJSON (builtins.readFile ./persist.json));
 
   # remove directories that start with the home directory
