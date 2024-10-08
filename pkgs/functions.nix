@@ -77,12 +77,16 @@ in
   # hello
   writeNixShellScript = name: text:
     let
-      # Get the second line of the script, which contains the packages
-      secondLine = builtins.elemAt (lib.splitString "\n" text) 1;
-      # Get the packages from the second line
-      packageList = builtins.elemAt (lib.splitString " -p " secondLine) 1;
-      # Convert the package names to nixpkgs packages
-      runtimeInputs = map self.matchPackage (lib.splitString " " packageList);
+      runtimeInputs = text
+        # Get the second line of the script, which contains the packages
+        |> lib.splitString "\n"
+        |> (x: lib.elemAt x 1)
+        # Get the packages from the second line
+        |> lib.splitString " -p "
+        |> (x: lib.elemAt x 1)
+        # Convert the package names to nixpkgs packages
+        |> lib.splitString " "
+        |> map self.matchPackage;
     in
     pkgs.writeShellApplication {
       inherit name text runtimeInputs;
