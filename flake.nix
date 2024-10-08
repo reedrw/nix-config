@@ -10,6 +10,10 @@ rec {
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
 
+    # flake-parts and its modules
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    ez-configs.url = "github:ehllie/ez-configs";
+
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
     lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/8";
@@ -57,25 +61,65 @@ rec {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { ... } @ inputs: let
-    system = "x86_64-linux";
-
-    pkgs = flake.lib.pkgsForSystem inputs.nixpkgs system;
-
-    flake.lib = import ./lib {
-      inherit inputs nixConfig;
+  outputs = { flake-parts, ... } @ inputs: let
+    versionSuffix = "${builtins.substring 0 8 (inputs.self.lastModifiedDate or inputs.self.lastModified)
+                    }_${inputs.self.shortRev or "dirty"}";
+    nixpkgs-options.nixpkgs = {
+      overlays = [
+        (import ./pkgs)
+        (import ./pkgs/branches.nix inputs)
+        (import ./pkgs/pin/overlay.nix)
+        (import ./pkgs/alias.nix inputs)
+        (import ./pkgs/lib.nix)
+        (import ./pkgs/functions.nix)
+      ];
+      config = import ./pkgs/config.nix {
+        inherit inputs;
+      };
     };
-  in flake.lib.mkHosts [
-    "nixos-desktop"
-    "nixos-t480"
-    "nixos-t400"
-    "nixos-vm"
-  ] // {
-    inherit pkgs inputs;
-    inherit (pkgs) pkgs-unstable lib;
+    pkgsForSystem = src: system:
+      import src (nixpkgs-options.nixpkgs // {
+          inherit system;
+        });
 
-    devShells."${system}".default = import ./shell.nix {
-      inherit pkgs;
+  in
+    flake-parts.lib.mkFlake { inherit inputs; } {
+
+      imports = [
+        inputs.ez-configs.flakeModule
+      ];
+
+      ezConfigs = {
+        root = ./.;
+        globalArgs = {
+          # inherit inputs nixpkgs-options versionSuffix nixConfig pkgs-unstable;
+          inherit inputs nixpkgs-options nixConfig versionSuffix;
+        };
+        nixos.specialArgs = {
+          # inherit inputs nixpkgs-options versionSuffix nixConfig pkgs-unstable;
+          inherit inputs nixpkgs-options nixConfig versionSuffix;
+          asNixosModule = true;
+        };
+        nixos.hosts.nixos-desktop.userHomeModules = [
+          "reed"
+        ];
+        home.extraSpecialArgs = {
+          inherit inputs nixpkgs-options nixConfig versionSuffix;
+          asNixosModule = true;
+        };
+      };
+
+      perSystem = { system, ...}: let
+        pkgs = pkgsForSystem inputs.nixpkgs system;
+        pkgs-unstable = pkgsForSystem inputs.unstable system;
+      in{
+        _module.args.pkgs = pkgs;
+        _module.args.pkgs-unstable = pkgs-unstable;
+
+        legacyPackages = pkgs;
+        # inherit pkgs;
+      };
+
+      systems = [ "x86_64-linux" ];
     };
-  };
 }
