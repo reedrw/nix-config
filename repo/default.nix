@@ -30,14 +30,12 @@ in
 
     home.users."reed".nameFunction = (_: "reed");
     home.users."reed@nixos-desktop".nameFunction = (_: "reed@nixos-desktop");
+    home.users."reed@nixos-t480".nameFunction = (_: "reed@nixos-t480");
 
     nixos.hosts = {
-      nixos-desktop.userHomeModules = {
-        reed = "reed@nixos-desktop";
-      };
-      nixos-vm.userHomeModules = [
-        "reed"
-      ];
+      nixos-desktop.userHomeModules = { reed = "reed@nixos-desktop"; };
+      nixos-t480.userHomeModules = { reed = "reed@nixos-t480"; };
+      nixos-vm.userHomeModules = [ "reed" ];
     };
   };
 
