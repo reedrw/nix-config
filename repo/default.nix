@@ -4,14 +4,14 @@ let
                   }_${inputs.self.shortRev or "dirty"}";
   nixpkgs-options.nixpkgs = {
     overlays = [
-      (import ../pkgs)
-      (import ../pkgs/branches.nix inputs)
-      (import ../pkgs/pin/overlay.nix)
-      (import ../pkgs/alias.nix inputs)
-      # (import ../pkgs/lib.nix)
-      (import ../pkgs/functions.nix)
+      (import ../overlays)
+      (import ../overlays/branches.nix inputs)
+      (import ../overlays/pin/overlay.nix)
+      (import ../overlays/alias.nix inputs)
+      # (import ../overlays/lib.nix)
+      (import ../overlays/functions.nix)
     ];
-    config = import ../pkgs/config.nix {
+    config = import ../overlays/config.nix {
       inherit inputs;
     };
   };
