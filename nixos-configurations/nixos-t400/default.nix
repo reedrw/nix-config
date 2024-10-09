@@ -9,6 +9,7 @@
     ezModules.nixpkgs
     ezModules.opengl
     ezModules.sshd
+    ezModules.styling
     ezModules.tweaks
     ezModules.zsh
 

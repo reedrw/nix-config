@@ -1,3 +1,3 @@
 {
-  imports = [ ./nixos-t400 ];
+  imports = [ ./nixos-t480 ];
 }
