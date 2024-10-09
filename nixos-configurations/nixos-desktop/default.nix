@@ -4,6 +4,6 @@
     ezModules.custom
     ezModules.common
     ezModules.myUsers
-    ./nixos-desktop/configuration.nix
+    ./configuration.nix
   ];
 }

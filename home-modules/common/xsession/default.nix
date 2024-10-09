@@ -76,9 +76,9 @@ in
   xsession = {
     enable = true;
     # profilePath = "${lib.removeHomeDirPrefix config.xdg.dataHome}/X11/xprofile";
-    profilePath = "./local/share/X11/xprofile";
+    profilePath = ".local/share/X11/xprofile";
     # scriptPath = "${lib.removeHomeDirPrefix config.xdg.dataHome}/X11/xsession";
-    scriptPath = "./local/share/X11/xsession";
+    scriptPath = ".local/share/X11/xsession";
     windowManager.i3 = {
       enable = true;
       config = {

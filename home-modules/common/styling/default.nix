@@ -1,7 +1,8 @@
-{ inputs, config, osConfig, asNixosModule, pkgs, lib, ... }:
+{ inputs, config, osConfig, pkgs, ... }:
 
 {
-  imports = lib.optionals (lib.trace (!asNixosModule) (!asNixosModule)) [
+
+  imports = [
     inputs.stylix.homeManagerModules.stylix
     {
       stylix = {

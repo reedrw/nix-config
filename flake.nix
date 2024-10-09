@@ -12,7 +12,7 @@ rec {
 
     # flake-parts and its modules
     flake-parts.url = "github:hercules-ci/flake-parts";
-    ez-configs.url = "github:ehllie/ez-configs";
+    ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
 
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
@@ -77,10 +77,6 @@ rec {
         inherit inputs;
       };
     };
-    pkgsForSystem = src: system:
-      import src (nixpkgs-options.nixpkgs // {
-          inherit system;
-        });
 
   in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -92,32 +88,11 @@ rec {
       ezConfigs = {
         root = ./.;
         globalArgs = {
-          # inherit inputs nixpkgs-options versionSuffix nixConfig pkgs-unstable;
           inherit inputs nixpkgs-options nixConfig versionSuffix;
         };
-        nixos.specialArgs = {
-          # inherit inputs nixpkgs-options versionSuffix nixConfig pkgs-unstable;
-          inherit inputs nixpkgs-options nixConfig versionSuffix;
-          asNixosModule = true;
+        nixos.hosts.nixos-desktop.userHomeModules = {
+          reed = "reed@nixos-desktop";
         };
-        nixos.hosts.nixos-desktop.userHomeModules = [
-          "reed"
-        ];
-        home.extraSpecialArgs = {
-          inherit inputs nixpkgs-options nixConfig versionSuffix;
-          asNixosModule = true;
-        };
-      };
-
-      perSystem = { system, ...}: let
-        pkgs = pkgsForSystem inputs.nixpkgs system;
-        pkgs-unstable = pkgsForSystem inputs.unstable system;
-      in{
-        _module.args.pkgs = pkgs;
-        _module.args.pkgs-unstable = pkgs-unstable;
-
-        legacyPackages = pkgs;
-        # inherit pkgs;
       };
 
       systems = [ "x86_64-linux" ];
