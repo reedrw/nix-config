@@ -41,10 +41,19 @@ in
       |> lib.mergeAttrsList;
 
     nixos.hosts = {
-      nixos-desktop.userHomeModules = { reed = "reed@nixos-desktop"; };
-      nixos-t480.userHomeModules = { reed = "reed@nixos-t480"; };
-      nixos-t400.userHomeModules = { reed = "reed@nixos-t400"; };
-      nixos-vm.userHomeModules = [ "reed" ];
+      nixos-desktop.userHomeModules = {
+        reed = "reed@nixos-desktop";
+        root = "root";
+      };
+      nixos-t480.userHomeModules = {
+        reed = "reed@nixos-t480";
+        root = "root";
+      };
+      nixos-t400.userHomeModules = {
+        reed = "reed@nixos-t400";
+        root = "root";
+      };
+      nixos-vm.userHomeModules = [ "reed" "root" ];
     };
   };
 
