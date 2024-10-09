@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
 let
   plugins = (import ./nix/sources.nix { }) // lib.packagesFromDirectoryRecursive {

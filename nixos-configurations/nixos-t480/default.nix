@@ -3,7 +3,7 @@
   imports = [
     ezModules.custom
     ezModules.common
-    ezModules.myUsers
+    ezModules.user-reed
     ./configuration.nix
   ];
 }

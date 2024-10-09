@@ -3,21 +3,16 @@
 {
 
   imports = [
+    ./hardware-configuration.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t410"
     # inputs.attic.nixosModules.atticd
   ];
 
   networking.hostName = "nixos-t400";
+  nixpkgs.hostPlatform = "x86_64-linux";
 
   custom.boot.bios.enable = true;
   boot.loader.grub.device = "/dev/sda";
-
-  common.bluetooth.enable = false;
-  common.fonts.enable = false;
-  common.logitech.enable = false;
-  common.sound.enable = false;
-  common.virtualization.enable = false;
-  common.xserver.enable = false;
 
   programs.dconf.enable = true;
 
@@ -67,8 +62,6 @@
 
   # Set your time zone.
   time.timeZone = "America/New_York";
-
-  myUsers.reed.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
