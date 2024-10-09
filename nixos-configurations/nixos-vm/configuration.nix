@@ -3,8 +3,11 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   networking.hostName = "nixos-vm";
-  myUsers.reed.enable = true;
   users.users.reed.password = "password";
 
   services.mullvad-vpn.enable = false;

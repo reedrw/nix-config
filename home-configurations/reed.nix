@@ -1,12 +1,8 @@
-{ ezModules, pkgs-unstable, ... }:
+{ ezModules, ... }:
 
 {
   imports = with ezModules; [
     common
-  ];
-
-  home.packages = [
-    pkgs-unstable.meow
   ];
 
   home = {

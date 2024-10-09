@@ -1,4 +1,4 @@
-{ nixpkgs-options, nixConfig, inputs, lib, ... }:
+{ pkgs, nixpkgs-options, nixConfig, inputs, lib, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
@@ -8,6 +8,8 @@
   # through _module.args somehow works????
   # TODO: investigate more later
   _module.args.pkgs-unstable = inputs.self.legacyPackages.x86_64-linux.pkgs-unstable;
+
+  home-manager.extraSpecialArgs = { inherit pkgs; };
 
   environment.etc = lib.mapAttrs' (n: v:
     lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })

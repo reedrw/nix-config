@@ -73,15 +73,10 @@ rec {
       ./repo
     ];
 
+    systems = [ "x86_64-linux" ];
+
     _module.args = { inherit nixConfig; };
 
-    ezConfigs = {
-      root = ./.;
-      nixos.hosts.nixos-desktop.userHomeModules = {
-        reed = "reed@nixos-desktop";
-      };
-    };
-
-    systems = [ "x86_64-linux" ];
+    ezConfigs.root = ./.;
   };
 }

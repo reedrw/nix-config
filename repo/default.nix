@@ -30,6 +30,15 @@ in
 
     home.users."reed".nameFunction = (_: "reed");
     home.users."reed@nixos-desktop".nameFunction = (_: "reed@nixos-desktop");
+
+    nixos.hosts = {
+      nixos-desktop.userHomeModules = {
+        reed = "reed@nixos-desktop";
+      };
+      nixos-vm.userHomeModules = [
+        "reed"
+      ];
+    };
   };
 
   perSystem = { pkgs, inputs', ... }: rec {
