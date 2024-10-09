@@ -10,6 +10,14 @@ rec {
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
 
+    # flake-parts and its modules
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    # flake-parts.inputs.nixpkgs-lib.follows = "unstable";
+
+    ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
+    # ez-configs.inputs.flake-parts.follows = "flake-parts";
+    # ez-configs.inputs.nixpkgs.follows = "nixpkgs";
+
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
     lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/8";
@@ -25,11 +33,6 @@ rec {
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    haumea = {
-      url = "github:nix-community/haumea/v0.2.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -57,25 +60,18 @@ rec {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { ... } @ inputs: let
-    system = "x86_64-linux";
+  outputs = { flake-parts, ... } @ inputs: flake-parts.lib.mkFlake {
+    inherit inputs;
+  } {
+    imports = [
+      inputs.ez-configs.flakeModule
+      ./repo
+    ];
 
-    pkgs = flake.lib.pkgsForSystem inputs.nixpkgs system;
+    systems = [ "x86_64-linux" ];
 
-    flake.lib = import ./lib {
-      inherit inputs nixConfig;
-    };
-  in flake.lib.mkHosts [
-    "nixos-desktop"
-    "nixos-t480"
-    "nixos-t400"
-    "nixos-vm"
-  ] // {
-    inherit pkgs inputs;
-    inherit (pkgs) pkgs-unstable lib;
+    _module.args = { inherit nixConfig; };
 
-    devShells."${system}".default = import ./shell.nix {
-      inherit pkgs;
-    };
+    ezConfigs.root = ./.;
   };
 }
