@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 let
   sources = import ./nix/sources.nix { };
   # use https://github.com/ncmpcpp/ncmpcpp master until new release

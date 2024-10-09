@@ -3,6 +3,12 @@
 {
   inherit (nixpkgs-options) nixpkgs;
 
+  # this is fucking COOKED. When I try to pass a nixpkgs-unstable instance through specialArgs, it fails
+  # when I try to pass it through an overlay, it fails, but adding it as a flake output and then passing THAT
+  # through _module.args somehow works????
+  # TODO: investigate more later
+  _module.args.pkgs-unstable = inputs.self.legacyPackages.x86_64-linux.pkgs-unstable;
+
   environment.etc = lib.mapAttrs' (n: v:
     lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })
   ) inputs;

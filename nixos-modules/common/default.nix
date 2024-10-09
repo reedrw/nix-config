@@ -1,20 +1,6 @@
 {
-  imports = [
-    ./autoupdate.nix
-    ./bluetooth.nix
-    ./fonts.nix
-    ./gnupg.nix
-    ./kernel.nix
-    ./logitech.nix
-    ./networking.nix
-    ./nixpkgs.nix
-    ./opengl.nix
-    ./sound.nix
-    ./sshd.nix
-    ./styling
-    ./tweaks.nix
-    ./virtualization.nix
-    ./xserver.nix
-    ./zsh.nix
-  ];
+  imports = builtins.readDir ./.
+    |> (x: builtins.removeAttrs x ["default.nix"])
+    |> builtins.attrNames
+    |> map (x: ./. + "/${x}");
 }

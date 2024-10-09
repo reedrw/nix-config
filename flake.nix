@@ -12,7 +12,11 @@ rec {
 
     # flake-parts and its modules
     flake-parts.url = "github:hercules-ci/flake-parts";
+    # flake-parts.inputs.nixpkgs-lib.follows = "unstable";
+
     ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
+    # ez-configs.inputs.flake-parts.follows = "flake-parts";
+    # ez-configs.inputs.nixpkgs.follows = "nixpkgs";
 
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
@@ -61,40 +65,23 @@ rec {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { flake-parts, ... } @ inputs: let
-    versionSuffix = "${builtins.substring 0 8 (inputs.self.lastModifiedDate or inputs.self.lastModified)
-                    }_${inputs.self.shortRev or "dirty"}";
-    nixpkgs-options.nixpkgs = {
-      overlays = [
-        (import ./pkgs)
-        (import ./pkgs/branches.nix inputs)
-        (import ./pkgs/pin/overlay.nix)
-        (import ./pkgs/alias.nix inputs)
-        (import ./pkgs/lib.nix)
-        (import ./pkgs/functions.nix)
-      ];
-      config = import ./pkgs/config.nix {
-        inherit inputs;
+  outputs = { flake-parts, ... } @ inputs: flake-parts.lib.mkFlake {
+    inherit inputs;
+  } {
+    imports = [
+      inputs.ez-configs.flakeModule
+      ./repo
+    ];
+
+    _module.args = { inherit nixConfig; };
+
+    ezConfigs = {
+      root = ./.;
+      nixos.hosts.nixos-desktop.userHomeModules = {
+        reed = "reed@nixos-desktop";
       };
     };
 
-  in
-    flake-parts.lib.mkFlake { inherit inputs; } {
-
-      imports = [
-        inputs.ez-configs.flakeModule
-      ];
-
-      ezConfigs = {
-        root = ./.;
-        globalArgs = {
-          inherit inputs nixpkgs-options nixConfig versionSuffix;
-        };
-        nixos.hosts.nixos-desktop.userHomeModules = {
-          reed = "reed@nixos-desktop";
-        };
-      };
-
-      systems = [ "x86_64-linux" ];
-    };
+    systems = [ "x86_64-linux" ];
+  };
 }

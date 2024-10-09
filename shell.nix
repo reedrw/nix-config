@@ -1,4 +1,4 @@
-{ pkgs ? (import ./lib/compat.nix).pkgs }:
+{ pkgs ? (import ./repo/compat.nix).legacyPackages."${builtins.currentSystem}" }:
 
 with pkgs;
 mkShell {

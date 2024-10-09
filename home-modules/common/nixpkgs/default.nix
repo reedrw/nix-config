@@ -1,7 +1,7 @@
-{ osConfig, lib, nixpkgs-options, versionSuffix, ... }:
+{ osConfig, lib, versionSuffix, inputs, ... }:
 
 {
-  inherit (nixpkgs-options) nixpkgs;
+  _module.args.pkgs-unstable = inputs.self.legacyPackages.x86_64-linux.pkgs-unstable;
 
   nix = {
     package = lib.mkDefault osConfig.nix.package;

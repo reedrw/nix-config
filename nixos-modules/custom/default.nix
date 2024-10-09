@@ -1,10 +1,6 @@
 {
-  imports = [
-    ./boot
-    ./games
-    ./persist-directory.nix
-    ./persist-path-manager.nix
-    ./snapper.nix
-    ./steam.nix
-  ];
+  imports = builtins.readDir ./.
+    |> (x: builtins.removeAttrs x ["default.nix"])
+    |> builtins.attrNames
+    |> map (x: ./. + "/${x}");
 }

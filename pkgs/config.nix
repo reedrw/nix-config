@@ -1,4 +1,4 @@
-{ inputs ? (import ../lib/compat.nix).inputs }:
+{ inputs ? (import ../repo/compat.nix).inputs }:
 
 {
   allowUnfree = true;

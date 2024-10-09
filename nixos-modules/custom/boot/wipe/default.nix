@@ -46,7 +46,7 @@ in
       config = {
         inherit (config.custom) persistDir prevDir;
         activateCommand = "ldp";
-        persistJson = "${pkgs.flakePath}/system/${config.networking.hostName}/persist.json";
+        persistJson = "${pkgs.flakePath}/nixos-configurations/${config.networking.hostName}/persist.json";
         snapper = {
           enable = builtins.hasAttr "persist" config.services.snapper.configs;
           config = "persist";

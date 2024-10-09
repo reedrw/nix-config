@@ -1,4 +1,4 @@
-{ ezModules, ... }:
+{ ezModules, pkgs, ... }:
 {
   imports = [
     ezModules.custom
@@ -6,4 +6,6 @@
     ezModules.myUsers
     ./configuration.nix
   ];
+
+  home-manager.extraSpecialArgs = { inherit pkgs; };
 }
