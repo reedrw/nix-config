@@ -1,1 +1,1 @@
-import ./overlays/config.nix { }
+import ./pkgs/config.nix { }
