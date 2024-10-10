@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   sound.enable = true;
 
@@ -22,6 +24,51 @@
         };
       };
     };
+
+    # https://github.com/wwmm/easyeffects/issues/2521#issuecomment-2134144237
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-disable-suspension.conf" ''
+        monitor.alsa.rules = [
+          {
+            matches = [
+              {
+                # Matches all sources
+                node.name = "~alsa_input.*"
+              },
+              {
+                # Matches all sinks
+                node.name = "~alsa_output.*"
+              }
+            ]
+            actions = {
+              update-props = {
+                session.suspend-timeout-seconds = 0
+              }
+            }
+          }
+        ]
+        # bluetooth devices
+        monitor.bluez.rules = [
+          {
+            matches = [
+              {
+                # Matches all sources
+                node.name = "~bluez_input.*"
+              },
+              {
+                # Matches all sinks
+                node.name = "~bluez_output.*"
+              }
+            ]
+            actions = {
+              update-props = {
+                session.suspend-timeout-seconds = 0
+              }
+            }
+          }
+        ]
+      '')
+    ];
   };
 
   # environment.systemPackages = with pkgs; [
