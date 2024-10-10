@@ -32,6 +32,7 @@
       shadow-radius = 20;
       rounded-corners-exclude = [
         "class_g = 'Polybar'"
+        "class_g = 'i3-frame'"
       ];
       opacity-rule = [
         "10:class_g != 'Polybar' && focused != 1 && _NET_WM_STATE@:32a *= '_NET_WM_STATE_STICKY'"
