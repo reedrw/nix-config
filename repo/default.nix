@@ -21,9 +21,6 @@ let
         inherit system;
     });
 
-  pkgs = pkgsForSystem inputs.nixpkgs "x86_64-linux";
-  lib = pkgs.lib;
-
 in
 {
   ezConfigs = {
@@ -31,14 +28,13 @@ in
       inherit inputs nixpkgs-options nixConfig versionSuffix;
     };
 
-    # home.users."reed".nameFunction = (_: "reed");
-    # home.users."reed@nixos-desktop".nameFunction = (_: "reed@nixos-desktop");
-    # home.users."reed@nixos-t480".nameFunction = (_: "reed@nixos-t480");
-    home.users = builtins.readDir ../home-configurations
-      |> builtins.attrNames
-      |> map (lib.removeSuffix ".nix")
-      |> map (configName: { "${configName}".nameFunction = (_: configName); } )
-      |> lib.mergeAttrsList;
+    home.users = {
+      "root".nameFunction = (_: "root");
+      "reed".nameFunction = (_: "reed");
+      "reed@nixos-desktop".nameFunction = (_: "reed@nixos-desktop");
+      "reed@nixos-t480".nameFunction = (_: "reed@nixos-t480");
+      "reed@nixos-t400".nameFunction = (_: "reed@nixos-t400");
+    };
 
     nixos.hosts = {
       nixos-desktop.userHomeModules = {
