@@ -1,8 +1,8 @@
 {
   "qbittorrent-nox": {
-    "4.6.5": {
-      "rev": "35f891662375a901671d399f46a8c86169b91d8b",
-      "sha256": "0dm9i4iddi8cnhi2sqs40xcs7jznn52r7p3hlm0pf9554jda3pzx"
+    "5.0.0": {
+      "rev": "b57179d8da17b15514fe28215a118f0cbf597632",
+      "sha256": "0f2lqazw416lmyardandxyy3g30hl97i5kjdfc8vx97syk0nk8fp"
     }
   }
 }
