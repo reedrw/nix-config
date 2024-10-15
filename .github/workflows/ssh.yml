@@ -9,7 +9,7 @@ on:
       ref:
         description: 'Choose branch or commit to checkout.'
         required: true
-        default: 'master'
+        default: 'main'
 jobs:
   tmate:
     if: github.event.inputs.method == 'tmate'
