@@ -44,8 +44,8 @@ mergePr(){
 }
 
 pushd "$dir" > /dev/null || exit
-clonedCommitSha="$(git rev-parse master)"
-upstreamCommitSha="$(curl -s "$mainUrl/branches" | jq -r '.[] | select(.name == "master") | .commit.sha')"
+clonedCommitSha="$(git rev-parse main)"
+upstreamCommitSha="$(curl -s "$mainUrl/branches" | jq -r '.[] | select(.name == "main") | .commit.sha')"
 if [[ "$clonedCommitSha" == "$upstreamCommitSha" ]]; then
   mergePr "$@"
 else

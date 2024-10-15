@@ -18,8 +18,8 @@ let
       pushd ${pkgs.flakePath}
         git fetch
         if [[ -z "$(git status -s)" ]] \
-        && [[ -z "$(git log origin/master..HEAD)" ]] \
-        && [[ "$(git log HEAD..origin/master | wc -l)" -gt 0 ]];
+        && [[ -z "$(git log origin/main..HEAD)" ]] \
+        && [[ "$(git log HEAD..origin/main | wc -l)" -gt 0 ]];
         then
           git pull
           ldp
