@@ -20,7 +20,7 @@ rec {
 
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
-    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/8";
+    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/10";
 
     # https://github.com/oxalica/nil/pull/152
     # add pipe operator

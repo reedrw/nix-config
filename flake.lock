@@ -390,16 +390,16 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1728227369,
-        "narHash": "sha256-DSd9VdIDah+WcJ+ATxyTYGJ65qk9i+i7uKEtgKC63gw=",
-        "ref": "refs/changes/83/1783/8",
-        "rev": "e7310e5516325a1c51bfa3a6369ab4b0111b8c08",
-        "revCount": 16324,
+        "lastModified": 1728885799,
+        "narHash": "sha256-dc0hA+u99/P5by6zAZqTpRHXaUkolMKIMdiiXJtCyV0=",
+        "ref": "refs/changes/83/1783/10",
+        "rev": "6fcedb0e4a6188c810bcfc2e6236a89b09ffd8c8",
+        "revCount": 16340,
         "type": "git",
         "url": "https://gerrit.lix.systems/lix"
       },
       "original": {
-        "ref": "refs/changes/83/1783/8",
+        "ref": "refs/changes/83/1783/10",
         "type": "git",
         "url": "https://gerrit.lix.systems/lix"
       }
