@@ -14,9 +14,9 @@ rec {
     flake-parts.url = "github:hercules-ci/flake-parts";
     # flake-parts.inputs.nixpkgs-lib.follows = "unstable";
 
+    # https://github.com/ehllie/ez-configs/pull/12
+    # Allow setting user module names for system hm modules
     ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
-    # ez-configs.inputs.flake-parts.follows = "flake-parts";
-    # ez-configs.inputs.nixpkgs.follows = "nixpkgs";
 
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
@@ -69,9 +69,6 @@ rec {
     ];
 
     systems = [ "x86_64-linux" ];
-
     _module.args = { inherit nixConfig; };
-
-    ezConfigs.root = ./.;
   };
 }

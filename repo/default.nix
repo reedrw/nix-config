@@ -24,6 +24,8 @@ let
 in
 {
   ezConfigs = {
+    root = ../.;
+
     globalArgs = {
       inherit inputs nixpkgs-options nixConfig versionSuffix;
     };
