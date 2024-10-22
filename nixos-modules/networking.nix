@@ -48,7 +48,10 @@ in
   }]);
 
   systemd.services.mullvad-daemon = {
-    after = [ "nix-daemon.service" ];
+    after = [
+      "nix-daemon.service"
+      "tailscaled.service"
+    ];
     postStart = let
       mullvad = config.services.mullvad-vpn.package;
       dnsServers = builtins.concatStringsSep " " nameservers;
@@ -58,6 +61,7 @@ in
       ${mullvad}/bin/mullvad auto-connect set on
       ${mullvad}/bin/mullvad dns set custom ${dnsServers}
       ${mullvad}/bin/mullvad split-tunnel add "$(${pkgs.procps}/bin/pidof nix-daemon)"
+      ${mullvad}/bin/mullvad split-tunnel add "$(${pkgs.procps}/bin/pidof tailscaled)"
     '';
   };
 
