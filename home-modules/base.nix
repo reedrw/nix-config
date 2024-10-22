@@ -15,6 +15,7 @@ let
     pm2       # process manager
     ripgrep   # recursive grep
     screen    # terminal multiplexer
+    wget      # download utility
 
     # global aliases
     (aliasToPackage {

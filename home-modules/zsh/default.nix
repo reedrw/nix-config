@@ -249,32 +249,32 @@ in
         fi
       }
     '';
-    shellAliases = with pkgs; {
+    shellAliases = {
       ":q" = "exit";
       "\\$" = "";
-      bmount = lib.getExe bashmount;
-      cat = "${lib.getExe bat} --theme=base16 --style='changes,snip,numbers' --paging=never --wrap=never";
       cd = "z";
       cp = "cp -riv";
-      df = lib.getExe pydf;
       gcd = "sudo gc -d";
       ln = "ln -v";
-      ls = "${lib.getExe eza} -lh --git -s type";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       nr = "nix repl self";
-      ping = "${lib.getExe prettyping} --nolegend";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
       snapper = "snapper -c persist";
-      taskdone = "${lib.getExe libnotify} 'Task finished.' && exit";
       tb = "termbin";
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
-      watch = lib.getExe viddy;
-      wget = "${lib.getExe wget} --progress=dot:giga";
       x = "exit";
-    };
+    } // (lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
+      bmount = "bashmount";
+      cat = "bat --theme=base16 --style='changes,snip,numbers' --paging=never --wrap=never";
+      df = "pydf";
+      ls = "eza -lh --git -s type";
+      ping = "prettyping --nolegend";
+      taskdone = "libnotify 'Task finished.' && exit";
+      watch = "viddy";
+    });
   };
 }
