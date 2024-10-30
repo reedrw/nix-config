@@ -12,8 +12,7 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  # https://github.com/NixOS/nixpkgs/pull/322548
-  qbittorrent-nox = if builtins.hasAttr "mainProgram" pkgs.qbittorrent-nox.meta
-    then lib.warn "qbittorrent-nox mainProgram fixed. PR should be merged." pkgs.pinned.qbittorrent-nox.v5_0_0
-    else pkgs.pinned.qbittorrent-nox.v5_0_0;
+  # https://animebytes.tv/rules/clients
+  # wait for AB to allowed qBittorrent v5
+  qbittorrent-nox = pkgs.pinned.qbittorrent-nox.v4_6_7;
 }
