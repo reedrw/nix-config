@@ -176,8 +176,23 @@ main() {
   if [ -z "$rev" ]; then
     # if we don't have an api response yet, query the api
     [ -z "${apiSearchResponse:-}" ] && queryApi
-    packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
-    rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
+    # devbox often only says package is for macOS, but we can still get the commit hash
+    #packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
+    systems=(
+      "x86_64-linux" "x86_64-darwin"
+      "aarch64-linux" "aarch64-darwin"
+      "armv7l-linux" "armv6l-linux"
+      "i686-linux"
+      "powerpc64le-linux"
+      "riscv64-linux"
+    )
+    for system in "${systems[@]}"; do
+      packageInfo="$(echo "$packageJson" | jq -r ".versions[] | select(.version == \"$version\") | .systems[\"$system\"]")"
+      rev="$(echo "$packageInfo" | jq -r ".commit_hash")"
+      if [ -n "$packageInfo" ] && [[ "$rev" != "null" ]]; then
+        break
+      fi
+    done
   fi
 
   # if we have a third argument, check whether it's a commit hash
