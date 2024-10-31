@@ -1,6 +1,6 @@
 self: pkgs:
 {
-  flakePath = "/home/reed/.config/nixpkgs";
+  flakePath = "/home/reed/files/nix-config";
   gc = pkgs.callPackage ./gc { };
   ldp = self.callPackage ./ldp { };
   pin = pkgs.callPackage ./pin { };

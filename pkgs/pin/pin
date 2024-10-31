@@ -7,7 +7,7 @@ set -eo pipefail
 # Pin a package to a specific version, using devbox's search API
 # Usage: pin.sh <package-name> <version>
 
-pinnedJson="$HOME/.config/nixpkgs/pkgs/pin/pinned.json"
+pinnedJson="$HOME/files/nix-config/pkgs/pin/pinned.json"
 
 api="https://search.devbox.sh/v1/search?q="
 

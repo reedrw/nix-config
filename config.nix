@@ -1,1 +1,0 @@
-import ./pkgs/config.nix { }
