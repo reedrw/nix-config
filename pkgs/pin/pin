@@ -33,9 +33,13 @@ helpMessage(){
 }
 
 checkPinned(){
-  if [ "$(jq -r ".${package} | has(\"$version\")" "$pinnedJson" 2> /dev/null)" = "true" ]; then
-    echo "Package $package is already pinned to version $version"
-    exit 0
+  local package="$1"
+  local version="$2"
+
+  if [ "$(jq -r ".[\"${package}\"] | has(\"$version\")" "$pinnedJson" 2> /dev/null)" = "true" ]; then
+    return 0
+  else
+    return 1
   fi
 }
 
@@ -79,12 +83,48 @@ getAvailableVersions(){
   echo "$packageJson" | jq -r ".versions | map(.version) | .[]"
 }
 
+noDefault(){
+  # @param $1 package name
+  local package="$1"
+
+  jq -r "del(.[\"$package\"][\"default\"])" "$pinnedJson"
+}
+
+setDefault(){
+  # @param $1 package name
+  # @param $2 version
+  local package="$1"
+  local version="$2"
+  local tmpJson
+
+  tmpJson="$(mktemp)"
+  noDefault "$package" | gron > "$tmpJson"
+
+  if [[ "$version" == "null" ]]; then
+    noDefault "$package" > "$tmpJson"
+    cat "$tmpJson" > "$pinnedJson"
+    rm "$tmpJson"
+    return 0
+  fi
+
+  # make sure the package and requested version are pinned
+  if checkPinned "$package" "$version"; then
+    echo "json[\"$package\"][\"default\"] = \"$version\";" >> "$tmpJson"
+    gron --ungron < "$tmpJson" | jq . > "$pinnedJson"
+  else
+    main "$package" "$version"
+    setDefault "$package" "$version"
+  fi
+  rm "$tmpJson"
+}
+
 main() {
   local purple="\033[0;35m"
   local green="\033[0;32m"
   local blue="\033[0;34m"
   local bold="\033[1m"
   local nc="\033[0m"
+  local tmpJson
 
   package="${1:-}"
   version="${2:-}"
@@ -137,8 +177,14 @@ main() {
       ;;
     -v|--verbose)
       set -x
+      export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
       shift
-      main "$@"
+      main "$@" && exit 0
+      ;;
+    --default|-d)
+      shift
+      setDefault "$1" "$2"
+      exit 0
       ;;
     --help|-h)
       helpMessage
@@ -168,7 +214,10 @@ main() {
   fi
 
   # if package and version is already pinned, exit
-  checkPinned
+  if checkPinned "$package" "$version"; then
+    echo "Package $package is already pinned to version $version"
+    exit 0
+  fi
 
   system="$(nix eval --raw nixpkgs\#system)"
 
