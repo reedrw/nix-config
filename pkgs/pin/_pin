@@ -4,6 +4,8 @@ _pin() {
   local -a options
 
   options=(
+    '--default[Set the default version for a package]'
+    '-d[Set the default version for a package]'
     '--remove[Remove a package from pinned.json]:pinned_packages:_pinned_packages'
     '-r[Remove a package from pinned.json]:pinned_packages:_pinned_packages'
     '--list[List all pinned packages]'

@@ -25,6 +25,7 @@ helpMessage(){
   local nc="\033[0m"
 
   echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--remove|--list|--help]${nc} ${bold}<package>${nc} ${bold}<version>${nc}"
+  echo -e "  ${green}-d, --default${nc}     Set the default version for a package"
   echo -e "  ${green}-r, --remove${nc}      Remove a package from pinned.json"
   echo -e "  ${green}-l, --list${nc}        List all pinned packages"
   echo -e "  ${green}-h, --help${nc}        Show this help message"
