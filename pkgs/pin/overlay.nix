@@ -4,12 +4,14 @@ let
   pinned = import ./pkgs.nix pkgs;
   # map pinned to top level if top level
   # is not already defined
-  final = pinned
-    # find packages with only 1 pinned version
-    |> lib.filterAttrs (n: v: (lib.count (x: true) (builtins.attrNames v)) == 1)
-    # find packages that don't exist in top level
+  defaults = pinned
+    |> lib.filterAttrs (n: v: lib.hasAttr "default" v)
+    |> lib.mapAttrs (n: v: v.default);
+
+  final = (pinned
+    |> lib.mapAttrs (n: v: lib.filterAttrs (n2: v2: n2 != "default") v)
+    |> lib.filterAttrs (n: v: (lib.length (builtins.attrNames v)) == 1)
     |> lib.filterAttrs (n: v: !lib.hasAttr n pkgs)
-    # map pinned to top level
-    |> builtins.mapAttrs (n: v: builtins.elemAt (lib.mapAttrsToList (n2: v2: lib.warn "${n} not found. Using pinned version ${n2}." v2) v) 0)
-  ;
+    |> builtins.mapAttrs (n: v: builtins.elemAt (builtins.attrValues v) 0)
+  ) // defaults;
 in final

@@ -14,5 +14,4 @@ in
 
   # https://animebytes.tv/rules/clients
   # wait for AB to allowed qBittorrent v5
-  qbittorrent-nox = pkgs.pinned.qbittorrent-nox.v4_6_7;
 }
