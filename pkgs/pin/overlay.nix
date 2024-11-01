@@ -1,7 +1,7 @@
 self: pkgs:
 let
   lib = pkgs.lib;
-  pinned = import ./pkgs.nix pkgs;
+  pinned = pkgs.pinned;
   # map pinned to top level if top level
   # is not already defined
   defaults = pinned
