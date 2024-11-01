@@ -21,7 +21,8 @@
   "qbittorrent-nox": {
     "4.6.7": {
       "rev": "fe866c653c24adf1520628236d4e70bbb2fdd949",
-      "sha256": "138a05jrlw1a0x9ixqypl32yw9lkly7s6yjxyq4d434cf59r2x0b"
+      "sha256": "138a05jrlw1a0x9ixqypl32yw9lkly7s6yjxyq4d434cf59r2x0b",
+      "note": "qbittorrent 5 isn't supported by AB yet https://animebytes.tv/rules/clients"
     },
     "5.0.0": {
       "rev": "d4f247e89f6e10120f911e2e2d2254a050d0f732",

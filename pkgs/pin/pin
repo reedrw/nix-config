@@ -27,6 +27,7 @@ helpMessage(){
   echo -e "Usage: ${bold}$(basename "$0") ${yellow}[--remove|--list|--help]${nc} ${bold}<package>${nc} ${bold}<version>${nc}"
   echo -e "  ${green}-d, --default${nc}     Set the default version for a package"
   echo -e "  ${green}-r, --remove${nc}      Remove a package from pinned.json"
+  echo -e "  ${green}-n, --note${nc}        Add a note to a pinned package"
   echo -e "  ${green}-l, --list${nc}        List all pinned packages"
   echo -e "  ${green}-h, --help${nc}        Show this help message"
   echo -e "  ${green}-v, --verbose${nc}     Show verbose output"
@@ -73,6 +74,7 @@ list(){
   #
   # $ pin --list
   # hyfetch 1.4.1
+  # (grey) Note: waiting until bug is fixed <issue link>
   # hyfetch 1.4.11 (default)
   # hyfetch 1.4.7
   # hyfetch 1.4.9
@@ -80,18 +82,44 @@ list(){
   # qbittorrent-nox 5.0.0
   # yt-dlp 2024.9.27
 
+  local package
+  local version
+  local default
+  local note
+  local nameStr
+
+  local grey
+  local green
+  local blue
+  local yellow
+  local purple
+  local nc
+
+  grey="$(tput setaf 8)"
+  green="$(tput setaf 2)"
+  blue="$(tput setaf 4)"
+  yellow="$(tput setaf 3)"
+  purple="$(tput setaf 5)"
+  nc="$(tput sgr0)"
+
   items="$(jq -r 'to_entries[] | .key + " " + (.value | keys_unsorted | .[])' "$pinnedJson")"
   echo "$items" | while read -r item; do
     package="$(echo "$item" | cut -d ' ' -f 1)"
     version="$(echo "$item" | cut -d ' ' -f 2)"
     default="$(jq -r ".[\"$package\"].default" "$pinnedJson")"
     if [ "$version" = "$default" ]; then
-      echo "$package $version (default)"
+      nameStr="$package ${blue}$version${nc} (${yellow}default${nc})"
     elif [ "$version" = "default" ]; then
       continue
     else
-      echo "$package $version"
+      nameStr="$package ${blue}$version${nc}"
     fi
+    # if note exists for version, print it
+    note="$(jq -r ".[\"$package\"][\"$version\"].note" "$pinnedJson" || return 0)"
+    if [ -n "$note" ] && [ "$note" != "null" ]; then
+      echo -e "${grey}Note: $note${nc}"
+    fi
+    echo "$nameStr"
   done
 }
 
@@ -142,6 +170,33 @@ setDefault(){
   rm "$tmpJson"
 }
 
+setNote(){
+  # @param $1 package name
+  # @param $2 version
+  # @param $3 note
+
+  local package="$1"
+  local version="$2"
+  local note="$3"
+  local tmpJson
+
+  if ! checkPinned "$package" "$version"; then
+    echo "Package $package $version is not pinned"
+    exit 1
+  fi
+
+  tmpJson="$(mktemp)"
+
+  if [[ "$note" == "null" ]]; then
+    jq -r "del(.[\"$package\"][\"$version\"].note)" "$pinnedJson" > "$tmpJson"
+  else
+    jq -r ".[\"$package\"][\"$version\"].note = \"$note\"" "$pinnedJson" > "$tmpJson"
+  fi
+
+  cat "$tmpJson" > "$pinnedJson"
+  rm "$tmpJson"
+}
+
 main() {
   local purple="\033[0;35m"
   local green="\033[0;32m"
@@ -176,16 +231,18 @@ main() {
       exit 0
       ;;
     --list|-l)
-      # if we have another argument, it's a package name
-      # so we list the pinned versions of that package
+      list
+      exit 0
+      ;;
+    --listRaw)
       if [ $# -ge 2 ]; then
         package="$2"
         shift 2
-        list | grep "^$package " | cut -d ' ' -f 2
+        main --listRaw | grep "^$package " | cut -d ' ' -f 2
         exit 0
       fi
       shift
-      list
+      jq -r 'to_entries[] | .key + " " + (.value | keys_unsorted | .[])' <(jq 'del(.[]["default"])' "$pinnedJson")
       exit 0
       ;;
     --listAllPackages)
@@ -208,6 +265,11 @@ main() {
     --default|-d)
       shift
       setDefault "$1" "$2"
+      exit 0
+      ;;
+    --note|-n)
+      shift
+      setNote "$1" "$2" "$3"
       exit 0
       ;;
     --help|-h)
