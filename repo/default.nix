@@ -2,10 +2,13 @@
 let
   versionSuffix = "${builtins.substring 0 8 (inputs.self.lastModifiedDate or inputs.self.lastModified)
                   }_${inputs.self.shortRev or "dirty"}";
+
   nixpkgs-options.nixpkgs = {
-    overlays = import ../pkgs/overlays.nix { inherit inputs; };
+    overlays = import ../pkgs/overlays.nix {
+      flake = inputs.self;
+    };
     config = import ../pkgs/config.nix {
-      inherit inputs;
+      flake = inputs.self;
     };
   };
 

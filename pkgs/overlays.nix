@@ -1,4 +1,4 @@
-{ inputs ? (import ../repo/compat.nix).inputs }:
+{ flake ? import ../repo/compat.nix, inputs ? flake.inputs }:
 
 [
   (import ./.)
