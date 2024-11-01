@@ -69,7 +69,30 @@ remove(){
 }
 
 list(){
-  jq -r 'keys[] as $k | "\($k) \(.[$k] | keys[])"' "$pinnedJson"
+  # output example:
+  #
+  # $ pin --list
+  # hyfetch 1.4.1
+  # hyfetch 1.4.11 (default)
+  # hyfetch 1.4.7
+  # hyfetch 1.4.9
+  # qbittorrent-nox 4.6.7 (default)
+  # qbittorrent-nox 5.0.0
+  # yt-dlp 2024.9.27
+
+  items="$(jq -r 'to_entries[] | .key + " " + (.value | keys_unsorted | .[])' "$pinnedJson")"
+  echo "$items" | while read -r item; do
+    package="$(echo "$item" | cut -d ' ' -f 1)"
+    version="$(echo "$item" | cut -d ' ' -f 2)"
+    default="$(jq -r ".[\"$package\"].default" "$pinnedJson")"
+    if [ "$version" = "$default" ]; then
+      echo "$package $version (default)"
+    elif [ "$version" = "default" ]; then
+      continue
+    else
+      echo "$package $version"
+    fi
+  done
 }
 
 listAllPackages(){
