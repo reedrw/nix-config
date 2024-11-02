@@ -53,10 +53,19 @@ queryApi(){
 remove(){
   local package="$1"
   local version="$2"
+  local default
+
 
   echo "Removing $package $version from pinned.json"
 
+  default="$(jq -r ".[\"$package\"].default" "$pinnedJson")"
+
   tmpJson="$(mktemp)"
+  if [ "$version" = "$default" ]; then
+    noDefault "$package" > "$tmpJson"
+    cat "$tmpJson" > "$pinnedJson"
+  fi
+
   gron "$pinnedJson" \
     | grep -Ev "\\[?\"?${package}\"?\]?\\[\"$version\"\\]" \
     | gron --ungron \
