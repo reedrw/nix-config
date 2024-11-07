@@ -52,9 +52,7 @@ in
   };
 
   perSystem = { pkgs, inputs', ... }: rec {
-    legacyPackages = (pkgsForSystem inputs.nixpkgs pkgs.system) // {
-      pkgs-unstable = pkgsForSystem inputs.unstable pkgs.system;
-    };
+    legacyPackages = pkgsForSystem inputs.nixpkgs pkgs.system;
 
     devShells.default = import ../shell.nix {
       pkgs = legacyPackages;
