@@ -12,6 +12,6 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  # https://animebytes.tv/rules/clients
-  # wait for AB to allowed qBittorrent v5
+  # TODO: remove on next release
+  qbittorrent-nox = pkgs.pkgs-unstable.qbittorrent-nox;
 }
