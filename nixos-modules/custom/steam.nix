@@ -3,7 +3,7 @@
 let
   cfg = config.custom.steam;
   steam-custom = with pkgs; steam.override {
-    extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.opengl.package];
+    extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.graphics.package];
     extraPkgs = pkgs: [ mangohud ];
     extraEnv = {
       # https://github.com/ValveSoftware/Source-1-Games/issues/5043

@@ -86,7 +86,6 @@ in
 
     __nix(){
       if [[ $1 == shell ]]; then
-        shift
         ${pkgs.any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
       else
         command nix "$@"

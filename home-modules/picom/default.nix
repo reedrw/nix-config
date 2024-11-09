@@ -1,7 +1,13 @@
+{ pkgs, ... }:
+let
+  sources = import ./nix/sources.nix { };
+in
 {
   services.picom = {
     enable = true;
-    extraArgs = [ "--legacy-backends" ];
+    package = pkgs.picom.overrideAttrs (oldAttrs: {
+      src = sources.picom;
+    });
     shadow = true;
     fade = true;
     fadeDelta = 3;
@@ -24,8 +30,8 @@
       "class_g      = 'Cairo-clock'"
       "class_g      = 'slop'"
       "window_type *= 'menu'"
-      "_GTK_FRAME_EXTENTS@:c"
-      "_NET_WM_WINDOW_TYPE:a *= '_KDE_NET_WM_WINDOW_TYPE_OVERRIDE'"
+      "_GTK_FRAME_EXTENTS@"
+      "_NET_WM_WINDOW_TYPE *= '_KDE_NET_WM_WINDOW_TYPE_OVERRIDE'"
     ];
     settings = {
       corner-radius = 10;
@@ -35,7 +41,7 @@
         "class_g = 'i3-frame'"
       ];
       opacity-rule = [
-        "10:class_g != 'Polybar' && focused != 1 && _NET_WM_STATE@:32a *= '_NET_WM_STATE_STICKY'"
+        "10:class_g != 'Polybar' && focused != 1 && _NET_WM_STATE@ *= '_NET_WM_STATE_STICKY'"
       ];
     };
   };

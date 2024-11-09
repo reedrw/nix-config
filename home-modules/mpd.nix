@@ -1,26 +1,5 @@
 { pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-  # use https://github.com/ncmpcpp/ncmpcpp master until new release
-  # this fixes the genius lyric fetcher
-  ncmpcpp = pkgs.versionConditionalOverride "0.9.2" pkgs.ncmpcpp (pkgs.ncmpcpp.overrideAttrs
-    (old: {
-      src = sources.ncmpcpp;
-      version = builtins.substring 0 7 sources.ncmpcpp.rev;
 
-      nativeBuildInputs = with pkgs; [
-        autoconf
-        automake
-        libtool
-        autoreconfHook
-      ] ++ old.nativeBuildInputs;
-
-      # preConfigure = ''
-      #   ./autogen.sh
-      # '';
-    })
-  );
-in
 {
   services.mpd = {
     enable = true;
@@ -52,7 +31,7 @@ in
 
   programs.ncmpcpp = {
     enable = true;
-    package = ncmpcpp.override {
+    package = pkgs.ncmpcpp.override {
       visualizerSupport = true;
     };
     settings = {

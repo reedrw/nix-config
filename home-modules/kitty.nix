@@ -25,7 +25,7 @@
     in {
       font_size = 10;
       font_family = "${family} Bold";
-      bold_font = "${family} Bold";
+      bold_font = ''family="${family}" style="Bold"'';
       italic_font = "${family} Italic";
       bold_italic_font = "${family} Bold Italic";
       window_padding_width = 10;

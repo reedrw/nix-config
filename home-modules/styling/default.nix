@@ -25,7 +25,7 @@
       libsForQt5.qtstyleplugins
       papirus-icon-theme
       qt5.qtbase
-      qt5ct
+      libsForQt5.qt5ct
       qt6ct
     ];
 
@@ -53,7 +53,7 @@
     "Trolltech.conf".source = ./Trolltech.conf;
     "qt5ct/qt5ct.conf".text = ''
       [Appearance]
-      color_scheme_path=${pkgs.qt5ct}/share/qt5ct/colors/airy.conf
+      color_scheme_path=${pkgs.libsForQt5.qt5ct}/share/qt5ct/colors/airy.conf
       custom_palette=false
       icon_theme=Papirus-Dark
       standard_dialogs=default

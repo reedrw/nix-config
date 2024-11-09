@@ -13,6 +13,7 @@
       open-sans
       source-code-pro
       ttf_bitstream_vera
+      fantasque-sans-mono
       (nerdfonts.override {
         fonts = [
           "FantasqueSansMono"
