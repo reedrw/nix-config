@@ -17,7 +17,7 @@ let
       |> builtins.attrValues
       |> builtins.concatStringsSep " "
     ;
-  in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
+  in pkgs.runCommandNoCC filename { buildInputs = [ pkgs.lutgen ]; } ''
     lutgen apply -s 36 ${config.stylix.image} -o $out -- ${colorScheme}
   '';
 
