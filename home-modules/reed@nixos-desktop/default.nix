@@ -1,6 +1,6 @@
 {
   imports = [
     ./qbittorrent.nix
-    ./xsession.nix
+    ./xsession
   ];
 }
