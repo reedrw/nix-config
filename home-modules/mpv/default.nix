@@ -4,7 +4,7 @@ let
   sources = import ./nix/sources.nix { };
 
   mkPlugin = path: let
-    name = (builtins.baseNameOf path);
+    name = builtins.baseNameOf path;
   in pkgs.runCommandNoCC name {
     passthru.scriptName = name;
   } ''
@@ -14,6 +14,7 @@ let
 in
 {
   programs.mpv = {
+    enable = true;
     package = pkgs.mpv.override {
       scripts = with pkgs.mpvScripts; [
         (mkPlugin "${sources.mpv-scripts}/clipshot.lua")
@@ -23,7 +24,6 @@ in
         thumbfast
       ];
     };
-    enable = true;
     config = {
       profile = "gpu-hq";
       scale = "ewa_lanczossharp";
