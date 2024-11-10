@@ -3,6 +3,8 @@ let
   sources = import ./nix/sources.nix { };
 in
 {
+  stylix.targets.neovim.enable = true;
+
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -33,8 +35,6 @@ in
       };
     };
     plugins = with pkgs.vimPlugins; [
-      ale
-      base16-nvim
       camelcasemotion
       caw-vim
       coc-pyright
@@ -118,8 +118,6 @@ in
       set numberwidth=5
       set cursorline
       set inccommand=nosplit
-
-      colorscheme base16-${config.lib.stylix.scheme.scheme-slug}
 
       " Make line wrapping nicer
       set breakindent

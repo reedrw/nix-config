@@ -1,16 +1,4 @@
 {
-    "lc3.vim": {
-        "branch": "master",
-        "description": "Syntax highlighting for the LC3 assembly language.",
-        "homepage": null,
-        "owner": "nprindle",
-        "repo": "lc3.vim",
-        "rev": "5d2b84480738e5d262007ff884e939860084dc22",
-        "sha256": "0phi1jvafga9qhbk7vb1dqa1710x1l2pbwc0pmalsh6khy1sl3mj",
-        "type": "tarball",
-        "url": "https://github.com/nprindle/lc3.vim/archive/5d2b84480738e5d262007ff884e939860084dc22.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "vim-fugitive-blame-ext": {
         "branch": "master",
         "description": "Extend tpope/vim-fugitive to show commit message on statusline in :Gblame",
