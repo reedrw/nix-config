@@ -11,30 +11,6 @@
         "url": "https://github.com/ObserverOfTime/mpv-scripts/archive/d03dde5ee8cb3843d1ec59e39c4a404a50597167.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "mpv-webm": {
-        "branch": "master",
-        "description": "Simple WebM maker for mpv, with no external dependencies.",
-        "homepage": "",
-        "owner": "ekisu",
-        "repo": "mpv-webm",
-        "rev": "64844ec52b7a17d621ddceacf77e1e933f856b3c",
-        "sha256": "0yvnnd8ynaiyv7z300pyj86h9h1dkn1ml8j7pczwgqk61c6zqz2j",
-        "type": "tarball",
-        "url": "https://github.com/ekisu/mpv-webm/archive/64844ec52b7a17d621ddceacf77e1e933f856b3c.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "thumbfast": {
-        "branch": "master",
-        "description": "High-performance on-the-fly thumbnailer script for mpv",
-        "homepage": "",
-        "owner": "po5",
-        "repo": "thumbfast",
-        "rev": "f1fdf10b17f394f2d42520d0e9bf22feaa20a9f4",
-        "sha256": "0wxcbq4ji6qbbml37w5pdhg43k3mixfn6p3hapf7wc0gxmzhna3k",
-        "type": "tarball",
-        "url": "https://github.com/po5/thumbfast/archive/f1fdf10b17f394f2d42520d0e9bf22feaa20a9f4.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "vanilla-osc": {
         "branch": "vanilla-osc",
         "description": "High-performance on-the-fly thumbnailer script for mpv",

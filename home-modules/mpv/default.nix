@@ -1,13 +1,28 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
-  plugins = (import ./nix/sources.nix { }) // lib.packagesFromDirectoryRecursive {
-    callPackage = pkgs.callPackage;
-    directory = ./plugins;
-  };
+  sources = import ./nix/sources.nix { };
+
+  mkPlugin = path: let
+    name = (builtins.baseNameOf path);
+  in pkgs.runCommandNoCC name {
+    passthru.scriptName = name;
+  } ''
+    mkdir -p $out/share/mpv/scripts
+    cp ${path} $out/share/mpv/scripts/${name}
+  '';
 in
 {
   programs.mpv = {
+    package = pkgs.mpv.override {
+      scripts = with pkgs.mpvScripts; [
+        (mkPlugin "${sources.mpv-scripts}/clipshot.lua")
+        (mkPlugin "${sources.vanilla-osc}/player/lua/osc.lua")
+        mpris
+        mpv-webm
+        thumbfast
+      ];
+    };
     enable = true;
     config = {
       profile = "gpu-hq";
@@ -17,11 +32,5 @@ in
       volume = 70;
       screenshot-directory = "~/";
     };
-  };
-  xdg.configFile = {
-    "mpv/scripts/clipshot.lua".source = "${plugins.mpv-scripts}/clipshot.lua";
-    "mpv/scripts/webm.lua".source = "${plugins.mpv-webm}/build/webm.lua";
-    "mpv/scripts/thumbfast.lua".source = "${plugins.thumbfast}/thumbfast.lua";
-    "mpv/scripts/osc.lua".source = "${plugins.vanilla-osc}/player/lua/osc.lua";
   };
 }
