@@ -1,4 +1,8 @@
-{ config, pkgs, inputs, ... }:
+{ pkgs, inputs, ... }:
+let
+  # schemes is from https://github.com/tinted-theming/schemes
+  schemes = (import ./nix/sources.nix { }).schemes;
+in
 {
   imports = [
     inputs.stylix.nixosModules.stylix
@@ -11,7 +15,7 @@
       autoImport = false;
     };
     polarity = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-${config.stylix.polarity}.yaml";
+    base16Scheme = "${schemes}/base16/ayu-dark.yaml";
     image = ./wallpaper.png;
   };
 
