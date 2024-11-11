@@ -156,6 +156,7 @@ setDefault(){
   # @param $2 version
   local package="$1"
   local version="$2"
+  local rev="${3:-}"
   local tmpJson
 
   tmpJson="$(mktemp)"
@@ -173,7 +174,7 @@ setDefault(){
     echo "json[\"$package\"][\"default\"] = \"$version\";" >> "$tmpJson"
     gron --ungron < "$tmpJson" | jq . > "$pinnedJson"
   else
-    main "$package" "$version"
+    main "$package" "$version" "$rev"
     setDefault "$package" "$version"
   fi
   rm "$tmpJson"
@@ -273,7 +274,7 @@ main() {
       ;;
     --default|-d)
       shift
-      setDefault "$1" "$2"
+      setDefault "$@"
       exit 0
       ;;
     --note|-n)
