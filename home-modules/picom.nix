@@ -1,13 +1,6 @@
-{ pkgs, ... }:
-let
-  sources = import ./nix/sources.nix { };
-in
 {
   services.picom = {
     enable = true;
-    package = pkgs.picom.overrideAttrs (oldAttrs: {
-      src = sources.picom;
-    });
     shadow = true;
     fade = true;
     fadeDelta = 3;
