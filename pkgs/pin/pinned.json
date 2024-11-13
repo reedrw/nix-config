@@ -3,7 +3,7 @@
     "12.4": {
       "rev": "171c84558ebeb72aaf359108d630b19e8969c6ae",
       "sha256": "1nsr2zpqldn0iszy4gs7pdgvws3bpam2wvnp18is7n43mljvyl5j",
-      "note": "https://github.com/NixOS/nixpkgs/pull/355250"
+      "note": "https://nixpk.gs/pr-tracker.html?pr=355250"
     },
     "default": "12.4"
   }
