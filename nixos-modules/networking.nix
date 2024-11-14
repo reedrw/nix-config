@@ -1,14 +1,8 @@
 { config, pkgs, lib, ... }:
-let
-  nameservers = lib.lists.remove "100.100.100.100" config.networking.nameservers;
-in
+
 {
   networking = {
-    networkmanager = {
-      enable = true;
-      dns = "systemd-resolved";
-      insertNameservers = nameservers;
-    };
+    networkmanager.enable = true;
     firewall.allowedTCPPorts = [
       # shairport-sync
       5000
@@ -20,16 +14,6 @@ in
       # shairport-sync
       { from = 6001; to = 6011; }
     ];
-    hosts = {
-      "0.0.0.0" = [
-        "ffapple.com"
-        "ppq.apple.com"
-        "ocsp.apple.com"
-        "ocsp2.apple.com"
-        "www.ocsp.apple.com"
-        "www.ocsp2.apple.com"
-      ];
-    };
   };
   services.mullvad-vpn = {
     enable = lib.mkDefault true;
@@ -54,12 +38,10 @@ in
     ];
     postStart = let
       mullvad = config.services.mullvad-vpn.package;
-      dnsServers = builtins.concatStringsSep " " nameservers;
     in ''
       while ! ${mullvad}/bin/mullvad status >/dev/null; do sleep 1; done
       ${mullvad}/bin/mullvad lan set allow
       ${mullvad}/bin/mullvad auto-connect set on
-      ${mullvad}/bin/mullvad dns set custom ${dnsServers}
       ${mullvad}/bin/mullvad split-tunnel add "$(${pkgs.procps}/bin/pidof nix-daemon)"
       ${mullvad}/bin/mullvad split-tunnel add "$(${pkgs.procps}/bin/pidof tailscaled)"
     '';
@@ -83,11 +65,6 @@ in
   services.tailscale.enable = true;
 
   networking.search = [ "tail3b7ba.ts.net" ];
-  networking.nameservers = [
-    "100.100.100.100"
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
 
   networking.nftables = {
     enable = true;
