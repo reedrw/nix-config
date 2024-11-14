@@ -37,6 +37,7 @@ in
     nixos.hosts = {
       nixos-desktop.userHomeModules = {
         reed = "reed@nixos-desktop";
+        spicypillow = "spicypillow";
         root = "root";
       };
       nixos-t480.userHomeModules = {
