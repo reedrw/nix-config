@@ -35,7 +35,7 @@ jobs:
         ref: ${{ github.event.inputs.ref }}
 
     - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v15
+      uses: DeterminateSystems/nix-installer-action@v16
       with:
         source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
         logger: pretty
