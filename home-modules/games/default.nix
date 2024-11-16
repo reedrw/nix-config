@@ -8,6 +8,10 @@ let
   '');
 in
 {
+  imports = [
+    ./steam.nix
+  ];
+
   home.packages = with pkgs; [
     prismlauncher
     quake
@@ -40,4 +44,5 @@ in
     '';
     "PrismLauncher/themes/base16/resources".source = pkgs.emptyDirectory;
   };
+
 }

@@ -40,7 +40,6 @@ in
         [ "tf2"        "440" ]
       ];
     in with pkgs; [
-      adwsteamgtk
       # https://github.com/ValveSoftware/Source-1-Games/issues/5043
       pkgsi686Linux.gperftools
 
