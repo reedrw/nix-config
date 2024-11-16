@@ -1,9 +1,27 @@
-{ pkgs, config, ... }:
-
+{ pkgs, lib, config, osConfig, ... }:
+let
+  adwsteamgtk = (pkgs.wrapPackage pkgs.adwsteamgtk (adwsteamgtk: ''
+    custom="\$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
+    if [[ -f "\$custom" ]]; then
+      rm -f "\$custom"
+    fi
+    ${adwsteamgtk} "\$@"
+  ''));
+in
 {
-  home.packages = with pkgs; [
-    adwsteamgtk
-  ];
+  home.packages = [ adwsteamgtk ];
+
+  home.activation = let
+    applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
+      ${lib.getExe adwsteamgtk} -i
+    '';
+  in lib.optionalAttrs osConfig.programs.steam.enable {
+    updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      run ${applySteamTheme}
+    '';
+  };
+
+  dconf.settings."io/github/Foldex/AdwSteamGtk".prefs-install-custom-css = true;
 
   xdg.configFile."AdwSteamGtk/custom.css".text = with config.lib.stylix.scheme; ''
     :root
