@@ -36,6 +36,9 @@
       "nix-daemon.service"
       "tailscaled.service"
     ];
+    preStart = ''
+      sleep 5
+    '';
     postStart = let
       mullvad = config.services.mullvad-vpn.package;
     in ''
