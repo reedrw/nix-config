@@ -25,6 +25,7 @@ with pkgs;
   "${mod}+r" = "${exec} ${getExe scripts.record}";
   "${mod}+n" = "${exec} ${osConfig.services.mullvad-vpn.package}/bin/mullvad reconnect";
   "${mod}+Shift+s" = "sticky toggle";
+  "${mod}+Shift+q" = "${exec} ${getExe scripts.killwrapper}";
   "${mod}+2" = "${exec} ${writeShellScript "workspace2" ''
     i3-msg workspace 2
     ${getExe scripts.mpv-dnd} --resume

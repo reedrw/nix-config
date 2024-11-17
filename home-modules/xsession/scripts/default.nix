@@ -5,6 +5,7 @@
     "brightness"
     "dwebp-serv"
     "keybinds"
+    "killwrapper"
     "load-layouts"
     "pause-suspend"
     "record"
