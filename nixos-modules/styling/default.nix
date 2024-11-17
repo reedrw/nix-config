@@ -15,7 +15,7 @@ in
       autoImport = false;
     };
     polarity = "dark";
-    base16Scheme = "${schemes}/base16/terracotta-dark.yaml";
+    base16Scheme = "${schemes}/base16/chalk.yaml";
     image = ./wallpaper.png;
   };
 
