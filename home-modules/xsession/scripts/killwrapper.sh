@@ -25,7 +25,10 @@ closeSteam() {
   # If we only have 1 steam window open, kill the process,
   # otherwise just close the window normally using i3-msg
   local numOpenWindows
-  numOpenWindows="$(xwininfo -tree -root | grep 'steam' | grep -v 'has no name' | grep -c --regexp '^        ')"
+  numOpenWindows="$(xwininfo -tree -root \
+    | grep 'steam' \
+    | grep -c --regexp '^        '
+  )"
 
   if [ "$numOpenWindows" -eq 1 ]; then
     killall steam
