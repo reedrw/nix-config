@@ -1,19 +1,17 @@
 { pkgs, lib, config, osConfig, ... }:
-let
-  adwsteamgtk = (pkgs.wrapPackage pkgs.adwsteamgtk (adwsteamgtk: ''
-    custom="\$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
-    if [[ -f "\$custom" ]]; then
-      rm -f "\$custom"
-    fi
-    ${adwsteamgtk} "\$@"
-  ''));
-in
-{
-  home.packages = [ adwsteamgtk ];
+
+lib.optionalAttrs osConfig.programs.steam.enable {
+  home.packages = [ pkgs.adwsteamgtk ];
 
   home.activation = let
     applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
-      ${lib.getExe adwsteamgtk} -i
+      # This file gets copied with read-only permission from the nix store
+      # if it is present, it causes an error when the theme is applied. Delete it.
+      custom="\$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
+      if [[ -f "\$custom" ]]; then
+        rm -f "\$custom"
+      fi
+      ${lib.getExe pkgs.adwsteamgtk} -i
     '';
   in lib.optionalAttrs osConfig.programs.steam.enable {
     updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" ] ''
