@@ -14,7 +14,7 @@ lib.optionalAttrs osConfig.programs.steam.enable {
       ${lib.getExe pkgs.adwsteamgtk} -i
     '';
   in {
-    updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" "dconfSettings" ] ''
       run ${applySteamTheme}
     '';
   };
