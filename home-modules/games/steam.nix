@@ -7,9 +7,9 @@ lib.optionalAttrs osConfig.programs.steam.enable {
     applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
       # This file gets copied with read-only permission from the nix store
       # if it is present, it causes an error when the theme is applied. Delete it.
-      custom="\$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
-      if [[ -f "\$custom" ]]; then
-        rm -f "\$custom"
+      custom="$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
+      if [[ -f "$custom" ]]; then
+        rm -f "$custom"
       fi
       ${lib.getExe pkgs.adwsteamgtk} -i
     '';
