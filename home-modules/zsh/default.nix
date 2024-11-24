@@ -9,6 +9,10 @@ in
     nix-direnv = {
       enable = true;
     };
+    config = {
+      hide_env_diff = true;
+      load_dotenv = true;
+    };
   };
 
   stylix.targets.fzf.enable = true;
