@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 let
   packagesMinimal = with pkgs; [
     # utilities
@@ -16,6 +16,7 @@ let
     ripgrep   # recursive grep
     screen    # terminal multiplexer
     wget      # download utility
+    inputs.tx-calculator.packages.${pkgs.system}.tx-calculator
 
     # global aliases
     (aliasToPackage {

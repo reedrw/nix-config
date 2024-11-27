@@ -26,6 +26,11 @@ rec {
     # add pipe operator
     nil.url = "github:q60/nil/pipe-operator-support";
 
+    tx-calculator = {
+      url = "github:reedrw/tx-calculator";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
