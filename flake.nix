@@ -24,7 +24,7 @@ rec {
 
     # https://github.com/oxalica/nil/pull/152
     # add pipe operator
-    nil.url = "github:q60/nil/pipe-operator-support";
+    nil.url = "github:oxalica/nil";
 
     tx-calculator = {
       url = "github:reedrw/tx-calculator";
