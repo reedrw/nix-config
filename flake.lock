@@ -2,11 +2,11 @@
   "nodes": {
     "NUR": {
       "locked": {
-        "lastModified": 1732712909,
-        "narHash": "sha256-itN6gokrJekkGJ1bBduDxqc0NeZVDEPwGM1eBk89268=",
+        "lastModified": 1732885785,
+        "narHash": "sha256-swTRlq1lqrDI9B/mPQgRkc0/FrebBJIRyfVVtoQtfL4=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "f2a9aa0e0cff734ea2ee8528aa97c2f367b92647",
+        "rev": "e854a10291145fbe225a1ada36907935203c9e8d",
         "type": "github"
       },
       "original": {
@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1731957371,
-        "narHash": "sha256-Tf+U5UyjPrmohVywWcrtOT+Cxluo4gJVKpaPlBp8KRg=",
+        "lastModified": 1732889632,
+        "narHash": "sha256-uzZOX85hIvVPKkPnuRaN4wxeHKbMCWDwJWNgaFO0m5s=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "203abb8943a35d6163762bc42042b5b41d9910f3",
+        "rev": "2ebe74d277bd7b0762db1fd320d0518c66a8a672",
         "type": "github"
       },
       "original": {
@@ -141,11 +141,11 @@
     },
     "flake-compat_2": {
       "locked": {
-        "lastModified": 1696426674,
-        "narHash": "sha256-kvjfFW7WAETZlt09AgDn1MrtKzP7t90Vf7vypd3OL1U=",
+        "lastModified": 1732722421,
+        "narHash": "sha256-HRJ/18p+WoXpWJkcdsk9St5ZiukCqSDgbOGFa8Okehg=",
         "owner": "edolstra",
         "repo": "flake-compat",
-        "rev": "0f9255e01c2351cc7d116c072cb317785dd33b33",
+        "rev": "9ed2ac151eada2306ca8c418ebd97807bb08f6ac",
         "type": "github"
       },
       "original": {
