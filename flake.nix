@@ -31,6 +31,8 @@ rec {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Waiting for release 24.11
+    # https://github.com/danth/stylix/issues/655
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
