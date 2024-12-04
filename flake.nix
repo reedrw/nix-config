@@ -20,10 +20,10 @@ rec {
 
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
-    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/10";
+    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/14";
 
-    # https://github.com/oxalica/nil/pull/152
     # add pipe operator
+    # wait for new release (after dec 2024)
     nil.url = "github:oxalica/nil";
 
     tx-calculator = {
@@ -34,7 +34,7 @@ rec {
     # Waiting for release 24.11
     # https://github.com/danth/stylix/issues/655
     stylix = {
-      url = "github:danth/stylix";
+      url = "github:danth/stylix/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

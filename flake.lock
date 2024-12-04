@@ -363,16 +363,16 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1728885799,
-        "narHash": "sha256-dc0hA+u99/P5by6zAZqTpRHXaUkolMKIMdiiXJtCyV0=",
-        "ref": "refs/changes/83/1783/10",
-        "rev": "6fcedb0e4a6188c810bcfc2e6236a89b09ffd8c8",
-        "revCount": 16340,
+        "lastModified": 1732152288,
+        "narHash": "sha256-jAtOt2pTu7WnByRdqgvO84xjFzoEGRTlsjSb3Wbu6Rs=",
+        "ref": "refs/changes/83/1783/14",
+        "rev": "890badc057a7da37d31131bf9f7284705aabe977",
+        "revCount": 16514,
         "type": "git",
         "url": "https://gerrit.lix.systems/lix"
       },
       "original": {
-        "ref": "refs/changes/83/1783/10",
+        "ref": "refs/changes/83/1783/14",
         "type": "git",
         "url": "https://gerrit.lix.systems/lix"
       }
@@ -624,6 +624,7 @@
       },
       "original": {
         "owner": "danth",
+        "ref": "release-24.11",
         "repo": "stylix",
         "type": "github"
       }
