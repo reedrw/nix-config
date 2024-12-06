@@ -15,7 +15,4 @@ in
   lockProgram = self.i3lock-fancy.override {
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
-
-  # TODO: remove on next release
-  qbittorrent-nox = pkgs.pkgs-unstable.qbittorrent-nox;
 }

@@ -4,7 +4,7 @@
     shadow = true;
     fade = true;
     fadeDelta = 3;
-    shadowOpacity = 0.3;
+    shadowOpacity = 0.6;
     shadowExclude = [
       "! name      ~= ''"
       "name         = '[i3 con] workspace 1'"
