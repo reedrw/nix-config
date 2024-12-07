@@ -3,7 +3,7 @@ let
   sources = import ./nix/sources.nix { };
 
   ccat = with pkgs; writeShellScriptBin "bat" ''
-    ${lib.getExe bat} --theme=base16 "$@"
+    ${lib.getExe bat} --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"
   '';
 
   rangerlaunch = pkgs.writeShellScript "rangerlaunch" ''

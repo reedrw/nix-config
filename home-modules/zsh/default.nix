@@ -33,6 +33,9 @@ in
     ];
   };
 
+  stylix.targets.bat.enable = true;
+  programs.bat.enable = true;
+
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
@@ -256,6 +259,7 @@ in
     shellAliases = {
       ":q" = "exit";
       "\\$" = "";
+      cat = "bat --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never";
       cd = "z";
       cp = "cp -riv";
       gcd = "sudo gc -d";
@@ -273,7 +277,6 @@ in
       x = "exit";
     } // (lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
       bmount = "bashmount";
-      cat = "bat --theme=base16 --style='changes,snip,numbers' --paging=never --wrap=never";
       df = "pydf";
       ls = "eza -lh --git -s type";
       ping = "prettyping --nolegend";
