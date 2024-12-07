@@ -15,6 +15,13 @@ if [ -n "$SUDO_ASKPASS" ]; then
   }
 fi
 
+# if user is root, sudo should do nothing
+if [ "$(id -u)" -eq 0 ]; then
+  sudo() {
+    "$@"
+  }
+fi
+
 helpMessage(){
   local green='\033[0;32m'
   local yellow='\033[0;33m'
