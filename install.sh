@@ -4,6 +4,7 @@ set -e
 
 dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
+flake="git+file://$flakePath?ref=main"
 
 nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
 logFormat=(--log-format bar-with-logs)
@@ -38,7 +39,7 @@ helpMessage(){
 main(){
   case $1 in
     --boot)
-      sudo nixos-rebuild boot --fast --flake "$flakePath/.#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild boot --fast --flake "$flake#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -47,11 +48,11 @@ main(){
         output="$2"
       fi
       if grep -q "@" <<< "$output"; then
-        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#homeConfigurations.$output.activationPackage" "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flake#homeConfigurations.$output.activationPackage" "${@:3}"
       elif grep -q "nixos-vm" <<< "$output"; then
-        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#nixosConfigurations.$output.config.system.build.vm" "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flake#nixosConfigurations.$output.config.system.build.vm" "${@:3}"
       else
-        "${nixCommand[@]}" build "${logFormat[@]}" "$flakePath/.#nixosConfigurations.$output.config.system.build.toplevel" "${@:3}"
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flake#nixosConfigurations.$output.config.system.build.toplevel" "${@:3}"
       fi
       ;;
     --help|-h)
@@ -60,7 +61,7 @@ main(){
     --list-outputs)
       nix eval --impure --raw --expr "
         let
-          flake = builtins.getFlake \"path:$flakePath/.\";
+          flake = builtins.getFlake \"$flake\";
           nixosConfigurations = builtins.attrNames flake.nixosConfigurations;
           homeConfigurations = builtins.attrNames flake.homeConfigurations;
         in
@@ -69,7 +70,7 @@ main(){
     --list-systems)
       nix eval --impure --raw --expr "
         let
-          flake = builtins.getFlake \"path:$flakePath/.\";
+          flake = builtins.getFlake \"$flake\";
           nixosConfigurations = builtins.attrNames flake.nixosConfigurations;
         in
           builtins.concatStringsSep \"\\n\" nixosConfigurations + \"\\n\""
@@ -80,7 +81,7 @@ main(){
       main "$@"
       ;;
     --switch|*)
-      sudo nixos-rebuild switch --fast --flake "$flakePath/.#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild switch --fast --flake "$flake#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
   esac
 }
