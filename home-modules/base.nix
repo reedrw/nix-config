@@ -17,7 +17,6 @@ let
     screen    # terminal multiplexer
     wget      # download utility
     inputs.tx-calculator.packages.${pkgs.system}.tx-calculator
-    hello
 
     # global aliases
     (aliasToPackage {

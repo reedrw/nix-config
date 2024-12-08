@@ -22,7 +22,7 @@ let
         && [[ "$(git log HEAD..origin/main | wc -l)" -gt 0 ]];
         then
           git pull
-          ldp
+          ldp -v
         fi
       popd
     '';
@@ -36,7 +36,7 @@ in
       Unit = "autoUpdate.service";
       WakeSystem = true;
       Persistent = false;
-      OnCalendar = "*-*-* *:20:00";
+      OnCalendar = "*-*-* 03:00:00";
     };
     wantedBy = [ "multi-user.target" ];
   };
