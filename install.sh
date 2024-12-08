@@ -4,7 +4,17 @@ set -e
 
 dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
-flake="git+file://$flakePath?ref=main"
+
+pushd "$flakePath" > /dev/null
+  ref=""
+  # check if repo is dirty
+  if git diff --quiet; then
+    ref="?ref=$(git rev-parse --abbrev-ref HEAD)"
+  fi
+popd > /dev/null
+
+flake="git+file://${flakePath}${ref}"
+# flake="git+file://$flakePath"
 
 nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
 logFormat=(--log-format bar-with-logs)
