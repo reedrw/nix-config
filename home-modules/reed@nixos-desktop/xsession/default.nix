@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ ... }:
 
 {
   xsession.windowManager.i3.config.startup = let
@@ -16,6 +16,4 @@
     inherit command;
     notification = false;
   }) run;
-
-  systemd.user.services = config.lib.functions.mkSimpleService "x11vnc" "${pkgs.writeNixShellScript "x11vnc" (builtins.readFile ./x11vnc.sh)}/bin/x11vnc";
 }
