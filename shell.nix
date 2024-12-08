@@ -1,7 +1,7 @@
-{ pkgs ? (import ./repo/compat.nix).legacyPackages."${builtins.currentSystem}" }:
+{ pkgs ? (import ./repo/compat.nix).legacyPackages."${builtins.currentSystem}", extraArgs ? {} }:
 
 with pkgs;
-mkShell {
+mkShell ({
   name = "nix-config";
   packages = [
     doppler
@@ -27,4 +27,4 @@ mkShell {
   ];
   PRE_COMMIT_COLOR = "never";
   SHELLCHECK_OPTS = "-e SC1008";
-}
+} // extraArgs)

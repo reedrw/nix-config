@@ -54,8 +54,20 @@ in
   perSystem = { pkgs, inputs', ... }: rec {
     legacyPackages = pkgsForSystem inputs.nixpkgs pkgs.system;
 
-    devShells.default = import ../shell.nix {
-      pkgs = legacyPackages;
+    devShells = {
+      default = import ../shell.nix {
+        pkgs = legacyPackages;
+      };
+      update = import ../shell.nix {
+        pkgs = legacyPackages;
+        extraArgs.shellHook = ''
+          unset shellHook
+          nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
+          "''${nixCommand[@]}" flake update
+          update-all
+          exit
+        '';
+      };
     };
   };
 }
