@@ -5,20 +5,6 @@ set -e
 dir="$(dirname "$(readlink -f "$0")")"
 flakePath="${flakePath:-"$dir"}"
 
-pushd "$flakePath" > /dev/null
-  ref=""
-  # check if repo is dirty
-  if git diff --quiet; then
-    ref="?ref=$(git rev-parse --abbrev-ref HEAD)"
-  fi
-popd > /dev/null
-
-flake="git+file://${flakePath}${ref}"
-# flake="git+file://$flakePath"
-
-nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
-logFormat=(--log-format bar-with-logs)
-
 # if SUDO_ASKPASS is set, use sudo -A
 if [ -n "$SUDO_ASKPASS" ]; then
   sudo() {
@@ -46,7 +32,27 @@ helpMessage(){
   echo -e "${green}  --verbose      ${NC}Enable verbose output"
 }
 
+getFlakeRef(){
+  local ref
+  local flake
+
+  pushd "$flakePath" > /dev/null
+    ref=""
+    # check if repo is dirty
+    if git diff --quiet; then
+      ref="?ref=$(git rev-parse --abbrev-ref HEAD)"
+    fi
+  popd > /dev/null
+
+  flake="git+file://${flakePath}${ref}"
+  echo "$flake"
+}
+
 main(){
+  nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
+  logFormat=(--log-format bar-with-logs)
+  flake="$(getFlakeRef)"
+
   case $1 in
     --boot)
       sudo nixos-rebuild boot --fast --flake "$flake#$2" --accept-flake-config "${logFormat[@]}" "${@:3}"
