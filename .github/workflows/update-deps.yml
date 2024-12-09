@@ -36,7 +36,7 @@ jobs:
     - name: Run all "update-sources.sh"
       run: |
         export TERM="xterm"
-        nix develop -L --option accept-flake-config true .#devShells.x86_64-linux.update
+        nix develop -L --option accept-flake-config true .\#update
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v7
