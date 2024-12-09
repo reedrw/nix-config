@@ -12,7 +12,7 @@
     "select-term"
     "toggle-touchpad"
     "volume"
-  ] (name: pkgs.writeNixShellScript name (builtins.readFile (./. + "/${name}.sh"))) // {
+  ] (name: pkgs.writeNixShellScript name (builtins.readFile "${./.}/${name}.sh")) // {
     clipboard-clean = let
       unalix = pkgs.callPackage ./unalix { };
     in pkgs.writeShellApplication {

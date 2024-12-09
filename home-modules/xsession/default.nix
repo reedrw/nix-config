@@ -152,7 +152,7 @@ in
   in listDirectory ./.
     |> builtins.filter (lib.hasSuffix ".json")
     |> map (x: lib.last (lib.splitString "/" (toString x)))
-    |> map (x: { "i3/${x}".source = ./. + "/${x}"; })
+    |> map (x: { "i3/${x}".source = "${./.}/${x}"; })
     |> lib.mergeAttrsList;
 
   services = {

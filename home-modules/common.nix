@@ -5,5 +5,5 @@
     |> (x: builtins.removeAttrs x [ "common.nix" ])
     |> builtins.attrNames
     |> builtins.filter (x: !lib.hasInfix "@" x)
-    |> map (x: ./. + "/${x}");
+    |> map (x: "${./.}/${x}");
 }
