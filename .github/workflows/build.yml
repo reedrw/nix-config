@@ -76,7 +76,7 @@ jobs:
         if [[ "${{ matrix.output }}" == "nix-shell" ]]; then
           buildCommand="nix develop --accept-flake-config --show-trace --command bash -c 'exit'"
         else
-          buildCommand="./install.sh --build ${{ matrix.output }}"
+          buildCommand="./install.sh -v --build ${{ matrix.output }}"
         fi
         $buildCommand
       env:
@@ -89,9 +89,9 @@ jobs:
         && github.head_ref == 'update-dependencies'
         && matrix.output != 'nix-shell' }}
       run: |
-        ./install.sh --build ${{ matrix.output }} -o result-new
+        ./install.sh -v --build ${{ matrix.output }} -o result-new
         git checkout "$(git rev-parse @~)"
-        ./install.sh --build ${{ matrix.output }} -o result-old
+        ./install.sh -v --build ${{ matrix.output }} -o result-old
         echo "diff_closure<<EOF" >> $GITHUB_ENV
         # TODO remove pipe to sed when NixOS/nix#4626 is fixed
         nix store diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
