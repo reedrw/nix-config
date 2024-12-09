@@ -1,7 +1,7 @@
 inputs:
 self: super:
 let
-  lib = inputs.nixpkgs-lib.lib;
+  lib = inputs.nixpkgs.lib;
   machineHmOutputs = lib.filterAttrs (n: v: lib.hasInfix "@" n) super.homeConfigurations;
 in
 {
