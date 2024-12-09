@@ -10,6 +10,8 @@ rec {
     impermanence.url = "github:nix-community/impermanence";
     flake-compat.url = "github:edolstra/flake-compat";
 
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
+
     # flake-parts and its modules
     flake-parts.url = "github:hercules-ci/flake-parts";
     # flake-parts.inputs.nixpkgs-lib.follows = "unstable";
@@ -67,15 +69,21 @@ rec {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { flake-parts, ... } @ inputs: flake-parts.lib.mkFlake {
-    inherit inputs;
-  } {
-    imports = [
-      inputs.ez-configs.flakeModule
-      ./repo
-    ];
+  outputs = { flake-parts, nixpkgs-lib, ... } @ inputs: let
+    flake = flake-parts.lib.mkFlake {
+      inherit inputs;
+    } {
+      imports = [
+        inputs.ez-configs.flakeModule
+        ./repo
+      ];
 
-    systems = [ "x86_64-linux" ];
-    _module.args = { inherit nixConfig; };
-  };
+      systems = [ "x86_64-linux" ];
+      _module.args = { inherit nixConfig; };
+    };
+
+    lib = nixpkgs-lib.lib;
+  in lib.fix (lib.foldl' (lib.flip lib.extends) (self: flake) [
+    (import ./repo/passInOsConfig.nix inputs)
+  ]);
 }

@@ -29,9 +29,19 @@ in
     home.users = {
       "root".nameFunction = (_: "root");
       "reed".nameFunction = (_: "reed");
-      "reed@nixos-desktop".nameFunction = (_: "reed@nixos-desktop");
-      "reed@nixos-t480".nameFunction = (_: "reed@nixos-t480");
-      "reed@nixos-t400".nameFunction = (_: "reed@nixos-t400");
+      "reed@nixos-desktop" = {
+        nameFunction = (_: "reed@nixos-desktop");
+        # we handle passing this in ourselves at top level flake
+        passInOsConfig = false;
+      };
+      "reed@nixos-t480" = {
+        nameFunction = (_: "reed@nixos-t480");
+        passInOsConfig = false;
+      };
+      "reed@nixos-t400" = {
+        nameFunction = (_: "reed@nixos-t400");
+        passInOsConfig = false;
+      };
     };
 
     nixos.hosts = {
