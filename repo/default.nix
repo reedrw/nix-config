@@ -61,6 +61,7 @@ in
       update = import ../shell.nix {
         pkgs = legacyPackages;
         extraArgs.shellHook = ''
+          set -e
           unset shellHook
           nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
           "''${nixCommand[@]}" flake update
