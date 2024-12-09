@@ -61,15 +61,15 @@ in
     };
   };
 
-  perSystem = { pkgs, inputs', ... }: {
+  perSystem = { pkgs, inputs', ... }: rec {
     legacyPackages = pkgsForSystem inputs.nixpkgs pkgs.system;
 
     devShells = {
       default = import ../shell.nix {
-        inherit pkgs;
+        pkgs = legacyPackages;
       };
       update = import ../shell.nix {
-        inherit pkgs;
+        pkgs = legacyPackages;
         extraArgs.shellHook = ''
           set -e
           unset shellHook
