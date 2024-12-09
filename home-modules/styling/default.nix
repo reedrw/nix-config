@@ -130,7 +130,6 @@
       '';
     };
     gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
       gtk-font-name = "Cantarell 10";
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
@@ -138,7 +137,6 @@
       gtk-decoration-layout = ":close";
     };
     gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
       gtk-font-name = "Cantarell 10";
       gtk-xft-antialias = 1;
       gtk-xft-hinting = 1;
