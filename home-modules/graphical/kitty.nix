@@ -5,6 +5,8 @@
     variant256Colors = true;
   };
 
+  home.sessionVariables.TERMINAL = "kitty";
+
   programs.kitty = {
     enable = true;
     # The -e flag doesn't work when a startup_session is specified.

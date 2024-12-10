@@ -17,8 +17,13 @@ let
         inherit system;
     });
 
+  lib = inputs.nixpkgs.lib;
 in
 {
+  imports = [
+    ./extraEzModules.nix
+  ];
+
   ezConfigs = {
     root = ../.;
 
@@ -26,23 +31,17 @@ in
       inherit inputs nixpkgs-options nixConfig versionSuffix;
     };
 
-    home.users = {
-      "root".nameFunction = (_: "root");
-      "reed".nameFunction = (_: "reed");
-      "reed@nixos-desktop" = {
-        nameFunction = (_: "reed@nixos-desktop");
-        # we handle passing this in ourselves at top level flake
-        passInOsConfig = false;
-      };
-      "reed@nixos-t480" = {
-        nameFunction = (_: "reed@nixos-t480");
-        passInOsConfig = false;
-      };
-      "reed@nixos-t400" = {
-        nameFunction = (_: "reed@nixos-t400");
-        passInOsConfig = false;
-      };
-    };
+    home.users = lib.genAttrs [
+      "root"
+      "reed"
+      "reed@nixos-desktop"
+      "reed@nixos-t400"
+      "reed@nixos-t480"
+      "reed@nixos-vm"
+    ] (n: {
+      nameFunction = _: n;
+      passInOsConfig = false;
+    });
 
     nixos.hosts = {
       nixos-desktop.userHomeModules = {
@@ -57,7 +56,10 @@ in
         reed = "reed@nixos-t400";
         root = "root";
       };
-      nixos-vm.userHomeModules = [ "reed" "root" ];
+      nixos-vm.userHomeModules = {
+        reed = "reed@nixos-vm";
+        root = "root";
+      };
     };
   };
 

@@ -52,7 +52,21 @@ in
     ./scripts
   ];
 
-  home.packages = [ pkgs.lockProgram ];
+  home.packages = with pkgs; [
+    xclip
+    xsel
+    lockProgram
+  ];
+
+  programs.zsh.initExtra = lib.mkAfter ''
+    function c(){
+      if [[ -p /dev/stdin ]]; then
+        xclip -i -selection clipboard
+      else
+        xclip -o -selection clipboard
+      fi
+    }
+  '';
 
   home.activation = let
     restartScript = pkgs.writeShellScript "restart" ''

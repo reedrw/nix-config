@@ -81,7 +81,8 @@ rec {
     };
 
     lib = nixpkgs.lib;
-  in lib.fix (lib.foldl' (lib.flip lib.extends) (self: flake) [
+    extends = overlay: f: (final: let prev = f final; in lib.recursiveUpdate prev (overlay final prev));
+  in lib.fix (lib.foldl' (lib.flip extends) (self: flake) [
     (import ./repo/passInOsConfig.nix inputs)
   ]);
 }

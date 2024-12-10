@@ -2,11 +2,7 @@
 
 {
   imports = [
-    ezModules.styling
-    ezModules.comma
-    ezModules.zsh
-    ezModules.nvim
-    ezModules.nixpkgs
+    ezModules.core
   ];
 
   home = {

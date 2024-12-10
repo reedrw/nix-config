@@ -247,14 +247,6 @@ in
           command touch "$file";
         done
       }
-
-      function c(){
-        if [[ -p /dev/stdin ]]; then
-          xclip -i -selection clipboard
-        else
-          xclip -o -selection clipboard
-        fi
-      }
     '';
     shellAliases = {
       ":q" = "exit";

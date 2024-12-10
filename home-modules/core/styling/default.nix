@@ -4,6 +4,10 @@
 
   imports = [
     inputs.stylix.homeManagerModules.stylix
+    ./extra/prismlauncher.nix
+    ./extra/steam.nix
+    ./extra/telegram-desktop.nix
+    ./extra/vesktop-clienttheme.nix
     {
       stylix = {
         inherit (osConfig.stylix)

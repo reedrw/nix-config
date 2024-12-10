@@ -8,11 +8,6 @@ let
   '');
 in
 {
-  imports = [
-    ./steam.nix
-    ./prismlauncher.nix
-  ];
-
   stylix.targets = {
     steam.enable = osConfig.programs.steam.enable;
     prismlauncher.enable = true;
