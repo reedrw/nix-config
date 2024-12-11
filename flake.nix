@@ -18,6 +18,8 @@ rec {
     # Allow setting user module names for system hm modules
     ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
 
+    haumea.url = "github:nix-community/haumea/v0.2.2";
+
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
     lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/14";
