@@ -3,11 +3,11 @@
   imports = [
     ezModules.core
     ezModules.custom
-    ezModules.extra
     ezModules.graphical
     ezModules.networking
-    ezModules'.virtualization.docker
+    ezModules'.extra.sshd
     ezModules'.users.reed
+    ezModules'.virtualization.docker
     ./configuration.nix
   ];
 }
