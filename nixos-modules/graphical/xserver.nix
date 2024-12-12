@@ -1,3 +1,5 @@
+{ lib, pkgs, ... }:
+
 {
   programs.dconf.enable = true;
   # programs.sway = {
@@ -27,6 +29,20 @@
           start = ''exec $HOME/.local/share/X11/xsession'';
         }
       ];
+    };
+  };
+  systemd.services."lock-before-suspend" = {
+    description = "Lock the screen before suspending";
+    wantedBy = [ "suspend.target" ];
+    before = [ "systemd-suspend.service" ];
+    environment = {
+      DISPLAY = ":0";
+      XAUTHORITY = "/var/run/lightdm/reed/xauthority";
+    };
+    serviceConfig = {
+      Type = "forking";
+      User = "reed";
+      ExecStart = "${lib.getExe pkgs.lockProgram}";
     };
   };
 }
