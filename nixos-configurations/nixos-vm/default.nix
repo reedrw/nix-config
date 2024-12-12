@@ -1,9 +1,11 @@
-{ ezModules, ... }:
+{ ezModules, ezModules', ... }:
 {
   imports = [
+    ezModules.core
     ezModules.custom
-    ezModules.common
-    ezModules.user-reed
+    ezModules.graphical
+    ezModules'.users.reed
+    ezModules'.networking.networking
     ./configuration.nix
   ];
 }

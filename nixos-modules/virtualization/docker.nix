@@ -1,6 +1,4 @@
 {
-  boot.kernelModules = [ "kvm-intel" ];
-
   virtualisation.docker = {
     enable = true;
     daemon.settings = {
@@ -8,7 +6,4 @@
       storage-driver = "overlay2";
     };
   };
-
-  virtualisation.libvirtd.enable = true;
-  programs.virt-manager.enable = true;
 }

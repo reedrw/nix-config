@@ -2,7 +2,7 @@
 let
   fromModulesDir = src: inputs.haumea.lib.load {
     inherit src;
-    loader = inputs.haumea.lib.loaders.verbatim;
+    loader = inputs.haumea.lib.loaders.path;
   };
 in
 {
