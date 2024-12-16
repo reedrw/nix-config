@@ -8,10 +8,10 @@
     home.activation = let
       applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
         # This file gets copied with read-only permission from the nix store
-        # if it is present, it causes an error when the theme is applied. Delete it.
+        # if it is present, we need to make it writable before running the installer
         custom="$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
         if [[ -f "$custom" ]]; then
-          rm -f "$custom"
+          chmod +w "$custom"
         fi
         ${lib.getExe pkgs.adwsteamgtk} -i
       '';
