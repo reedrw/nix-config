@@ -1,6 +1,8 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p xdotool xorg.xwininfo killall
 
+set -x
+
 # I don't like it when programs try to "minimize" to the system tray
 # while I don't have a system tray. I would rather have them just
 # close when I close them. This script provides handling for programs
@@ -16,9 +18,13 @@ main() {
       closeSteam
     ;;
     *)
-      i3-msg kill
+      closeAny
     ;;
   esac
+}
+
+closeAny() {
+  i3-msg kill
 }
 
 closeSteam() {
@@ -37,4 +43,4 @@ closeSteam() {
   fi
 }
 
-main "$@"
+main "$@" || closeAny
