@@ -404,29 +404,30 @@
       "inputs": {
         "flake-compat": "flake-compat_3",
         "nix2container": "nix2container",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nixpkgs-regression": "nixpkgs-regression",
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1732152288,
-        "narHash": "sha256-jAtOt2pTu7WnByRdqgvO84xjFzoEGRTlsjSb3Wbu6Rs=",
-        "ref": "refs/changes/83/1783/14",
-        "rev": "890badc057a7da37d31131bf9f7284705aabe977",
-        "revCount": 16514,
-        "type": "git",
-        "url": "https://gerrit.lix.systems/lix"
+        "lastModified": 1733932114,
+        "narHash": "sha256-LN4pgLjGWztTlJ4oDcKWvDuTFeUUVgbmXoZ2EXG20Gw=",
+        "owner": "lix-project",
+        "repo": "lix",
+        "rev": "92ed9fee7d169febf53ea85961174fc0a22c2115",
+        "type": "github"
       },
       "original": {
-        "ref": "refs/changes/83/1783/14",
-        "type": "git",
-        "url": "https://gerrit.lix.systems/lix"
+        "owner": "lix-project",
+        "repo": "lix",
+        "type": "github"
       }
     },
     "nil": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_4",
         "rust-overlay": "rust-overlay"
       },
       "locked": {
@@ -571,22 +572,6 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1727184566,
-        "narHash": "sha256-mgdK8BcFsLSNhe780+cHbEUbZ3OruLa1T/xgQlL4Aj4=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "48c3030083c46042584531bc9d931020f1975677",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-24.05-small",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_5": {
-      "locked": {
         "lastModified": 1731890469,
         "narHash": "sha256-D1FNZ70NmQEwNxpSSdTXCSklBH1z2isPR84J6DQrJGs=",
         "owner": "nixos",
@@ -601,7 +586,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1734323986,
         "narHash": "sha256-m/lh6hYMIWDYHCAsn81CDAiXoT3gmxXI9J987W5tZrE=",
@@ -647,7 +632,7 @@
         "nil": "nil",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_6",
+        "nixpkgs": "nixpkgs_5",
         "stylix": "stylix",
         "tx-calculator": "tx-calculator",
         "unstable": "unstable"
