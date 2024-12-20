@@ -15,6 +15,9 @@ in
 
   home.packages = with pkgs; [
     prismlauncher
-    quake
+  ] ++ lib.optional osConfig.programs.steam.enable [
+    (aliasToPackage {
+      quake = "${lib.getExe quake} $@";
+    })
   ];
 }
