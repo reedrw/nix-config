@@ -67,6 +67,8 @@ main(){
         "${nixCommand[@]}" build "${logFormat[@]}" "$flake#homeConfigurations.$output.activationPackage" "${@:3}"
       elif grep -q "nixos-vm" <<< "$output"; then
         "${nixCommand[@]}" build "${logFormat[@]}" "$flake#nixosConfigurations.$output.config.system.build.vm" "${@:3}"
+      elif grep -q "nixos-iso" <<< "$output"; then
+        "${nixCommand[@]}" build "${logFormat[@]}" "$flake#nixosConfigurations.$output.config.system.build.isoImage" "${@:3}"
       else
         "${nixCommand[@]}" build "${logFormat[@]}" "$flake#nixosConfigurations.$output.config.system.build.toplevel" "${@:3}"
       fi

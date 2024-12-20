@@ -3,11 +3,11 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+  # imports = [
+  #   ./hardware-configuration.nix
+  # ];
 
-  networking.hostName = "nixos-vm";
+  networking.hostName = "nixos-iso";
   users.users.reed.password = "password";
 
   time.timeZone = "America/New_York";

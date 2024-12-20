@@ -38,6 +38,7 @@ in
       "reed@nixos-t400"
       "reed@nixos-t480"
       "reed@nixos-vm"
+      "reed@nixos-iso"
     ] (n: {
       nameFunction = _: n;
       passInOsConfig = false;
@@ -58,6 +59,10 @@ in
       };
       nixos-vm.userHomeModules = {
         reed = "reed@nixos-vm";
+        root = "root";
+      };
+      nixos-iso.userHomeModules = {
+        reed = "reed@nixos-iso";
         root = "root";
       };
     };
