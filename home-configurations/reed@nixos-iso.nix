@@ -6,5 +6,7 @@
     ezModules.core
     ezModules.extra
     ezModules.graphical
+    ezModules.media
+    ezModules.social
   ];
 }
