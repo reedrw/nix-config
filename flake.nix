@@ -20,10 +20,9 @@ rec {
 
     haumea.url = "github:nix-community/haumea/v0.2.2";
 
-    lix = {
-      url = "github:lix-project/lix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # https://gerrit.lix.systems/c/lix/+/1783
+    # repl: tab-complete quoted attribute names
+    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/14";
 
     # add pipe operator
     # wait for new release (after dec 2024)
