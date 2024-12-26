@@ -35,6 +35,11 @@
     acpilight.enable = true;
   };
 
+  custom.steam = {
+    enable = true;
+    mullvad-exclude = false;
+  };
+
   services.btrfs.autoScrub.enable = true;
 
   custom = {

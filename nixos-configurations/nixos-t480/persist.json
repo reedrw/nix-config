@@ -2,7 +2,8 @@
   "files": [
     "/home/reed/.cache/rofi-3.runcache",
     "/home/reed/.config/clipit/clipitrc",
-    "/home/reed/.local/share/zsh/zsh_history"
+    "/home/reed/.local/share/zsh/zsh_history",
+    "/home/reed/.steam/registry.vdf"
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
@@ -25,6 +26,7 @@
     "/home/reed/.config/github-copilot",
     "/home/reed/.config/vesktop",
     "/home/reed/.local/share/PrismLauncher",
+    "/home/reed/.local/share/Steam",
     "/home/reed/.local/share/TelegramDesktop",
     "/home/reed/.local/share/direnv",
     "/home/reed/.local/share/home-manager",
