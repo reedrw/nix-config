@@ -22,7 +22,7 @@ rec {
 
     lix = {
       url = "github:lix-project/lix";
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # add pipe operator
