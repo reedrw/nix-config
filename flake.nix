@@ -25,9 +25,7 @@ rec {
       flake = false;
     };
 
-    # https://gerrit.lix.systems/c/lix/+/1783
-    # repl: tab-complete quoted attribute names
-    lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/14";
+    lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 
     # add pipe operator
     # wait for new release (after dec 2024)
