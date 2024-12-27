@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-PS4=''
+PS4='$ '
 set -x
 
 pushd "./plugins" || exit

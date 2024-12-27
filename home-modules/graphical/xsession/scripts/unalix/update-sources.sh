@@ -1,8 +1,6 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash -p gron jq python3
 
-set -x
-
 pushd ./sources || exit
   nix flake update
 popd || exit
