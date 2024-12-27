@@ -1,7 +1,7 @@
 { pkgs, inputs, ... }:
 let
   # schemes is from https://github.com/tinted-theming/schemes
-  schemes = (import ./nix/sources.nix { }).schemes;
+  schemes = (pkgs.getInputs { root = ./sources; }).schemes;
 in
 {
   imports = [

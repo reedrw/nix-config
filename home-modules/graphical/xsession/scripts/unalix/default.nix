@@ -1,7 +1,7 @@
-{ python3Packages, ... }:
+{ python3Packages, getInputs, ... }:
 
 let
- sources = import ./nix/sources.nix { };
+ sources = getInputs { root = ./sources; };
 in
 python3Packages.buildPythonPackage {
   name = "Unalix";

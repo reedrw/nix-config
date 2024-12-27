@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  sources = import ./nix/sources.nix { };
+  sources = pkgs.getInputs { root = ./plugins; };
 
   mkPlugin = path: let
     name = builtins.baseNameOf path;

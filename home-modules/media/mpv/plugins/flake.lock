@@ -1,0 +1,45 @@
+{
+  "nodes": {
+    "mpv-scripts": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1719998762,
+        "narHash": "sha256-QPcDZJSvXq4+XJMcDOOEul1jSQme/YY5vaNB79+pen8=",
+        "owner": "ObserverOfTime",
+        "repo": "mpv-scripts",
+        "rev": "d03dde5ee8cb3843d1ec59e39c4a404a50597167",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ObserverOfTime",
+        "repo": "mpv-scripts",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "mpv-scripts": "mpv-scripts",
+        "vanilla-osc": "vanilla-osc"
+      }
+    },
+    "vanilla-osc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1703168856,
+        "narHash": "sha256-6nICOdtPzDQUMufqCJ+g2OnPasOgp3PegnRoWw8TVBU=",
+        "owner": "po5",
+        "repo": "thumbfast",
+        "rev": "5fefc9b8e995cf5e663666aa10649af799e60186",
+        "type": "github"
+      },
+      "original": {
+        "owner": "po5",
+        "ref": "vanilla-osc",
+        "repo": "thumbfast",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

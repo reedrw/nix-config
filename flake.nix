@@ -20,6 +20,11 @@ rec {
 
     haumea.url = "github:nix-community/haumea/v0.2.2";
 
+    flake-inputs = {
+      url = "github:fricklerhandwerk/flake-inputs";
+      flake = false;
+    };
+
     # https://gerrit.lix.systems/c/lix/+/1783
     # repl: tab-complete quoted attribute names
     lix.url = "git+https://gerrit.lix.systems/lix?ref=refs/changes/83/1783/14";

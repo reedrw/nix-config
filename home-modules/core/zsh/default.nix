@@ -1,6 +1,6 @@
 { config, osConfig, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
+  sources = pkgs.getInputs { root = ./plugins; };
 in
 {
   programs.direnv = {

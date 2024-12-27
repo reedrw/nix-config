@@ -1,6 +1,6 @@
 { lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
+  sources = pkgs.getInputs { root = ./plugins; };
 
   ccat = with pkgs; writeShellScriptBin "bat" ''
     ${lib.getExe bat} --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"

@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "root": {
+      "inputs": {
+        "vim-fugitive-blame-ext": "vim-fugitive-blame-ext"
+      }
+    },
+    "vim-fugitive-blame-ext": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1593700801,
+        "narHash": "sha256-ELUVZJUqN23Z6/HS1Er/Lxuh5X2aFx81PiQ7cxItsJA=",
+        "owner": "tommcdo",
+        "repo": "vim-fugitive-blame-ext",
+        "rev": "0c9355deeb235f89f50e3e9f362469826efcfb6a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tommcdo",
+        "repo": "vim-fugitive-blame-ext",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

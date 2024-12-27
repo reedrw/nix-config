@@ -9,7 +9,6 @@ mkShell ({
     home-manager
     ldp
     ncurses
-    niv
     nix
     pre-commit
     shellcheck

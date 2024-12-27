@@ -1,8 +1,8 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i bash -p niv
+#! /usr/bin/env bash
 
 PS4=''
 set -x
 
-niv init
-niv update
+pushd "./plugins" || exit
+  nix flake update
+popd || exit

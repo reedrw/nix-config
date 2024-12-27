@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  sources = import ./nix/sources.nix { };
+  sources = pkgs.getInputs { root = ./plugins; };
 in
 {
   stylix.targets.neovim.enable = true;

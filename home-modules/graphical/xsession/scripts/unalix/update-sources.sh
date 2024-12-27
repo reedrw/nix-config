@@ -1,12 +1,13 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p gron jq niv python3
+#! nix-shell -i bash -p gron jq python3
 
 set -x
 
-niv init
-niv update
+pushd ./sources || exit
+  nix flake update
+popd || exit
 
-rev="$(jq -r '.["Unalix"].rev' ./nix/sources.json)"
+rev="$(jq -r '.nodes.Unalix.locked.rev' ./sources/flake.lock)"
 
 dir="$(mktemp -u -d)"
 

@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "ranger-archives": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1713454058,
+        "narHash": "sha256-QJu5G2AYtwcaE355yhiG4wxGFMQvmBWvaPQGLsi5x9Q=",
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "rev": "b4e136b24fdca7670e0c6105fb496e5df356ef25",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maximtrp",
+        "repo": "ranger-archives",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "ranger-archives": "ranger-archives"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
