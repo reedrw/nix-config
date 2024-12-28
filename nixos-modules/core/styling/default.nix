@@ -1,7 +1,7 @@
 { pkgs, inputs, ... }:
 let
   # schemes is from https://github.com/tinted-theming/schemes
-  schemes = (pkgs.getInputs { root = ./sources; }).schemes;
+  schemes = (inputs.get-flake ./sources).inputs.schemes;
 in
 {
   imports = [

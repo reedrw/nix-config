@@ -1,15 +1,8 @@
-inputs:
 self: pkgs:
 let
   lib = pkgs.lib;
 in
 {
-
-  getInputs = { root, ... }@args:
-    if builtins.hasAttr "flake.lock" (builtins.readDir root)
-    then builtins.removeAttrs (import inputs.flake-inputs args) ["self"]
-    else {};
-
   # hasMainProgram :: Package -> Bool
   ########################################
   # Given a package, return true if the package has a meta.mainProgram attribute.

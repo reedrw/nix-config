@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
-  sources = pkgs.getInputs { root = ./plugins; };
+  sources = (inputs.get-flake ./plugins).inputs;
 
   mkPlugin = path: let
     name = builtins.baseNameOf path;

@@ -4,6 +4,8 @@ let
   lib = pkgs.lib;
 in
 {
+  inherit (inputs) get-flake;
+
   nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
     patches = [ ./nix.patch ];

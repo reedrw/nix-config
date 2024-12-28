@@ -20,10 +20,7 @@ rec {
 
     haumea.url = "github:nix-community/haumea/v0.2.2";
 
-    flake-inputs = {
-      url = "github:fricklerhandwerk/flake-inputs";
-      flake = false;
-    };
+    get-flake.url = "github:ursi/get-flake";
 
     lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 

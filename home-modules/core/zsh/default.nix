@@ -1,6 +1,6 @@
-{ config, osConfig, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, inputs, ... }:
 let
-  sources = pkgs.getInputs { root = ./plugins; };
+  sources = (inputs.get-flake ./plugins).inputs or {};
 in
 {
   programs.direnv = {

@@ -191,22 +191,6 @@
         "type": "github"
       }
     },
-    "flake-inputs": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1733676964,
-        "narHash": "sha256-ph9T0XFfTXTYimqcbFQUHSKH3qDq462t279t0c2tcD0=",
-        "owner": "fricklerhandwerk",
-        "repo": "flake-inputs",
-        "rev": "559574c9cbb8af262f3944b67d60fbf0f6ad03c3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "fricklerhandwerk",
-        "repo": "flake-inputs",
-        "type": "github"
-      }
-    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -319,6 +303,21 @@
       "original": {
         "owner": "SenchoPens",
         "repo": "fromYaml",
+        "type": "github"
+      }
+    },
+    "get-flake": {
+      "locked": {
+        "lastModified": 1714237590,
+        "narHash": "sha256-9gtHdGbzFHaR20xORN8IYd67ROWS+1nqQ5CsPf9MD8I=",
+        "owner": "ursi",
+        "repo": "get-flake",
+        "rev": "a6c57417d1b857b8be53aba4095869a0f438c502",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ursi",
+        "repo": "get-flake",
         "type": "github"
       }
     },
@@ -654,8 +653,8 @@
         "aagl": "aagl",
         "ez-configs": "ez-configs",
         "flake-compat": "flake-compat_2",
-        "flake-inputs": "flake-inputs",
         "flake-parts": "flake-parts_3",
+        "get-flake": "get-flake",
         "haumea": "haumea",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
