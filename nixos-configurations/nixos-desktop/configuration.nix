@@ -40,11 +40,6 @@
     mullvad-exclude = false;
   };
 
-  custom.aagl = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
   custom.zzz = {
     enable = true;
     mullvad-exclude = true;
