@@ -25,14 +25,6 @@
   boot.initrd.services.lvm.enable = true;
   services.lvm.boot.thin.enable = true;
 
-  # services.foldingathome = {
-  #   enable = true;
-  #   user = "reed";
-  #   extraArgs = [ "--power" "light" ];
-  # };
-
-  # myUsers.reed.enable = true;
-
   custom = {
     persistDir = "/var/persist";
     prevDir = "/var/prev";
