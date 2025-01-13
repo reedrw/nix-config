@@ -11,7 +11,6 @@ with lib;
 with pkgs;
 { xsession.windowManager.i3.config.keybindings = mkOptionDefault ({
   "Print" = "${exec} flameshot gui";
-  "${mod}+Escape" = "${exec} ${getExe scripts.pause-suspend}";
   "${mod}+Return" = "${exec} ${term}";
   "${sup}+Return" = "${exec} ${getExe scripts.select-term}";
   "${mod}+d" = "focus child";
