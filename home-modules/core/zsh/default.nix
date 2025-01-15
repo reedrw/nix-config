@@ -225,6 +225,18 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
+      function flake() {
+        case "$1" in
+          init)
+            shift
+            nix flake init -t flake-parts#templates.default "$@"
+          ;;
+          *)
+            nix flake "$@"
+          ;;
+        esac
+      }
+
       function git(){
         case "$1" in
           ~)
