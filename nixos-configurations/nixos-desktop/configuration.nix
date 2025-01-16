@@ -11,6 +11,12 @@
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  services.ollama = {
+    enable = true;
+    acceleration = "rocm";
+    openFirewall = true;
+  };
+
   custom.boot = {
     keyfile-unlock = {
       enable = true;
