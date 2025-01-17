@@ -6,6 +6,7 @@
     extraGroups = [
       "audio"
       "docker"
+      "input"
       "libvirtd"
       "networkmanager"
       "wheel"
