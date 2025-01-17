@@ -1,7 +1,11 @@
-{ nixpkgs-options, nixConfig, inputs, lib, ... }:
+{ nixpkgs-options, nixConfig, inputs, pkgs, lib, ... }:
 
 {
   inherit (nixpkgs-options) nixpkgs;
+
+  _module.args.pkgs-unstable = import inputs.unstable {
+    inherit (pkgs) system config;
+  };
 
   environment.etc = lib.mapAttrs' (n: v:
     lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })
