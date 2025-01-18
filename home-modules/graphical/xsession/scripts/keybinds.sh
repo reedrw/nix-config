@@ -21,5 +21,9 @@ while true; do
   if id="$(xinput list | grep -o 'Synaptics.*id=[0-9]*' | cut -d= -f2)"; then
     xinput set-prop "$id" "libinput Natural Scrolling Enabled" 1
   fi
+
+  if command -v solaar-cli &> /dev/null; then
+    solaar-cli config "MX Master 3S" smart-shift 18 || true
+  fi
   sleep 20
 done
