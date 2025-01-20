@@ -215,6 +215,8 @@ main() {
   local nc="\033[0m"
   local tmpJson
 
+  local note
+
   package="${1:-}"
   version="${2:-}"
   rev="${3:-}"
@@ -340,12 +342,14 @@ main() {
     done
   fi
 
+  note=""
   # if we have a third argument, check whether it's a commit hash
   # based on length of the string
   if [[ "${#rev}" != "40" ]]; then
     # if it's not a commit hash, assume it's a nixpkgs PR number
     # and query the GitHub API to get the commit hash
     rev="$(curl -s "https://api.github.com/repos/NixOS/nixpkgs/pulls/$3" | jq -r '.head.sha')"
+    note="https://github.com/NixOS/nixpkgs/pull/$3"
   fi
   sha256="$(nix-prefetch-url https://github.com/nixos/nixpkgs/archive/"$rev".tar.gz --unpack --type sha256)"
 
@@ -365,6 +369,10 @@ main() {
 
   cat "$tmpJson" > "$pinnedJson"
   rm "$tmpJson"
+
+  if [ -n "$note" ]; then
+    setNote "$package" "$version" "$note"
+  fi
 
   echo -e "Pinned ${blue}${bold}$package${nc} to version ${green}$version${nc} at attribute ${purple}${bold}pkgs.pinned.$package.v$(echo "$version" | tr '.' '_')${nc}"
 }
