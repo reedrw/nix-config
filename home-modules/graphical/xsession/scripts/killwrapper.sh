@@ -15,7 +15,10 @@ main() {
 
   case "$activewindowclass" in
     "steam")
-      closeSteam
+      closeLast steam steam
+    ;;
+    "TelegramDesktop")
+      closeLast TelegramDesktop .telegram-desktop
     ;;
     *)
       closeAny
@@ -27,17 +30,17 @@ closeAny() {
   i3-msg kill
 }
 
-closeSteam() {
-  # If we only have 1 steam window open, kill the process,
-  # otherwise just close the window normally using i3-msg
+closeLast() {
+  # @param $1: The window class to search xwininfo for
+  # @param $2: The process name to pkill
   local numOpenWindows
   numOpenWindows="$(xwininfo -tree -root \
-    | grep 'steam' \
+    | grep "$1" \
     | grep -c --regexp '^        '
   )"
 
   if [ "$numOpenWindows" -eq 1 ]; then
-    killall steam
+    killall "$2"
   else
     i3-msg kill
   fi
