@@ -1092,10 +1092,10 @@ index 632fc24..e8cc6c1 100644
 +SwdLZrWeqrqgHkHZAXQ6bkU6iYAZezKYVWOr62Nuk22rGwlgMU4=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..5f8de3d 100644
+index f2a54b1..60c53e4 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1888 @@
+@@ -1,1628 +1,1905 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3537,7 +3537,8 @@ index f2a54b1..5f8de3d 100644
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?github\\.com",
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?\\.youtrack\\.cloud",
-+        "^https?:\\/\\/cu\\.bankid\\.com"
++        "^https?:\\/\\/cu\\.bankid\\.com",
++        "^https?:\\/\\/login\\.aliexpress\\.us"
 +      ],
 +      "referralMarketing": [
 +        "(?:%3F)?ref_?",
@@ -3667,7 +3668,10 @@ index f2a54b1..5f8de3d 100644
 +        "rlz",
 +        "i-would-rather-use-firefox",
 +        "pcampaignid",
-+        "sca_esv"
++        "sca_(?:esv|upv)",
++        "iflsig",
++        "fbs",
++        "ictx"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}"
 +    },
@@ -4067,6 +4071,13 @@ index f2a54b1..5f8de3d 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?nytimes\\.com"
 +    },
++    "office-partner.de": {
++      "rules": [
++        "sPartner",
++        "campaign"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?office-partner\\.de"
++    },
 +    "onet.pl": {
 +      "rules": [
 +        "srcc",
@@ -4223,6 +4234,12 @@ index f2a54b1..5f8de3d 100644
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?site3\\.com.*?\\?r=([^&]*)"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?site3\\.com"
++    },
++    "skimresources.com": {
++      "redirections": [
++        "^https?:\\/\\/go\\.skimresources\\.com\\/.*?url=([^&]+)"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?skimresources\\.com"
 +    },
 +    "smartredirect.de": {
 +      "redirections": [
