@@ -2,7 +2,8 @@
   "nodes": {
     "root": {
       "inputs": {
-        "vim-fugitive-blame-ext": "vim-fugitive-blame-ext"
+        "vim-fugitive-blame-ext": "vim-fugitive-blame-ext",
+        "vim-xonsh": "vim-xonsh"
       }
     },
     "vim-fugitive-blame-ext": {
@@ -18,6 +19,22 @@
       "original": {
         "owner": "tommcdo",
         "repo": "vim-fugitive-blame-ext",
+        "type": "github"
+      }
+    },
+    "vim-xonsh": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1686907557,
+        "narHash": "sha256-ugHLu2Z9bTtQsIp4FQPKxgjVe9oZNjfQYrP+aHu+/uU=",
+        "owner": "meatballs",
+        "repo": "vim-xonsh",
+        "rev": "929f35e37ad7dbdec80b1effe295b89c9ac3f090",
+        "type": "github"
+      },
+      "original": {
+        "owner": "meatballs",
+        "repo": "vim-xonsh",
         "type": "github"
       }
     }

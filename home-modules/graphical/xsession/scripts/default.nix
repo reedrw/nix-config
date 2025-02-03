@@ -1,6 +1,7 @@
 { lib, pkgs, osConfig, ... }:
 
 {
+  # Bash scripts
   lib.scripts = lib.genAttrs [
     "brightness"
     "dwebp-serv"
@@ -12,7 +13,12 @@
     "select-term"
     "toggle-touchpad"
     "volume"
-  ] (name: pkgs.writeNixShellScript name (builtins.readFile "${./.}/${name}.sh")) // {
+  ] (name: pkgs.writeNixShellScript name (builtins.readFile "${./.}/${name}.sh"))
+  # Xonsh scripts
+  // lib.genAttrs [
+
+  ] (name: pkgs.writeXonshNixShellScript name (builtins.readFile "${./.}/${name}.xsh"))
+  // {
     clipboard-clean = let
       unalix = pkgs.callPackage ./unalix { };
     in pkgs.writeShellApplication {

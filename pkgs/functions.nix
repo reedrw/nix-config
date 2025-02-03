@@ -93,6 +93,35 @@ in
       meta.mainProgram = name;
     };
 
+  # writeXonshNixShellScript :: String -> String -> Package
+  ############################################################
+  # Given a name and the text of a xonsh script with nix-shell shebang, return a package that
+  # has the packages specfied in the shebang as dependencies.
+  # Ex.
+  # writeXonshNixShellScript "hello-world" (builtins.readFile ./hello-world.xsh)
+  #
+  # Contents of ./hello-world.xsh:
+  # #!/usr/bin/env nix-shell
+  # #! nix-shell -i xonsh -p hello
+  # echo "Hello, world!"
+  writeXonshNixShellScript = name: text:
+    let
+      runtimeInputs = text
+        # Get the second line of the script, which contains the packages
+        |> lib.splitString "\n"
+        |> (x: lib.elemAt x 1)
+        # Get the packages from the second line
+        |> lib.splitString " -p "
+        |> (x: lib.elemAt x 1)
+        # Convert the package names to nixpkgs packages
+        |> lib.splitString " "
+        |> map self.matchPackage;
+    in
+    self.writeXonshApplication {
+      inherit name text runtimeInputs;
+      meta.mainProgram = name;
+    };
+
   # matchPackageCommand :: String -> String
   ########################################
   # Given a command starting with a package name, return the
@@ -149,6 +178,54 @@ in
     ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
     exec ${x} "\$@"
   '');
+
+  # writeXonshApplication :: { ... } -> Package
+  ################################################
+  # Return a package that runs a xonsh script with dependencies specified in runtimeInputs.aliasToPackage
+  # Ex.
+  # writeXonshApplication {
+  #   name = "hello-world";
+  #   text = builtins.readFile ./hello-world.xsh;
+  #   runtimeInputs = [ pkgs.hello ];
+  # }
+  #
+  writeXonshApplication = {
+    name,
+    text,
+    runtimeInputs ? [],
+    meta ? {}
+  }: pkgs.writeTextFile {
+    inherit name meta;
+    executable = true;
+    destination = "/bin/${name}";
+    allowSubstitutes = true;
+    preferLocalBuild = false;
+    text = ''
+      #!${pkgs.xonsh}/bin/xonsh
+    '' + lib.optionalString (runtimeInputs != []) ''
+      $PATH.prepend("${lib.makeBinPath runtimeInputs}");
+    '' + ''
+      ${text}
+    '';
+  };
+
+  # writeXonshScript :: String -> String -> Package
+  ####################################################
+  # Given a name and the text of a xonsh script, return a package of the xonsh script.
+  # Ex.
+  # writeXonshScript "hello-world" (builtins.readFile ./hello-world.xsh)
+  #
+  # Contents of ./hello-world.xsh:
+  # #!/usr/bin/env xonsh
+  # echo "Hello, world!"
+  writeXonshScript = name: text:
+    pkgs.writeTextFile {
+      inherit name;
+      text = ''
+        !#${pkgs.xonsh}/bin/xonsh
+        ${text}
+      '';
+    };
 
   # mullvadExclude :: Package -> Package
   ########################################
