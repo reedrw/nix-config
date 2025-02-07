@@ -46,11 +46,6 @@
     mullvad-exclude = false;
   };
 
-  custom.zzz = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
   services.btrfs.autoScrub.enable = true;
 
   custom.snapper = {
