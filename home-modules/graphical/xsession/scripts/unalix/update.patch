@@ -1092,10 +1092,10 @@ index 632fc24..e8cc6c1 100644
 +SwdLZrWeqrqgHkHZAXQ6bkU6iYAZezKYVWOr62Nuk22rGwlgMU4=
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..60c53e4 100644
+index f2a54b1..3c84d23 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1905 @@
+@@ -1,1628 +1,1939 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -2723,6 +2723,12 @@ index f2a54b1..60c53e4 100644
 -            ]
 -        }
 +  "providers": {
++    "80000hours.org": {
++      "rules": [
++        "int_campaign"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?80000hours\\.org"
++    },
 +    "9gag.com": {
 +      "exceptions": [
 +        "^https?:\\/\\/comment-cdn\\.9gag\\.com\\/.*?comment-list.json\\?"
@@ -2787,7 +2793,6 @@ index f2a54b1..60c53e4 100644
 +    },
 +    "accounts.firefox.com": {
 +      "rules": [
-+        "context",
 +        "entrypoint",
 +        "form_type"
 +      ],
@@ -2955,7 +2960,10 @@ index f2a54b1..60c53e4 100644
 +        "s",
 +        "content-id",
 +        "dib",
-+        "dib_tag"
++        "dib_tag",
++        "social_share",
++        "starsLeft",
++        "skipTwisterOG"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?amazon(?:\\.[a-z]{2,}){1,}"
 +    },
@@ -3557,6 +3565,7 @@ index f2a54b1..60c53e4 100644
 +        "(?:%3F)?mkt_tok",
 +        "(?:%3F)?hmb_(?:campaign|medium|source)",
 +        "(?:%3F)?gclid",
++        "(?:%3F)?srsltid",
 +        "(?:%3F)?otm_[a-z_]*",
 +        "(?:%3F)?cmpid",
 +        "(?:%3F)?os_ehash",
@@ -4148,7 +4157,8 @@ index f2a54b1..60c53e4 100644
 +        "\\$3p",
 +        "%24original_url",
 +        "\\$original_url",
-+        "_branch_match_id"
++        "_branch_match_id",
++        "share_id"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?reddit.com"
 +    },
@@ -4397,6 +4407,8 @@ index f2a54b1..60c53e4 100644
 +        "u_code",
 +        "preview_pb",
 +        "_d",
++        "_t",
++        "_r",
 +        "timestamp",
 +        "user_id",
 +        "share_app_name",
@@ -4570,6 +4582,27 @@ index f2a54b1..60c53e4 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?x.com"
 +    },
++    "xiaohongshu.com": {
++      "rules": [
++        "xhsshare",
++        "author_share",
++        "type",
++        "xsec_source",
++        "share_from_user_hidden",
++        "app_version",
++        "ignoreEngage",
++        "app_platform",
++        "apptime",
++        "appuid",
++        "shareRedId",
++        "share_id",
++        "exSource",
++        "verifyUuid",
++        "verifyType",
++        "verifyBiz"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?xiaohongshu\\.com"
++    },
 +    "yandex": {
 +      "rules": [
 +        "lr",
@@ -4600,7 +4633,8 @@ index f2a54b1..60c53e4 100644
 +        "feature",
 +        "gclid",
 +        "kw",
-+        "si"
++        "si",
++        "pp"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?(youtube\\.com|youtu\\.be)"
 +    },
