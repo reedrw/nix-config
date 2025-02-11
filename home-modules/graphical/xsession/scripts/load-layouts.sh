@@ -51,30 +51,8 @@ main(){
       ;;
     esac
   else
-    # Load workspace 1
-    loadLayout 1
-    launchPrograms 1
-
-    until windowExists Firefox; do
-      sleep 1
-    done
-
-    # Load workspace 4
-    loadLayout 4
-    launchPrograms 4
-
-    until windowExists \
-      blueberry.py \
-      Pavucontrol \
-      easyeffects
-    do
-      sleep 1
-    done
-
-    # Load workspace 2
-    # Should always be last since Discord's updater is problematic otherwise
-    loadLayout 2
-    launchPrograms 2
+    echo "Usage: load-layouts.sh <workspace>"
+    exit 1
   fi
 }
 
