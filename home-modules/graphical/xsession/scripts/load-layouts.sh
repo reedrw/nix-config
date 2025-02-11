@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p wmctrl
+#! nix-shell -i bash -p wmctrl bluetuith
 
 set -x
 set -e
@@ -21,7 +21,7 @@ launchPrograms(){
       (steam &)
     ;;
     "4" )
-      (blueberry &)
+      ("$TERMINAL" -e bluetuith &)
       (pwvucontrol &)
       (easyeffects &)
     ;;
