@@ -3,7 +3,7 @@ let
   sources = (inputs.get-flake ./plugins).inputs;
 
   ccat = with pkgs; writeShellScriptBin "bat" ''
-    ${lib.getExe bat} --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"
+    ${lib.getExe bat} --color=always --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"
   '';
 
   rangerlaunch = pkgs.writeShellScript "rangerlaunch" ''
