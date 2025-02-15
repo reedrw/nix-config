@@ -130,13 +130,14 @@ in
         ++ commandForWindows {
           command = "border pixel 0";
         } [
-          "firefox"
-          "mpv"
-          "kitty"
+          "Signal"
           "TelegramDesktop"
-          "easyeffects"
-          "vesktop"
           "Zathura"
+          "easyeffects"
+          "firefox"
+          "kitty"
+          "mpv"
+          "vesktop"
         ]
         ++ commandForWindows {
           command = "fullscreen enable";

@@ -15,6 +15,7 @@ launchPrograms(){
     ;;
     "2" )
       (vesktop &)
+      (signal-desktop &)
       (telegram-desktop &)
     ;;
     "3")
