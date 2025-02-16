@@ -100,6 +100,11 @@ in
         gaps = {
           inner = 7;
         };
+        fonts = lib.mkForce {
+          names = [ "Fantasque Sans Mono" ];
+          style = "Bold";
+          size = 10.0;
+        };
         window.border = 5;
         window.titlebar = false;
         floating.border = 5;
