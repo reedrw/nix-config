@@ -225,6 +225,18 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
+      function cat() {
+        # check if the last argument is an image
+        case "''${@[-1]}" in
+          *.gif|*.png|*.jpg|*.jpeg|*.webp)
+            kitty +kitten icat "$@"
+          ;;
+          *)
+            bat --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"
+          ;;
+        esac
+      }
+
       function flake() {
         case "$1" in
           init)
@@ -263,7 +275,6 @@ in
     shellAliases = {
       ":q" = "exit";
       "\\$" = "";
-      cat = "bat --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never";
       cd = "z";
       cp = "cp -riv";
       gcd = "sudo gc -d";
