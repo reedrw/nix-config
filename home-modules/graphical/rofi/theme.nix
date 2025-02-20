@@ -1,6 +1,6 @@
 { config,  ... }:
 
-with config.lib.stylix.scheme;
+with config.lib.stylix.colors;
 {
   programs.rofi.theme = builtins.toFile "theme.rasi" ''
     configuration {

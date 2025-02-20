@@ -13,7 +13,7 @@ in
   services.polybar = with pkgs; {
     enable = true;
     package = polybarFull;
-    config = with config.lib.stylix.scheme; {
+    config = with config.lib.stylix.colors; {
       "bar/main" = {
         background = "#${base00}";
         foreground = "#${base05}";

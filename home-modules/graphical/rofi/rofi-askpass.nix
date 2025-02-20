@@ -4,7 +4,7 @@ let
 in
 {
   lib.scripts.rofi-askpass = let
-    askpass-rasi = with config.lib.stylix.scheme; builtins.toFile "askpass.rasi" ''
+    askpass-rasi = with config.lib.stylix.colors; builtins.toFile "askpass.rasi" ''
       * {
         background-color: #${base01};
         text-color:       #${base07};

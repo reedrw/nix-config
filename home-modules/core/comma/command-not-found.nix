@@ -9,7 +9,7 @@ let
     inherit dbPath;
     perl = pkgs.perl.withPackages (p: [ p.DBDSQLite p.StringShellQuote ]);
   };
-  inherit (config.lib.stylix) scheme;
+  inherit (config.lib.stylix) colors;
 in
 {
   programs.zsh.initExtra = lib.mkAfter ''
@@ -22,7 +22,7 @@ in
       else
         color="green"
       fi
-      RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{#${scheme.base02}}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
+      RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{#${colors.base02}}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
     fi
     command_not_found_handler(){
       # If user is root, use the default handler

@@ -46,7 +46,7 @@ in
       {
         plugin = galaxyline-nvim;
         type = "lua";
-        config = with config.lib.stylix.scheme; ''
+        config = with config.lib.stylix.colors; ''
           local colors = {
             blank = '#${base00}',
             bg = '#${base01}',

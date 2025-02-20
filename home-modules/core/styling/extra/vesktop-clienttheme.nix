@@ -6,7 +6,7 @@
     home.activation = let
       writeVesktopTheme = pkgs.writeShellScript "write-vesktop-theme" ''
         configFile="$HOME/.config/vesktop/settings/settings.json"
-        newConfig="$(${pkgs.jq}/bin/jq -r '.plugins.ClientTheme.color = "${config.lib.stylix.scheme.base00}"' $configFile)"
+        newConfig="$(${pkgs.jq}/bin/jq -r '.plugins.ClientTheme.color = "${config.lib.stylix.colors.base00}"' $configFile)"
         echo "$newConfig" > $configFile
       '';
     in {

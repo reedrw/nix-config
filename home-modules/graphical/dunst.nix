@@ -3,7 +3,7 @@
 {
   services.dunst = {
     enable = true;
-    settings = with config.lib.stylix.scheme; {
+    settings = with config.lib.stylix.colors; {
       global = {
         monitor = 0;
         width = "(0, 250)";

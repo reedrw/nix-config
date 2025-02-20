@@ -3,7 +3,7 @@
 {
   options.stylix.targets.prismlauncher.enable = lib.mkEnableOption "Enable PrismLauncher theme";
   config = lib.mkIf config.stylix.targets.prismlauncher.enable {
-    xdg.dataFile = with config.lib.stylix.scheme; {
+    xdg.dataFile = with config.lib.stylix.colors; {
       "PrismLauncher/themes/base16/theme.json".text = builtins.toJSON {
         colors = {
           AlternateBase = "#${base02}";

@@ -87,7 +87,7 @@ in
     };
     initExtra =
     with pkgs;
-    with config.lib.stylix.scheme;
+    with config.lib.stylix.colors;
     ''
       while read -r i; do
         autoload -Uz "$i"

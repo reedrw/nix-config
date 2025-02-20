@@ -23,7 +23,7 @@
 
     dconf.settings."io/github/Foldex/AdwSteamGtk".prefs-install-custom-css = true;
 
-    xdg.configFile."AdwSteamGtk/custom.css".text = with config.lib.stylix.scheme; ''
+    xdg.configFile."AdwSteamGtk/custom.css".text = with config.lib.stylix.colors; ''
       :root
       {
         /* The main accent color and the matching text value */
