@@ -40,6 +40,7 @@ in
       camelcasemotion
       caw-vim
       coc-pyright
+      coc-tsserver
       context_filetype-vim
       copilot-vim
       editorconfig-vim
