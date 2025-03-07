@@ -27,13 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    # # Uncomment if GitHub Actions jobs start failing from lack of space
-    # - name: Cleanup Disk
-    #   uses: jlumbroso/free-disk-space@main
-
-    # Deleting android library saves ~14gb of space
+    # Uncomment if GitHub Actions jobs start failing from lack of space
     - name: Cleanup Disk
-      run: sudo rm -rf /usr/local/lib/android
+      uses: jlumbroso/free-disk-space@main
+
+    # # Deleting android library saves ~14gb of space
+    # - name: Cleanup Disk
+    #   run: sudo rm -rf /usr/local/lib/android
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3
