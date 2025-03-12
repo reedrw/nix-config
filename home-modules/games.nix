@@ -22,6 +22,7 @@ in
 
   home.packages = with pkgs; [
     (mullvadExclude prismlauncher)
+    pkgs-unstable.openrct2
   ] ++ lib.optionals osConfig.programs.steam.enable [
     (aliasToPackage {
       quake = "${lib.getExe quake} $@";
