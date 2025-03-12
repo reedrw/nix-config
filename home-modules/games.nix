@@ -21,7 +21,7 @@ in
   xdg.dataFile."PrismLauncher/instances-compressed/BTA-Updater-2.0.zip".source = btaUpdater;
 
   home.packages = with pkgs; [
-    prismlauncher
+    (mullvadExclude prismlauncher)
   ] ++ lib.optionals osConfig.programs.steam.enable [
     (aliasToPackage {
       quake = "${lib.getExe quake} $@";
