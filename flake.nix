@@ -8,7 +8,7 @@ rec {
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     NUR.url = "github:nix-community/NUR";
     impermanence.url = "github:nix-community/impermanence";
-    flake-compat.url = "github:edolstra/flake-compat";
+    get-flake.url = "github:ursi/get-flake";
 
     # flake-parts and its modules
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -19,8 +19,6 @@ rec {
     ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
 
     haumea.url = "github:nix-community/haumea/v0.2.2";
-
-    get-flake.url = "github:ursi/get-flake";
 
     lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 
