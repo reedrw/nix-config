@@ -50,4 +50,8 @@ in
       alias sudo='sudo -A'
     fi
   '';
+
+  home.packages = [
+    scripts.rofi-askpass
+  ];
 }
