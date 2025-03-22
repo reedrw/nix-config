@@ -1,4 +1,4 @@
-{ inputs, config, ... }:
+{ pkgs-unstable, inputs, config, ... }:
 
 {
   imports = [
@@ -13,6 +13,7 @@
 
   services.ollama = {
     enable = true;
+    package = pkgs-unstable.ollama;
     acceleration = "rocm";
     openFirewall = true;
   };
