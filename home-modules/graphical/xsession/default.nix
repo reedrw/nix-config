@@ -66,6 +66,9 @@ in
         xclip -o -selection clipboard
       fi
     }
+
+    alias pbcopy='xclip -i -selection clipboard'
+    alias pbpaste='xclip -o -selection clipboard'
   '';
 
   home.activation = let
