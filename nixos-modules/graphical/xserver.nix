@@ -8,19 +8,12 @@
   #     passthru.providedSessions = [ "sway" ];
   #   });
   # };
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "reed";
-  };
   services.xserver = {
     enable = true;
     displayManager = {
-      lightdm = {
+      gdm = {
+        wayland = false;
         enable = true;
-        greeter.enable = false;
-        extraConfig = ''
-          user-authority-in-system-dir = true
-        '';
       };
       session = [
         {
@@ -37,7 +30,7 @@
     before = [ "systemd-suspend.service" ];
     environment = {
       DISPLAY = ":0";
-      XAUTHORITY = "/var/run/lightdm/reed/xauthority";
+      #XAUTHORITY = "/var/run/lightdm/reed/xauthority";
     };
     serviceConfig = {
       Type = "forking";
