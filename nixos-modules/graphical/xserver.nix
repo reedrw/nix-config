@@ -29,8 +29,8 @@
     wantedBy = [ "suspend.target" ];
     before = [ "systemd-suspend.service" ];
     environment = {
-      DISPLAY = ":0";
-      #XAUTHORITY = "/var/run/lightdm/reed/xauthority";
+      DISPLAY = ":1";
+      XAUTHORITY = "/run/user/1000/gdm/Xauthority";
     };
     serviceConfig = {
       Type = "forking";
