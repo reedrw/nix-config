@@ -17,7 +17,9 @@
       builders-use-substitutes = true;
       experimental-features = [ "flakes" "nix-command" "pipe-operator" ];
       extra-substituters = nixConfig.extra-substituters ++ [ ];
-      extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [ ];
+      extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [
+        "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
+      ];
       keep-derivations = true;
       keep-outputs = true;
       trusted-users = [ "root" "@wheel" ];

@@ -47,6 +47,7 @@
     "/root/.cache/nix",
     "/root/.config/dconf",
     "/root/.local/share/nix",
+    "/root/.ssh",
     "/var/db/sudo",
     "/var/lib/NetworkManager",
     "/var/lib/bluetooth",

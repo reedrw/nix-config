@@ -282,6 +282,7 @@ in
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       nr = "nix repl self";
+      nixDesktop = "nix --extra-substituters ssh://nix-ssh@nixos-desktop.local";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
