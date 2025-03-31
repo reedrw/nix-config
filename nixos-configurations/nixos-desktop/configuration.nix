@@ -37,6 +37,16 @@
     prevDir = "/var/prev";
   };
 
+  custom.nix-ssh-serve = {
+    enable = true;
+    keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP4QB7g+vkkytelSG2Wcibmxn7b3ZhnezFjpppD/MCWW root@nixos-t480"
+    ];
+    secretKeyFiles = [
+      "${config.custom.persistDir}/secrets/nix-store/nix-store-secret-key.pem"
+    ];
+  };
+
   users = {
     mutableUsers = false;
     users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
