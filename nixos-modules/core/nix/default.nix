@@ -20,6 +20,7 @@
       extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [
         "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
       ];
+      repl-overlays = [ ./repl-overlays.nix ];
       keep-derivations = true;
       keep-outputs = true;
       trusted-users = [ "root" "@wheel" ];

@@ -281,7 +281,7 @@ in
       ln = "ln -v";
       mkdir = "mkdir -vp";
       mv = "mv -iv";
-      nr = "nix repl self";
+      nr = "nix repl";
       nixDesktop = "nix --extra-substituters ssh://nix-ssh@nixos-desktop.local";
       rm = "rm -v";
       rr = "ranger_cd";
