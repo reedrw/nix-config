@@ -32,5 +32,9 @@ in
       volume = 70;
       screenshot-directory = "~/";
     };
+    bindings = {
+      WHEEL_LEFT = "add volume -2";
+      WHEEL_RIGHT = "add volume 2";
+    };
   };
 }
