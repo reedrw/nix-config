@@ -1192,10 +1192,10 @@ index 632fc24..584af3c 100644
 ++KIkBI3Y4WNeApI02phhXBxvWHZks/wCuPWdCg==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..b98dd5c 100644
+index f2a54b1..e5db128 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1928 @@
+@@ -1,1628 +1,1964 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3562,6 +3562,12 @@ index f2a54b1..b98dd5c 100644
 +      "completeProvider": true,
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?fls-na\\.amazon(?:\\.[a-z]{2,}){1,}"
 +    },
++    "forbes.com": {
++      "rules": [
++        "sh"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?forbes\\.com"
++    },
 +    "gamespot.com": {
 +      "rules": [
 +        "PostType",
@@ -4039,6 +4045,12 @@ index f2a54b1..b98dd5c 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?messenger\\.com"
 +    },
++    "metro.co.uk": {
++      "rules": [
++        "ito"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?metro\\.co\\.uk"
++    },
 +    "moosejaw.com": {
 +      "rules": [
 +        "cm_lm",
@@ -4056,6 +4068,12 @@ index f2a54b1..b98dd5c 100644
 +        "https?:\\/\\/[^/]+\\/v1\\/[0-9a-f]{64}\\/(.*)"
 +      ],
 +      "urlPattern": "https?:\\/\\/outgoing\\.prod\\.mozaws\\.net\\/"
++    },
++    "mozgcp.net": {
++      "redirections": [
++        "^https?:\\/\\/prod\\.outgoing\\.prod\\.webservices\\.mozgcp\\.net\\/v1\\/.+?\\/([^&]+)"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?mozgcp\\.net"
 +    },
 +    "mozilla.org": {
 +      "exceptions": [
@@ -4463,7 +4481,10 @@ index f2a54b1..b98dd5c 100644
 +      "rules": [
 +        "ncid",
 +        "sr",
-+        "sr_share"
++        "sr_share",
++        "guccounter",
++        "guce_referrer",
++        "guce_referrer_sig"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?techcrunch\\.com"
 +    },
@@ -4484,6 +4505,12 @@ index f2a54b1..b98dd5c 100644
 +        "CMP"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?theguardian\\.com"
++    },
++    "thetimes.co.uk": {
++      "rules": [
++        "shareToken"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?thetimes\\.co\\.uk"
 +    },
 +    "thunderbird.net": {
 +      "rules": [
@@ -4589,6 +4616,12 @@ index f2a54b1..b98dd5c 100644
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?twitter.com"
 +    },
++    "viglink.com": {
++      "redirections": [
++        "^https?:\\/\\/redirect\\.viglink\\.com\\/.*?u=([^&]+)"
++      ],
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?viglink\\.com"
++    },
 +    "vitamix.com": {
 +      "rules": [
 +        "_requestid",
@@ -4672,6 +4705,9 @@ index f2a54b1..b98dd5c 100644
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?x.com"
 +    },
 +    "xiaohongshu.com": {
++      "exceptions": [
++        "^https?:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/web\\/v1\\/user\\/hover_card"
++      ],
 +      "rules": [
 +        "xhsshare",
 +        "author_share",
