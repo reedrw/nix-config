@@ -6,41 +6,56 @@ rec {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
-    NUR.url = "github:nix-community/NUR";
     impermanence.url = "github:nix-community/impermanence";
     get-flake.url = "github:ursi/get-flake";
 
     # flake-parts and its modules
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    # flake-parts.inputs.nixpkgs-lib.follows = "unstable";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "unstable";
+    };
 
-    # https://github.com/ehllie/ez-configs/pull/12
-    # Allow setting user module names for system hm modules
-    ez-configs.url = "github:ehllie/ez-configs/user-home-modules";
+    NUR = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
 
-    haumea.url = "github:nix-community/haumea/v0.2.2";
+    ez-configs = {
+      url = "github:ehllie/ez-configs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+
+    haumea = {
+      url = "github:nix-community/haumea/v0.2.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 
     # add pipe operator
     # wait for new release (after dec 2024)
-    nil.url = "github:oxalica/nil";
+    nil = {
+      url = "github:oxalica/nil";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     tx-calculator = {
       url = "github:reedrw/tx-calculator";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Waiting for release 24.11
-    # https://github.com/danth/stylix/issues/655
-    stylix = {
-      url = "github:danth/stylix/release-24.11";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    stylix = {
+      url = "github:danth/stylix/release-24.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
 
     nix-index-database = {
