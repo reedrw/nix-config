@@ -1,7 +1,7 @@
 { fetchFromGitHub, buildDotnetModule, dotnetCorePackages, ... }:
 
 buildDotnetModule rec {
-  pname = "WheelWizard";
+  pname = "wheel-wizard";
   version = "2.1.3";
 
   src = fetchFromGitHub {
