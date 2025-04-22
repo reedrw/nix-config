@@ -4,7 +4,7 @@
 set -x
 set -e
 
-version="$(nix eval --impure --raw --expr "(builtins.getFlake \"$(realpath ../../.)\").packages.x86_64-linux.WheelWizard.version")"
+version="$(nix eval --impure --raw --expr "(builtins.getFlake \"$(realpath ../../.)\").packages.x86_64-linux.wheel-wizard.version")"
 
 currentDir="$(pwd)"
 tmpDir="$(mktemp -d)"
