@@ -1,18 +1,24 @@
 { config, pkgs, inputs, lib, ... }:
 let
   dbPath = "/nix/var/nix/profiles/per-user/root/channels/nixos/programs.sqlite";
-  commandNotFound = pkgs.substituteAll {
+  commandNotFound = pkgs.replaceVarsWith {
     name = "command-not-found";
     dir = "bin";
     src = "${inputs.nixpkgs}/nixos/modules/programs/command-not-found/command-not-found.pl";
     isExecutable = true;
-    inherit dbPath;
-    perl = pkgs.perl.withPackages (p: [ p.DBDSQLite p.StringShellQuote ]);
+    replacements = {
+      inherit (config.programs.command-not-found) dbPath;
+      perl = pkgs.perl.withPackages (p: [
+        p.DBDSQLite
+        p.StringShellQuote
+      ]);
+    };
   };
+
   inherit (config.lib.stylix) colors;
 in
 {
-  programs.zsh.initExtra = lib.mkAfter ''
+  programs.zsh.initContent = lib.mkAfter ''
     if [ -n "$ANY_NIX_SHELL_PKGS" ]; then
       if [ -n "$IN_AUTO_SHELL" ]; then
         alias leave="noglob exit"

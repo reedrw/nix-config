@@ -38,7 +38,10 @@ let
 in
 {
 
-  stylix.targets.firefox.enable = true;
+  stylix.targets.firefox = {
+    enable = true;
+    profileNames = [ "default" ];
+  };
 
   programs.firefox = {
     enable = true;

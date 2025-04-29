@@ -14,12 +14,8 @@
       source-code-pro
       ttf_bitstream_vera
       fantasque-sans-mono
-      (nerdfonts.override {
-        fonts = [
-          "FantasqueSansMono"
-          "CascadiaCode"
-        ];
-      })
+      nerd-fonts.fantasque-sans-mono
+      nerd-fonts.caskaydia-cove
     ];
     fontconfig = {
       enable = true;

@@ -1,1 +1,9 @@
-{}
+{
+  "dunst": {
+    "1.11.0": {
+      "rev": "566e53c2ad750c84f6d31f9ccb9d00f823165550",
+      "sha256": "1c9nwlhsv3da5d8wg2fa0r7kl0v0icidq100v51ax99brpj1idhl"
+    },
+    "default": "1.11.0"
+  }
+}

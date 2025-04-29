@@ -85,7 +85,7 @@ in
       save = 99999;
       size = 99999;
     };
-    initExtra =
+    initContent =
     with pkgs;
     with config.lib.stylix.colors;
     ''
@@ -193,6 +193,8 @@ in
       if [[ "$USER" != "root" ]] && [[ "$TMUX" == *"tmux"* ]]; then
         zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
       fi
+
+      zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
       zstyle ':completion:*' sort false
       zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
