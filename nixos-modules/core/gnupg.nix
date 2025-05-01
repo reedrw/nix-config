@@ -10,6 +10,10 @@
 
   security.pam.services = {
     gdm.enableGnomeKeyring = true;
+    login = {
+      enable = true;
+      enableGnomeKeyring = true;
+    };
   };
 
 }
