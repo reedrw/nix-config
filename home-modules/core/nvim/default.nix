@@ -197,7 +197,7 @@ in
       autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
 
       aunmenu PopUp.How-to\ disable\ mouse
-      aunmenu PopUp.-1-
+      aunmenu PopUp.-2-
 
       hi CocSearch ctermfg=DarkBlue
 
