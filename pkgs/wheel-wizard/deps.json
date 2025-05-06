@@ -95,6 +95,11 @@
     "hash": "sha256-ieiUl7G5pVKQ4V6rxhEe0ehep0/u1RBD3EAI63AQTI0="
   },
   {
+    "pname": "CSharpier.MsBuild",
+    "version": "0.30.6",
+    "hash": "sha256-FhXf9ggWmWzGp6vz6vJP+ly4SOeyluP6Ic3MfCz1uUA="
+  },
+  {
     "pname": "DotNet.Glob",
     "version": "3.1.3",
     "hash": "sha256-5uGSaGY1IqDjq4RCDLPJm0Lg9oyWmyR96OiNeGqSj84="
@@ -155,6 +160,16 @@
     "hash": "sha256-aTR4eSGHPWdbmVsmUYJ+qKEG1ah+zubpZyrM6jEqOEQ="
   },
   {
+    "pname": "Microsoft.Extensions.Caching.Abstractions",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-yc4xSH5JuFXsCka5A5FGuUtvgEIjyj1VDav8pZ52s3U="
+  },
+  {
+    "pname": "Microsoft.Extensions.Caching.Memory",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-jLC6jhzDJTNcOMuwdaGEMaAKuftIMFnO+oPwjTcLNh0="
+  },
+  {
     "pname": "Microsoft.Extensions.Compliance.Abstractions",
     "version": "9.3.0",
     "hash": "sha256-kTZy+spk9bbXIWXcL9PS42v8NkJc7XHVtRF+B10JOkA="
@@ -183,6 +198,11 @@
     "pname": "Microsoft.Extensions.DependencyInjection",
     "version": "9.0.3",
     "hash": "sha256-/gAk+YbJT1/XjMfPBrEg9wUbljA0g1vFJuE+mFOPwV0="
+  },
+  {
+    "pname": "Microsoft.Extensions.DependencyInjection.Abstractions",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-kcXuldbnR8++yNGQj9/rVJOyFaJPKPxecWU9b0KX7AY="
   },
   {
     "pname": "Microsoft.Extensions.DependencyInjection.Abstractions",
@@ -251,6 +271,11 @@
   },
   {
     "pname": "Microsoft.Extensions.Logging.Abstractions",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-8ls/8wAEqMI5HEAeHz82tjmM9Xel/m3JymxEdUni6ig="
+  },
+  {
+    "pname": "Microsoft.Extensions.Logging.Abstractions",
     "version": "8.0.0",
     "hash": "sha256-Jmddjeg8U5S+iBTwRlVAVLeIHxc4yrrNgqVMOB7EjM4="
   },
@@ -281,6 +306,11 @@
   },
   {
     "pname": "Microsoft.Extensions.Options",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-TqviXNJUy9wTWwSLP6/QdfN6+VUg2HHR7skVrotPHGU="
+  },
+  {
+    "pname": "Microsoft.Extensions.Options",
     "version": "8.0.0",
     "hash": "sha256-n2m4JSegQKUTlOsKLZUUHHKMq926eJ0w9N9G+I3FoFw="
   },
@@ -298,6 +328,11 @@
     "pname": "Microsoft.Extensions.Options.ConfigurationExtensions",
     "version": "8.0.0",
     "hash": "sha256-A5Bbzw1kiNkgirk5x8kyxwg9lLTcSngojeD+ocpG1RI="
+  },
+  {
+    "pname": "Microsoft.Extensions.Primitives",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-E1rTPmEYK/ssqHS1CF7xUTRbFWuYxbelV9w2VRST01E="
   },
   {
     "pname": "Microsoft.Extensions.Primitives",
@@ -446,6 +481,11 @@
   },
   {
     "pname": "System.Diagnostics.DiagnosticSource",
+    "version": "10.0.0-preview.3.25171.5",
+    "hash": "sha256-iI1z0kg5z1aTg3fTm/tMCXGQe7JqgOxaCf6Ac85G9+Y="
+  },
+  {
+    "pname": "System.Diagnostics.DiagnosticSource",
     "version": "9.0.3",
     "hash": "sha256-zgZF8BTksBk5oucX0j0Ju8qNG8oKJbIGio0GM+egT9M="
   },
@@ -478,6 +518,11 @@
     "pname": "System.Threading.RateLimiting",
     "version": "8.0.0",
     "hash": "sha256-KOEWEt6ZthvZHJ2Wp70d9nBhBrPqobGQDi2twlKYh/w="
+  },
+  {
+    "pname": "TestableIO.System.IO.Abstractions.Analyzers",
+    "version": "2022.0.0",
+    "hash": "sha256-BbH3iS85/cmk9+9xUq69cCCgHQasyoHAYsa+QaYNInE="
   },
   {
     "pname": "Testably.Abstractions",
