@@ -9,7 +9,11 @@
   services.gnome.gnome-keyring.enable = true;
 
   security.pam.services = {
-    gdm.enableGnomeKeyring = true;
+    gdm = {
+      enable = true;
+      enableGnomeKeyring = true;
+    };
+    i3lock.enable = true;
     login = {
       enable = true;
       enableGnomeKeyring = true;
