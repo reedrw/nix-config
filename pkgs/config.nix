@@ -9,4 +9,7 @@
     # TODO: make the overlays work in ~/.config/nixpkgs/overlays.nix
     flake = flake // { pkgs = flake.legacyPackages.${pkgs.system}; };
   };
+  # permittedInsecurePackages = [
+  #   "python-2.7.18.8"
+  # ];
 }
