@@ -77,21 +77,8 @@ in
   in {
     packages = pkgs'.myPkgs;
 
-    devShells = {
-      default = import ../shell.nix {
-        pkgs = pkgs';
-      };
-      update = import ../shell.nix {
-        pkgs = pkgs';
-        extraArgs.shellHook = ''
-          set -e
-          unset shellHook
-          nixCommand=(nix --experimental-features 'nix-command flakes' --accept-flake-config)
-          "''${nixCommand[@]}" flake update
-          update-all
-          exit
-        '';
-      };
+    devShells.default = import ../shell.nix {
+      pkgs = pkgs';
     };
   };
 }

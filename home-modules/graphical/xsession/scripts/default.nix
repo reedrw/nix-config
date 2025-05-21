@@ -14,10 +14,6 @@
     "toggle-touchpad"
     "volume"
   ] (name: pkgs.writeNixShellScript name (builtins.readFile "${./.}/${name}.sh"))
-  # Xonsh scripts
-  // lib.genAttrs [
-
-  ] (name: pkgs.writeXonshNixShellScript name (builtins.readFile "${./.}/${name}.xsh"))
   // {
     clipboard-clean = let
       unalix = pkgs.callPackage ./unalix { };

@@ -43,7 +43,7 @@ in
       2> /dev/null
   '';
 
-  programs.zsh.initExtra = ''
+  programs.zsh.initContent = ''
     if [[ ! -z $DISPLAY ]]; then
       export SSH_ASKPASS="${lib.getExe scripts.rofi-askpass}"
       export SUDO_ASKPASS="${lib.getExe scripts.rofi-askpass}"

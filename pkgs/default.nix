@@ -6,6 +6,7 @@ let
     ldp = self.callPackage ./ldp { };
     pin = pkgs.callPackage ./pin { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
+    update-all = pkgs.callPackage ./update-all { };
     wheel-wizard = pkgs.callPackage ./wheel-wizard { };
   };
 in

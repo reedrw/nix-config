@@ -13,7 +13,7 @@
         padding = 16;
         horizontal_padding = 16;
         frame_width = 0;
-        frame_color = "${base00}";
+        frame_color = "#${base00}";
         separator_color = "frame";
         font = "FantasqueSansM Nerd Font Bold 10";
         line_height = 4;

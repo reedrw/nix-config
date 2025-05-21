@@ -58,7 +58,7 @@ in
     lockProgram
   ];
 
-  programs.zsh.initExtra = lib.mkAfter ''
+  programs.zsh.initContent = lib.mkAfter ''
     function c(){
       if [[ -p /dev/stdin ]]; then
         xclip -i -selection clipboard

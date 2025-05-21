@@ -4,7 +4,7 @@
   stylix.targets.telegram-desktop.enable = true;
 
   home.packages = with pkgs; [
-    (wrapEnv tdesktop {
+    (wrapEnv pkgs-unstable.tdesktop {
       XDG_CURRENT_DESKTOP = "gnome";
     })
   ];

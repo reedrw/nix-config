@@ -85,7 +85,7 @@ in
   };
   xdg.configFile = {
     "ranger/rc.conf".text = ''
-      map D shell dragon -a -x %p
+      map D shell dragon-drop -a -x %p
       map S q
       map e console shell etouch%space
       map xc compress
