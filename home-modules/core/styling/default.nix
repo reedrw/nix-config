@@ -3,7 +3,7 @@
 {
 
   imports = [
-    inputs.stylix.homeManagerModules.stylix
+    inputs.stylix.homeModules.stylix
     ./extra/prismlauncher.nix
     ./extra/steam.nix
     ./extra/telegram-desktop.nix
