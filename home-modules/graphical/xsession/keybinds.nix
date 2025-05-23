@@ -23,6 +23,7 @@ with pkgs;
   "${sup}+space" = "${exec} ${getExe scripts.rofi-comma} -lines 10 -width 40";
   "${mod}+r" = "${exec} ${getExe scripts.record}";
   "${mod}+n" = "${exec} ${osConfig.services.mullvad-vpn.package}/bin/mullvad reconnect";
+  "${mod}+Shift+semicolon" = "${exec} ${getExe rofimoji}";
   "${mod}+Shift+s" = "sticky toggle";
   "${mod}+Shift+q" = "${exec} ${getExe scripts.killwrapper}";
   "${mod}+2" = "${exec} ${writeShellScript "workspace2" ''
