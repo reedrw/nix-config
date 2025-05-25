@@ -3,6 +3,7 @@
 {
   fonts = {
     packages = with pkgs; [
+      adwaita-fonts
       cantarell-fonts
       carlito
       corefonts
