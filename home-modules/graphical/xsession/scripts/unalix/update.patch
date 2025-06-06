@@ -1369,10 +1369,10 @@ index 632fc24..4acd8e5 100644
 ++KIkBI3Y4WNeApI02phhXBxvWHZks/wCuPWdCg==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..e5db128 100644
+index f2a54b1..aff4af9 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1964 @@
+@@ -1,1628 +1,1965 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3825,7 +3825,8 @@ index f2a54b1..e5db128 100644
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?billiger\\.de\\/.*?mc=",
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?\\.youtrack\\.cloud",
 +        "^https?:\\/\\/cu\\.bankid\\.com",
-+        "^https?:\\/\\/login\\.aliexpress\\.us"
++        "^https?:\\/\\/login\\.aliexpress\\.us",
++        "^https?:\\/\\/ieeexplore\\.ieee\\.org"
 +      ],
 +      "referralMarketing": [
 +        "(?:%3F)?ref_?",
