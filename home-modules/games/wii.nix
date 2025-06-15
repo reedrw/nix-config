@@ -3,6 +3,6 @@
 {
   home.packages = with pkgs; [
     dolphin-emu
-    wheel-wizard
+    (mullvadExclude wheel-wizard)
   ];
 }

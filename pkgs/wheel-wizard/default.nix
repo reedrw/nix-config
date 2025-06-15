@@ -1,4 +1,4 @@
-{ fetchFromGitHub, buildDotnetModule, dotnetCorePackages, csharpier, ... }:
+{ fetchFromGitHub, buildDotnetModule, dotnetCorePackages, ... }:
 
 buildDotnetModule rec {
   pname = "wheel-wizard";
@@ -24,4 +24,8 @@ buildDotnetModule rec {
   executables = ["WheelWizard"];
 
   packNupkg = true;
+
+  meta = {
+    mainProgram = "WheelWizard";
+  };
 }
