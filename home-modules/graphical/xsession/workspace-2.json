@@ -139,7 +139,7 @@
                     "swallows": [
                        {
                            "class": "^TelegramDesktop$",
-                           "instance": "^telegram\\-desktop$"
+                           "instance": "^Telegram$"
                        }
                     ],
                     "type": "con"
