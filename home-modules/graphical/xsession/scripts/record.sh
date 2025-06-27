@@ -9,7 +9,7 @@ startrec(){
     -s "${3}x${4}" \
     -framerate 60 \
     -f x11grab \
-    -i :0.0+"${1},${2}" \
+    -i "$DISPLAY".0+"${1},${2}" \
     -crf 16 \
     -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" \
     ~/"record-$(date '+%a %b %d - %l:%M %p')".mp4
