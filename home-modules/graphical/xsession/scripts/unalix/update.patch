@@ -1369,10 +1369,10 @@ index 632fc24..4acd8e5 100644
 ++KIkBI3Y4WNeApI02phhXBxvWHZks/wCuPWdCg==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..aff4af9 100644
+index f2a54b1..0ac03ea 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
-@@ -1,1628 +1,1965 @@
+@@ -1,1628 +1,1974 @@
  {
 -    "providers": {
 -        "amazon": {
@@ -3234,7 +3234,6 @@ index f2a54b1..aff4af9 100644
 +        "dchild",
 +        "camp",
 +        "creative",
-+        "s",
 +        "content-id",
 +        "dib",
 +        "dib_tag",
@@ -3453,9 +3452,11 @@ index f2a54b1..aff4af9 100644
 +      "exceptions": [
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?bing(?:\\.[a-z]{2,}){1,}\\/WS\\/redirect\\/"
 +      ],
++      "referralMarketing": [
++        "form"
++      ],
 +      "rules": [
 +        "cvid",
-+        "form",
 +        "sk",
 +        "sp",
 +        "sc",
@@ -3731,7 +3732,11 @@ index f2a54b1..aff4af9 100644
 +        "collection-tab-name",
 +        "sattr\\[\\]",
 +        "p\\[\\]",
-+        "st"
++        "st",
++        "qH",
++        "hpid",
++        "ctx",
++        "nnc"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?flipkart\\.com"
 +    },
@@ -3826,7 +3831,9 @@ index f2a54b1..aff4af9 100644
 +        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?\\.youtrack\\.cloud",
 +        "^https?:\\/\\/cu\\.bankid\\.com",
 +        "^https?:\\/\\/login\\.aliexpress\\.us",
-+        "^https?:\\/\\/ieeexplore\\.ieee\\.org"
++        "^https?:\\/\\/ieeexplore\\.ieee\\.org",
++        "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?\\.sendgb\\.com\\/upload\\/?.*?utm_source=",
++        "^https?:\\/\\/firebaseappdistribution\\.googleapis\\.com\\/app-binary-downloads\\/projects\\/?.*?utm_source="
 +      ],
 +      "referralMarketing": [
 +        "(?:%3F)?ref_?",
@@ -3960,7 +3967,8 @@ index f2a54b1..aff4af9 100644
 +        "sca_(?:esv|upv)",
 +        "iflsig",
 +        "fbs",
-+        "ictx"
++        "ictx",
++        "cshid"
 +      ],
 +      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?google(?:\\.[a-z]{2,}){1,}"
 +    },
@@ -4213,9 +4221,10 @@ index f2a54b1..aff4af9 100644
 +        "type",
 +        "c_[_a-zA-Z]+",
 +        "me\\.[_a-zA-Z]+",
-+        "reco_[_a-zA-Z]+"
++        "reco_[_a-zA-Z]+",
++        "ad_click_id"
 +      ],
-+      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?mercadolibre\\.com"
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?mercadoli[bv]re\\.com"
 +    },
 +    "messenger.com": {
 +      "redirections": [
@@ -4498,7 +4507,7 @@ index f2a54b1..aff4af9 100644
 +        "sp_atk",
 +        "xptdk"
 +      ],
-+      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?shopee\\.(com|co\\.th)"
++      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?shopee\\.(com|co\\.th|tw)"
 +    },
 +    "shutterstock.com": {
 +      "rules": [
