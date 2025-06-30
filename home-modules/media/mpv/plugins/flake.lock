@@ -3,11 +3,11 @@
     "mpv-scripts": {
       "flake": false,
       "locked": {
-        "lastModified": 1719998762,
-        "narHash": "sha256-QPcDZJSvXq4+XJMcDOOEul1jSQme/YY5vaNB79+pen8=",
+        "lastModified": 1751140506,
+        "narHash": "sha256-KE2NKp6ZlRQgXXUtFDuDAR+b3CB68l/Ig8dmu+ffeFk=",
         "owner": "ObserverOfTime",
         "repo": "mpv-scripts",
-        "rev": "d03dde5ee8cb3843d1ec59e39c4a404a50597167",
+        "rev": "da0ac047b73727ef712d30a661f5aedd4f8c55a2",
         "type": "github"
       },
       "original": {
