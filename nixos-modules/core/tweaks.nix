@@ -55,6 +55,7 @@
 
   # /bin/bash symlink
   system.activationScripts.create-bash-symlink = {
+    deps = [ "binsh" "usrbinenv" ];
     text = ''
       ${pkgs.coreutils}/bin/ln -sf /run/current-system/sw/bin/bash /bin/bash
       ${pkgs.coreutils}/bin/ln -sf /run/current-system/sw/bin/bash /usr/bin/bash
