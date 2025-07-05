@@ -1,4 +1,4 @@
-{ pkgs, lib, versionSuffix, ... }:
+{ config, pkgs, lib, versionSuffix, ... }:
 
 {
   boot.loader.grub.configurationName = lib.mkDefault "Default - ${versionSuffix}";
@@ -19,16 +19,27 @@
   # set console colors
   stylix.targets.console.enable = true;
 
-  systemd = let
-    extraConfig = ''
-      DefaultTimeoutStartSec=30s
-      DefaultTimeoutStopSec=15s
-      DefaultLimitNOFILE=2048:1048576
-    '';
-  in {
-    inherit extraConfig;
-    user = { inherit extraConfig; };
+  systemd.extraConfig = ''
+    DefaultTimeoutStartSec=30s
+    DefaultTimeoutStopSec=15s
+    DefaultLimitNOFILE=2048:1048576
+  '';
+  systemd.user.extraConfig = config.systemd.extraConfig;
+
+  # /bin/bash symlink
+  systemd.services.create-bash-symlink = {
+    description = "Create /bin/bash symlink";
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "create-bash-symlink" ''
+        ${pkgs.coreutils}/bin/ln -sfv /run/current-system/sw/bin/bash /bin/bash
+        ${pkgs.coreutils}/bin/ln -sfv /run/current-system/sw/bin/bash /usr/bin/bash
+      '';
+      RemainAfterExit = true;
+    };
   };
+
 
   system.activationScripts.diff = {
     supportsDryActivation = true;
