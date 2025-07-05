@@ -26,21 +26,6 @@
   '';
   systemd.user.extraConfig = config.systemd.extraConfig;
 
-  # /bin/bash symlink
-  systemd.services.create-bash-symlink = {
-    description = "Create /bin/bash symlink";
-    wantedBy = ["multi-user.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "create-bash-symlink" ''
-        ${pkgs.coreutils}/bin/ln -sfv /run/current-system/sw/bin/bash /bin/bash
-        ${pkgs.coreutils}/bin/ln -sfv /run/current-system/sw/bin/bash /usr/bin/bash
-      '';
-      RemainAfterExit = true;
-    };
-  };
-
-
   system.activationScripts.diff = {
     supportsDryActivation = true;
     text = ''
@@ -65,6 +50,14 @@
           }
         "
       fi
+    '';
+  };
+
+  # /bin/bash symlink
+  system.activationScripts.create-bash-symlink = {
+    text = ''
+      ${pkgs.coreutils}/bin/ln -sf /run/current-system/sw/bin/bash /bin/bash
+      ${pkgs.coreutils}/bin/ln -sf /run/current-system/sw/bin/bash /usr/bin/bash
     '';
   };
 
