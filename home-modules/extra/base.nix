@@ -12,7 +12,6 @@ let
     ripgrep   # recursive grep
     screen    # terminal multiplexer
     wget      # download utility
-    (xonsh.override { extraPackages = ps: [ ps.requests ]; }) # python shell
     inputs.tx-calculator.packages.${pkgs.system}.tx-calculator
 
     # global aliases
