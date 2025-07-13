@@ -1,13 +1,13 @@
 diff --git a/misc/zsh/completion.zsh b/misc/zsh/completion.zsh
-index f9b3dca74..9518c646e 100644
+index 8a899ec99..8fe877c22 100644
 --- a/misc/zsh/completion.zsh
 +++ b/misc/zsh/completion.zsh
-@@ -18,7 +18,7 @@ function _nix() {
+@@ -22,7 +22,7 @@ function _nix() {
    elif [[ "$tpe" == attrs ]]; then
      args+=('-S' '')
    fi
--  compadd -J nix "${args[@]}" -a suggestions
-+  compadd -Q -J nix "${args[@]}" -a suggestions
+-  compadd -J nix "${args[@]}" -d suggestions_display -a suggestions
++  compadd -Q -J nix "${args[@]}" -d suggestions_display -a suggestions
  }
 
  _nix "$@"
