@@ -59,7 +59,7 @@ in
         fi
 
         argv0=$1; shift
-        attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --top-level --minimal --at-root --whole-name "/bin/$argv0")"
+        attr="$(${pkgs.nix-index}/bin/nix-locate --db "$database" --minimal --at-root --whole-name "/bin/$argv0")"
 
         if [[ -z $attr ]]; then
           >&2 echo "$argv0: command not found"
