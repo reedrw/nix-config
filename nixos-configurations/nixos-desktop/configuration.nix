@@ -18,6 +18,8 @@
     openFirewall = true;
   };
 
+  services.thelounge.enable = true;
+
   custom.boot = {
     keyfile-unlock = {
       enable = true;
