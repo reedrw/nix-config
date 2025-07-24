@@ -21,5 +21,7 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
+  bottles = pkgs.bottles.override {
+    removeWarningPopup = true;
   };
 }
