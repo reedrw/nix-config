@@ -45,22 +45,6 @@ in
       caw-vim
       coc-pyright
       coc-tsserver
-      # (let
-      #   coc-tsserver-with-path = (pkgs.myNodePackages.override {
-      #     nodeEnv = pkgs.myNodeEnv.override {
-      #       nodejs = pkgs.myNodejs;
-      #     };
-      #   }).coc-tsserver.overrideAttrs (_: {
-      #     postInstall = ''
-      #       chmod -R u+w $out/lib/node_modules
-      #       cp -rL ${pkgs.myNodejs}/lib/node_modules/* $out/lib/node_modules
-      #     '';
-      #   });
-      # in pkgs.vimUtils.buildVimPlugin {
-      #   name = "coc-tsserver";
-      #   inherit (coc-tsserver-with-path) version meta;
-      #   src = "${coc-tsserver-with-path}/lib/node_modules/coc-tsserver";
-      # })
       context_filetype-vim
       copilot-vim
       editorconfig-vim
@@ -128,8 +112,6 @@ in
 
       let g:fugitive_dynamic_colors = 0
       let g:lc3_detect_asm = 1
-
-      let g:coc_node_path = "${pkgs.myNodejs}/bin/node"
 
       " disable language packs
       let g:polyglot_disabled = [
