@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753952399,
-        "narHash": "sha256-hDLcvVZPma31l4UKiFqWFv16TYJ/bLqneQftr4Yr75Q=",
+        "lastModified": 1753980404,
+        "narHash": "sha256-dpgnInUcDxhevrO8YjgZxRkeIfL+fpr4SWAmLgZBQfg=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "d190f2fc76a5817a4665865df8259912c92d18c2",
+        "rev": "66237f8810310083feddb7dfa7af2fa45e581f2a",
         "type": "github"
       },
       "original": {
@@ -32,11 +32,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1753937653,
-        "narHash": "sha256-Wk1jnMA4f0yiZY5fZqoJZ5D9TbaltxnHILyXk4gHj70=",
+        "lastModified": 1753981030,
+        "narHash": "sha256-UjvwQxnXIDdzAboaGTyaB1hUZpnuY0BtwXJRqLjOstI=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "56312710ff3e1c971c706a156a66f57c95b08997",
+        "rev": "173850a9b6283a1f1596b63eeb7f05ee0a6d3bd7",
         "type": "github"
       },
       "original": {
@@ -358,11 +358,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1753849119,
-        "narHash": "sha256-2sDX5Nv/DGIzZH+3pIlAUpZfVlMGz7Hl/mqHUaic+p8=",
+        "lastModified": 1753974924,
+        "narHash": "sha256-ExeVmD8m1lDfND4bsf7O423ITL5p7uAIGNlzOTmZDK0=",
         "ref": "refs/heads/main",
-        "rev": "321807a40e1fdd44d950ff01746c95cb6e2eced3",
-        "revCount": 18226,
+        "rev": "98a27fbfd248daffe7cc16e06948a87b069c1028",
+        "revCount": 18231,
         "type": "git",
         "url": "https://git.lix.systems/lix-project/lix.git"
       },
@@ -667,11 +667,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1753921619,
-        "narHash": "sha256-XAXQZYm/Cyj2PYER+N6K0YlkZsBF5sPpYoylQLLE6d0=",
+        "lastModified": 1753979771,
+        "narHash": "sha256-MdMdQymbivEWWkC5HqeLYtP8FYu0SqiSpiRlyw9Fm3Y=",
         "owner": "nix-community",
         "repo": "stylix",
-        "rev": "3e500983c46d88ab36aa2f971bca13cba966a011",
+        "rev": "5b81b0c4fbab3517b39d63f493760d33287150ad",
         "type": "github"
       },
       "original": {
