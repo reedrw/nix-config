@@ -169,21 +169,6 @@
       }
     },
     "flake-compat_2": {
-      "locked": {
-        "lastModified": 1733328505,
-        "narHash": "sha256-NeCCThCEP3eCl2l/+27kNNK7QrwZB1IJCrXfrbv5oqU=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "ff81ac966bb2cae68946d5ed5fc4994f96d0ffec",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-compat_3": {
       "flake": false,
       "locked": {
         "lastModified": 1696426674,
@@ -257,20 +242,18 @@
       }
     },
     "get-flake": {
-      "inputs": {
-        "flake-compat": "flake-compat_2"
-      },
       "locked": {
-        "lastModified": 1745945175,
-        "narHash": "sha256-JGDbJRl5v1snA4JX+yp6m3UA6Mazr59Hrgz+UhhP91M=",
+        "lastModified": 1714237590,
+        "narHash": "sha256-9gtHdGbzFHaR20xORN8IYd67ROWS+1nqQ5CsPf9MD8I=",
         "owner": "ursi",
         "repo": "get-flake",
-        "rev": "38401aa2b3a99c77d0c02727471e99e7de2fc366",
+        "rev": "a6c57417d1b857b8be53aba4095869a0f438c502",
         "type": "github"
       },
       "original": {
         "owner": "ursi",
         "repo": "get-flake",
+        "rev": "a6c57417d1b857b8be53aba4095869a0f438c502",
         "type": "github"
       }
     },
@@ -350,7 +333,7 @@
     },
     "lix": {
       "inputs": {
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_2",
         "nix2container": "nix2container",
         "nix_2_18": "nix_2_18",
         "nixpkgs": "nixpkgs_3",

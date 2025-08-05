@@ -7,7 +7,6 @@ mkShell ({
     doppler
     git
     home-manager
-    ldp
     ncurses
     nix
     pre-commit
