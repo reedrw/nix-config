@@ -1,8 +1,0 @@
-[
-  "@types/bun",
-  "@types/node",
-  "bun-types",
-  "coc-tsserver",
-  "typescript",
-  "undici-types"
-]
