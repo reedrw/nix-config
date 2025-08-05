@@ -59,7 +59,7 @@ main(){
       if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
         echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
       fi
-      sudo nixos-rebuild boot --fast --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild boot --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
     --build)
       if [ "$#" -lt 2 ]; then
@@ -107,7 +107,7 @@ main(){
       if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
         echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
       fi
-      sudo nixos-rebuild switch --fast --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
+      sudo nixos-rebuild switch --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
   esac
 }
