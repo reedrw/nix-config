@@ -7,7 +7,14 @@ set -eo pipefail
 # Pin a package to a specific version, using devbox's search API
 # Usage: pin.sh <package-name> <version>
 
-pinnedJson="$HOME/files/nix-config/pkgs/pin/pinned.json"
+dir="$(dirname "$(readlink -f "$0")")"
+flakePath="${flakePath:-}"
+
+if [ -d "$flakePath" ]; then
+  pinnedJson="$flakePath/pkgs/pin/pinned.json"
+else
+  pinnedJson="$dir/pinned.json"
+fi
 
 api="https://search.devbox.sh/v1/search?q="
 

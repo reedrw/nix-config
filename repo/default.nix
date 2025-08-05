@@ -17,6 +17,8 @@ let
         inherit system;
     });
 
+  root = ../.;
+
   lib = inputs.nixpkgs.lib;
 in
 {
@@ -25,10 +27,10 @@ in
   ];
 
   ezConfigs = {
-    root = ../.;
+    inherit root;
 
     globalArgs = {
-      inherit inputs nixpkgs-options nixConfig versionSuffix;
+      inherit inputs nixpkgs-options nixConfig versionSuffix root;
     };
 
     home.users = lib.genAttrs [

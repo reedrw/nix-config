@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, rootAbsolute, ... }:
 let
   cfg = config.custom.boot.wipe;
   wipeScript = builtins.readFile ./wipeScript.sh;
@@ -46,7 +46,7 @@ in
       config = {
         inherit (config.custom) persistDir prevDir;
         activateCommand = "ldp";
-        persistJson = "${pkgs.flakePath}/nixos-configurations/${config.networking.hostName}/persist.json";
+        persistJson = "${rootAbsolute}/nixos-configurations/${config.networking.hostName}/persist.json";
         snapper = {
           enable = builtins.hasAttr "persist" config.services.snapper.configs;
           config = "persist";

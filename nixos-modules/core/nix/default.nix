@@ -1,11 +1,23 @@
-{ nixpkgs-options, nixConfig, inputs, pkgs, lib, ... }:
+{ nixpkgs-options, nixConfig, root, rootAbsolute, inputs, pkgs, config, lib, ... }:
 
 {
-  inherit (nixpkgs-options) nixpkgs;
+  # inherit (nixpkgs-options) nixpkgs;
+  nixpkgs = {
+    inherit (nixpkgs-options.nixpkgs) config;
+    overlays = nixpkgs-options.nixpkgs.overlays ++ [
+      (final: prev: { flakePath = rootAbsolute; })
+    ];
+  };
 
+  # Must be applied, not at flake level, so that it inherits per-system
+  # nixpkgs overlays and configuration.
   _module.args.pkgs-unstable = import inputs.unstable {
     inherit (pkgs) system config;
   };
+
+  _module.args.rootAbsolute =
+    builtins.readFile "${root}/nixos-configurations/${config.networking.hostName}/.flake-path"
+      |> lib.removeSuffix "\n";
 
   environment.etc = lib.mapAttrs' (n: v:
     lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })
@@ -20,7 +32,14 @@
       extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [
         "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
       ];
-      repl-overlays = [ "${pkgs.flakePath}/nixos-modules/core/nix/repl-overlays.nix" ];
+      repl-overlays = [
+        (pkgs.writeText "repl-overlay-extrainfo.nix" ''
+          info: final: prev: {
+            extraInfo.hostName = "${config.networking.hostName}";
+          }
+        '')
+        ./repl-overlays.nix
+      ];
       keep-derivations = true;
       keep-outputs = true;
       trusted-users = [ "root" "@wheel" ];

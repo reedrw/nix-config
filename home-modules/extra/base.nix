@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, rootAbsolute, ... }:
 let
   packagesMinimal = with pkgs; [
     # utilities
@@ -17,7 +17,7 @@ let
     # global aliases
     (aliasToPackage {
       hms = ''home-manager switch -L "$@"'';
-      pai = ''${pkgs.flakePath}/pull-and-install.sh "$@"'';
+      pai = ''${rootAbsolute}/pull-and-install.sh "$@"'';
     })
   ];
 

@@ -1,4 +1,4 @@
-{ pkgs, lib, ...}:
+{ pkgs, lib, rootAbsolute, ...}:
 let
   updateScript = pkgs.writeShellApplication rec {
     name = "updateScript";
@@ -15,7 +15,7 @@ let
         su reed -c "git $*"
       }
 
-      pushd ${pkgs.flakePath}
+      pushd ${rootAbsolute}
         git fetch
         if [[ -z "$(git status -s)" ]] \
         && [[ -z "$(git log origin/main..HEAD)" ]] \
