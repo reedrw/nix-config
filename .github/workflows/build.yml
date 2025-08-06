@@ -28,6 +28,8 @@ jobs:
     steps:
     - name: Cleanup Disk
       uses: wimpysworld/nothing-but-nix@main
+      with:
+        witness-carnage: true
 
     - name: Install Nix
       uses: DeterminateSystems/nix-installer-action@v19
