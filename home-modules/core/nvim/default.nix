@@ -1,6 +1,6 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 let
-  sources = (inputs.get-flake ./plugins).inputs;
+  sources = (pkgs.importFlake ./plugins).inputs;
 in
 {
   stylix.targets.neovim.enable = true;

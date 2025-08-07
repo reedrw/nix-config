@@ -1,3 +1,4 @@
+inputs:
 self: pkgs:
 let
   lib = pkgs.lib;
@@ -203,4 +204,12 @@ in
       exec ${x} "\$@"
     fi
   '');
+
+  # importFlake :: Path -> AttrSet
+  ########################################################
+  # Import a flake using lix flake compat.
+  importFlake = path: (import inputs.flake-compat {
+    src = path;
+    useBuiltinsFetchTree = true;
+  }).defaultNix;
 }

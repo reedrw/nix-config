@@ -1,7 +1,7 @@
-{ python3Packages, get-flake, ... }:
+{ python3Packages, importFlake, ... }:
 
 let
- sources = (get-flake ./sources).inputs;
+ sources = (importFlake ./sources).inputs;
 in
 python3Packages.buildPythonPackage {
   name = "Unalix";

@@ -1,7 +1,14 @@
 let
-  lock = builtins.fromJSON (builtins.readFile ../flake.lock);
-  get-flake = import (fetchTarball {
-    url = lock.nodes.get-flake.url or "https://github.com/ursi/get-flake/archive/${lock.nodes.get-flake.locked.rev}.tar.gz";
-    sha256 = lock.nodes.get-flake.locked.narHash;
-  });
-in get-flake ../.
+  lockFile = builtins.fromJSON (builtins.readFile ../flake.lock);
+  flake-compat-node = lockFile.nodes.${lockFile.nodes.root.inputs.flake-compat};
+  flake-compat = builtins.fetchTarball {
+    inherit (flake-compat-node.locked) url;
+    sha256 = flake-compat-node.locked.narHash;
+  };
+
+  flake = (
+    import flake-compat {
+      src = ../.;
+    }
+  );
+in flake.defaultNix

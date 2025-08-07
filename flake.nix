@@ -7,7 +7,11 @@ rec {
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";
-    get-flake.url = "github:ursi/get-flake/a6c57417d1b857b8be53aba4095869a0f438c502";
+
+    flake-compat = {
+      url = "https://git.lix.systems/lix-project/flake-compat/archive/main.tar.gz";
+      flake = false;
+    };
 
     # flake-parts and its modules
     flake-parts = {
