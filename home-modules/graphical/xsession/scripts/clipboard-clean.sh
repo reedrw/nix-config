@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export DISPLAY=:0
+export DISPLAY=:1
 
 COPY_CMD="xclip -i -selection clipboard"
 PASTE_CMD="xclip -o -selection clipboard"
