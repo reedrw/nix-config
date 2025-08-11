@@ -15,6 +15,14 @@
     enable = true;
     package = pkgs-unstable.ollama;
     acceleration = "rocm";
+
+    # https://github.com/NixOS/nixpkgs/issues/308206
+    # https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
+    rocmOverrideGfx = "10.3.0"; # gfx1030
+
+    environmentVariables = {
+      OLLAMA_FLASH_ATTENTION = "1";
+    };
     openFirewall = true;
   };
 
