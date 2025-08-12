@@ -62,7 +62,7 @@ jobs:
         private_key: ${{ env.APP_PRIVATE_KEY }}
 
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
