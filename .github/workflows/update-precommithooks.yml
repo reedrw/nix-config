@@ -31,7 +31,7 @@ jobs:
         logger: pretty
 
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - run: nix shell nixpkgs#pre-commit -c pre-commit autoupdate
 
