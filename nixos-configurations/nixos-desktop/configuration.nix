@@ -85,12 +85,6 @@
     gfxpayloadEfi = "keep";
   };
 
-  networking.firewall = {
-    # 5900 : VNC
-    allowedTCPPorts = [ 5900 ];
-    allowedUDPPorts = [ 5900 ];
-  };
-
   time.timeZone = "America/New_York";
 
   services.xserver.videoDrivers = [ "amdgpu" ];
