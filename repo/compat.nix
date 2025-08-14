@@ -6,9 +6,7 @@ let
     sha256 = flake-compat-node.locked.narHash;
   };
 
-  flake = (
-    import flake-compat {
-      src = ../.;
-    }
-  );
+  flake = import flake-compat {
+    src = ../.;
+  };
 in flake.defaultNix

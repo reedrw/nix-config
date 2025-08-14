@@ -293,13 +293,13 @@ in
       termbin = "nc termbin.com 9999";
       tree = "ls --tree";
       x = "exit";
-    } // (lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
+    } // lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
       bmount = "bashmount";
       df = "pydf";
       ls = "eza -lh --git -s type";
       ping = "prettyping --nolegend";
       taskdone = "libnotify 'Task finished.' && exit";
       watch = "viddy";
-    });
+    };
   };
 }

@@ -48,10 +48,12 @@ in
     # Exclude firefox from mullvad. I use the FoxyProxy extension
     # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
     # (because private trackers block mullvad).
-    package = with pkgs; (emptyDirectory // { override = _: wrapEnv (mullvadExclude myFirefox) {
-      # Enable XInput2 for high-resolution mouse scrolling
-      MOZ_USE_XINPUT2 = "1";
-    }; });
+    package = with pkgs; emptyDirectory // {
+      override = _: wrapEnv (mullvadExclude myFirefox) {
+        # Enable XInput2 for high-resolution mouse scrolling
+        MOZ_USE_XINPUT2 = "1";
+      };
+    };
 
     profiles."default" = {
       name = "default";

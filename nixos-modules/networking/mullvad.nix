@@ -30,9 +30,9 @@
   # connection and set per-domain rules.
   services.autossh.sessions = let
     mullvadEnabled = config.services.mullvad-vpn.enable;
-  in (lib.optionals mullvadEnabled [{
+  in lib.optionals mullvadEnabled [{
     extraArguments = "-D 1337 -nNT localhost";
     name = "mullvad-socks-proxy";
     user = "reed";
-  }]);
+  }];
 }

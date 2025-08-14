@@ -4,10 +4,9 @@ let
 in
 {
   lib.scripts = {
-    calnotify = pkgs.writeNixShellScript "calnotify" (builtins.readFile ./calnotify.sh);
-    screenthing = pkgs.writeShellScriptBin "screenthing" (builtins.readFile ./screenthing.sh);
-    # Average battery capacities together cuz my laptop has 2 internal batteries
-    bataverage = pkgs.writeShellScriptBin "bataverage" (builtins.readFile ./bataverage.sh);
+    calnotify = pkgs.writeNixShellScript "calnotify"     <| builtins.readFile ./calnotify.sh;
+    screenthing = pkgs.writeShellScriptBin "screenthing" <| builtins.readFile ./screenthing.sh;
+    bataverage = pkgs.writeShellScriptBin "bataverage"   <| builtins.readFile ./bataverage.sh;
   };
 
   services.polybar = with pkgs; {

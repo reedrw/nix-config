@@ -16,7 +16,8 @@ pkgs: let
       then n
       else ("v" + builtins.replaceStrings ["."] ["_"] n);
   in lib.nameValuePair
-    (version)
-    ({ pkgs = pinnedPkgs; } // pinnedPkgs."${package}")
+    version <| {
+      pkgs = pinnedPkgs;
+    } // pinnedPkgs."${package}"
   ) a;
 in builtins.mapAttrs mapToPackage json

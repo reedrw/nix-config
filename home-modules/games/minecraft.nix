@@ -5,7 +5,7 @@
     prismlauncher.enable = true;
   };
 
-  home.packages = with pkgs;[
+  home.packages = with pkgs; [
     (mullvadExclude prismlauncher)
   ];
 }

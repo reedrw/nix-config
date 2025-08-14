@@ -1,7 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 let
   cfg = config.custom.hrl;
-  customIcon = builtins.fetchurl (lib.importJSON ./icon.json);
+  customIcon = builtins.fetchurl <| lib.importJSON ./icon.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
 in
 {

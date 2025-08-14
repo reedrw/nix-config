@@ -187,11 +187,11 @@ in
   };
 
   systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
-    (mkSimpleService "autotiling" (lib.getExe pkgs.autotiling))
-    (mkSimpleService "clipboard-clean" (lib.getExe scripts.clipboard-clean))
-    (mkSimpleService "dwebp-serv" (lib.getExe scripts.dwebp-serv))
-    (mkSimpleService "mpv-dnd" (lib.getExe scripts.mpv-dnd))
-    (mkSimpleService "keybinds" (lib.getExe scripts.keybinds))
-    (mkSimpleService "droidcam-fix" (lib.getExe scripts.droidcam-fix))
+u   (mkSimpleService "autotiling"      <| lib.getExe pkgs.autotiling)
+    (mkSimpleService "clipboard-clean" <| lib.getExe scripts.clipboard-clean)
+    (mkSimpleService "dwebp-serv"      <| lib.getExe scripts.dwebp-serv)
+    (mkSimpleService "mpv-dnd"         <| lib.getExe scripts.mpv-dnd)
+    (mkSimpleService "keybinds"        <| lib.getExe scripts.keybinds)
+    (mkSimpleService "droidcam-fix"    <| lib.getExe scripts.droidcam-fix)
   ];
 }

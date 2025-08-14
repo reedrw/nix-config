@@ -20,7 +20,7 @@
       |> lib.removeSuffix "\n";
 
   environment.etc = lib.mapAttrs' (n: v:
-    lib.nameValuePair ("nix/inputs/${n}") ({ source = v.outPath; })
+    lib.nameValuePair "nix/inputs/${n}" <| { source = v.outPath; }
   ) inputs;
 
   nix = {

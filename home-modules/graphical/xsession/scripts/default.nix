@@ -13,7 +13,7 @@
     "select-term"
     "toggle-touchpad"
     "volume"
-  ] (name: pkgs.writeNixShellScript name (builtins.readFile "${./.}/${name}.sh"))
+  ] (name: pkgs.writeNixShellScript name <| builtins.readFile "${./.}/${name}.sh")
   // {
     clipboard-clean = let
       unalix = pkgs.callPackage ./unalix { };
@@ -24,7 +24,7 @@
         xclip
         (python3.withPackages(ps: [ unalix ]))
       ];
-      text = (builtins.readFile ./clipboard-clean.sh);
+      text = builtins.readFile ./clipboard-clean.sh;
     };
 
     droidcam-fix = pkgs.writeShellApplication {
@@ -34,7 +34,7 @@
     };
 
     mpv-dnd = let
-      unwrapped = pkgs.writeNixShellScript "mpv-dnd" (builtins.readFile ./mpv-dnd.sh);
+      unwrapped = pkgs.writeNixShellScript "mpv-dnd" <| builtins.readFile ./mpv-dnd.sh;
       # Window classes to be suspended while mpv is the active window
       chatApps = [
         "TelegramDesktop"

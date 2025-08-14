@@ -30,7 +30,7 @@ in
   #    └── tb -> /nix/store/4q5d9z7r4a1qvpd6klblksrm0racx6px-tb/bin/tb
   aliasToPackage = alias:
     let
-      name = builtins.concatStringsSep "-"  ([ "alias" ] ++ (builtins.attrNames alias));
+      name = builtins.concatStringsSep "-" <| [ "alias" ] ++ (builtins.attrNames alias);
       paths = lib.mapAttrsToList pkgs.writeShellScriptBin alias;
       numAliases = builtins.length paths;
     in
@@ -63,7 +63,7 @@ in
   ########################################
   # Given a package name, return the corresponding package from nixpkgs.
   matchPackage = pkgName:
-    builtins.foldl' (a: x: a."${x}") pkgs (lib.splitString "." pkgName);
+    builtins.foldl' (a: x: a."${x}") pkgs <| lib.splitString "." pkgName;
 
   # writeNixShellScript :: String -> String -> Package
   ########################################################
@@ -148,9 +148,9 @@ in
   matchPackageCommand = command:
     let
       parts = lib.splitString " " command;
-      package = self.matchPackage (builtins.head parts);
+      package = self.matchPackage <| builtins.head parts;
     in
-    builtins.concatStringsSep " " ([ (lib.getExe package) ] ++ builtins.tail parts);
+    builtins.concatStringsSep " " <| [(lib.getExe package)] ++ builtins.tail parts;
 
   # wrapPackage :: Package -> (String -> String) -> Package
   ##########################################################
@@ -189,7 +189,7 @@ in
   # wrapEnv hello { FOO = "bar"; }
   wrapEnv = package: env: self.wrapPackage package (x: ''
     #! ${pkgs.runtimeShell} -e
-    ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
+    ${builtins.concatStringsSep "\n" <| lib.mapAttrsToList (k: v: "export ${k}=${v}") env}
     exec ${x} "\$@"
   '');
 

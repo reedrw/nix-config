@@ -1,4 +1,4 @@
-{ config, lib, pkgs, rootAbsolute, ... }:
+{ config, lib, rootAbsolute, ... }:
 let
   cfg = config.custom.boot.wipe;
   wipeScript = builtins.readFile ./wipeScript.sh;
