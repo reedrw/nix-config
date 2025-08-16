@@ -187,7 +187,7 @@ in
   };
 
   systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
-u   (mkSimpleService "autotiling"      <| lib.getExe pkgs.autotiling)
+    (mkSimpleService "autotiling"      <| lib.getExe pkgs.autotiling)
     (mkSimpleService "clipboard-clean" <| lib.getExe scripts.clipboard-clean)
     (mkSimpleService "dwebp-serv"      <| lib.getExe scripts.dwebp-serv)
     (mkSimpleService "mpv-dnd"         <| lib.getExe scripts.mpv-dnd)
