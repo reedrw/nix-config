@@ -4,7 +4,8 @@ let
   pinned = pkgs.pinned;
 
   # map defaults to top level
-  defaults = pinned
-    |> lib.filterAttrs (n: v: lib.hasAttr "default" v)
-    |> lib.mapAttrs (n: v: v.default);
+  defaults = lib.pipe pinned [
+    (lib.filterAttrs (n: v: lib.hasAttr "default" v))
+    (lib.mapAttrs (n: v: v.default))
+  ];
 in defaults

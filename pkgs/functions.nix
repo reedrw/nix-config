@@ -30,7 +30,7 @@ in
   #    └── tb -> /nix/store/4q5d9z7r4a1qvpd6klblksrm0racx6px-tb/bin/tb
   aliasToPackage = alias:
     let
-      name = builtins.concatStringsSep "-" <| [ "alias" ] ++ (builtins.attrNames alias);
+      name = builtins.concatStringsSep "-" ([ "alias" ] ++ (builtins.attrNames alias));
       paths = lib.mapAttrsToList pkgs.writeShellScriptBin alias;
       numAliases = builtins.length paths;
     in
@@ -63,7 +63,7 @@ in
   ########################################
   # Given a package name, return the corresponding package from nixpkgs.
   matchPackage = pkgName:
-    builtins.foldl' (a: x: a."${x}") pkgs <| lib.splitString "." pkgName;
+    builtins.foldl' (a: x: a."${x}") pkgs (lib.splitString "." pkgName);
 
   # writeNixShellScript :: String -> String -> Package
   ########################################################
@@ -78,16 +78,17 @@ in
   # hello
   writeNixShellScript = name: text:
     let
-      runtimeInputs = text
+      runtimeInputs = lib.pipe text [
         # Get the second line of the script, which contains the packages
-        |> lib.splitString "\n"
-        |> (x: lib.elemAt x 1)
+        (lib.splitString "\n")
+        (x: lib.elemAt x 1)
         # Get the packages from the second line
-        |> lib.splitString " -p "
-        |> (x: lib.elemAt x 1)
+        (lib.splitString " -p ")
+        (x: lib.elemAt x 1)
         # Convert the package names to nixpkgs packages
-        |> lib.splitString " "
-        |> map self.matchPackage;
+        (lib.splitString " ")
+        (map self.matchPackage)
+      ];
     in
     pkgs.writeShellApplication {
       inherit name text runtimeInputs;
@@ -111,23 +112,25 @@ in
   # await $`echo "Hello, world!"`;
   writeBunNixShellScript = name: text:
     let
-      buildInputs = text
+      buildInputs = lib.pipe text [
         # Get the third line of the script, which contains the packages
-        |> lib.splitString "\n"
-        |> (x: lib.elemAt x 2)
+        (lib.splitString "\n")
+        (x: lib.elemAt x 2)
         # Get the packages from the third line
-        |> lib.splitString " -p bun "
-        |> (x: lib.elemAt x 1)
+        (lib.splitString " -p bun ")
+        (x: lib.elemAt x 1)
         # Convert the package names to nixpkgs packages
-        |> lib.splitString " "
-        |> map self.matchPackage;
+        (lib.splitString " ")
+        (map self.matchPackage)
+      ];
 
       unwrappedScript = pkgs.writeScript name ''
         #! ${pkgs.bun}/bin/bun
-        ${lib.splitString "\n" text
-          |> lib.tail
-          |> lib.concatStringsSep "\n"
-        }
+        ${lib.pipe text [
+	  (lib.splitString "\n")
+          lib.tail
+          (lib.concatStringsSep "\n")
+        ]}
       '';
     in # Wrap the script with a shell script that sets the PATH
     pkgs.writeShellScriptBin name ''
@@ -148,9 +151,9 @@ in
   matchPackageCommand = command:
     let
       parts = lib.splitString " " command;
-      package = self.matchPackage <| builtins.head parts;
+      package = self.matchPackage (builtins.head parts);
     in
-    builtins.concatStringsSep " " <| [(lib.getExe package)] ++ builtins.tail parts;
+    builtins.concatStringsSep " " ([(lib.getExe package)] ++ builtins.tail parts);
 
   # wrapPackage :: Package -> (String -> String) -> Package
   ##########################################################
@@ -189,7 +192,7 @@ in
   # wrapEnv hello { FOO = "bar"; }
   wrapEnv = package: env: self.wrapPackage package (x: ''
     #! ${pkgs.runtimeShell} -e
-    ${builtins.concatStringsSep "\n" <| lib.mapAttrsToList (k: v: "export ${k}=${v}") env}
+    ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "export ${k}=${v}") env)}
     exec ${x} "\$@"
   '');
 
