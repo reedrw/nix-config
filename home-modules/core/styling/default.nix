@@ -1,4 +1,4 @@
-{ inputs, config, osConfig, pkgs, ... }:
+{ inputs, config, osConfig, pkgs, lib, ... }:
 
 {
 
@@ -41,16 +41,16 @@
 
   stylix.targets.gtk = {
     enable = true;
-    extraCss = ''
-      window {
-        padding: 0;
-        box-shadow: none;
-      }
-      decoration {
-        padding: 0;
-        border: 0px;
-      }
-    '';
+    # extraCss = ''
+    #   window {
+    #     padding: 0;
+    #     box-shadow: none;
+    #   }
+    #   decoration {
+    #     padding: 0;
+    #     border: 0px;
+    #   }
+    # '';
   };
 
   xdg.configFile = {
@@ -126,6 +126,11 @@
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
+    };
+    font = {
+      name = lib.mkForce "Cantarell";
+      package = lib.mkForce pkgs.cantarell-fonts;
+      size = lib.mkForce 10;
     };
     gtk2 = {
       configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc-2.0";

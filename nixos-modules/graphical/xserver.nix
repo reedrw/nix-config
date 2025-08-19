@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 
 {
   programs.dconf.enable = true;
@@ -12,10 +12,10 @@
     enable = true;
     displayManager = {
       gdm = {
-        wayland = false;
+        wayland = true;
         enable = true;
       };
-      session = [
+      session = lib.optionals (!config.services.xserver.desktopManager.gnome.enable) [
         {
           manage = "desktop";
           name = "xsession";

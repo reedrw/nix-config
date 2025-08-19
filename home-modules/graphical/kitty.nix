@@ -32,6 +32,8 @@
       bold_italic_font = "${family} Bold Italic";
       window_padding_width = 10;
 
+      hide_window_decorations = true;
+
       enable_audio_bell = false;
       cursor_shape = "beam";
       confirm_os_window_close = 0;

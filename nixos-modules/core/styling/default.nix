@@ -19,6 +19,22 @@ in
     image = ./wallpaper.png;
   };
 
+  stylix.fonts = {
+    serif = {
+      package = pkgs.cantarell-fonts;
+      name = "Cantarell";
+    };
+    sansSerif = {
+      package = pkgs.cantarell-fonts;
+      name = "Cantarell";
+    };
+
+    monospace = {
+      package = pkgs.fira-code;
+      name = "Fira Code";
+    };
+  };
+
   stylix.cursor = {
     package = pkgs.openzone-cursors;
     name = "OpenZone_Black";
