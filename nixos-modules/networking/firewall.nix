@@ -9,6 +9,9 @@
 
       # qbittorrent
       43173
+
+      # http
+      8080
     ];
     allowedUDPPorts = [
       # SSDP/UPnP

@@ -11,6 +11,26 @@
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  # services.keyd = {
+  #   enable = true;
+  #   keyboards = {
+  #     default = {
+  #       ids = [ "*" ];
+  #       settings = {
+  #         main = {
+  #           capslock = "overload(control, esc)";
+  #         };
+  #         "shift" = {
+  #           esc = "~";
+  #         };
+  #         # "meta" = {
+  #         #   space = "overload(leftmeta, rightmeta)";
+  #         # };
+  #       };
+  #     };
+  #   };
+  # };
+
   services.ollama = {
     enable = true;
     package = pkgs-unstable.ollama;

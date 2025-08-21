@@ -5,5 +5,12 @@
       "sha256": "1c9nwlhsv3da5d8wg2fa0r7kl0v0icidq100v51ax99brpj1idhl"
     },
     "default": "1.11.0"
+  },
+  "gnomeExtensions": {
+    "426325": {
+      "note": "https://github.com/NixOS/nixpkgs/pull/426325",
+      "rev": "6bba2a5d92ab0952d24ba74b32d8f502c4ac7b87",
+      "sha256": "1fs5mmnycm9205jwhll8c7jvsf40hdhw4z35p30s3j9fla0xqfwx"
+    }
   }
 }
