@@ -1,7 +1,8 @@
-{ pkgs, ... }:
-
+{ pkgs, lib, osConfig, ... }:
 let
-  extensions = (with pkgs.gnomeExtensions; [
+  gnomeEnabled = osConfig.services.xserver.desktopManager.gnome.enable;
+
+  extensions = lib.optionals gnomeEnabled ((with pkgs.gnomeExtensions; [
     caffeine
     forge
     rounded-window-corners-reborn
@@ -9,7 +10,7 @@ let
     # window-is-ready-remover
   ]) ++ [
     pkgs.pinned.gnomeExtensions.v426325.another-window-session-manager
-  ];
+  ]);
 in
 {
   home.packages = extensions;

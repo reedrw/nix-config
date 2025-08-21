@@ -1,18 +1,20 @@
-{ config, lib, pkgs, ... }:
-
+{ config, osConfig, lib, pkgs, ... }:
+let
+  gnomeEnabled = osConfig.services.xserver.desktopManager.gnome.enable;
+in
 {
   imports = builtins.readDir ./.
     |> (x: builtins.removeAttrs x ["default.nix"])
     |> builtins.attrNames
     |> map (x: "${./.}/${x}");
 
-  home.packages = with pkgs; [
+  home.packages = lib.optionals gnomeEnabled (with pkgs; [
     dconf-editor
-  ];
+  ]);
 
-  programs.gnome-shell.enable = true;
+  programs.gnome-shell.enable = gnomeEnabled;
 
-  systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
+  systemd.user.services = lib.optionalAttrs gnomeEnabled (with config.lib.functions; lib.mergeAttrsList [
     (mkSimpleService "xwayland-satellite" <| lib.getExe pkgs.xwayland-satellite)
-  ];
+  ]);
 }

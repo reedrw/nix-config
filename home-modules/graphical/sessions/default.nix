@@ -1,8 +1,6 @@
-{ osConfig, ... }:
-
 {
-  imports = if osConfig.services.xserver.desktopManager.gnome.enable then
-    [ ./gnome ]
-  else
-    [ ./i3 ];
+  imports = [
+    ./gnome # only enabled if gnome is enabled in system config
+    ./i3
+  ];
 }
