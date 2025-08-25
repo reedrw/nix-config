@@ -1,0 +1,59 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1684398685,
+        "narHash": "sha256-TRE62m91iZ5ArVMgA+uj22Yda8JoQuuhc9uwZ+NoX+0=",
+        "path": "/nix/store/vwligfzzdw09wdhw1dzfhxpzgcbc4s5z-source",
+        "rev": "628d4bb6e9f4f0c30cfd9b23d3c1cdcec9d3cb5c",
+        "type": "path"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs-maptool": {
+      "locked": {
+        "lastModified": 1684459863,
+        "narHash": "sha256-1ub5UXev7OgJ1EkV65CyfYqPSsLsec7v+gBrpKOw8qU=",
+        "owner": "rhendric",
+        "repo": "nixpkgs",
+        "rev": "45eb557afafd24a5d938e753ba1c6f8edee978a7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rhendric",
+        "ref": "rhendric/maptool",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "tlaterpkgs": "tlaterpkgs"
+      }
+    },
+    "tlaterpkgs": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-maptool": "nixpkgs-maptool"
+      },
+      "locked": {
+        "lastModified": 1685570901,
+        "narHash": "sha256-Ckgr7pjEHEdN/cWpz0NZBIl+VeuhRvA8SDYwGBlzU/c=",
+        "owner": "TLATER",
+        "repo": "tlaterpkgs",
+        "rev": "d5503f100834236484a1d19fbcc1ccbf561ada84",
+        "type": "github"
+      },
+      "original": {
+        "owner": "TLATER",
+        "repo": "tlaterpkgs",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
