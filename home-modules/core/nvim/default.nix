@@ -46,7 +46,7 @@ in
       coc-pyright
       coc-tsserver
       context_filetype-vim
-      copilot-vim
+      # copilot-vim
       editorconfig-vim
       {
         plugin = galaxyline-nvim;
