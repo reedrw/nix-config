@@ -77,6 +77,27 @@ in
         else
           branch="unstable"
         fi
+
+        if [ -f "$HOME/.cache/nix/comma-runcounts" ]; then
+          # shellcheck disable=1091
+          source "$HOME/.cache/nix/comma-runcounts"
+        else
+          declare -A usage_counts
+        fi
+
+        if test -v "usage_counts[$attr]"; then
+          (( usage_counts[$attr]++ ))
+          if [ "''${usage_counts[$attr]}" -gt 4 ]; then
+            unset "usage_counts[$attr]"
+            nix profile install "$branch#$attr"
+          fi
+        else
+          usage_counts[$attr]=1
+        fi
+
+        declare -p usage_counts > "$HOME/.cache/nix/comma-runcounts"
+        unset usage_counts
+
         __nix shell "$branch#$attr" -c sh -c "$argv0 $*; >&2 exec zsh"
       fi
     }

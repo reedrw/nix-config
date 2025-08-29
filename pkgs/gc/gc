@@ -1,11 +1,20 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p nix
+#! nix-shell -i bash -p nix jq
 # vim: filetype=sh
 
 gc() {
   if type -P lorri &> /dev/null; then
     lorri gc rm
   fi
+
+  nix profile list --json \
+    | jq -r '.elements | to_entries[] | "\(.key)"' \
+    | while read -r profile; do
+    if [[ "$profile" != "home-manager-path" ]]; then
+      nix profile remove "$profile"
+    fi
+  done
+
   nix-collect-garbage "$@"
 }
 
