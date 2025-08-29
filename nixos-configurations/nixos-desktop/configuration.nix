@@ -41,8 +41,8 @@
     rocmOverrideGfx = "10.3.0"; # gfx1030
 
     environmentVariables = {
-      # OLLAMA_FLASH_ATTENTION = "1";
-      OLLAMA_CONTEXT_LENGTH = "8192";
+      OLLAMA_FLASH_ATTENTION = "1";
+      OLLAMA_CONTEXT_LENGTH = "16384";
     };
     openFirewall = true;
   };
