@@ -21,6 +21,7 @@
     "/home/reed/.cache/mozilla",
     "/home/reed/.cache/nix",
     "/home/reed/.cache/pre-commit",
+    "/home/reed/.cache/pypoetry",
     "/home/reed/.cache/ranger",
     "/home/reed/.config/Bitwarden",
     "/home/reed/.config/Bitwarden CLI",
