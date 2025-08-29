@@ -73,7 +73,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    btdu
     ldp
     xdg-desktop-portal
   ];

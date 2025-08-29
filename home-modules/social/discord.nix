@@ -5,7 +5,6 @@
 
   home.packages = with pkgs; [
     vesktop
-    discord
   ];
 
   xdg.configFile = {

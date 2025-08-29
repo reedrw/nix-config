@@ -7,7 +7,6 @@ let
     git       # version control
     gh        # github cli
     moreutils # more scripting tools
-    nix-tree  # nix derivation graph browser
     pin       # easy nix package pinning
     ripgrep   # recursive grep
     screen    # terminal multiplexer

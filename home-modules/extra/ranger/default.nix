@@ -29,7 +29,6 @@ let
     imagemagick
     jq
     libarchive
-    libreoffice
     loupe
     mediainfo
     poppler_utils
@@ -97,8 +96,6 @@ in
     '';
 
     "ranger/rifle.conf".text = ''
-      ext doc, flag f = libreoffice "$@"
-      ext docx, flag f = libreoffice "$@"
       ext flac = mpv --force-window -- "$@"
       ext wav =  mpv --force-window -- "$@"
       ext ogg =  mpv --force-window -- "$@"

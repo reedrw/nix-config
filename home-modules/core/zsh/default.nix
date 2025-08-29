@@ -294,12 +294,10 @@ in
       tree = "ls --tree";
       x = "exit";
     } // lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
-      bmount = "bashmount";
       df = "pydf";
       ls = "eza -lh --git -s type";
       ping = "prettyping --nolegend";
       taskdone = "libnotify 'Task finished.' && exit";
-      watch = "viddy";
     };
   };
 }

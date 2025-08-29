@@ -3,8 +3,6 @@
 {
   options.stylix.targets.steam.enable = lib.mkEnableOption "Enable AdwSteamGtk theme";
   config = lib.mkIf config.stylix.targets.steam.enable {
-    home.packages = [ pkgs.adwsteamgtk ];
-
     home.activation = let
       applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
         # This file gets copied with read-only permission from the nix store
