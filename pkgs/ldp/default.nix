@@ -1,5 +1,5 @@
 { writeShellScriptBin
-, flakePath
+, flakePath ? ""
 }:
 
 (writeShellScriptBin "ldp" (''

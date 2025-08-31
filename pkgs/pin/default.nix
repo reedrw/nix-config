@@ -1,4 +1,4 @@
-{ writeNixShellScript, flakePath, stdenv }:
+{ writeNixShellScript, flakePath ? "", stdenv }:
 
 (writeNixShellScript "pin" (builtins.readFile ./pin)).overrideAttrs (old: {
   buildCommand = old.buildCommand + ''
