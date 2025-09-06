@@ -107,7 +107,12 @@ main(){
       if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
         echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
       fi
+
       sudo nixos-rebuild switch --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
+
+      if test -f "$ZDOTDIR/.zcompdump"; then
+        rm "$ZDOTDIR/.zcompdump"
+      fi
       ;;
   esac
 }

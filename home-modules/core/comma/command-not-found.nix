@@ -89,7 +89,7 @@ in
           (( usage_counts[$attr]++ ))
           if [ "''${usage_counts[$attr]}" -gt 4 ]; then
             unset "usage_counts[$attr]"
-            nix profile install "$branch#$attr"
+            __nix profile install "$branch#$attr"
           fi
         else
           usage_counts[$attr]=1
@@ -112,11 +112,21 @@ in
     }
 
     __nix(){
-      if [[ $1 == shell ]]; then
-        ${pkgs.any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
-      else
-        command nix "$@"
-      fi
+      case $1 in
+        shell)
+          ${pkgs.any-nix-shell}/bin/.any-nix-wrapper zsh "$@"
+          ;;
+        profile)
+          command nix "$@"
+
+          if test -f "$ZDOTDIR/.zcompdump"; then
+            command rm "$ZDOTDIR/.zcompdump"
+          fi
+          ;;
+        *)
+          command nix "$@"
+          ;;
+      esac
     }
 
     nix() {

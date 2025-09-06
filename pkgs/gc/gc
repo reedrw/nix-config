@@ -12,6 +12,10 @@ gc() {
     | while read -r profile; do
     if [[ "$profile" != "home-manager-path" ]]; then
       nix profile remove "$profile"
+
+      if test -f "$ZDOTDIR/.zcompdump"; then
+        rm "$ZDOTDIR/.zcompdump"
+      fi
     fi
   done
 

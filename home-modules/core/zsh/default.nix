@@ -74,7 +74,8 @@ in
       (mkZshPlugin { pkg = zsh-autosuggestions; })
       (mkZshPlugin {
         pkg = zsh-fzf-tab;
-        file = "fzf-tab.plugin.zsh"; })
+        file = "fzf-tab.plugin.zsh";
+      })
       (mkZshPlugin { pkg = zsh-syntax-highlighting; })
     ] ++ lib.attrsets.mapAttrsToList (name: src: {
       inherit name src;
@@ -85,25 +86,27 @@ in
       save = 99999;
       size = 99999;
     };
+    envExtra = ''
+      if [[ "$PROFILE_STARTUP" == true ]]; then
+        zmodload zsh/zprof
+        PS4=$'%D{%M%S%.} %N:%i> '
+        exec 3>&2 2>$HOME/startlog.$$
+        setopt xtrace prompt_subst
+      fi
+    '';
+    completionInit = ''
+      autoload -U compinit && compinit -C
+    '';
     initContent =
     with pkgs;
     with config.lib.stylix.colors;
     ''
-      while read -r i; do
-        autoload -Uz "$i"
-      done << EOF
-        add-zsh-hook
-        colors
-        down-line-or-beginning-search
-        up-line-or-beginning-search
-      EOF
+      autoload -Uz add-zsh-hook
+      autoload -Uz colors
+      autoload -Uz down-line-or-beginning-search
+      autoload -Uz up-line-or-beginning-search
 
-      while read -r i; do
-        setopt "$i"
-      done << EOF
-        interactivecomments
-        histverify
-      EOF
+      setopt histverify
 
       unsetopt nomatch
 
@@ -273,6 +276,11 @@ in
           command touch "$file";
         done
       }
+
+      if [[ "$PROFILE_STARTUP" == true ]]; then
+        unsetopt xtrace
+        exec 2>&3 3>&-; zprof > ~/zshprofile$(date +'%s')
+      fi
     '';
     shellAliases = {
       ":q" = "exit";
