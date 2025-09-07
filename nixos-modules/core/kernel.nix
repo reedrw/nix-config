@@ -17,6 +17,7 @@
       "usbcore.old_scheme_first" = 1;
     };
     extraModprobeConfig = ''
+      options cfg80211 ieee80211_regdom=US
       options nct6683 force=1
       options kvm_amd avic=1
     '';
