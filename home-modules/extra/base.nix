@@ -11,6 +11,7 @@ let
     ripgrep   # recursive grep
     screen    # terminal multiplexer
     wget      # download utility
+    progress  # progress viewer
     inputs.tx-calculator.packages.${pkgs.system}.tx-calculator
 
     # global aliases
