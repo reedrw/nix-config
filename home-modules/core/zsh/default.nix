@@ -304,8 +304,6 @@ in
     } // lib.mapAttrs (n: v: pkgs.matchPackageCommand v) {
       df = "pydf";
       ls = "eza -lh --git -s type";
-      ping = "prettyping --nolegend";
-      taskdone = "libnotify 'Task finished.' && exit";
     };
   };
 }
