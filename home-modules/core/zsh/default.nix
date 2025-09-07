@@ -77,9 +77,14 @@ in
         file = "fzf-tab.plugin.zsh";
       })
       (mkZshPlugin { pkg = zsh-syntax-highlighting; })
-    ] ++ lib.attrsets.mapAttrsToList (name: src: {
-      inherit name src;
-    }) sources;
+      (mkZshPlugin {
+        pkg = {
+          pname = "zsh-simple-abbreviations";
+          src = sources.zsh-simple-abbreviations;
+        };
+        file = "zsh-simple-abbreviations.zsh";
+      })
+    ];
     autocd = true;
     defaultKeymap = "emacs";
     history = {

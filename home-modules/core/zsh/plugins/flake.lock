@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "root": {
+      "inputs": {
+        "zsh-simple-abbreviations": "zsh-simple-abbreviations"
+      }
+    },
+    "zsh-simple-abbreviations": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1755728626,
+        "narHash": "sha256-HlKoVSeff1XlvVAm/i6tshCHQqpNierF/Eh89MZtoVY=",
+        "owner": "DeveloperC286",
+        "repo": "zsh-simple-abbreviations",
+        "rev": "c3353f379a01dc3498b3abd4b859763ea2f3742a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DeveloperC286",
+        "repo": "zsh-simple-abbreviations",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
