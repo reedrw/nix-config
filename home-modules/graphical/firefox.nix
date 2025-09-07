@@ -49,7 +49,7 @@ in
     # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
     # (because private trackers block mullvad).
     package = with pkgs; emptyDirectory // {
-      override = _: wrapEnv (mullvadExclude myFirefox) {
+      override = _: wrapEnv myFirefox {
         # Enable XInput2 for high-resolution mouse scrolling
         MOZ_USE_XINPUT2 = "1";
       };
