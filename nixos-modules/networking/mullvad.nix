@@ -38,4 +38,11 @@
     name = "mullvad-exclude-proxy";
     user = "reed";
   }];
+
+  systemd.services.autossh-mullvad-exclude-proxy = {
+    after = [
+      "sshd.service"
+      "mullvad-daemon.service"
+    ];
+  };
 }
