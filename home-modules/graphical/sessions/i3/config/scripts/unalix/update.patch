@@ -1,5 +1,5 @@
 diff --git a/unalix/package_data/ca/ca-bundle.crt b/unalix/package_data/ca/ca-bundle.crt
-index 632fc24..0dee453 100644
+index 632fc24..f04c551 100644
 --- a/unalix/package_data/ca/ca-bundle.crt
 +++ b/unalix/package_data/ca/ca-bundle.crt
 @@ -1,89 +1,25 @@
@@ -7,7 +7,7 @@ index 632fc24..0dee453 100644
  ## Bundle of CA Root Certificates
  ##
 -## Certificate data from Mozilla as of: Tue Feb  1 04:12:05 2022 GMT
-+## Certificate data from Mozilla as of: Tue Aug 12 03:12:01 2025 GMT
++## Certificate data from Mozilla as of: Tue Sep  9 03:12:01 2025 GMT
 +##
 +## Find updated versions here: https://curl.se/docs/caextract.html
  ##
@@ -25,7 +25,7 @@ index 632fc24..0dee453 100644
 -## Conversion done with mk-ca-bundle.pl version 1.28.
 -## SHA256: 187ef9dc231135324fe78830cf4462f1ecdeab3e6c9d5e38d623391e88dc5d3c
 +## Conversion done with mk-ca-bundle.pl version 1.29.
-+## SHA256: c185b859c19b05f104c50e1b0b2a6c775149a1d9bb731d414d73b1722892a66c
++## SHA256: 0078e6bdd280fd89e1b883174387aae84b3eae2ee263416a5f8a14ee7f179ae9
  ##
  
  
