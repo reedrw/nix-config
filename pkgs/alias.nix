@@ -6,7 +6,7 @@ in
 {
   nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
-    patches = [ ./nix.patch ];
+    patches = [ ./patches/nix/compadd.patch ];
   });
 
   nixos-option = pkgs.nixos-option.override {
