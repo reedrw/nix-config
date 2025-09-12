@@ -11,25 +11,11 @@
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  # services.keyd = {
-  #   enable = true;
-  #   keyboards = {
-  #     default = {
-  #       ids = [ "*" ];
-  #       settings = {
-  #         main = {
-  #           capslock = "overload(control, esc)";
-  #         };
-  #         "shift" = {
-  #           esc = "~";
-  #         };
-  #         # "meta" = {
-  #         #   space = "overload(leftmeta, rightmeta)";
-  #         # };
-  #       };
-  #     };
-  #   };
-  # };
+  services.autossh.sessions = [{
+    name = "updog-tuns";
+    extraArguments = "-R updog:80:localhost:9090 tuns.sh";
+    username = "reed";
+  }];
 
   services.ollama = {
     enable = true;
