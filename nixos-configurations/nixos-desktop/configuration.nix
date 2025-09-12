@@ -14,7 +14,7 @@
   services.autossh.sessions = [{
     name = "updog-tuns";
     extraArguments = "-R updog:80:localhost:9090 tuns.sh";
-    username = "reed";
+    user = "reed";
   }];
 
   services.ollama = {
