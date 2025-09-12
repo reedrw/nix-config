@@ -22,4 +22,8 @@ in
   bottles = pkgs.bottles.override {
     removeWarningPopup = true;
   };
+
+  updog = pkgs.updog.overrideAttrs (old: {
+    patches = [ ./patches/updog/username.patch ];
+  });
 }

@@ -1,0 +1,23 @@
+diff --git a/updog/__main__.py b/updog/__main__.py
+index 63d5e06..1359948 100644
+--- a/updog/__main__.py
++++ b/updog/__main__.py
+@@ -31,7 +31,8 @@ def parse_arguments():
+                              '[Default=.]')
+     parser.add_argument('-p', '--port', type=int, default=9090,
+                         help='Port to serve [Default=9090]')
+-    parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
++    parser.add_argument('--password', type=str, default='', help='Use a password to access the page.')
++    parser.add_argument('--username', type=str, default='', help='Use a username to access the page.')
+     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
+     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
+
+@@ -153,7 +154,7 @@ def main():
+
+     # Password functionality is without username
+     users = {
+-        '': generate_password_hash(args.password)
++        f'{args.username}': generate_password_hash(args.password)
+     }
+
+     @auth.verify_password
