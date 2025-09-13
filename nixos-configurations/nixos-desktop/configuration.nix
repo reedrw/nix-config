@@ -11,12 +11,6 @@
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  services.autossh.sessions = [{
-    name = "updog-tuns";
-    extraArguments = "-R updog:80:localhost:9090 tuns.sh";
-    user = "reed";
-  }];
-
   services.ollama = {
     enable = true;
     package = pkgs-unstable.ollama;

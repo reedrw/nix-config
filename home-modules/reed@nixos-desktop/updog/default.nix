@@ -1,11 +1,24 @@
 { pkgs, lib, config, ... }:
 
 {
-  systemd.user.services = config.lib.functions.mkSimpleService "updog" (
-    builtins.readFile ./updog.sh |>
-    pkgs.writeNixShellScript "updog" |>
-    lib.getExe
-  );
+  systemd.user.services = with config.lib.functions;
+  lib.mergeAttrsList [
+    (mkSimpleService "updog" (
+      builtins.readFile ./updog.sh |>
+      pkgs.writeNixShellScript "updog" |>
+      lib.getExe
+    ))
+    (lib.recursiveUpdate
+      (mkSimpleService "autossh-updog-tuns" (
+        pkgs.writeShellScript "autossh-updog-tuns" ''
+          ${lib.getExe pkgs.autossh} -M 0 -R updog:80:localhost:9090 tuns.sh
+        ''
+      )) {
+        autossh-updog-tuns.Service.ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
+      }
+    )
+  ];
+
 
   home.packages = with pkgs; [
     updog
