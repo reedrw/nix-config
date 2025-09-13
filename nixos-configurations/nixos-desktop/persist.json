@@ -79,6 +79,7 @@
     "/var/lib/private/ollama",
     "/var/lib/systemd",
     "/var/lib/tailscale",
-    "/var/lib/thelounge"
+    "/var/lib/thelounge",
+    "/var/tmp"
   ]
 }
