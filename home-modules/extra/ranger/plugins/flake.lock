@@ -3,11 +3,11 @@
     "ranger-archives": {
       "flake": false,
       "locked": {
-        "lastModified": 1713454058,
-        "narHash": "sha256-QJu5G2AYtwcaE355yhiG4wxGFMQvmBWvaPQGLsi5x9Q=",
+        "lastModified": 1758366477,
+        "narHash": "sha256-HEJ+8KlG++PK0vVpEYptbyuPZAKllX5PeyaTBKcf+8M=",
         "owner": "maximtrp",
         "repo": "ranger-archives",
-        "rev": "b4e136b24fdca7670e0c6105fb496e5df356ef25",
+        "rev": "0b1cfa9a77412c3b51da5b1b213c672227f9fbb4",
         "type": "github"
       },
       "original": {
