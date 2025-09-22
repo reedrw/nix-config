@@ -63,11 +63,6 @@
     users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
   };
 
-  custom.aagl = {
-    enable = true;
-    mullvad-exclude = true;
-  };
-
   custom.steam = {
     enable = true;
     mullvad-exclude = false;
