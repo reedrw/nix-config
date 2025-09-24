@@ -39,7 +39,7 @@ jobs:
         sudo rm -rfv /usr/local/.ghcup || true
 
     - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v19
+      uses: DeterminateSystems/nix-installer-action@v20
       with:
         source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
         logger: pretty
