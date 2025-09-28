@@ -10,6 +10,8 @@ let
       LD_PRELOAD = "$LD_PRELOAD:/run/current-system/sw/lib/libtcmalloc_minimal.so";
     };
   };
+  optionalApply = bool: f: x:
+    if bool then f x else x;
 in
 {
   options.custom.steam = {
@@ -25,12 +27,12 @@ in
   config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
-      package = steam-custom;
-      # package = with pkgs; emptyDirectory // {
-      #   override = (x: lib.optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
-      #     run = steam-custom.run;
-      #   });
-      # };
+      # package = steam-custom;
+      package = with pkgs; emptyDirectory // {
+        override = (x: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
+          run = steam-custom.run;
+        });
+      };
     };
     environment.systemPackages = let
       # games to make available on the command line

@@ -65,7 +65,7 @@
 
   custom.steam = {
     enable = true;
-    mullvad-exclude = false;
+    mullvad-exclude = true;
   };
 
   services.btrfs.autoScrub.enable = true;
