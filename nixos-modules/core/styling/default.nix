@@ -15,8 +15,8 @@ in
       autoImport = false;
     };
     polarity = "dark";
-    base16Scheme = "${schemes}/base16/chalk.yaml";
     image = ./wallpaper.png;
+    base16Scheme = "${schemes}/base16/ayu-dark.yaml";
   };
 
   stylix.fonts = {
