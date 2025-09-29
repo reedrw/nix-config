@@ -1,4 +1,4 @@
-rec {
+let self = {
   description = "a flake for my NixOS and home-manager configs";
 
   # {{{ Inputs
@@ -95,11 +95,11 @@ rec {
       ];
 
       systems = [ "x86_64-linux" ];
-      _module.args = { inherit nixConfig; };
+      _module.args = { inherit (self) nixConfig; };
     };
 
     lib = nixpkgs.lib;
-  in lib.fix (lib.foldl' (lib.flip lib.extends) (self: flake) [
+  in lib.fix (lib.foldl' (lib.flip lib.extends) (_: flake) [
     (import ./repo/passInOsConfig.nix inputs)
   ]);
-}
+}; in self

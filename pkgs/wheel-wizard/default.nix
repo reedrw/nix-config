@@ -1,13 +1,13 @@
 { fetchFromGitHub, buildDotnetModule, dotnetCorePackages, ... }:
 
-buildDotnetModule rec {
+buildDotnetModule (self: {
   pname = "wheel-wizard";
   version = "2.3.3";
 
   src = fetchFromGitHub {
     owner = "TeamWheelWizard";
     repo = "WheelWizard";
-    rev = version;
+    rev = self.version;
     sha256 = "sha256-DuEI6bmvNP6wRuZX9Do0FGDsu80ldy0SCefBk6gqT9s=";
   };
 
@@ -28,4 +28,4 @@ buildDotnetModule rec {
   meta = {
     mainProgram = "WheelWizard";
   };
-}
+})
