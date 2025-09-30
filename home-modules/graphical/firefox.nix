@@ -1,6 +1,6 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, ... }:
 let
-  myFirefox = with pkgs; (wrapFirefox firefox-esr-unwrapped {
+  myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;
@@ -34,8 +34,6 @@ let
       defaultPref("browser.sessionstore.restore_tabs_lazily", false);
       defaultPref("browser.sessionstore.restore_on_demand", false);
     '';
-  }).override {
-    nativeMessagingHosts = [ pkgs-unstable.firefoxpwa ];
   };
 in
 {
@@ -45,19 +43,13 @@ in
     profileNames = [ "default" ];
   };
 
-  home.packages = [ pkgs-unstable.firefoxpwa ];
+  home.sessionVariables = {
+    MOZ_USE_XINPUT2 = "1";
+  };
 
   programs.firefox = {
     enable = true;
-    # Exclude firefox from mullvad. I use the FoxyProxy extension
-    # with SSH SOCKS5 proxy to localhost to manage proxy in firefox
-    # (because private trackers block mullvad).
-    package = with pkgs; emptyDirectory // {
-      override = _: wrapEnv myFirefox {
-        # Enable XInput2 for high-resolution mouse scrolling
-        MOZ_USE_XINPUT2 = "1";
-      };
-    };
+    package = myFirefox;
 
     profiles."default" = {
       name = "default";
