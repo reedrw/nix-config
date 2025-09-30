@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 let
-  myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
+  myFirefox = with pkgs; (wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
       CaptivePortal = false;
       DisableFirefoxStudies = true;
@@ -34,6 +34,8 @@ let
       defaultPref("browser.sessionstore.restore_tabs_lazily", false);
       defaultPref("browser.sessionstore.restore_on_demand", false);
     '';
+  }).override {
+    nativeMessagingHosts = [ pkgs-unstable.firefoxpwa ];
   };
 in
 {
@@ -42,6 +44,8 @@ in
     enable = true;
     profileNames = [ "default" ];
   };
+
+  home.packages = [ pkgs-unstable.firefoxpwa ];
 
   programs.firefox = {
     enable = true;
