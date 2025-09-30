@@ -36,7 +36,11 @@ let self = {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lix.url = "git+https://git.lix.systems/lix-project/lix.git";
+    lix = {
+      url = "git+https://git.lix.systems/lix-project/lix.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
+    };
 
     # add pipe operator
     # wait for new release (after dec 2024)
