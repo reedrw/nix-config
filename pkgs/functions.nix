@@ -59,6 +59,15 @@ in
     else lib.warn "versionConditionalOverride: ${package.name} is already at version ${package.version}. No override applied."
          package;
 
+  # writeShellApplication :: Either Set Function -> Package
+  # #########################################################
+  # Wrapper around pkgs.writeShellApplication to allow (self: {...})
+  # in place of `rec`
+  writeShellApplication = a:
+    if builtins.typeOf a == "lambda"
+    then pkgs.writeShellApplication (lib.fix a)
+    else pkgs.writeShellApplication a;
+
   # matchPackage :: String -> Package
   ########################################
   # Given a package name, return the corresponding package from nixpkgs.

@@ -1,8 +1,8 @@
 { pkgs, lib, rootAbsolute, ...}:
 let
-  updateScript = pkgs.writeShellApplication rec {
+  updateScript = pkgs.writeShellApplication (self: {
     name = "updateScript";
-    meta.mainProgram = name;
+    meta.mainProgram = self.name;
     runtimeInputs = with pkgs; [ git ldp coreutils ];
     text = ''
       set -x
@@ -26,7 +26,7 @@ let
         fi
       popd
     '';
-  };
+  });
 in
 {
   systemd.timers.autoUpdate = {
