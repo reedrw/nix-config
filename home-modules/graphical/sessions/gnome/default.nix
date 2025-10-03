@@ -6,7 +6,7 @@ in
   imports = builtins.readDir ./.
     |> (x: builtins.removeAttrs x ["default.nix"])
     |> builtins.attrNames
-    |> map (x: "${./.}/${x}");
+    |> map (x: ./${x});
 
   home.packages = lib.optionals gnomeEnabled (with pkgs; [
     dconf-editor
