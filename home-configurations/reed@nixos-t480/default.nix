@@ -2,7 +2,8 @@
 
 {
   imports = [
-    ./reed.nix
+    ../reed.nix
+    ./kitty.nix
     ezModules.core
     ezModules.extra
     ezModules.graphical
@@ -10,6 +11,5 @@
     ezModules.social
     ezModules'.games.minecraft
     ezModules'.games.steam
-    ezModules."reed@nixos-t480"
   ];
 }
