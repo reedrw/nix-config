@@ -66,6 +66,7 @@
     "/root/.local/share/nix",
     "/var/db/sudo",
     "/var/lib/bluetooth",
+    "/var/lib/cups",
     "/var/lib/docker",
     "/var/lib/jellyfin",
     "/var/lib/libvirt",
