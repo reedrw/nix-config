@@ -34,6 +34,7 @@ let
     poppler_utils
     tmux
     unrar
+    p7zip
     unzip
     xdragon
     zip
