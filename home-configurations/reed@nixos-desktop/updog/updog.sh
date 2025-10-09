@@ -1,9 +1,15 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p updog openssl
 
-UPDOG_PASSWORD="$(openssl rand -hex 16)"
+set -x
 
-echo "$UPDOG_PASSWORD" > /tmp/updog-password
+passwordFile="$HOME/.cache/updog-password"
+if [[ -f "$passwordFile" && -s "$passwordFile" ]]; then
+  UPDOG_PASSWORD="$(cat "$passwordFile")"
+else
+  UPDOG_PASSWORD="$(openssl rand -hex 16)"
+  echo "$UPDOG_PASSWORD" > "$passwordFile"
+fi
 
 updog \
   --directory ~/files/share \

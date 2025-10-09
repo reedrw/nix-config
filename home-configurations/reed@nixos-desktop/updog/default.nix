@@ -24,8 +24,8 @@
     updog
     (writeShellScriptBin "shareurl" ''
       UPDOG_PASSWORD=""
-      if test -f /tmp/updog-password; then
-        UPDOG_PASSWORD="$(cat /tmp/updog-password)"
+      if test -f ~/.cache/updog-password; then
+        UPDOG_PASSWORD="$(cat ~/.cache/updog-password)"
       else
         echo "password file missing"
         exit 1
