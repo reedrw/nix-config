@@ -11,7 +11,12 @@
     (lib.recursiveUpdate
       (mkSimpleService "autossh-updog-tuns" (
         pkgs.writeShellScript "autossh-updog-tuns" ''
-          ${lib.getExe pkgs.autossh} -M 0 -R updog:80:localhost:9090 tuns.sh
+          set -x
+          autossh="${lib.getExe pkgs.autossh}"
+          if [[ -f /run/wrappers/bin/mullvad-exclude ]]; then
+            autossh="/run/wrappers/bin/mullvad-exclude $autossh"
+          fi
+          $autossh -M 0 -R updog:80:localhost:9090 tuns.sh
         ''
       )) {
         autossh-updog-tuns.Service.ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
