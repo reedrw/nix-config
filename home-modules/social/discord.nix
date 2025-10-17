@@ -1,14 +1,45 @@
 { pkgs, ... }:
-
+let
+  nixcord = (pkgs.importFlake ./sources).inputs.nixcord;
+in
 {
-  stylix.targets.vesktop-clienttheme.enable = true;
-
-  home.packages = with pkgs; [
-    vesktop
+  imports = [
+    nixcord.homeModules.nixcord
   ];
 
-  xdg.configFile = {
-    "discord/settings.json".source = ./discord-settings.json;
-    "discordcanary/settings.json".source = ./discord-settings.json;
+  programs.nixcord = {
+    enable = true;
+    discord = {
+      autoscroll.enable = true;
+    };
+    config.plugins = {
+      youtubeAdblock.enable = true;
+      betterUploadButton.enable = true;
+      clearURLs.enable = true;
+      fakeNitro.enable = true;
+      iLoveSpam.enable = true;
+      loadingQuotes.enable = true;
+      messageLinkEmbeds.enable = true;
+      noBlockedMessages.enable = true;
+      normalizeMessageLinks.enable = true;
+      silentTyping = {
+        enable = true;
+        showIcon = true;
+        contextMenu = true;
+        isEnabled = false;
+      };
+      translate.enable = true;
+      typingIndicator.enable = true;
+      unindent.enable = true;
+      voiceMessages.enable = true;
+      fixImagesQuality.enable = true;
+      fixYoutubeEmbeds.enable = true;
+      betterSettings.enable = true;
+      replaceGoogleSearch = {
+        enable = true;
+        customEngineName = "DuckDuckGo";
+        customEngineURL = "https://duckduckgo.com/";
+      };
+    };
   };
 }

@@ -76,8 +76,8 @@
                                                             "percent": 0.5,
                                                             "swallows": [
                                                                {
-                                                                    "class": "^vesktop$",
-                                                                    "title": "^(?!.*vesktop).*$"
+                                                                    "class": "^discord$",
+                                                                    "title": "^(?!.*discord).*$"
                                                                }
                                                             ],
                                                             "type": "con"

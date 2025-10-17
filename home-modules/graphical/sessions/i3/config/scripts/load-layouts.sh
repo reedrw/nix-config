@@ -14,7 +14,7 @@ launchPrograms(){
       (firefox &)
     ;;
     "2" )
-      (vesktop &)
+      (discord &)
       (signal-desktop &)
       (Telegram &)
     ;;

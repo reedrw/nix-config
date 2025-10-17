@@ -145,6 +145,7 @@ in
           "Signal"
           "TelegramDesktop"
           "Zathura"
+          "discord"
           "easyeffects"
           "firefox"
           "kitty"
