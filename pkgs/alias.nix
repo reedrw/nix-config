@@ -4,6 +4,8 @@ let
   lib = pkgs.lib;
 in
 {
+  gh = pkgs.pkgs-unstable.gh;
+
   nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
     patches = [ ./patches/nix/compadd.patch ];
