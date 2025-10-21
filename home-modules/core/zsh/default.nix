@@ -1,6 +1,6 @@
-{ config, osConfig, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, util, ... }:
 let
-  sources = (pkgs.importFlake ./plugins).inputs or {};
+  sources = (util.importFlake ./plugins).inputs or {};
 in
 {
   programs.direnv = {

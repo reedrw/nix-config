@@ -1,23 +1,22 @@
-{ nixpkgs-options, nixConfig, root, rootAbsolute, inputs, pkgs, config, lib, ... }:
+{ util, rootAbsolute, inputs, pkgs, config, lib, ... }:
 
 {
   # inherit (nixpkgs-options) nixpkgs;
   nixpkgs = {
-    inherit (nixpkgs-options.nixpkgs) config;
-    overlays = nixpkgs-options.nixpkgs.overlays ++ [
+    inherit (util.nixpkgs-options.nixpkgs) config;
+    overlays = util.nixpkgs-options.nixpkgs.overlays ++ [
       (final: prev: { flakePath = rootAbsolute; })
     ];
   };
 
   # Must be applied, not at flake level, so that it inherits per-system
   # nixpkgs overlays and configuration.
-  _module.args.pkgs-unstable = import inputs.unstable {
-    inherit (pkgs) system config;
+  _module.args = {
+    pkgs-unstable = import inputs.unstable {
+      inherit (pkgs) system config;
+    };
+    rootAbsolute = util.rootAbsolute' config.networking.hostName;
   };
-
-  _module.args.rootAbsolute =
-    builtins.readFile "${root}/nixos-configurations/${config.networking.hostName}/.flake-path"
-      |> lib.removeSuffix "\n";
 
   environment.etc = lib.mapAttrs' (n: v:
     lib.nameValuePair "nix/inputs/${n}" <| { source = v.outPath; }
@@ -28,8 +27,8 @@
       auto-optimise-store = true;
       builders-use-substitutes = true;
       experimental-features = [ "flakes" "nix-command" "pipe-operator" ];
-      extra-substituters = nixConfig.extra-substituters ++ [ ];
-      extra-trusted-public-keys = nixConfig.extra-trusted-public-keys ++ [
+      extra-substituters = util.nixConfig.extra-substituters ++ [ ];
+      extra-trusted-public-keys = util.nixConfig.extra-trusted-public-keys ++ [
         "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
       ];
       repl-overlays = [

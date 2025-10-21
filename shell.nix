@@ -1,4 +1,4 @@
-{ pkgs ? (import ./repo/compat.nix).pkgsForSystem (import ./repo/compat.nix).inputs.nixpkgs builtins.currentSystem, extraArgs ? {} }:
+{ pkgs ? (import ./repo/compat.nix).legacyPackages."${builtins.currentSystem}".util.pkgsForSystem (import ./repo/compat.nix).inputs.nixpkgs builtins.currentSystem, extraArgs ? {} }:
 
 with pkgs;
 mkShell ({

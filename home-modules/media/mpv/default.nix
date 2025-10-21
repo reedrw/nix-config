@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, util, ... }:
 
 let
-  sources = (pkgs.importFlake ./plugins).inputs;
+  sources = (util.importFlake ./plugins).inputs;
 
   mkPlugin = path: let
     name = builtins.baseNameOf path;

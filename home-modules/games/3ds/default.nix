@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, util, ... }:
 let
-  tlaterpkgs = (pkgs.importFlake ./sources).inputs.tlaterpkgs;
+  tlaterpkgs = (util.importFlake ./sources).inputs.tlaterpkgs;
 in
 {
   home.packages = (with pkgs.nur.repos.ihaveamac; [

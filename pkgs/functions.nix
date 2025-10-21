@@ -136,7 +136,7 @@ in
       unwrappedScript = pkgs.writeScript name ''
         #! ${pkgs.bun}/bin/bun
         ${lib.pipe text [
-	  (lib.splitString "\n")
+          (lib.splitString "\n")
           lib.tail
           (lib.concatStringsSep "\n")
         ]}
@@ -217,11 +217,5 @@ in
     fi
   '');
 
-  # importFlake :: Path -> AttrSet
-  ########################################################
-  # Import a flake using lix flake compat.
-  importFlake = path: (import inputs.flake-compat {
-    src = path;
-    useBuiltinsFetchTree = true;
-  }).defaultNix;
+  util = inputs.self.legacyPackages.${pkgs.system}.util;
 }

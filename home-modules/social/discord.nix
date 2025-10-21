@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ util, ... }:
 let
-  nixcord = (pkgs.importFlake ./sources).inputs.nixcord;
+  nixcord = (util.importFlake ./sources).inputs.nixcord;
 in
 {
   imports = [

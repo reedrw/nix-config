@@ -1,4 +1,4 @@
-{ config, lib, versionSuffix, ... }:
+{ config, lib, util, ... }:
 let
   cfg = config.custom.boot.keyfile-unlock;
 in
@@ -25,14 +25,14 @@ in
       "no-keyfile-unlock".configuration = {
         boot = {
           initrd.luks.devices."${cfg.device}".keyFile = null;
-          loader.grub.configurationName = "No keyfile unlock - ${versionSuffix}";
+          loader.grub.configurationName = "No keyfile unlock - ${util.versionSuffix}";
         };
       };
     } else {
       "keyfile-unlock".configuration = {
         boot = {
           initrd.luks.devices."${cfg.device}".keyFile = cfg.keyFile;
-          loader.grub.configurationName = "Keyfile unlock - ${versionSuffix}";
+          loader.grub.configurationName = "Keyfile unlock - ${util.versionSuffix}";
         };
       };
     };

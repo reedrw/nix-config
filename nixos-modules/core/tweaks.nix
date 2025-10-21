@@ -1,8 +1,8 @@
-{ config, pkgs, lib, versionSuffix, ... }:
+{ config, pkgs, lib, util, ... }:
 
 {
-  boot.loader.grub.configurationName = lib.mkDefault "Default - ${versionSuffix}";
-  environment.etc."nixos/tree-version".text = versionSuffix;
+  boot.loader.grub.configurationName = lib.mkDefault "Default - ${util.versionSuffix}";
+  environment.etc."nixos/tree-version".text = util.versionSuffix;
   services.journald.extraConfig = "SystemMaxUse=500M";
   services.udisks2.enable = true;
 

@@ -1,6 +1,6 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, util, ... }:
 let
-  sources = (pkgs.importFlake ./plugins).inputs;
+  sources = (util.importFlake ./plugins).inputs;
 
   ccat = with pkgs; writeShellScriptBin "bat" ''
     ${lib.getExe bat} --color=always --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"

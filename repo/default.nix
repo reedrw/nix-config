@@ -12,14 +12,26 @@ let
     };
   };
 
-  pkgsForSystem = src: system:
-    import src (nixpkgs-options.nixpkgs // {
-        inherit system;
-    });
-
   root = ../.;
 
   lib = inputs.nixpkgs.lib;
+
+  util = { inherit nixpkgs-options nixConfig versionSuffix root; } // {
+    importFlake = path: (import inputs.flake-compat {
+      src = path;
+      useBuiltinsFetchTree = true;
+    }).defaultNix;
+
+    pkgsForSystem = src: system:
+      import src (nixpkgs-options.nixpkgs // {
+          inherit system;
+      });
+
+    rootAbsolute' = hostName:
+      builtins.readFile "${root}/nixos-configurations/${hostName}/.flake-path"
+        |> lib.removeSuffix "\n";
+
+  };
 in
 {
   imports = [
@@ -30,7 +42,7 @@ in
     inherit root;
 
     globalArgs = {
-      inherit inputs nixpkgs-options nixConfig versionSuffix root;
+      inherit inputs util;
     };
 
     home.users = lib.genAttrs [
@@ -70,14 +82,11 @@ in
     };
   };
 
-  flake = {
-    inherit pkgsForSystem;
-  };
-
-  perSystem = { pkgs, lib, inputs', ... }: let
-    pkgs' = pkgsForSystem inputs.nixpkgs pkgs.system;
+  perSystem = { pkgs, lib, ... }: let
+    pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.system;
   in {
     packages = pkgs'.myPkgs;
+    legacyPackages = { inherit util; };
 
     devShells.default = import ../shell.nix {
       pkgs = pkgs';

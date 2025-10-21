@@ -1,7 +1,7 @@
-{ pkgs, inputs, ... }:
+{ pkgs, util, inputs, ... }:
 let
   # schemes is from https://github.com/tinted-theming/schemes
-  schemes = (pkgs.importFlake ./sources).inputs.schemes;
+  schemes = (util.importFlake ./sources).inputs.schemes;
 in
 {
   imports = [
