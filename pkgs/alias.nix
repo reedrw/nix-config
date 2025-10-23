@@ -4,7 +4,17 @@ let
   lib = pkgs.lib;
 in
 {
+  bottles = pkgs.bottles.override {
+    removeWarningPopup = true;
+  };
+
   gh = pkgs.pkgs-unstable.gh;
+
+  lockProgram = self.i3lock-fancy.override {
+    screenshotCommand = "${lib.getExe pkgs.maim} -u";
+  };
+
+  nil = inputs.nil.packages.x86_64-linux.nil;
 
   nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
@@ -13,16 +23,6 @@ in
 
   nixos-option = pkgs.nixos-option.override {
     nix = pkgs.nix;
-  };
-
-  nil = inputs.nil.packages.x86_64-linux.nil;
-
-  lockProgram = self.i3lock-fancy.override {
-    screenshotCommand = "${lib.getExe pkgs.maim} -u";
-  };
-
-  bottles = pkgs.bottles.override {
-    removeWarningPopup = true;
   };
 
   updog = pkgs.updog.overrideAttrs (old: {
