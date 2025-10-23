@@ -8,8 +8,6 @@ in
     removeWarningPopup = true;
   };
 
-  dolphin-emu = pkgs.pkgs-unstable.dolphin-emu;
-
   gh = pkgs.pkgs-unstable.gh;
 
   lockProgram = self.i3lock-fancy.override {

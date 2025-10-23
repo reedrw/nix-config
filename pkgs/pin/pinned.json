@@ -1,4 +1,12 @@
 {
+  "dolphin-emu": {
+    "2509": {
+      "rev": "c12c63cd6c5eb34c7b4c3076c6a99e00fcab86ec",
+      "sha256": "16bm7pjj38rmp7fvm8yc079yzyjrcyrnn454rq0xgf0qkkan512v",
+      "note": "https://github.com/NixOS/nixpkgs/issues/454802"
+    },
+    "default": "2509"
+  },
   "dunst": {
     "1.11.0": {
       "rev": "566e53c2ad750c84f6d31f9ccb9d00f823165550",
