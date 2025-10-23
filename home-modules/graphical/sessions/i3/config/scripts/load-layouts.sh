@@ -14,7 +14,7 @@ launchPrograms(){
       (firefox &)
     ;;
     "2" )
-      (discord &)
+      (mullvad-exclude discord &)
       (signal-desktop &)
       (Telegram &)
     ;;
