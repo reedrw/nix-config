@@ -53,6 +53,8 @@
     '';
   };
 
+  programs.nano.enable = false;
+
   # /bin/bash symlink
   system.activationScripts.create-bash-symlink = {
     deps = [ "binsh" "usrbinenv" ];
