@@ -197,6 +197,8 @@ in
       autocmd VimEnter * hi Folded cterm=bold ctermfg=DarkBlue ctermbg=none
       autocmd VimEnter * hi FoldColumn cterm=bold ctermfg=DarkBlue ctermbg=none
 
+      autocmd BufReadPre *.nfo :setlocal fileencodings=cp437,utf-8
+
       aunmenu PopUp.How-to\ disable\ mouse
       aunmenu PopUp.-2-
 
