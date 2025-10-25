@@ -2,6 +2,7 @@ self: pkgs:
 let
   myPkgs = {
     gc = pkgs.callPackage ./gc { };
+    jdownloader = pkgs.callPackage ./jdownloader { };
     ldp = self.callPackage ./ldp { };
     pin = pkgs.callPackage ./pin { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
