@@ -8,5 +8,4 @@ self: pkgs:
   pkgs-unstable = import inputs.unstable {
     inherit (pkgs) system config;
   };
-  pinned = import ./pin/pkgs.nix pkgs;
 }
