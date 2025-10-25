@@ -48,6 +48,15 @@ getFlakeRef(){
   echo "$flake"
 }
 
+updateFlakePathFile(){
+  local hostname
+  hostname="$1"
+
+  if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
+    echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
+  fi
+}
+
 main(){
   nixCommand=(nix --experimental-features 'pipe-operator nix-command flakes' --accept-flake-config)
   logFormat=(--log-format bar-with-logs)
@@ -56,9 +65,7 @@ main(){
   case $1 in
     --boot)
       hostname="${2:-$(hostname)}"
-      if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
-        echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
-      fi
+      updateFlakePathFile "$hostname"
       sudo nixos-rebuild boot --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
       ;;
     --build)
@@ -104,9 +111,7 @@ main(){
       ;;
     --switch|*)
       hostname="${2:-$(hostname)}"
-      if [ -d "$flakePath/nixos-configurations/$hostname" ]; then
-        echo -e "$flakePath" > "$flakePath/nixos-configurations/$hostname/.flake-path"
-      fi
+      updateFlakePathFile "$hostname"
 
       sudo nixos-rebuild switch --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
 
