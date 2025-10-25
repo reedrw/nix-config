@@ -1,4 +1,4 @@
-{ ezModules, ... }:
+{ pkgs, ezModules, ... }:
 
 {
   imports = [
@@ -12,5 +12,11 @@
     ezModules.graphical
     ezModules.media
     ezModules.social
+  ];
+
+  home.packages = [
+    (pkgs.jdownloader.override {
+      darkTheme = true;
+    })
   ];
 }
