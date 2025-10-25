@@ -82,6 +82,8 @@ in writeShellApplication {
       mkdir "$XDG_DATA_HOME/jdownloader/cfg"
     fi
 
+    # Apply debloating settings from:
+    # https://claraiscute.neocities.org/Guides/jdownloader2/
     if [ ! -f "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json" ]; then
       (
       echo '{'
