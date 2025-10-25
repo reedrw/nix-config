@@ -43,6 +43,7 @@ in
   home = {
     sessionVariables = {
       GNUPGHOME = "${config.xdg.dataHome}/gnupg";
+      SCREENDIR = "${config.xdg.dataHome}/screen";
       XDG_CONFIG_HOME = config.xdg.configHome;
       XDG_CACHE_HOME = config.xdg.cacheHome;
       XDG_DATA_HOME = config.xdg.dataHome;
