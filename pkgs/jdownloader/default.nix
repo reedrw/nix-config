@@ -20,7 +20,7 @@ let
   # for single files, isDir == true will produce a different sha256 than isDir == false
   stdenv.mkDerivation {
     inherit name;
-    outputHashMode = if isDir then "recursive" else "flat";
+    outputHashMode = "recursive";
     outputHashAlgo = "sha256";
     outputHash = sha256;
     builder = writeShellScript "builder.sh" ''
@@ -59,7 +59,6 @@ let
     name= "JDownloader";
     url = "https://mega.nz/file/3dkXRLTb#tBmI9K0jrbjkh57CArqkVPbmMZ8l11JypDbM8RncqdU";
     sha256="sha256-stMfQwRhng+apYtUaDx7eavP4Zmb3cucISIviVButtQ=";
-    isDir = true;
   };
 
   darkThemeSrc = fetchFromGitHub {
