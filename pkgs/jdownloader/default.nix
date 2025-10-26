@@ -8,7 +8,9 @@
   lib,
   megacmd,
   openjdk,
-  darkTheme ? false
+  darkTheme ? false,
+  debloat ? true,
+  extraOptions ? {}
 }:
 
 let
@@ -66,6 +68,32 @@ let
     rev = "f004ca290e903a6732c3be9955b5acaef582a268";
     hash = "sha256-pct3O5jV2X2/Uc17DKICgxh4AMfTMrLv7pTgh9xxRsM=";
   };
+
+  darkThemeOptions = {
+    "org.jdownloader.settings.GraphicalUserInterfaceSettings" = {
+      lookandfeeltheme = "FLATLAF_DARK";
+    };
+  };
+
+  # Apply debloating settings from:
+  # https://claraiscute.neocities.org/Guides/jdownloader2/
+  debloatOptions = {
+    "org.jdownloader.settings.GraphicalUserInterfaceSettings" = {
+      bannerenabled = false;
+      donatebuttonstate = "AUTO_HIDDEN";
+      premiumalertetacolumnenabled = false;
+      premiumalertspeedcolumnenabled = false;
+      premiumalerttaskcolumnenabled = false;
+      specialdealoboomdialogvisibleonstartup = false;
+      specialdealsenabled = false;
+    };
+  };
+
+  finalOptions = lib.foldl' (a: x: lib.recursiveUpdate a x) {} [
+    (lib.optionalAttrs darkTheme darkThemeOptions)
+    (lib.optionalAttrs debloat debloatOptions)
+    extraOptions
+  ];
 in writeShellApplication {
   name = "jdownloader";
   runtimeInputs = [ openjdk jq ];
@@ -81,48 +109,17 @@ in writeShellApplication {
     if [ ! -d "$XDG_DATA_HOME/jdownloader/cfg" ]; then
       mkdir "$XDG_DATA_HOME/jdownloader/cfg"
     fi
-
-    # Apply debloating settings from:
-    # https://claraiscute.neocities.org/Guides/jdownloader2/
-    if [ ! -f "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json" ]; then
-      (
-      echo '{'
-      echo '  "premiumalertetacolumnenabled": false,'
-      echo '  "premiumalertspeedcolumnenabled": false,'
-      echo '  "premiumalerttaskcolumnenabled": false,'
-      echo '  "specialdealoboomdialogvisibleonstartup": false,'
-      echo '  "specialdealsenabled": false',
-      echo '  "donatebuttonstate":"AUTO_HIDDEN",'
-      ${lib.optionalString darkTheme ''
-          echo '  "lookandfeeltheme":"FLATLAF_DARK",'
-      ''}
-      echo '  "bannerenabled": false'
-      echo '}'
-      ) > "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
+  '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (n: v: ''
+    if [ ! -f "$XDG_DATA_HOME/jdownloader/cfg/${n}.json" ]; then
+      echo '${builtins.toJSON v}' > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
     fi
 
-    tmp="$(jq '.donatebuttonstate = "AUTO_HIDDEN"' \
-      "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
+    tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1: ".${n1}=${builtins.toJSON v1}") v)}' \
+      "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
     )"
 
-    echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
-
-    if [ ! -f "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GeneralSettings.json" ]; then
-      mkdir "$XDG_DATA_HOME/jdownloader/downloads"
-      (
-      echo '{'
-      echo "  \"defaultdownloadfolder\": \"$XDG_DATA_HOME/jdownloader/downloads\""
-      echo '}'
-      ) > "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GeneralSettings.json"
-    fi
-
-  '' + lib.optionalString darkTheme ''
-    tmp="$(jq '.lookandfeeltheme = "FLATLAF_DARK"' \
-      "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
-    )"
-
-    echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
-
+    echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
+  '' ) finalOptions) + lib.optionalString darkTheme ''
     mkdir -p "$XDG_DATA_HOME/jdownloader/themes/standard/org/jdownloader"
     mkdir -p "$XDG_DATA_HOME/jdownloader/libs/laf"
 
