@@ -3,7 +3,7 @@
 {
   imports = [
     ../reed.nix
-    ./xsession
+    ./xsession.nix
     ezModules.core
     ezModules.extra
     ezModules.filesharing
