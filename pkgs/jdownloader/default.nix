@@ -110,15 +110,15 @@ in writeShellApplication {
       mkdir "$XDG_DATA_HOME/jdownloader/cfg"
     fi
   '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (n: v: ''
-    if [ ! -f "$XDG_DATA_HOME/jdownloader/cfg/${n}.json" ]; then
+    if [ -f "$XDG_DATA_HOME/jdownloader/cfg/${n}.json" ]; then
+      tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1: ".${n1}=${builtins.toJSON v1}") v)}' \
+        "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
+      )"
+
+      echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
+    else
       echo '${builtins.toJSON v}' > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
     fi
-
-    tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1: ".${n1}=${builtins.toJSON v1}") v)}' \
-      "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
-    )"
-
-    echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
   '' ) finalOptions) + lib.optionalString darkTheme ''
     mkdir -p "$XDG_DATA_HOME/jdownloader/themes/standard/org/jdownloader"
     mkdir -p "$XDG_DATA_HOME/jdownloader/libs/laf"
