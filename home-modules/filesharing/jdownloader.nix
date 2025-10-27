@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 
 {
-  home.packages = [
-    (pkgs.jdownloader.override {
+  home.packages = with pkgs; [
+    (mullvadExclude <| jdownloader.override {
       darkTheme = true;
       extraOptions = {
         "org.jdownloader.extensions.extraction.ExtractionExtension" = {
