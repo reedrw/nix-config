@@ -112,9 +112,7 @@ in writeShellApplication {
     if [ -f "$XDG_DATA_HOME/jdownloader/cfg/${n}.json" ]; then
       tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1: ".${n1}=${builtins.toJSON v1}") v)}' \
         "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
-      )"
-
-      echo "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
+      )" && cat <<< "$tmp" > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
     else
       echo '${builtins.toJSON v}' > "$XDG_DATA_HOME/jdownloader/cfg/${n}.json"
     fi
