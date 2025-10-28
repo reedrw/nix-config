@@ -29,7 +29,7 @@
     wantedBy = [ "suspend.target" ];
     before = [ "systemd-suspend.service" ];
     environment = {
-      DISPLAY = ":1";
+      DISPLAY = ":0";
       XAUTHORITY = "/run/user/1000/gdm/Xauthority";
     };
     serviceConfig = {

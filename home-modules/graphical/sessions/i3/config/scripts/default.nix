@@ -21,6 +21,7 @@
       name = "clipboard-clean";
       runtimeInputs = with pkgs; [
         coreutils
+        clipnotify
         xclip
         (python3.withPackages(ps: [ unalix ]))
       ];

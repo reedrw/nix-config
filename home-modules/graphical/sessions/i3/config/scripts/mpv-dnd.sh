@@ -4,7 +4,7 @@
 # Suspends programs while mpv player is active because I dont like notifications while I'm watching stuff
 set -x
 
-export DISPLAY=:1
+export DISPLAY=:0
 
 # programs to suspend
 programs=( "$@" )

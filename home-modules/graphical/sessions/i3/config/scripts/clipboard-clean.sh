@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export DISPLAY=:1
+export DISPLAY=:0
 
 COPY_CMD="xclip -i -selection clipboard"
 PASTE_CMD="xclip -o -selection clipboard"
@@ -17,8 +17,7 @@ print(unalix.clear_url(url=url))
 EOF
 }
 
-while true; do
-  sleep 5
+while clipnotify; do
   CURR_CLIP=$($PASTE_CMD) || continue
   if [ "$CURR_CLIP" != "$PREV_CLIP" ]; then
     # Check if the clipboard starts with 'http'
@@ -30,5 +29,5 @@ while true; do
         ;;
     esac
   fi
-  PREV_CLIP=$($PASTE_CMD)
+  PREV_CLIP="$CURR_CLIP"
 done
