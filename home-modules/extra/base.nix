@@ -44,6 +44,7 @@ in
     sessionVariables = {
       GNUPGHOME = "${config.xdg.dataHome}/gnupg";
       SCREENDIR = "${config.xdg.dataHome}/screen";
+      _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
       XDG_CONFIG_HOME = config.xdg.configHome;
       XDG_CACHE_HOME = config.xdg.cacheHome;
       XDG_DATA_HOME = config.xdg.dataHome;

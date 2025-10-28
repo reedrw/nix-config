@@ -93,6 +93,10 @@ in
 
   stylix.targets.i3.enable = true;
 
+  home.sessionVariables = {
+    XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
+  };
+
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
     enable = true;
