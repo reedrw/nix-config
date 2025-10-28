@@ -1,7 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.packages = [
-    pkgs.bottles
+  home.packages = with pkgs; [
+    bottles
+    ludusavi
   ];
 }
