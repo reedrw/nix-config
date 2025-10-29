@@ -48,11 +48,11 @@ in
     home.users = lib.genAttrs [
       "root"
       "reed"
+      "nixos"
       "reed@nixos-desktop"
       "reed@nixos-t400"
       "reed@nixos-t480"
       "reed@nixos-vm"
-      "reed@nixos-iso"
     ] (n: {
       nameFunction = _: n;
       passInOsConfig = false;
@@ -76,7 +76,7 @@ in
         root = "root";
       };
       nixos-iso.userHomeModules = {
-        reed = "reed@nixos-iso";
+        nixos = "nixos";
         root = "root";
       };
     };

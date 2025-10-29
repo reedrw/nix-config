@@ -2,10 +2,15 @@
 
 {
   imports = [
-    ./reed.nix
+    {
+      home = {
+        username = "nixos";
+        stateVersion = "25.05";
+        homeDirectory = "/home/nixos";
+      };
+    }
     ezModules.core
     ezModules.extra
-    ezModules.games
     ezModules.graphical
     ezModules.media
     ezModules.social

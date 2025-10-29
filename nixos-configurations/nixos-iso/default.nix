@@ -4,7 +4,7 @@
     ezModules.core
     ezModules.custom
     ezModules.graphical
-    ezModules'.users.reed
+    # ezModules'.users.reed
     ezModules'.networking.bluetooth
     ezModules'.networking.networking
     "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"

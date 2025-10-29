@@ -12,7 +12,7 @@
 
   networking.hostName = "nixos-iso";
 
-  users.users.reed.password = "password";
+  users.users.nixos.shell = pkgs.zsh;
 
   time.timeZone = "America/New_York";
 
