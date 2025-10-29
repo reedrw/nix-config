@@ -1,10 +1,11 @@
-{ lib, ... }:
+{ pkgs, lib, ... }:
 
 {
 
   boot = {
     plymouth.enable = lib.mkForce false;
     initrd.systemd.enable = lib.mkForce false;
+    kernelPackages = lib.mkForce pkgs.linuxPackages;
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
