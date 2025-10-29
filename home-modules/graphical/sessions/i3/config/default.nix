@@ -189,10 +189,6 @@ in
 
   services = {
     flameshot.enable = true;
-    parcellite = {
-      enable = true;
-      package = pkgs.clipit;
-    };
   };
 
   systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
