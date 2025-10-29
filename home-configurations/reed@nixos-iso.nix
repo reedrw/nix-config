@@ -1,4 +1,4 @@
-{ ezModules, ... }:
+{ ezModules, ezModules', ... }:
 
 {
   imports = [
@@ -9,5 +9,6 @@
     ezModules.graphical
     ezModules.media
     ezModules.social
+    ezModules'.filesharing.jdownloader
   ];
 }
