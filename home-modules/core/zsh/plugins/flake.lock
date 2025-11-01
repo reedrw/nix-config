@@ -8,11 +8,11 @@
     "zsh-simple-abbreviations": {
       "flake": false,
       "locked": {
-        "lastModified": 1761615204,
-        "narHash": "sha256-keZbK1FljFJ6pgRdn9w4pxomHFuGGi9Ol89fc06wALk=",
+        "lastModified": 1761811774,
+        "narHash": "sha256-sAQFW17U7H1fITQkR63Qv/Exq7AghnqQxPan2QBYJao=",
         "owner": "DeveloperC286",
         "repo": "zsh-simple-abbreviations",
-        "rev": "32694145765f98a3ef8fb4b884fc360efd95acc7",
+        "rev": "5dfb5f8a091ded8db298d964e7f761bb187aa7a1",
         "type": "github"
       },
       "original": {
