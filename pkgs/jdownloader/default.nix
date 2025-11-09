@@ -85,6 +85,7 @@ let
       premiumalerttaskcolumnenabled = false;
       specialdealoboomdialogvisibleonstartup = false;
       specialdealsenabled = false;
+      speedmetervisible = false;
     };
   };
 
