@@ -1,7 +1,9 @@
+{ lib, osConfig, ... }:
+
 {
   home = {
     username = "reed";
-    stateVersion = "20.09";
+    stateVersion = osConfig.system.stateVersion or lib.trivial.release;
     homeDirectory = "/home/reed";
   };
 }

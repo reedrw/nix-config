@@ -1,11 +1,11 @@
-{ ezModules, ezModules', ... }:
+{ lib, ezModules, ezModules', osConfig, ... }:
 
 {
   imports = [
     {
       home = {
         username = "nixos";
-        stateVersion = "25.05";
+        stateVersion = osConfig.system.stateVersion or lib.trivial.release;
         homeDirectory = "/home/nixos";
       };
     }

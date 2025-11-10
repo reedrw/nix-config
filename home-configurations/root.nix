@@ -1,4 +1,4 @@
-{ pkgs, ezModules, ... }:
+{ lib, pkgs, ezModules, osConfig, ... }:
 
 {
   imports = [
@@ -8,7 +8,7 @@
   home = {
     username = "root";
     homeDirectory = "/root";
-    stateVersion = "22.05";
+    stateVersion = osConfig.system.stateVersion or lib.trivial.release;
     sessionVariables = {
       EDITOR = "nvim";
     };
