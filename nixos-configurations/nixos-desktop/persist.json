@@ -16,7 +16,6 @@
     "/etc/mullvad-vpn",
     "/etc/ssh",
     "/home/reed/.cache/fontconfig",
-    "/home/reed/.cache/lorri",
     "/home/reed/.cache/mesa_shader_cache",
     "/home/reed/.cache/mozilla",
     "/home/reed/.cache/nix",
