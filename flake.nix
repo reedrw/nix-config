@@ -89,8 +89,8 @@ let self = {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { flake-parts, nixpkgs, ... } @ inputs: let
-    flake = flake-parts.lib.mkFlake {
+  outputs = { flake-parts, nixpkgs, ... } @ inputs:
+    flake-parts.lib.mkFlake {
       inherit inputs;
     } {
       imports = [
@@ -101,9 +101,4 @@ let self = {
       systems = [ "x86_64-linux" ];
       _module.args = { inherit (self) nixConfig; };
     };
-
-    lib = nixpkgs.lib;
-  in lib.fix (lib.foldl' (lib.flip lib.extends) (_: flake) [
-    (import ./repo/passInOsConfig.nix inputs)
-  ]);
 }; in self

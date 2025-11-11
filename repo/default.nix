@@ -61,10 +61,7 @@ in
       "reed@nixos-t400"
       "reed@nixos-t480"
       "reed@nixos-vm"
-    ] (n: {
-      nameFunction = _: n;
-      passInOsConfig = false;
-    });
+    ] (n: { nameFunction = _: n; });
 
     nixos.hosts = lib.mergeAttrsList [
       (mkUserHomeModules "nixos-desktop" [ "reed" "root" ])
