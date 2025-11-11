@@ -1,4 +1,5 @@
-{ inputs, nixConfig, ... }:
+{ config, inputs, nixConfig, ... }:
+
 let
   versionSuffix = "${builtins.substring 0 8 (inputs.self.lastModifiedDate or inputs.self.lastModified)
                   }_${inputs.self.shortRev or "dirty"}";
@@ -30,7 +31,14 @@ let
     rootAbsolute' = hostName:
       builtins.readFile "${root}/nixos-configurations/${hostName}/.flake-path"
         |> lib.removeSuffix "\n";
+  };
 
+  mkUserHomeModules = hostname: users: {
+    "${hostname}".userHomeModules = lib.mergeAttrsList (map (user: {
+      "${user}" = if lib.hasAttr "${user}@${hostname}" config.ezConfigs.home.users
+        then "${user}@${hostname}"
+        else user;
+    }) users);
   };
 in
 {
@@ -58,28 +66,13 @@ in
       passInOsConfig = false;
     });
 
-    nixos.hosts = {
-      nixos-desktop.userHomeModules = {
-        reed = "reed@nixos-desktop";
-        root = "root";
-      };
-      nixos-t480.userHomeModules = {
-        reed = "reed@nixos-t480";
-        root = "root";
-      };
-      nixos-t400.userHomeModules = {
-        reed = "reed@nixos-t400";
-        root = "root";
-      };
-      nixos-vm.userHomeModules = {
-        reed = "reed@nixos-vm";
-        root = "root";
-      };
-      nixos-iso.userHomeModules = {
-        nixos = "nixos";
-        root = "root";
-      };
-    };
+    nixos.hosts = lib.mergeAttrsList [
+      (mkUserHomeModules "nixos-desktop" [ "reed" "root" ])
+      (mkUserHomeModules "nixos-t480"    [ "reed" "root" ])
+      (mkUserHomeModules "nixos-t400"    [ "reed" "root" ])
+      (mkUserHomeModules "nixos-vm"      [ "reed" "root" ])
+      { nixos-iso.userHomeModules = [ "nixos" "root" ]; }
+    ];
   };
 
   perSystem = { pkgs, lib, ... }: let
