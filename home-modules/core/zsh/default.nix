@@ -243,7 +243,7 @@ in
         HISTFILE="$HOME/.zsh_history"
       fi
 
-      zsh-simple-abbreviations --set prog "watch -n 0.2 progress -p"
+      zsh-simple-abbreviations --set prog "progress -Mc"
 
       function cat() {
         # check if the last argument is an image
