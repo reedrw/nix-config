@@ -8,6 +8,7 @@
     "/home/reed/.cache/updog-password",
     "/home/reed/.config/hub",
     "/home/reed/.config/monitors.xml",
+    "/home/reed/.config/weechat/irc.conf",
     "/home/reed/.local/share/zsh/zsh_history",
     "/home/reed/.steam/registry.vdf"
   ],
@@ -50,6 +51,7 @@
     "/home/reed/.local/share/nix",
     "/home/reed/.local/share/qBittorrent",
     "/home/reed/.local/share/ranger",
+    "/home/reed/.local/share/weechat",
     "/home/reed/.local/share/zoxide",
     "/home/reed/.local/state/nix",
     "/home/reed/.local/state/wireplumber",

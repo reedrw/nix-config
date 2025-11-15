@@ -2,7 +2,8 @@
 
 {
   imports = [
-    ./discord.nix
+    ./discord
+    ./weechat
     ./telegram.nix
   ];
 
