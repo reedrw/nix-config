@@ -9,6 +9,7 @@ mkShell ({
     home-manager
     ncurses
     nix
+    nix-update
     pre-commit
     shellcheck
     update-all
