@@ -31,15 +31,18 @@ jobs:
     # - name: Cleanup Disk
     #   uses: jlumbroso/free-disk-space@main
 
-    # Deleting android and haskell saves ~14gb of space
-    # - name: Cleanup Disk
-    #   run: |
-    #     sudo rm -rfv /usr/local/lib/android || true
-    #     sudo rm -rfv /opt/ghc || true
-    #     sudo rm -rfv /usr/local/.ghcup || true
-
+    #  Deleting android and haskell saves ~14gb of space
     - name: Cleanup Disk
-      uses: wimpysworld/nothing-but-nix@main
+      run: |
+        function cleanup-disk-space() {
+          sudo rm -rfv /usr/local/lib/android || true
+          sudo rm -rfv /opt/ghc || true
+          sudo rm -rfv /usr/local/.ghcup || true
+        }
+        cleanup-disk-space &
+
+    # - name: Cleanup Disk
+    #   uses: wimpysworld/nothing-but-nix@main
 
     - name: Install Nix
       uses: DeterminateSystems/nix-installer-action@v20
