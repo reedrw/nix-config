@@ -49,7 +49,6 @@ jobs:
       with:
         source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
         logger: pretty
-        determinate: false
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3
