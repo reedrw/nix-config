@@ -11,6 +11,8 @@
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  powerManagement.cpuFreqGovernor = "ondemand";
+
   services.ollama = {
     enable = true;
     package = pkgs-unstable.ollama;
