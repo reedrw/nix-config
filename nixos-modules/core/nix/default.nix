@@ -37,7 +37,7 @@
             extraInfo.hostName = "${config.networking.hostName}";
           }
         '')
-        ./repl-overlays.nix
+        (pkgs.writeText "repl-overlays.nix" <| lib.readFile ./repl-overlays.nix)
       ];
       keep-derivations = true;
       keep-outputs = true;
