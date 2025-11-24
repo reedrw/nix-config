@@ -4,7 +4,7 @@ let
   cfg = config.custom.steam;
   steam-custom = with pkgs; steam.override {
     extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.graphics.package];
-    extraPkgs = pkgs: [ mangohud ];
+    extraPkgs = pkgs: [ mangohud steamtinkerlaunch winetricks ];
     extraEnv = {
       # https://github.com/ValveSoftware/Source-1-Games/issues/5043
       LD_PRELOAD = "$LD_PRELOAD:/run/current-system/sw/lib/libtcmalloc_minimal.so";
