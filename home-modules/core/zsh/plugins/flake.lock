@@ -7,11 +7,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1762760606,
-        "narHash": "sha256-nK40y6r8lgJGM4RByQ9N1FxB8Ba5E3VLaqXWb4zgDtg=",
+        "lastModified": 1763970269,
+        "narHash": "sha256-EnPi1Ki00L9QjPmgcrIzapcnzdV9GIcYQwpmGHJZfoU=",
         "owner": "Mic92",
         "repo": "direnv-instant",
-        "rev": "a37cc7ac655a08ace4fd796c33329840dd71f339",
+        "rev": "b18320a9c56dce65551602acd8f6baeea33e658e",
         "type": "github"
       },
       "original": {
@@ -87,11 +87,11 @@
     "zsh-simple-abbreviations": {
       "flake": false,
       "locked": {
-        "lastModified": 1763661334,
-        "narHash": "sha256-+EVvCR2QYk15NE2dI1UVqMph8CYi6f+MXtjOz4IlfL0=",
+        "lastModified": 1763776037,
+        "narHash": "sha256-8hDURdxKSBSlhmelxjsZOI3w88UDMmY8vHoVz9hmmhQ=",
         "owner": "DeveloperC286",
         "repo": "zsh-simple-abbreviations",
-        "rev": "12c542c98b0da050424c64338a30c836e731854a",
+        "rev": "d14b7fec0597099de2d99507121d2f83563118aa",
         "type": "github"
       },
       "original": {
