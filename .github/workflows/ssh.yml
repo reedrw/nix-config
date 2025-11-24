@@ -21,13 +21,14 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    # - name: Cleanup Disk
-    #   run: |
-    #     sudo rm -rfv /usr/local/lib/android || true
-    #     sudo rm -rfv /opt/ghc || true
-    #     sudo rm -rfv /usr/local/.ghcup || true
     - name: Cleanup Disk
-      uses: wimpysworld/nothing-but-nix@main
+      run: |
+        function cleanup-disk-space() {
+          sudo rm -rfv /usr/local/lib/android || true
+          sudo rm -rfv /opt/ghc || true
+          sudo rm -rfv /usr/local/.ghcup || true
+        }
+        cleanup-disk-space &
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3
@@ -74,13 +75,14 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    # - name: Cleanup Disk
-    #   run: |
-    #     sudo rm -rfv /usr/local/lib/android || true
-    #     sudo rm -rfv /opt/ghc || true
-    #     sudo rm -rfv /usr/local/.ghcup || true
     - name: Cleanup Disk
-      uses: wimpysworld/nothing-but-nix@main
+      run: |
+        function cleanup-disk-space() {
+          sudo rm -rfv /usr/local/lib/android || true
+          sudo rm -rfv /opt/ghc || true
+          sudo rm -rfv /usr/local/.ghcup || true
+        }
+        cleanup-disk-space &
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3
