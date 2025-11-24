@@ -14,8 +14,6 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  nil = inputs.nil.packages.x86_64-linux.nil;
-
   nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
     patches = [ ./patches/nix/compadd.patch ];

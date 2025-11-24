@@ -42,13 +42,6 @@ let self = {
       inputs.flake-compat.follows = "flake-compat";
     };
 
-    # add pipe operator
-    # wait for new release (after dec 2024)
-    nil = {
-      url = "github:oxalica/nil";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     tx-calculator = {
       url = "github:reedrw/tx-calculator";
       inputs.nixpkgs.follows = "nixpkgs";

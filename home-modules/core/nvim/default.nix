@@ -1,4 +1,4 @@
-{ config, lib, pkgs, util, ... }:
+{ config, lib, pkgs, pkgs-unstable, util, ... }:
 let
   sources = (util.importFlake ./plugins).inputs;
 in
@@ -13,8 +13,8 @@ in
     vimAlias = true;
     vimdiffAlias = true;
     withPython3 = true;
-    extraPackages = with pkgs; [
-      nil
+    extraPackages = [
+      pkgs-unstable.nil
     ];
     extraPython3Packages = (ps: with ps; [
       black
