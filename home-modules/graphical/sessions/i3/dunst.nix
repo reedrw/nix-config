@@ -7,7 +7,7 @@
       global = {
         monitor = 0;
         width = "(0, 250)";
-        height = "(50, 150)";
+        height = "(50, 250)";
         offset = "50x55";
         shrink = "yes";
         padding = 16;
