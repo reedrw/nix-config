@@ -1,9 +1,9 @@
 {
   "bat": {
     "0.25.0": {
+      "note": "TODO: figure out why 0.26.0 breaks fzf-tab",
       "rev": "bce5fe2bb998488d8e7e7856315f90496723793c",
-      "sha256": "0hkpgac4djwffciz171h37zb8xx26q6af1aa0c87233kgvscn1dz",
-      "note": "TODO: figure out why 0.26.0 breaks fzf-tab"
+      "sha256": "0hkpgac4djwffciz171h37zb8xx26q6af1aa0c87233kgvscn1dz"
     },
     "default": "0.25.0"
   },
@@ -14,13 +14,6 @@
       "sha256": "16bm7pjj38rmp7fvm8yc079yzyjrcyrnn454rq0xgf0qkkan512v"
     },
     "default": "2509"
-  },
-  "dunst": {
-    "1.11.0": {
-      "rev": "566e53c2ad750c84f6d31f9ccb9d00f823165550",
-      "sha256": "1c9nwlhsv3da5d8wg2fa0r7kl0v0icidq100v51ax99brpj1idhl"
-    },
-    "default": "1.11.0"
   },
   "easyeffects": {
     "7.2.5": {
