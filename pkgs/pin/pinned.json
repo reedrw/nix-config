@@ -7,14 +7,6 @@
     },
     "default": "0.25.0"
   },
-  "dolphin-emu": {
-    "2509": {
-      "note": "https://github.com/NixOS/nixpkgs/issues/454802",
-      "rev": "c12c63cd6c5eb34c7b4c3076c6a99e00fcab86ec",
-      "sha256": "16bm7pjj38rmp7fvm8yc079yzyjrcyrnn454rq0xgf0qkkan512v"
-    },
-    "default": "2509"
-  },
   "easyeffects": {
     "7.2.5": {
       "note": "8.0.0 is unpolished/ugly Qt UI",
@@ -22,12 +14,5 @@
       "sha256": "0zr033ybqjc5spwh7xnzkhbqgc6gh8waw6z76rpvadxckyqlfgiq"
     },
     "default": "7.2.5"
-  },
-  "gnomeExtensions": {
-    "426325": {
-      "note": "https://github.com/NixOS/nixpkgs/pull/426325",
-      "rev": "6bba2a5d92ab0952d24ba74b32d8f502c4ac7b87",
-      "sha256": "1fs5mmnycm9205jwhll8c7jvsf40hdhw4z35p30s3j9fla0xqfwx"
-    }
   }
 }
