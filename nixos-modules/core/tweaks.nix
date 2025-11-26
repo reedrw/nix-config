@@ -19,12 +19,18 @@
   # set console colors
   stylix.targets.console.enable = true;
 
-  systemd.extraConfig = ''
-    DefaultTimeoutStartSec=30s
-    DefaultTimeoutStopSec=15s
-    DefaultLimitNOFILE=2048:1048576
-  '';
-  systemd.user.extraConfig = config.systemd.extraConfig;
+  # systemd.extraConfig = ''
+  #   DefaultTimeoutStartSec=30s
+  #   DefaultTimeoutStopSec=15s
+  #   DefaultLimitNOFILE=2048:1048576
+  # '';
+  systemd.settings.Manager = {
+    DefaultTimeoutStartSec = "30s";
+    DefaultTimeoutStopSec = "15s";
+    DefaultLimitNOFILE = "2048:1048576";
+  };
+
+  # systemd.user.extraConfig = config.systemd.extraConfig;
 
   system.activationScripts.diff = {
     supportsDryActivation = true;

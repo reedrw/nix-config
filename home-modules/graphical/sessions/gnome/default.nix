@@ -1,6 +1,6 @@
 { config, osConfig, lib, pkgs, ... }:
 let
-  gnomeEnabled = osConfig.services.xserver.desktopManager.gnome.enable;
+  gnomeEnabled = osConfig.services.desktopManager.gnome.enable;
 in
 {
   imports = builtins.readDir ./.

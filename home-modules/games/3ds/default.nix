@@ -7,7 +7,7 @@ in
     ctrtool
     cxitool
     makerom
-  ]) ++ (with tlaterpkgs.packages."${pkgs.system}"; [
+  ]) ++ (with tlaterpkgs.packages."${pkgs.stdenv.hostPlatform.system}"; [
     servefiles
   ]);
 }

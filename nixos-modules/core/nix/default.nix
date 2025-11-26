@@ -13,7 +13,8 @@
   # nixpkgs overlays and configuration.
   _module.args = {
     pkgs-unstable = import inputs.unstable {
-      inherit (pkgs) system config;
+      inherit (pkgs) config;
+      inherit (pkgs.stdenv.hostPlatform) system;
     };
     rootAbsolute = util.rootAbsolute' config.networking.hostName;
   };

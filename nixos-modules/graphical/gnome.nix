@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  gnomeEnabled = config.services.xserver.desktopManager.gnome.enable;
+  gnomeEnabled = config.services.desktopManager.gnome.enable;
 in
 {
   # services.xserver.desktopManager.gnome.enable = true;

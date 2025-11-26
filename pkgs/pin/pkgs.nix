@@ -4,7 +4,10 @@ pkgs: let
   pinnedVersionToPkg = { rev, sha256, ... }: import (builtins.fetchTarball {
     inherit sha256;
     url = "https://github.com/nixos/nixpkgs/archive/${rev}.tar.gz";
-  }) { inherit (pkgs) system config; };
+  }) {
+    inherit (pkgs) config;
+    inherit (pkgs.stdenv.hostPlatform) system;
+  };
 
   mapToPackage = package: a: lib.mapAttrs' (n: v: let
     pinnedPkgs =

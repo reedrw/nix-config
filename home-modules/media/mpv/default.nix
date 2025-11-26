@@ -5,7 +5,7 @@ let
 
   mkPlugin = path: let
     name = builtins.baseNameOf path;
-  in pkgs.runCommandNoCC name {
+  in pkgs.runCommand name {
     passthru.scriptName = name;
   } ''
     mkdir -p $out/share/mpv/scripts

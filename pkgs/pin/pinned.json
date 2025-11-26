@@ -1,4 +1,12 @@
 {
+  "bat": {
+    "0.25.0": {
+      "rev": "bce5fe2bb998488d8e7e7856315f90496723793c",
+      "sha256": "0hkpgac4djwffciz171h37zb8xx26q6af1aa0c87233kgvscn1dz",
+      "note": "TODO: figure out why 0.26.0 breaks fzf-tab"
+    },
+    "default": "0.25.0"
+  },
   "dolphin-emu": {
     "2509": {
       "note": "https://github.com/NixOS/nixpkgs/issues/454802",
@@ -16,9 +24,9 @@
   },
   "easyeffects": {
     "7.2.5": {
+      "note": "8.0.0 is unpolished/ugly Qt UI",
       "rev": "12c1f0253aa9a54fdf8ec8aecaafada64a111e24",
-      "sha256": "0zr033ybqjc5spwh7xnzkhbqgc6gh8waw6z76rpvadxckyqlfgiq",
-      "note": "8.0.0 is unpolished/ugly Qt UI"
+      "sha256": "0zr033ybqjc5spwh7xnzkhbqgc6gh8waw6z76rpvadxckyqlfgiq"
     },
     "default": "7.2.5"
   },

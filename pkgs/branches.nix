@@ -6,6 +6,7 @@ self: pkgs:
     nurpkgs = pkgs;
   };
   pkgs-unstable = import inputs.unstable {
-    inherit (pkgs) system config;
+    inherit (pkgs) config;
+    inherit (pkgs.stdenv.hostPlatform) system;
   };
 }

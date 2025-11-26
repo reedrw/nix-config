@@ -8,22 +8,24 @@
   #     passthru.providedSessions = [ "sway" ];
   #   });
   # };
-  services.xserver = {
-    enable = true;
-    displayManager = {
-      gdm = {
-        wayland = true;
-        enable = true;
-      };
-      session = lib.optionals (!config.services.xserver.desktopManager.gnome.enable) [
-        {
-          manage = "desktop";
-          name = "xsession";
-          start = ''exec $HOME/.local/share/X11/xsession'';
-        }
-      ];
+  services.displayManager = {
+    gdm = {
+      wayland = true;
+      enable = true;
     };
   };
+
+  services.xserver = {
+    enable = true;
+    displayManager.session = lib.optionals (!config.services.desktopManager.gnome.enable) [
+      {
+        manage = "desktop";
+        name = "xsession";
+        start = ''exec $HOME/.local/share/X11/xsession'';
+      }
+    ];
+  };
+
   systemd.services."lock-before-suspend" = {
     description = "Lock the screen before suspending";
     wantedBy = [ "suspend.target" ];

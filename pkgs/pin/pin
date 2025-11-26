@@ -324,7 +324,7 @@ main() {
     exit 0
   fi
 
-  system="$(nix eval --raw nixpkgs\#system)"
+  system="$(nix eval --raw nixpkgs\#stdenv.targetPlatform.system)"
 
   # find the commit hash for the given version
   if [ -z "$rev" ]; then

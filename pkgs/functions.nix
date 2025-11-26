@@ -217,5 +217,5 @@ in
     fi
   '');
 
-  util = inputs.self.legacyPackages.${pkgs.system}.util;
+  util = inputs.self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.util;
 }

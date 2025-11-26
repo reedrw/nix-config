@@ -30,7 +30,7 @@
       papirus-icon-theme
       qt5.qtbase
       libsForQt5.qt5ct
-      qt6ct
+      qt6Packages.qt6ct
     ];
 
     sessionVariables = {
@@ -87,7 +87,7 @@
     '';
     "qt6ct/qt6ct.conf".text = ''
       [Appearance]
-      color_scheme_path=${pkgs.qt6ct}/share/qt5ct/colors/airy.conf
+      color_scheme_path=${pkgs.qt6Packages.qt6ct}/share/qt5ct/colors/airy.conf
       custom_palette=false
       standard_dialogs=default
       style=Adwaita-Dark

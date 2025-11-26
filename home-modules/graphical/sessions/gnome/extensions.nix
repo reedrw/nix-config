@@ -1,6 +1,6 @@
 { pkgs, lib, osConfig, ... }:
 let
-  gnomeEnabled = osConfig.services.xserver.desktopManager.gnome.enable;
+  gnomeEnabled = osConfig.services.desktopManager.gnome.enable;
 
   extensions = lib.optionals gnomeEnabled ((with pkgs.gnomeExtensions; [
     caffeine

@@ -10,7 +10,7 @@
       dejavu_fonts
       ipafont
       kochi-substitute
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       open-sans
       source-code-pro
       ttf_bitstream_vera

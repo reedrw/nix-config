@@ -17,7 +17,7 @@ let
       |> builtins.attrValues
       |> builtins.concatStringsSep " "
     ;
-  in pkgs.runCommandNoCC filename { buildInputs = [ pkgs.lutgen ]; } ''
+  in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
     lutgen apply \
       --preserve \
       -s 128 \

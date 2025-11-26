@@ -73,7 +73,7 @@ in
   };
 
   perSystem = { pkgs, lib, ... }: let
-    pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.system;
+    pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.stdenv.hostPlatform.system;
   in {
     packages = pkgs'.myPkgs;
     legacyPackages = { inherit util; };

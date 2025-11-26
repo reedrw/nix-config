@@ -12,7 +12,7 @@ let
     screen    # terminal multiplexer
     wget      # download utility
     progress  # progress viewer
-    inputs.tx-calculator.packages.${pkgs.system}.tx-calculator
+    inputs.tx-calculator.packages.${pkgs.stdenv.hostPlatform.system}.tx-calculator
 
     # global aliases
     (aliasToPackage {

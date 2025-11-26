@@ -20,7 +20,7 @@ in
 
   programs.direnv-instant = {
     enable = true;
-    package = sources.direnv-instant.packages."${pkgs.system}".default;
+    package = sources.direnv-instant.packages."${pkgs.stdenv.hostPlatform.system}".default;
   };
 
   stylix.targets.fzf.enable = true;
@@ -77,7 +77,7 @@ in
   in
   {
     enable = true;
-    dotDir = ".local/share/zsh";
+    dotDir = "${config.xdg.dataHome}/zsh";
     plugins = with pkgs; [
       (mkZshPlugin { pkg = zsh-autosuggestions; })
       (mkZshPlugin {
@@ -252,7 +252,12 @@ in
             kitty +kitten icat "$@"
           ;;
           *)
-            bat --theme=base16-stylix --style='changes,snip,numbers' --paging=never --wrap=never "$@"
+            bat \
+              --theme=base16-stylix \
+              --style='changes,snip,numbers' \
+              --paging=never \
+              --wrap=never \
+              "$@"
           ;;
         esac
       }
@@ -275,10 +280,10 @@ in
             cd "$(command git rev-parse --show-toplevel)"
           ;;
           clone)
-            ${gitAndTools.hub}/bin/hub clone --recurse-submodules "''${@:2}"
+            ${hub}/bin/hub clone --recurse-submodules "''${@:2}"
           ;;
           *)
-            ${gitAndTools.hub}/bin/hub "$@"
+            ${hub}/bin/hub "$@"
           ;;
         esac
       }

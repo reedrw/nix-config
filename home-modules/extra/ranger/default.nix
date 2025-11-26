@@ -31,12 +31,12 @@ let
     libarchive
     loupe
     mediainfo
-    poppler_utils
+    poppler-utils
     tmux
     unrar
     p7zip
     unzip
-    xdragon
+    dragon-drop
     zip
   ] ++ (with pkgs.python3Packages; [
     pdf2image
