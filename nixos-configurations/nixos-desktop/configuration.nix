@@ -13,6 +13,10 @@
 
   powerManagement.cpuFreqGovernor = "ondemand";
 
+  networking.firewall.allowedTCPPorts = [
+    8181
+  ];
+
   services.ollama = {
     enable = true;
     package = pkgs-unstable.ollama;
