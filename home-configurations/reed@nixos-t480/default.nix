@@ -9,6 +9,8 @@
     ezModules.graphical
     ezModules.media
     ezModules.social
+    ezModules'.filesharing.jdownloader
+    ezModules'.games.bottles
     ezModules'.games.minecraft
     ezModules'.games.steam
   ];
