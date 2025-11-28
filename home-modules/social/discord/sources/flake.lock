@@ -39,17 +39,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1763971464,
-        "narHash": "sha256-o5XdYnPKYKZNKWKUh2T0zPYHj+3C0no6s61AcN5IpQ8=",
+        "lastModified": 1764317078,
+        "narHash": "sha256-U8V+hb1fXUn/NtR5C//whFPo9Uh7JgqbGgZFndXm+Tk=",
         "owner": "kaylorben",
         "repo": "nixcord",
-        "rev": "cabf0f4f0795274d021c9db9fd5e04162d2f1917",
+        "rev": "162347700710442a64b3fc972adc979f8581b382",
         "type": "github"
       },
       "original": {
         "owner": "kaylorben",
         "repo": "nixcord",
-        "rev": "cabf0f4f0795274d021c9db9fd5e04162d2f1917",
         "type": "github"
       }
     },
