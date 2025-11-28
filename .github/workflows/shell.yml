@@ -34,11 +34,11 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.inputs.ref }}
 
-    - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v20
-      with:
-        source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
-        logger: pretty
+    - name: Install Lix
+      run: |
+        curl -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
+        sudo tee -a /etc/nix/nix.conf <<< "trusted-users = root runner"
+        sudo tee -a /etc/nix/nix.conf <<< "experimental-features = nix-command flakes"
 
     - name: Install Cachix
       uses: cachix/cachix-action@v16
