@@ -29,8 +29,7 @@ let
       });
 
     rootAbsolute' = hostName:
-      builtins.readFile "${root}/nixos-configurations/${hostName}/.flake-path"
-        |> lib.removeSuffix "\n";
+      lib.removeSuffix "\n" (builtins.readFile "${root}/nixos-configurations/${hostName}/.flake-path");
   };
 
   mkUserHomeModules = hostname: users: {
