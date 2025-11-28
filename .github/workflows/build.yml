@@ -53,7 +53,7 @@ jobs:
     - name: Install Lix
       run: |
         curl -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
-        sudo tee -a /etc/nix/nix.conf <<< "trusted-users = root worker"
+        sudo tee -a /etc/nix/nix.conf <<< "trusted-users = root runner"
         sudo tee -a /etc/nix/nix.conf <<< "experimental-features = nix-command flakes"
 
     - name: Install Doppler CLI
