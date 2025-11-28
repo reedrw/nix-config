@@ -8,10 +8,7 @@ let self = {
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";
 
-    flake-compat = {
-      url = "git+https://git.lix.systems/lix-project/flake-compat.git";
-      flake = false;
-    };
+    flake-compat.url = "https://git.lix.systems/lix-project/flake-compat/archive/main.tar.gz";
 
     # flake-parts and its modules
     flake-parts = {
