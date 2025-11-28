@@ -44,11 +44,17 @@ jobs:
     # - name: Cleanup Disk
     #   uses: wimpysworld/nothing-but-nix@main
 
-    - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v20
-      with:
-        source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
-        logger: pretty
+    # - name: Install Nix
+    #   uses: DeterminateSystems/nix-installer-action@v20
+    #   with:
+    #     source-url: "https://install.lix.systems/lix/lix-installer-x86_64-linux"
+    #     logger: pretty
+
+    - name: Install Lix
+      run: |
+        curl -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
+        sudo tee -a /etc/nix/nix.conf <<< "trusted-users = root worker"
+        sudo tee -a /etc/nix/nix.conf <<< "experimental-features = nix-command flakes pipe-operator"
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3
