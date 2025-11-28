@@ -75,6 +75,7 @@ jobs:
     - name: Install Cachix
       uses: cachix/cachix-action@v16
       with:
+        useDaemon: false
         name: ${{ matrix.cachixName }}
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
