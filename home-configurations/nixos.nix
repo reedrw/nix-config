@@ -1,4 +1,4 @@
-{ lib, ezModules, ezModules', osConfig, ... }:
+{ lib, ezModules, osConfig, ... }:
 
 {
   imports = [
@@ -14,6 +14,5 @@
     ezModules.graphical
     ezModules.media
     ezModules.social
-    ezModules'.filesharing.jdownloader
   ];
 }
