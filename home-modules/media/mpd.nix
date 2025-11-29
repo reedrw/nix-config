@@ -16,6 +16,14 @@
       }
     '';
   };
+  systemd.user.services.mpd = {
+    Unit = {
+      # https://github.com/altdesktop/playerctl/issues/361
+      # playerctld segfaults if mpd started first
+      After = [ "playerctld.service" ];
+      Requires = [ "playerctld.service" ];
+    };
+  };
 
   services.mpd-mpris.enable = true;
 
@@ -23,9 +31,7 @@
   systemd.user.services.playerctld = {
     Unit = {
       After = [ "graphical.target" ];
-    };
-    Service = {
-      RestartSec = 5;
+      Before = [ "mpd.service" ];
     };
   };
 
