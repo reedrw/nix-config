@@ -1,4 +1,4 @@
-{ util, ... }:
+{ config, util, ... }:
 let
   nixcord = (util.importFlake ./sources).inputs.nixcord;
 in
@@ -45,4 +45,20 @@ in
       };
     };
   };
+
+  home.activation.extraDiscordSettings = let
+    extraSettings = {
+      OPEN_ON_STARTUP = false;
+      MINIMIZE_TO_TRAY = false;
+    };
+  in config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    set -euo pipefail
+    mkdir -p "${config.programs.nixcord.discord.configDir}"
+    config_dir="${config.programs.nixcord.discord.configDir}"
+    if [ -f "$config_dir/settings.json" ]; then
+      jq '. + ${builtins.toJSON extraSettings}' "$config_dir/settings.json" > "$config_dir/settings.json.tmp" && mv "$config_dir/settings.json.tmp" "$config_dir/settings.json"
+    else
+      echo '${builtins.toJSON extraSettings}' > "$config_dir/settings.json"
+    fi
+  '';
 }
