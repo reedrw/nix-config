@@ -1,6 +1,4 @@
 {
-  symlinkJoin,
-  makeDesktopItem,
   graphicsmagick,
   fetchurl,
   callPackage,
@@ -18,29 +16,26 @@ let
   };
 
   wrapper = callPackage ./wrapper.nix { inherit darkTheme debloat extraOptions; };
-in symlinkJoin {
-  name = "jdownloader";
-
-  paths = [
-    wrapper
-    (makeDesktopItem {
-      name = "JDownloader 2";
-      exec = "${wrapper}/bin/jdownloader";
-      icon = "jdownloader";
-      comment = "Free, open-source download management tool.";
-      desktopName = "JDownloader 2";
-      genericName = "JDownloader 2";
-      categories = ["Network"];
-    })
-  ];
-
-  postBuild = ''
-    mkdir -pv $out/bin $out/share/applications
+in wrapper.overrideAttrs (old: {
+  buildCommand = old.buildCommand + ''
+    mkdir -p $out/bin $out/share/applications
 
     for size in 16 24 32 48 64 128 256 512; do
       mkdir -p $out/share/icons/hicolor/"$size"x"$size"/apps
       ${lib.getExe graphicsmagick} convert -resize "$size"x"$size" ${icon} $out/share/icons/hicolor/"$size"x"$size"/apps/jdownloader.png
     done
+
+    cat << EOF > $out/share/applications/jdownloader.desktop
+    [Desktop Entry]
+    Categories=Network
+    Comment=Free, open-source download management tool.
+    Exec=jdownloader
+    GenericName=JDownloader 2
+    Icon=jdownloader
+    Name=JDownloader 2
+    Type=Application
+    Version=1.5
+    EOF
   '';
 
   meta = with lib; {
@@ -50,4 +45,4 @@ in symlinkJoin {
     platforms = platforms.unix;
     mainProgram = "jdownloader";
   };
-}
+})
