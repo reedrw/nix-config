@@ -47,15 +47,15 @@ in
 {
 
   home.packages = let
-    ranger = #pkgs.versionConditionalOverride "1.9.3" myranger
-      # https://github.com/ranger/ranger/pull/2856
+    ranger =
+      # https://github.com/ranger/ranger/pull/3086
       myranger.overrideAttrs (old: {
-        version = "1.9.3";
+        version = "1.9.4";
         src = pkgs.fetchFromGitHub {
-          owner = "Ethsan";
+          owner = "l4zygreed";
           repo = "ranger";
-          rev = "c73ffcbad20c6fef688ad0deb8d133ee5826e518";
-          sha256 = "sha256-10DyzWdnpXjwsmPEw6V7BTRmYIu+mXHk3sXy4Emn8Nk=";
+          rev = "cf078461841ff3dbb0085c48f44f7d5e27f5bfd9";
+          sha256 = "sha256-O5ID4c3lJ/1dMQMevikwxDLu6Dg+0DMbiWX4ouo2CnA=";
         };
         propagatedBuildInputs = old.propagatedBuildInputs ++ (with pkgs.python3Packages; [ astroid pylint ]);
       });
