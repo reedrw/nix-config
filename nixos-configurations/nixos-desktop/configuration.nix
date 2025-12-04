@@ -47,6 +47,11 @@
   };
 
   boot.initrd.services.lvm.enable = true;
+
+  boot.kernelParams = [
+    "pcie_aspm=off"
+  ];
+
   services.lvm.boot.thin.enable = true;
 
   custom = {
