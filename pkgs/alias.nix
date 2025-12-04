@@ -8,8 +8,6 @@ in
     removeWarningPopup = true;
   };
 
-  gh = pkgs.pkgs-unstable.gh;
-
   lockProgram = self.i3lock-fancy.override {
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
