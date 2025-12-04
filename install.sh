@@ -104,6 +104,13 @@ main(){
         in
           builtins.concatStringsSep \"\\n\" nixosConfigurations + \"\\n\""
       ;;
+    --force-shell)
+      shift;
+      nix develop \
+        --accept-flake-config \
+        --show-trace \
+        --command "$flakePath/install.sh" "$@"
+      ;;
     --verbose|-v)
       shift;
       set -x
