@@ -107,6 +107,7 @@ main(){
     --force-shell)
       shift;
       nix develop \
+        --extra-experimental-features "flakes nix-command" \
         --accept-flake-config \
         --show-trace \
         --command "$flakePath/install.sh" "$@"
