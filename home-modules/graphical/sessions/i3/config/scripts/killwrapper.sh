@@ -17,9 +17,6 @@ main() {
     "steam")
       closeLast steam steam
     ;;
-    "TelegramDesktop")
-      closeLast TelegramDesktop .telegram-desktop
-    ;;
     *)
       closeAny
     ;;

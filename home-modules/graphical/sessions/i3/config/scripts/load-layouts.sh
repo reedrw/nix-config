@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p wmctrl bluetuith
+#! nix-shell -i bash -p bluetuith
 
 set -x
 set -e
@@ -10,33 +10,23 @@ loadLayout(){
 
 launchPrograms(){
   case "$1" in
+    # Browser
     "1" )
       (firefox &)
     ;;
+    # Chat
     "2" )
       (mullvad-exclude discord &)
       (signal-desktop &)
       (Telegram &)
     ;;
-    "3")
-      (steam &)
-    ;;
+    # Audio
     "4" )
       ("$TERMINAL" -e bluetuith &)
       (pwvucontrol &)
       (easyeffects &)
     ;;
   esac
-}
-
-windowExists(){
-  if (( "$#" == 1 )); then
-    wmctrl -lx | grep -q "$1"
-  else
-    for window in "$@"; do
-      windowExists "$window"
-    done
-  fi
 }
 
 main(){
