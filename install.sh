@@ -110,7 +110,8 @@ main(){
         --extra-experimental-features "flakes nix-command" \
         --accept-flake-config \
         --show-trace \
-        --command "$flakePath/install.sh" "$@"
+        --command "$flakePath/install.sh" "$@" \
+      || nix-shell --run "$flakePath/install.sh $*"
       ;;
     --verbose|-v)
       shift;
