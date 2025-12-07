@@ -1,4 +1,4 @@
-{ config, pkgs, lib, util, ... }:
+{ pkgs, lib, util, ... }:
 
 {
   boot.loader.grub.configurationName = lib.mkDefault "Default - ${util.versionSuffix}";
@@ -19,11 +19,6 @@
   # set console colors
   stylix.targets.console.enable = true;
 
-  # systemd.extraConfig = ''
-  #   DefaultTimeoutStartSec=30s
-  #   DefaultTimeoutStopSec=15s
-  #   DefaultLimitNOFILE=2048:1048576
-  # '';
   systemd.settings.Manager = {
     DefaultTimeoutStartSec = "30s";
     DefaultTimeoutStopSec = "15s";
