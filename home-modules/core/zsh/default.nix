@@ -158,6 +158,7 @@ in
 
       export MANPAGER="nvim +Man\!"
       export EDITOR="${config.home.sessionVariables.EDITOR}"
+      export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
 
       # Make sure nix-shell gets its completions loaded
       # BUG: Doesn't unload completions when leaving direnv
