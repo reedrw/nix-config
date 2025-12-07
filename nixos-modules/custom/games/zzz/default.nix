@@ -1,7 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 let
   cfg = config.custom.zzz;
-  customIcon = builtins.fetchurl <| lib.importJSON ./icon.json;
+  # customIcon = builtins.fetchurl <| lib.importJSON ./icon.json;
   aaglPkgs = inputs.aagl.packages.x86_64-linux;
 in
 {
@@ -14,11 +14,12 @@ in
     programs.sleepy-launcher = {
       enable = true;
       package = with pkgs; let
-        zzz = aaglPkgs.sleepy-launcher.override (old: {
-          unwrapped = old.unwrapped.override {
-            inherit customIcon;
-          };
-        });
+        # zzz = aaglPkgs.sleepy-launcher.override (old: {
+        #   unwrapped = old.unwrapped.override {
+        #     inherit customIcon;
+        #   };
+        # });
+        zzz = aaglPkgs.sleepy-launcher;
       in if cfg.mullvad-exclude then mullvadExclude zzz else zzz;
     };
 
