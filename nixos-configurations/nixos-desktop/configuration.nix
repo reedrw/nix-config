@@ -1,4 +1,4 @@
-{ pkgs-unstable, inputs, config, ... }:
+{ inputs, config, ... }:
 
 {
   imports = [
@@ -19,7 +19,6 @@
 
   services.ollama = {
     enable = true;
-    package = pkgs-unstable.ollama;
     acceleration = "rocm";
 
     # https://github.com/NixOS/nixpkgs/issues/308206
