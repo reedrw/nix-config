@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
@@ -15,25 +15,6 @@ let
         SkipOnboarding = true;
       };
     };
-    extraPrefs = ''
-      defaultPref("browser.contentblocking.report.lockwise.enabled", false);
-      defaultPref("browser.contentblocking.report.monitor.enabled", false);
-      defaultPref("browser.display.use_system_colors", false);
-      defaultPref("browser.download.useDownloadDir", false);
-      defaultPref("devtools.theme", "dark");
-      defaultPref("general.autoScroll", true);
-      defaultPref("gfx.webrender.all", true);
-      defaultPref("media.videocontrols.picture-in-picture.video-toggle.enabled", false)
-      defaultPref("media.cubeb_latency_playback_ms", 10);
-      defaultPref("widget.content.allow-gtk-dark-theme", false);
-      defaultPref("browser.proton.contextmenus.enabled", false);
-      defaultPref("browser.proton.doorhangers.enabled", false);
-      defaultPref("browser.proton.enabled", false);
-      defaultPref("browser.proton.modals.enabled", false);
-      defaultPref("browser.proton.places-tooltip.enabled", false);
-      defaultPref("browser.sessionstore.restore_tabs_lazily", false);
-      defaultPref("browser.sessionstore.restore_on_demand", false);
-    '';
   };
 in
 {
@@ -56,6 +37,26 @@ in
       userChrome = ''
         .tab-text { font-size: 14px !important; }
       '';
+      settings = {
+        "font.size.variable.x-western" = lib.mkForce 16;
+        "browser.contentblocking.report.lockwise.enabled" = false;
+        "browser.contentblocking.report.monitor.enabled" = false;
+        "browser.display.use_system_colors" = false;
+        "browser.download.useDownloadDir" = false;
+        "devtools.theme" = "dark";
+        "general.autoScroll" = true;
+        "gfx.webrender.all" = true;
+        "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
+        "media.cubeb_latency_playback_ms" = 10;
+        "widget.content.allow-gtk-dark-theme" = false;
+        "browser.proton.contextmenus.enabled" = false;
+        "browser.proton.doorhangers.enabled" = false;
+        "browser.proton.enabled" = false;
+        "browser.proton.modals.enabled" = false;
+        "browser.proton.places-tooltip.enabled" = false;
+        "browser.sessionstore.restore_tabs_lazily" = false;
+        "browser.sessionstore.restore_on_demand" = false;
+      };
     };
   };
 
