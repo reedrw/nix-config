@@ -19,6 +19,13 @@ in
     base16Scheme = "${schemes}/base16/ayu-dark.yaml";
   };
 
+  stylix.icons = {
+    enable = true;
+    package = pkgs.papirus-icon-theme;
+    dark = "Papirus-Dark";
+    light = "Papirus-Light";
+  };
+
   stylix.fonts = {
     serif = {
       package = pkgs.cantarell-fonts;
@@ -28,11 +35,11 @@ in
       package = pkgs.cantarell-fonts;
       name = "Cantarell";
     };
-
     monospace = {
-      package = pkgs.fira-code;
-      name = "Fira Code";
+      package = pkgs.hack-font;
+      name = "Hack";
     };
+    sizes.applications = 10;
   };
 
   stylix.cursor = {
@@ -43,5 +50,6 @@ in
 
   stylix.targets = {
     gtk.enable = true;
+    qt.enable = true;
   };
 }
