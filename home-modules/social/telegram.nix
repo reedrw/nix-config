@@ -8,6 +8,7 @@
       XDG_CURRENT_DESKTOP = "gnome";
       # stylix qt module breaks tdesktop right-click shadow
       QT_QPA_PLATFORMTHEME = "";
+      QT_STYLE_OVERRIDE = "";
     })
   ];
 
