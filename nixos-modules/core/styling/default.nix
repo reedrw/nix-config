@@ -27,17 +27,9 @@ in
   };
 
   stylix.fonts = {
-    serif = {
-      package = pkgs.cantarell-fonts;
-      name = "Cantarell";
-    };
     sansSerif = {
       package = pkgs.cantarell-fonts;
       name = "Cantarell";
-    };
-    monospace = {
-      package = pkgs.hack-font;
-      name = "Hack";
     };
     sizes.applications = 10;
   };
