@@ -18,6 +18,13 @@ in
         betterSettings.enable = true;
         betterUploadButton.enable = true;
         clearUrLs.enable = true;
+        clientTheme = {
+          enable = true;
+          color =
+            if config.stylix.polarity == "dark"
+            then config.lib.stylix.colors.base02
+            else config.lib.stylix.colors.base00;
+        };
         fakeNitro.enable = true;
         fixImagesQuality.enable = true;
         fixYoutubeEmbeds.enable = true;
