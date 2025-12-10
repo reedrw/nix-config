@@ -4,7 +4,6 @@
 
   imports = [
     inputs.stylix.homeModules.stylix
-    ./extra/prismlauncher.nix
     ./extra/steam.nix
     ./extra/telegram-desktop.nix
     ./extra/vesktop-clienttheme.nix
