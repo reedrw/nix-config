@@ -17,13 +17,22 @@ let
       |> builtins.attrValues
       |> builtins.concatStringsSep " "
     ;
-  in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
+  in pkgs.runCommand filename { buildInputs = with pkgs; [ lutgen imagemagick ]; } <|
+  ((lib.optionalString (config.stylix.polarity == "light") ''
+    convert ${config.stylix.image} -channel RGB -negate out.${fileType}
+  '') + ''
+    if test -f "out.${fileType}"; then
+      image="out.${fileType}"
+    else
+      image="${config.stylix.image}"
+    fi
+
     lutgen apply \
       --preserve \
       -s 128 \
-      ${config.stylix.image} \
+      $image \
       -o $out -- ${colorScheme}
-  '';
+  '');
 
   alwaysRun = with pkgs; [
     "${lib.getExe feh} --bg-fill ${wallpaper-colored} --no-fehbg"
