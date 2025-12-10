@@ -28,17 +28,17 @@
       };
       urgency_low = {
         background = "#${base00}";
-        forefround = "#${base05}";
+        foreground = "#${base05}";
         timeout = 4;
       };
       urgency_normal = {
         background = "#${base00}";
-        forefround = "#${base05}";
+        foreground = "#${base05}";
         timeout = 4;
       };
       urgency_critical = {
         background = "#${base00}";
-        forefrond = "#${base05}";
+        foreground = "#${base05}";
         frame_color = "#${base08}";
         timeout = 4;
       };
