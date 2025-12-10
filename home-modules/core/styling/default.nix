@@ -1,4 +1,4 @@
-{ inputs, config, osConfig, pkgs, lib, ... }:
+{ inputs, config, osConfig, lib, ... }:
 
 {
 
@@ -18,40 +18,23 @@
           cursor
           fonts
           icons
+          polarity
         ;
       };
     }
   ];
-
-
-  home = {
-    packages = with pkgs; [
-      adwaita-qt
-      adwaita-qt6
-      libsForQt5.qtstyleplugins
-      qt5.qtbase
-      libsForQt5.qt5ct
-      qt6Packages.qt6ct
-    ];
-
-    sessionVariables = {
-      QT_QPA_PLATFORMTHEME = "qt5ct";
-      XCURSOR_THEME = config.gtk.cursorTheme.name;
-    };
-  };
 
   stylix.targets = {
     gtk.enable = true;
     qt.enable = true;
   };
 
-
   gtk = {
     enable = true;
     gtk2 = {
       configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc-2.0";
       extraConfig = ''
-        gtk-application-prefer-dark-theme = ${toString <| config.stylix.polarity == "dark"}
+        gtk-application-prefer-dark-theme = ${lib.boolToString <| config.stylix.polarity == "dark"}
       '';
     };
     gtk3.extraConfig = {
@@ -71,6 +54,7 @@
   };
 
   home.pointerCursor.dotIcons.enable = false;
+  home.sessionVariables.XCURSOR_THEME = config.gtk.cursorTheme.name;
 
   dconf.settings = {
     "org/gnome/desktop/interface".color-scheme = "prefer-${config.stylix.polarity}";
