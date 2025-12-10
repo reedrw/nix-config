@@ -6,7 +6,6 @@
     inputs.stylix.homeModules.stylix
     ./extra/steam.nix
     ./extra/telegram-desktop.nix
-    ./extra/vesktop-clienttheme.nix
     {
       stylix = {
         inherit (osConfig.stylix)
