@@ -78,10 +78,10 @@ in
   home.activation = let
     restartScript = pkgs.writeShellScript "restart" ''
       restartFunc() {
-        while pidof i3lock > /dev/null; do
+        while ${pkgs.procps}/bin/pidof i3lock > /dev/null; do
           sleep 1
         done
-        i3-msg restart
+        ${pkgs.i3}/bin/i3-msg restart
       }
       restartFunc &
     '';
