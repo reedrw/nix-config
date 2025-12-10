@@ -187,10 +187,6 @@ in
     |> map (x: { "i3/${x}".source = ./${x}; })
     |> lib.mergeAttrsList;
 
-  services = {
-    flameshot.enable = true;
-  };
-
   systemd.user.services = with config.lib.functions; lib.mergeAttrsList [
     (mkSimpleService "autotiling-rs"   <| lib.getExe pkgs.autotiling-rs)
     (mkSimpleService "clipboard-clean" <| lib.getExe scripts.clipboard-clean)
