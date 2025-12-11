@@ -18,7 +18,7 @@ in
         foreground = "#${base05}";
         modules-left = "i3";
         modules-center = "mpris";
-        modules-right = "screen battery date";
+        modules-right = "screen light-dark battery date";
         border-left-size = 1;
         border-left-color = "#${base00}";
         border-right-size = 1;
@@ -62,6 +62,15 @@ in
         exec = lib.getExe scripts.screenthing;
         click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
         label-padding = 4;
+        tail = true;
+      };
+      "module/light-dark" = {
+        type = "custom/script";
+        exec =
+          if (config.stylix.polarity == "light")
+          then "echo "
+          else "echo 󰃠";
+        click-left = "toggle-theme";
         tail = true;
       };
     };
