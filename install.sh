@@ -119,10 +119,23 @@ main(){
       main "$@"
       ;;
     --switch|*)
+      specialisation=""
+      if test -f "/etc/nixos/specialisation"; then
+        specialisation="$(cat /etc/nixos/specialisation)"
+      fi
       hostname="${2:-$(hostname)}"
       updateFlakePathFile "$hostname"
 
-      sudo nixos-rebuild switch --flake "$flake#$hostname" --accept-flake-config "${logFormat[@]}" "${@:3}"
+      if test -z "$specialisation"; then
+        sudo nixos-rebuild switch \
+          --flake "$flake#$hostname" \
+          --accept-flake-config "${logFormat[@]}" "${@:3}"
+      else
+        sudo nixos-rebuild switch \
+        --flake "$flake#$hostname" \
+        --specialisation "$specialisation" \
+        --accept-flake-config "${logFormat[@]}" "${@:3}"
+      fi
 
       if test -f "$ZDOTDIR/.zcompdump"; then
         rm "$ZDOTDIR/.zcompdump"
