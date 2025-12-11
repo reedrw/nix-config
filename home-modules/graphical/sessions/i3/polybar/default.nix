@@ -69,10 +69,10 @@ in
         type = "custom/script";
         exec =
           if (config.stylix.polarity == "light")
-          then "echo "
-          else "echo 󰃠";
+          then "echo ' '"
+          else "echo '󰃠 '";
         click-left = "toggle-theme";
-        label-padding = 1;
+        label-padding = 2;
         tail = true;
       };
     };
