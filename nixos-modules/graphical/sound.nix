@@ -69,10 +69,10 @@
     ];
   };
 
-  # environment.systemPackages = with pkgs; [
-  #   qpwgraph
-  #   (aliasToPackage {
-  #     helvum = "qpwgraph";
-  #   })
-  # ];
+  environment.systemPackages = with pkgs; [
+    qpwgraph
+    (aliasToPackage {
+      helvum = "qpwgraph";
+    })
+  ];
 }
