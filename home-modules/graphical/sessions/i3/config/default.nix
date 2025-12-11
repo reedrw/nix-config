@@ -40,7 +40,6 @@ let
     "systemctl --user restart picom"
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
-    "systemctl --user restart playerctld"
     "systemctl --user import-environment PATH"
     "systemctl --user restart xdg-desktop-portal.service"
     "systemctl --user restart xdg-desktop-portal-gtk.service"
