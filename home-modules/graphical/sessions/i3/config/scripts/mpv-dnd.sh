@@ -44,6 +44,9 @@ stopPrograms(){
 
 contPrograms(){
   for i in "${programs[@]}"; do
+    if [[ "$i" == "--resume" ]]; then
+      continue
+    fi
     # shellcheck disable=SC2207
     pids=( $(findWindowPids "$i") )
     for pid in "${pids[@]}"; do
