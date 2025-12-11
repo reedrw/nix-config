@@ -43,6 +43,7 @@ let
     "systemctl --user restart playerctld"
     "systemctl --user import-environment PATH"
     "systemctl --user restart xdg-desktop-portal.service"
+    "systemctl --user restart xdg-desktop-portal-gtk.service"
     "${lib.getExe scripts.toggle-touchpad} disable --silent"
   ];
 
