@@ -34,14 +34,15 @@ in
         type = "custom/script";
         exec = lib.getExe scripts.bataverage;
         click-left = ''${libnotify}/bin/notify-send "$(acpi | sed -e 's/\%.*/\%/g')"'';
+        label-padding = 2;
         tail = true;
       };
       "module/date" = {
         type = "internal/date";
-        date = "%I:%M %p    %a %b %d";
+        date = "%I:%M %p    %a %b %d   ";
         label = "%{A1:${lib.getExe scripts.calnotify} ${base0B}:}%date%%{A}";
         format = "<label>";
-        label-padding = 4;
+        label-padding = 1;
       };
       "module/i3" = {
         type = "internal/i3";
@@ -61,7 +62,7 @@ in
         type = "custom/script";
         exec = lib.getExe scripts.screenthing;
         click-left = ''${libnotify}/bin/notify-send "$(screen -ls)"'';
-        label-padding = 4;
+        label-padding = 2;
         tail = true;
       };
       "module/light-dark" = {
@@ -71,6 +72,7 @@ in
           then "echo "
           else "echo 󰃠";
         click-left = "toggle-theme";
+        label-padding = 1;
         tail = true;
       };
     };
