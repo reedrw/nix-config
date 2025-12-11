@@ -5,7 +5,6 @@ in
 {
   options.custom.boot.keyfile-unlock = {
     enable = lib.mkEnableOption "enable keyfile unlock";
-    default = lib.mkEnableOption "keyfile unlock should be enabled by default";
     device = lib.mkOption {
       type = lib.types.str;
       default = lib.throwIfNot false "custom.boot.keyfile-unlock is enabled but no device is set. Please set custom.boot.keyfile-unlock.device";
@@ -19,21 +18,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.initrd.luks.devices."${cfg.device}".keyFile = lib.mkDefault (if cfg.default then cfg.keyFile else null);
-
-    specialisation = if cfg.default then {
-      "no-keyfile-unlock".configuration = {
-        boot = {
-          initrd.luks.devices."${cfg.device}".keyFile = null;
-          loader.grub.configurationName = "No keyfile unlock - ${util.versionSuffix}";
-        };
-      };
-    } else {
-      "keyfile-unlock".configuration = {
-        boot = {
-          initrd.luks.devices."${cfg.device}".keyFile = cfg.keyFile;
-          loader.grub.configurationName = "Keyfile unlock - ${util.versionSuffix}";
-        };
+    boot.initrd = {
+      luks.devices."${cfg.device}" = {
+        keyFile = cfg.keyFile;
+        keyFileTimeout = 5;
       };
     };
   };
