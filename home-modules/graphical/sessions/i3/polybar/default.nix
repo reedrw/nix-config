@@ -66,14 +66,13 @@ in
         tail = true;
       };
       "module/light-dark" = {
-        type = "custom/script";
-        exec =
+        type = "custom/text";
+        label =
           if (config.stylix.polarity == "light")
-          then "echo ' '"
-          else "echo '󰃠 '";
+          then " "
+          else "󰃠 ";
         click-left = "toggle-theme";
         label-padding = 2;
-        tail = true;
       };
     };
     script = "";
