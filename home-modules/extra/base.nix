@@ -8,10 +8,12 @@ let
     gh        # github cli
     moreutils # more scripting tools
     pin       # easy nix package pinning
+    rar       # rar unzipper
     ripgrep   # recursive grep
     screen    # terminal multiplexer
     wget      # download utility
     progress  # progress viewer
+    p7zip     # 7z unzipper
     inputs.tx-calculator.packages.${pkgs.stdenv.hostPlatform.system}.tx-calculator
 
     # global aliases
