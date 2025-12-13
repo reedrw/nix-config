@@ -20,7 +20,6 @@ in
       base16Scheme = lib.mkForce "${schemes}/base16/ayu-light.yaml";
     };
     environment.etc."nixos/specialisation".text = "light";
-    boot.loader.grub.configurationName = "Light - ${util.versionSuffix}";
   };
 
   stylix = {
