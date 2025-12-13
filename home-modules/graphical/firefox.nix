@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 let
   myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
@@ -43,7 +43,7 @@ in
         "browser.contentblocking.report.monitor.enabled" = false;
         "browser.display.use_system_colors" = false;
         "browser.download.useDownloadDir" = false;
-        "devtools.theme" = "dark";
+        "devtools.theme" = "auto";
         "general.autoScroll" = true;
         "gfx.webrender.all" = true;
         "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
