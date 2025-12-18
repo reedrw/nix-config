@@ -413,8 +413,8 @@
     '';
     home.activation = with config.lib.stylix.colors; {
       tg-theme = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-        ${pkgs.imagemagick}/bin/magick -size 2960x2960 xc:#${base00} ~/.config/background.jpg
-        cd ~/.config && ${pkgs.zip}/bin/zip telegram-base16.zip background.jpg colors.tdesktop-theme && rm -rf colors.tdesktop-theme background.jpg && mv telegram-base16.zip telegram-base16.tdesktop-theme
+        ${pkgs.imagemagick}/bin/magick -size 100x100 xc:#${base00} ~/.config/tiled.png
+        cd ~/.config && ${pkgs.zip}/bin/zip telegram-base16.zip tiled.png colors.tdesktop-theme && rm -rf colors.tdesktop-theme tiled.png && mv telegram-base16.zip telegram-base16.tdesktop-theme
       '';
     };
   };
