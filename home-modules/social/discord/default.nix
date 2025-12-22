@@ -17,7 +17,7 @@ in
       plugins = {
         betterSettings.enable = true;
         betterUploadButton.enable = true;
-        clearUrLs.enable = true;
+        ClearURLs.enable = true;
         fakeNitro.enable = true;
         fixImagesQuality.enable = true;
         fixYoutubeEmbeds.enable = true;
@@ -29,7 +29,7 @@ in
         replaceGoogleSearch = {
           enable = true;
           customEngineName = "DuckDuckGo";
-          customEngineUrl = "https://duckduckgo.com/";
+          customEngineURL = "https://duckduckgo.com/";
         };
         silentTyping = {
           enable = true;
