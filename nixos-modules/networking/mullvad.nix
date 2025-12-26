@@ -17,15 +17,15 @@
     postStart = let
       mullvad = "${config.services.mullvad-vpn.package}/bin/mullvad";
     in ''
+      set -x
       while ! ${mullvad} status >/dev/null; do sleep 1; done
       ${mullvad} lan set allow
       ${mullvad} auto-connect set on
-      ${mullvad} split-tunnel add "$(${pkgs.procps}/bin/pidof nix-daemon)"
     '' + lib.optionalString config.services.tailscale.enable ''
       ${mullvad} split-tunnel add "$(${pkgs.procps}/bin/pidof tailscaled)";
     '' + lib.optionalString config.services.openssh.enable ''
       ${mullvad} split-tunnel add "$(${pkgs.procps}/bin/pidof sshd)";
-    '';
+    '' + ''set +x'';
   };
 
   # This is how I access mullvad in Firefox, allowing me to use the
