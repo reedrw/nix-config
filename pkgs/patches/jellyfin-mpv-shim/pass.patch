@@ -1,0 +1,13 @@
+diff --git a/jellyfin_mpv_shim/clients.py b/jellyfin_mpv_shim/clients.py
+index c6885a1..604734e 100644
+--- a/jellyfin_mpv_shim/clients.py
++++ b/jellyfin_mpv_shim/clients.py
+@@ -74,7 +74,7 @@ class ClientManager(object):
+         while not is_logged_in or add_another:
+             server = input(_("Server URL: "))
+             username = input(_("Username: "))
+-            password = getpass(_("Password: "))
++            password = input(_("Password: "))
+
+             is_logged_in = self.login(server, username, password)
+

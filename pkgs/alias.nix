@@ -8,6 +8,10 @@ in
     removeWarningPopup = true;
   };
 
+  jellyfin-mpv-shim = pkgs.jellyfin-mpv-shim.overrideAttrs (old: {
+    patches = [ ./patches/jellyfin-mpv-shim/pass.patch ];
+  });
+
   lockProgram = self.i3lock-fancy.override {
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
