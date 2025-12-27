@@ -3,21 +3,9 @@
 {
   options.stylix.targets.steam.enable = lib.mkEnableOption "Enable AdwSteamGtk theme";
   config = lib.mkIf config.stylix.targets.steam.enable {
-    home.activation = let
-      applySteamTheme = pkgs.writeShellScript "applySteamTheme" ''
-        # This file gets copied with read-only permission from the nix store
-        # if it is present, we need to make it writable before running the installer
-        custom="$HOME/.cache/AdwSteamInstaller/extracted/custom/custom.css"
-        if [[ -f "$custom" ]]; then
-          chmod +w "$custom"
-        fi
-        ${lib.getExe pkgs.adwsteamgtk} -i
-      '';
-    in {
-      updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" "dconfSettings" ] ''
-        run ${applySteamTheme}
-      '';
-    };
+    home.activation.updateSteamTheme = config.lib.dag.entryAfter [ "writeBoundary" "dconfSettings" ] ''
+      ${lib.getExe pkgs.adwsteamgtk} -i
+    '';
 
     dconf.settings."io/github/Foldex/AdwSteamGtk".prefs-install-custom-css = true;
 

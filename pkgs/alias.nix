@@ -4,6 +4,12 @@ let
   lib = pkgs.lib;
 in
 {
+  adwsteamgtk = pkgs.adwsteamgtk.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [
+      ./patches/adwsteamgtk/fix_custom_css_permissions.patch
+    ];
+  });
+
   bottles = pkgs.bottles.override {
     removeWarningPopup = true;
   };
