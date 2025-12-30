@@ -7,11 +7,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1765783616,
-        "narHash": "sha256-Q7jTQSKUjtptdYHkLyFkxxNQMwRj8ocFksaJW1a74Cg=",
+        "lastModified": 1767085469,
+        "narHash": "sha256-vdJbSEX72K6LRhD1n1c7xycVloPuruGvZISqCvwLmbI=",
         "owner": "Mic92",
         "repo": "direnv-instant",
-        "rev": "1c247e133ba15784b4ae5d192666dc5de26642b4",
+        "rev": "c88b6c7dd0a5892a99338feba8e56276cfe55c7d",
         "type": "github"
       },
       "original": {
