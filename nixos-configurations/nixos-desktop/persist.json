@@ -9,8 +9,7 @@
     "/home/reed/.config/hub",
     "/home/reed/.config/monitors.xml",
     "/home/reed/.config/weechat/irc.conf",
-    "/home/reed/.local/share/zsh/zsh_history",
-    "/home/reed/.steam/registry.vdf"
+    "/home/reed/.local/share/zsh/zsh_history"
   ],
   "directories": [
     "/etc/NetworkManager/system-connections",
@@ -59,6 +58,7 @@
     "/home/reed/.local/state/wireplumber",
     "/home/reed/.mozilla/firefox",
     "/home/reed/.ssh",
+    "/home/reed/.steam",
     "/home/reed/downloads",
     "/home/reed/files",
     "/home/reed/games",
