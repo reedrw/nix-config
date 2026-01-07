@@ -24,15 +24,17 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  nix = inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
+  nix = (inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
     doCheck = false;
     patches = (old.patches or []) ++ [
       ./patches/nix/compadd.patch
     ];
-  });
+  })).override {
+    aws-sdk-cpp = null;
+  };
 
   nixos-option = pkgs.nixos-option.override {
-    nix = pkgs.nix;
+    nix = self.nix;
   };
 
   updog = pkgs.updog.overrideAttrs (old: {
