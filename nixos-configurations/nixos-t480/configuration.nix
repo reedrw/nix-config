@@ -5,10 +5,11 @@
 { inputs, pkgs, config, ... }:
 {
   imports = [
-    ./persist.nix
     ./hardware-configuration.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
   ];
+
+  custom.persistJSON = ./persist.json;
 
   networking.hostName = "nixos-t480";
 

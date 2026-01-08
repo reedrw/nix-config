@@ -2,11 +2,12 @@
 
 {
   imports = [
-    ./persist.nix
     ./hardware-configuration.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
   ];
+
+  custom.persistJSON = ./persist.json;
 
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
