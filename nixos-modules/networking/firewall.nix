@@ -5,6 +5,9 @@
       # SSDP/UPnP
       1900
 
+      # HTTP
+      8080
+
       # shairport-sync
       5000
 
