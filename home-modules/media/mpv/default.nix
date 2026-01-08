@@ -58,7 +58,7 @@ in
       });
     in pkgs.wrapPackage package (x: ''
       #!${pkgs.runtimeShell}
-      loginFile="/var/persist/secrets/jellyfin/login"
+      loginFile="${osConfig.custom.persistDir}/secrets/jellyfin/login"
       if test -f "\$loginFile"; then
         ${x} "\$@" < "\$loginFile"
       else
