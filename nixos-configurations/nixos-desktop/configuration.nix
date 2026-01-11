@@ -13,6 +13,7 @@
   custom = {
     persistDir = "/var/persist";
     persistJSON = ./persist.json;
+    copyPersistPaths = true;
     prevDir = "/var/prev";
     boot = {
       keyfile-unlock = {

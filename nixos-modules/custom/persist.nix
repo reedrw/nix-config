@@ -1,4 +1,4 @@
-{ config, inputs, lib, ... }:
+{ config, inputs, lib, pkgs, ... }:
 let
   homeManagerUserDirs = config.home-manager.users
   |> lib.mapAttrs (n: v: v.home.homeDirectory);
@@ -6,6 +6,34 @@ let
   partitionPathsForUser = user: paths: lib.partition (x:
     lib.hasPrefix homeManagerUserDirs.${user} x
   ) paths;
+
+  # Taken from:
+  # https://github.com/nix-community/impermanence/blob/cf507572c9eb6aada2ac865bc34ab421c827b658/nixos.nix#L59-L83
+  # All persistent storage path submodule values zipped together into
+  # one set. This includes paths from the Home Manager persistence
+  # module and `users` submodules.
+  allPersistentStoragePaths = let
+    cfg = config.environment.persistence;
+    # All enabled system paths
+    nixos = lib.filter (v: v.enable) (lib.attrValues cfg);
+
+    # Get the files and directories from the `users` submodules of
+    # enabled system paths
+    nixosUsers = lib.flatten (map lib.attrValues (lib.catAttrs "users" nixos));
+
+    # Fetch enabled paths from all Home Manager users who have the
+    # persistence module loaded
+    homeManager =
+      let
+        paths = lib.flatten
+          (lib.mapAttrsToList
+            (_name: value:
+              lib.attrValues (value.home.persistence or { }))
+            config.home-manager.users or { });
+      in
+      lib.filter (v: v.enable) paths;
+  in lib.zipAttrsWith (_: lib.flatten) (nixos ++ nixosUsers ++ homeManager);
+
 
   cfg = config.custom;
 in
@@ -24,6 +52,11 @@ in
       type = lib.types.str;
       default = "/prev";
       description = "Mountpoint for previous subvolume";
+    };
+    copyPersistPaths = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether to automatically manage copying and deleting persistent files";
     };
     persistJSON = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
@@ -65,6 +98,109 @@ in
       directories = filterUserPaths cfg.persistDirectories;
     };
   in lib.mkIf (cfg.persistJSON != null) {
+    system.activationScripts = lib.mkIf cfg.copyPersistPaths {
+      "copy-existing-persist-paths" = {
+        deps = [
+          "createPersistentStorageDirs"
+          "specialfs"
+        ];
+        text = let
+          persistFile = pkgs.writeText "persistent" (lib.concatStringsSep "\n" (lib.concatLists [
+            (map (x: x.dirPath)  allPersistentStoragePaths.directories)
+            (map (x: x.filePath) allPersistentStoragePaths.files)
+          ]));
+          useSnapper = ''${lib.boolToString config.custom.snapper.enable} && snapper -c persist ls > /dev/null'';
+          removePath = pkgs.writeShellScript "removePath" ''
+            path="$1"
+
+            if test -f "$path"; then
+              rm "$path"
+              rmdir \
+                --parents \
+                --ignore-fail-on-non-empty \
+                "$(dirname "$path")"
+            fi
+
+            if test -d "$path"; then
+              rm -r "$path"/*
+              rmdir \
+                --parents \
+                --ignore-fail-on-non-empty \
+                "$path"
+            fi
+          '';
+          copyPath = pkgs.writeShellScript "copyPath" ''
+            path="$1"
+
+            if test -d "$path" && ! mountpoint -q "$path"; then
+              if test -d "${config.custom.persistDir}/$path"; then
+                rmdir "${config.custom.persistDir}/$path"
+              fi
+              if ${useSnapper}; then
+                snapper -c persist create --command "
+                  cp -a -rp --reflink '$path' '${config.custom.persistDir}/$path'
+                " -d "persist $path"
+              else
+                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+              fi
+            fi
+
+            if test -f "$path" && ! mountpoint -q "$path"; then
+              if ${useSnapper}; then
+                snapper -c persist create --command "
+                  cp -a -rp --reflink '$path' '${config.custom.persistDir}/$path'
+                " -d "persist $path"
+              else
+                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+              fi
+              mv "$path" "$path.bak"
+            fi
+          '';
+        in builtins.toString (pkgs.writeShellScript "copy-existing-persist-paths.sh" (
+          ''
+            PATH="${lib.makeBinPath ([
+              pkgs.util-linux
+              pkgs.coreutils
+            ] ++ lib.optionals config.custom.snapper.enable [
+              pkgs.snapper
+            ])}"
+          '' + "\n" +
+          # Directories
+          (
+            lib.foldl' (acc: dir: acc + ''
+              ${copyPath} "${dir.dirPath}"
+            '') "" allPersistentStoragePaths.directories
+          ) + "\n" +
+          # Files
+          (
+            lib.foldl' (acc: file: acc + ''
+              ${copyPath} "${file.filePath}"
+            '') "" allPersistentStoragePaths.files
+          ) +
+          # Cleanup
+          ''
+            if test -f /etc/nixos/persistent; then
+              comm -23 <(sort /etc/nixos/persistent) <(sort ${persistFile}) |
+              while IFS= read -r path; do
+                if ${useSnapper}; then
+                  snapper -c persist create --command "
+                    ${removePath} '${config.custom.persistDir}/$path'
+                  " -d "remove $path"
+                else
+                  ${removePath} "${config.custom.persistDir}/$path"
+                fi
+                if test -f "$path.bak"; then
+                  mv "$path.bak" "$path"
+                fi
+              done
+            fi
+          '' + ''
+            cat ${persistFile} > /etc/nixos/persistent
+          ''
+        ));
+      };
+    };
+
     environment.persistence."${config.custom.persistDir}" = {
       hideMounts = true;
       inherit (nonUserPaths) files directories;
