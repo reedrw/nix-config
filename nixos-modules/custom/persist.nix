@@ -123,6 +123,7 @@ in
           ]));
           useSnapper = ''${lib.boolToString config.custom.snapper.enable} && snapper -c persist ls > /dev/null'';
           removePath = pkgs.writeShellScript "removePath" ''
+            set -x
             path="$1"
 
             if test -f "$path"; then
@@ -140,8 +141,10 @@ in
                 --ignore-fail-on-non-empty \
                 "$path"
             fi
+            set +x
           '';
           copyPath = pkgs.writeShellScript "copyPath" ''
+            set -x
             path="$1"
 
             if test -d "$path" && ! mountpoint -q "$path"; then
@@ -167,9 +170,11 @@ in
               fi
               mv "$path" "$path.bak"
             fi
+            set +x
           '';
         in builtins.toString (pkgs.writeShellScript "copy-existing-persist-paths.sh" (
           ''
+            set -x
             PATH="${lib.makeBinPath ([
               pkgs.util-linux
               pkgs.coreutils
@@ -208,6 +213,7 @@ in
             fi
           '' + ''
             cat ${persistFile} > /etc/nixos/persistent
+            set +x
           ''
         ));
       };
