@@ -6,4 +6,9 @@
     <| lib.getExe
     <| pkgs.mullvadExclude
     <| pkgs.qbittorrent-nox;
+
+  custom.persistence.directories = [
+    ".config/qBittorrent"
+    ".local/share/qBittorrent"
+  ];
 }

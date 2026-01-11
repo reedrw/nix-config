@@ -7,6 +7,10 @@ in
 
   home.sessionVariables.EDITOR = "nvim";
 
+  custom.persistence.directories = [
+    ".config/coc"
+  ];
+
   programs.neovim = {
     enable = true;
     viAlias = true;

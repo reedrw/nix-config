@@ -1,27 +1,42 @@
-{ config, osConfig, lib, pkgs, util, ... }:
+{ config, lib, pkgs, util, ... }:
 let
   sources = (util.importFlake ./plugins).inputs or {};
 in
 {
   imports = [
     sources.direnv-instant.homeModules.direnv-instant
+    ({
+      programs.direnv = {
+        enable = true;
+        nix-direnv = {
+          enable = true;
+        };
+        config = {
+          hide_env_diff = true;
+          load_dotenv = true;
+        };
+      };
+
+      programs.direnv-instant = {
+        enable = true;
+        package = sources.direnv-instant.packages."${pkgs.stdenv.hostPlatform.system}".default;
+      };
+
+      custom.persistence.directories = [
+        ".local/share/direnv"
+      ];
+    })
+    ({
+      programs.zoxide = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+
+      custom.persistence.directories = [
+        ".local/share/zoxide"
+      ];
+    })
   ];
-
-  programs.direnv = {
-    enable = true;
-    nix-direnv = {
-      enable = true;
-    };
-    config = {
-      hide_env_diff = true;
-      load_dotenv = true;
-    };
-  };
-
-  programs.direnv-instant = {
-    enable = true;
-    package = sources.direnv-instant.packages."${pkgs.stdenv.hostPlatform.system}".default;
-  };
 
   stylix.targets.fzf.enable = true;
 
@@ -43,11 +58,6 @@ in
 
   stylix.targets.bat.enable = true;
   programs.bat.enable = true;
-
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
 
   programs.tmux = {
     enable = true;
@@ -238,8 +248,8 @@ in
       zle -N termwwidget
       bindkey '^[^M' termwwidget
 
-      if [[ -f "${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history" ]]; then
-        HISTFILE="${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history"
+      if [[ -f "${config.programs.zsh.dotDir}/zsh_history" ]]; then
+        HISTFILE="${config.programs.zsh.dotDir}/zsh_history"
       else
         HISTFILE="$HOME/.zsh_history"
       fi
@@ -275,20 +285,6 @@ in
         esac
       }
 
-      function git(){
-        case "$1" in
-          ~)
-            cd "$(command git rev-parse --show-toplevel)"
-          ;;
-          clone)
-            ${hub}/bin/hub clone --recurse-submodules "''${@:2}"
-          ;;
-          *)
-            ${hub}/bin/hub "$@"
-          ;;
-        esac
-      }
-
       function touch(){
         for file in "$@"; do
           if [[ "$file" = */* ]]; then
@@ -313,7 +309,6 @@ in
       mkdir = "mkdir -vp";
       mv = "mv -iv";
       nr = "nix repl";
-      nixDesktop = "nix --extra-substituters ssh://nix-ssh@nixos-desktop.local";
       rm = "rm -v";
       rr = "ranger_cd";
       rsync = "rsync --old-args";
@@ -327,4 +322,8 @@ in
       ls = "eza -lh --git -s type";
     };
   };
+
+  custom.persistence.files = [
+    ".local/share/zsh/zsh_history"
+  ];
 }

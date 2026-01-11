@@ -27,4 +27,10 @@
     #   import ${pkgs.flakePath}/pkgs/overlays.nix {}
     # '';
   };
+
+  custom.persistence.directories = [
+    ".local/share/nix"
+    ".local/state/nix"
+    ".cache/nix"
+  ];
 }

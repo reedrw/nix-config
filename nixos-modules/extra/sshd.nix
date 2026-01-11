@@ -13,4 +13,8 @@
       ];
     };
   };
+
+  custom.persistence.directories = [
+    "/etc/ssh"
+  ];
 }

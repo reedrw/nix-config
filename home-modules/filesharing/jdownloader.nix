@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -18,5 +18,9 @@
         };
       };
     })
+  ];
+
+ custom.persistence.directories = [
+    ".local/share/jdownloader"
   ];
 }

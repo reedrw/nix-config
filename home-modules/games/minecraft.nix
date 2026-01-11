@@ -18,4 +18,8 @@
 
     ${lib.getExe pkgs.crudini} --set "${config.xdg.dataHome}/PrismLauncher/prismlauncher.cfg" General IconTheme "${theme}"
   '';
+
+  custom.persistence.directories = [
+    ".local/share/PrismLauncher"
+  ];
 }

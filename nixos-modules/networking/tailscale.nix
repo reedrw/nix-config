@@ -6,4 +6,8 @@
   };
 
   networking.search = [ "tail3b7ba.ts.net" ];
+
+  custom.persistence.directories = [
+    "/var/lib/tailscale"
+  ];
 }

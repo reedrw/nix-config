@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, ... }:
 let
   myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
     extraPolicies = {
@@ -60,4 +60,8 @@ in
     };
   };
 
+  custom.persistence.directories = [
+    ".cache/mozilla"
+    ".mozilla/firefox"
+  ];
 }

@@ -58,6 +58,18 @@ in
       default = false;
       description = "Whether to automatically manage copying and deleting persistent files";
     };
+    persistence = {
+      directories = lib.mkOption {
+        type = lib.types.listOf lib.types.unspecified;
+        default = [];
+        description = "Directories to persist";
+      };
+      files = lib.mkOption {
+        type = lib.types.listOf lib.types.unspecified;
+        default = [];
+        description = "Files to persist";
+      };
+    };
     persistJSON = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
@@ -97,7 +109,7 @@ in
       files = filterUserPaths cfg.persistFiles;
       directories = filterUserPaths cfg.persistDirectories;
     };
-  in lib.mkIf (cfg.persistJSON != null) {
+  in lib.mkIf (cfg.persistJSON != null || cfg.copyPersistPaths) {
     system.activationScripts = lib.mkIf cfg.copyPersistPaths {
       "copy-existing-persist-paths" = {
         deps = [
@@ -201,9 +213,17 @@ in
       };
     };
 
-    environment.persistence."${config.custom.persistDir}" = {
+    environment.persistence."${config.custom.persistDir}" = lib.foldl' (acc: x: {
       hideMounts = true;
-      inherit (nonUserPaths) files directories;
-    };
+      files = (acc.files or []) ++ x.files;
+      directories = (acc.directories or []) ++ x.directories;
+    }) {} [
+      {
+        inherit (nonUserPaths) files directories;
+      }
+      (lib.optionalAttrs cfg.copyPersistPaths {
+        inherit (cfg.persistence) files directories;
+      })
+    ];
   };
 }

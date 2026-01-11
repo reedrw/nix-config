@@ -17,4 +17,8 @@
   dconf.settings = {
     "org/gnome/desktop/wm/preferences".button-layout = ":minimize,maximize,close";
   };
+
+  custom.persistence.directories = [
+    ".local/share/TelegramDesktop"
+  ];
 }

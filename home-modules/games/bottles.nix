@@ -5,4 +5,9 @@
     bottles
     ludusavi
   ];
+
+  custom.persistence.directories = [
+    ".local/share/bottles"
+    ".config/ludusavi"
+  ];
 }

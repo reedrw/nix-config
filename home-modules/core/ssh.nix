@@ -1,0 +1,3 @@
+{
+  custom.persistence.directories = [ ".ssh" ];
+}

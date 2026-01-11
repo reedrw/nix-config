@@ -6,12 +6,6 @@
   services.journald.extraConfig = "SystemMaxUse=500M";
   services.udisks2.enable = true;
 
-  security.sudo.extraConfig = ''
-    # Prevent arbitrary code execution as your user when sudoing to another
-    # user due to TTY hijacking via TIOCSTI ioctl.
-    Defaults use_pty
-  '';
-
   services.dbus.implementation = "broker";
   services.irqbalance.enable = true;
   services.fstrim.enable = true;
@@ -78,5 +72,11 @@
   environment.systemPackages = with pkgs; [
     ldp
     xdg-desktop-portal
+  ];
+
+  custom.persistence.directories = [
+    "/var/lib/nixos"
+    "/var/lib/systemd"
+    "/var/tmp"
   ];
 }

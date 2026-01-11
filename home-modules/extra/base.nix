@@ -2,10 +2,8 @@
 let
   packagesMinimal = with pkgs; [
     # utilities
-    cachix    # binary cache
     gc        # garbage collection script
-    git       # version control
-    gh        # github cli
+    jq        # json processor
     moreutils # more scripting tools
     pin       # easy nix package pinning
     rar       # rar unzipper
@@ -25,6 +23,30 @@ let
 
 in
 {
+  imports = [
+    {
+      programs.home-manager.enable = true;
+
+      custom.persistence.directories = [
+        ".local/share/home-manager"
+      ];
+    }
+
+    {
+      home.packages = [ pkgs.cachix ];
+
+      custom.persistence.directories = [
+        ".config/cachix"
+      ];
+    }
+
+    {
+      custom.persistence.directories = [
+        ".cache/pre-commit"
+      ];
+    }
+  ];
+
   xdg = {
     mimeApps.enable = true;
     userDirs = {
@@ -38,13 +60,10 @@ in
     };
   };
 
-  programs.home-manager.enable = true;
-
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home = {
     sessionVariables = {
-      GNUPGHOME = "${config.xdg.dataHome}/gnupg";
       SCREENDIR = "${config.xdg.dataHome}/screen";
       _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
       XDG_CONFIG_HOME = config.xdg.configHome;
@@ -54,6 +73,15 @@ in
     };
     packages = packagesMinimal;
   };
+
+  custom.persistence.directories = [
+    "downloads"
+    "files"
+    "games"
+    "images"
+    "music"
+    "videos"
+  ];
 
   systemd.user.startServices = true;
 }

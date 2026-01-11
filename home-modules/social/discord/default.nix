@@ -61,4 +61,8 @@ in
       echo '${builtins.toJSON extraSettings}' > "$config_dir/settings.json"
     fi
   '';
+
+  custom.persistence.directories = [
+    ".config/discord"
+  ];
 }

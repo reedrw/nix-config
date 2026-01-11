@@ -44,7 +44,10 @@
         echo "~/files/share is being shared to"
         echo "$url"
       fi
-
     '')
+  ];
+
+  custom.persistence.files = [
+    ".cache/updog-password"
   ];
 }

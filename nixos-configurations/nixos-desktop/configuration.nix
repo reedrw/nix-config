@@ -1,10 +1,29 @@
-{ inputs, config, ... }:
+{ inputs, config, lib, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
+    {
+      services.jellyfin = {
+        enable = true;
+        user = "reed";
+        group = "users";
+        openFirewall = true;
+      };
+
+      custom.persistence.directories = [
+        "/var/lib/jellyfin"
+      ];
+    }
+    {
+      services.thelounge.enable = true;
+
+      custom.persistence.directories = [
+        "/var/lib/thelounge"
+      ];
+    }
   ];
 
   networking.hostName = "nixos-desktop";
@@ -12,7 +31,6 @@
 
   custom = {
     persistDir = "/var/persist";
-    persistJSON = ./persist.json;
     copyPersistPaths = true;
     prevDir = "/var/prev";
     boot = {
@@ -26,6 +44,8 @@
     };
   };
 
+  programs.persist-path-manager.enable = lib.mkForce false;
+
   powerManagement.cpuFreqGovernor = "ondemand";
 
   services.udev.extraRules = ''
@@ -38,8 +58,6 @@
     # NVMe SSD
     ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="none"
   '';
-
-  services.thelounge.enable = true;
 
   boot.initrd.services.lvm.enable = true;
 
@@ -74,13 +92,6 @@
   time.timeZone = "America/New_York";
 
   services.xserver.videoDrivers = [ "amdgpu" ];
-
-  services.jellyfin = {
-    enable = true;
-    user = "reed";
-    group = "users";
-    openFirewall = true;
-  };
 
   nix.settings.cores = 8;
 

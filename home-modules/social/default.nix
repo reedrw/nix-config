@@ -1,13 +1,6 @@
-{ pkgs, ... }:
-
 {
-  imports = [
-    ./discord
-    ./weechat
-    ./telegram.nix
-  ];
-
-  home.packages = with pkgs; [
-    signal-desktop
-  ];
+  imports = builtins.readDir ./.
+    |> (x: builtins.removeAttrs x ["default.nix"])
+    |> builtins.attrNames
+    |> map (x: ./${x});
 }

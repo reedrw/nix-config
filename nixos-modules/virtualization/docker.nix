@@ -6,4 +6,8 @@
       storage-driver = "overlay2";
     };
   };
+
+  custom.persistence.directories = [
+    "/var/lib/docker"
+  ];
 }

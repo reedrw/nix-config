@@ -45,4 +45,8 @@
       "mullvad-daemon.service"
     ];
   };
+
+  custom.persistence.directories = [
+    "/etc/mullvad-vpn"
+  ];
 }

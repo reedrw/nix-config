@@ -16,4 +16,8 @@
 
     ${lib.getExe pkgs.crudini} --set "${config.xdg.configHome}/obs-studio/user.ini" Appearance Theme "${theme}"
   '';
+
+  custom.persistence.directories = [
+    ".config/obs-studio"
+  ];
 }

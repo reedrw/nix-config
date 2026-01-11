@@ -17,4 +17,8 @@ in
   systemd.user.services = lib.optionalAttrs gnomeEnabled (with config.lib.functions; lib.mergeAttrsList [
     (mkSimpleService "xwayland-satellite" <| lib.getExe pkgs.xwayland-satellite)
   ]);
+
+  custom.persistence.files = [
+    ".config/monitors.xml"
+  ];
 }
