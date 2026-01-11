@@ -7,16 +7,25 @@
     "${inputs.nixos-hardware}/common/pc/ssd"
   ];
 
-  custom.persistJSON = ./persist.json;
-
   networking.hostName = "nixos-desktop";
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  powerManagement.cpuFreqGovernor = "ondemand";
+  custom = {
+    persistDir = "/var/persist";
+    persistJSON = ./persist.json;
+    prevDir = "/var/prev";
+    boot = {
+      keyfile-unlock = {
+        enable = true;
+        device = "enc";
+        keyFile = "/dev/disk/by-id/usb-SanDisk_Cruzer_Glide_4C530001240706109524-0:0-part2";
+      };
+      wipe.enable = true;
+      efi.enable = true;
+    };
+  };
 
-  networking.firewall.allowedTCPPorts = [
-    8181
-  ];
+  powerManagement.cpuFreqGovernor = "ondemand";
 
   services.udev.extraRules = ''
     # HDD
@@ -29,32 +38,7 @@
     ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="none"
   '';
 
-  services.ollama = {
-    enable = true;
-    acceleration = "rocm";
-
-    # https://github.com/NixOS/nixpkgs/issues/308206
-    # https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
-    rocmOverrideGfx = "10.3.0"; # gfx1030
-
-    environmentVariables = {
-      OLLAMA_FLASH_ATTENTION = "1";
-      OLLAMA_CONTEXT_LENGTH = "16384";
-    };
-    openFirewall = true;
-  };
-
   services.thelounge.enable = true;
-
-  custom.boot = {
-    keyfile-unlock = {
-      enable = true;
-      device = "enc";
-      keyFile = "/dev/disk/by-id/usb-SanDisk_Cruzer_Glide_4C530001240706109524-0:0-part2";
-    };
-    wipe.enable = true;
-    efi.enable = true;
-  };
 
   boot.initrd.services.lvm.enable = true;
 
@@ -63,21 +47,6 @@
   ];
 
   services.lvm.boot.thin.enable = true;
-
-  custom = {
-    persistDir = "/var/persist";
-    prevDir = "/var/prev";
-  };
-
-  custom.nix-ssh-serve = {
-    enable = true;
-    keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP4QB7g+vkkytelSG2Wcibmxn7b3ZhnezFjpppD/MCWW root@nixos-t480"
-    ];
-    secretKeyFiles = [
-      "${config.custom.persistDir}/secrets/nix-store/nix-store-secret-key.pem"
-    ];
-  };
 
   users = {
     mutableUsers = false;
