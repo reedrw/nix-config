@@ -221,8 +221,8 @@ in
 
     environment.persistence."${config.custom.persistDir}" = lib.foldl' (acc: x: {
       hideMounts = true;
-      files = (acc.files or []) ++ x.files;
-      directories = (acc.directories or []) ++ x.directories;
+      files = (acc.files or []) ++ (x.files or []);
+      directories = (acc.directories or []) ++ (x.directories or []);
     }) {} [
       {
         inherit (nonUserPaths) files directories;
