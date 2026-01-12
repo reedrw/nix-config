@@ -143,30 +143,43 @@ in
             fi
             set +x
           '';
-          copyPath = pkgs.writeShellScript "copyPath" ''
+          copyPath = let
+            copyIfNotEmpty = pkgs.writeShellScript "copyIfNotEmpty" ''
+              set -x
+              path="$1"
+
+              # path exists and is not an empty directory
+              if [ "$(ls -A "$path" 2> /dev/null)" ]; then
+                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+              fi
+              set +x
+            '';
+          in pkgs.writeShellScript "copyPath" ''
             set -x
             path="$1"
 
             if test -d "$path" && ! mountpoint -q "$path"; then
               if test -d "${config.custom.persistDir}/$path"; then
-                rmdir "${config.custom.persistDir}/$path"
+                rmdir \
+                  --ignore-fail-on-non-empty \
+                  "${config.custom.persistDir}/$path"
               fi
               if ${useSnapper}; then
                 snapper -c persist create --command "
-                  cp -a -rp --reflink '$path' '${config.custom.persistDir}/$path'
+                  ${copyIfNotEmpty} '$path'
                 " -d "persist $path"
               else
-                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+                ${copyIfNotEmpty} "$path"
               fi
             fi
 
             if test -f "$path" && ! mountpoint -q "$path"; then
               if ${useSnapper}; then
                 snapper -c persist create --command "
-                  cp -a -rp --reflink '$path' '${config.custom.persistDir}/$path'
+                  ${copyIfNotEmpty} '$path'
                 " -d "persist $path"
               else
-                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+                ${copyIfNotEmpty} "$path"
               fi
               mv "$path" "$path.bak"
             fi
