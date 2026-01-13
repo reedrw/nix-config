@@ -123,8 +123,9 @@ in
           ]));
           useSnapper = ''${lib.boolToString config.custom.snapper.enable} && snapper -c persist ls > /dev/null'';
           removePath = pkgs.writeShellScript "removePath" ''
-            set -x
             path="$1"
+
+            shopt -s dotglob
 
             if test -f "$path"; then
               rm "$path"
@@ -132,6 +133,7 @@ in
                 --parents \
                 --ignore-fail-on-non-empty \
                 "$(dirname "$path")"
+              exit 0
             fi
 
             if test -d "$path"; then
@@ -140,30 +142,33 @@ in
                 --parents \
                 --ignore-fail-on-non-empty \
                 "$path"
+              exit 0
             fi
-            set +x
           '';
           copyPath = let
             copyIfNotEmpty = pkgs.writeShellScript "copyIfNotEmpty" ''
-              set -x
               path="$1"
 
+              shopt -s dotglob
+
               # path exists and is not an empty directory
-              if [ "$(ls -A "$path" 2> /dev/null)" ]; then
-                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+              [ "$(ls -A "$path" 2> /dev/null)" ] || exit 0
+
+              if test -d "$path"; then
+                cp -a -rp --reflink "$path"/* "${config.custom.persistDir}/$path"
+                exit 0
               fi
-              set +x
+
+              if test -f "$path"; then
+                cp -a -rp --reflink "$path" "${config.custom.persistDir}/$path"
+                mv "$path" "$path.bak"
+                exit 0
+              fi
             '';
           in pkgs.writeShellScript "copyPath" ''
-            set -x
             path="$1"
 
-            if test -d "$path" && ! mountpoint -q "$path"; then
-              if test -d "${config.custom.persistDir}/$path"; then
-                rmdir \
-                  --ignore-fail-on-non-empty \
-                  "${config.custom.persistDir}/$path"
-              fi
+            if ! mountpoint -q "$path"; then
               if ${useSnapper}; then
                 snapper -c persist create --command "
                   ${copyIfNotEmpty} '$path'
@@ -172,22 +177,9 @@ in
                 ${copyIfNotEmpty} "$path"
               fi
             fi
-
-            if test -f "$path" && ! mountpoint -q "$path"; then
-              if ${useSnapper}; then
-                snapper -c persist create --command "
-                  ${copyIfNotEmpty} '$path'
-                " -d "persist $path"
-              else
-                ${copyIfNotEmpty} "$path"
-              fi
-              mv "$path" "$path.bak"
-            fi
-            set +x
           '';
-        in builtins.toString (pkgs.writeShellScript "copy-existing-persist-paths.sh" (
+        in (pkgs.writeShellScript "copy-existing-persist-paths.sh" (
           ''
-            set -x
             PATH="${lib.makeBinPath ([
               pkgs.util-linux
               pkgs.coreutils
@@ -216,8 +208,6 @@ in
                   snapper -c persist create --command "
                     ${removePath} '${config.custom.persistDir}/$path'
                   " -d "remove $path"
-                else
-                  ${removePath} "${config.custom.persistDir}/$path"
                 fi
                 if test -f "$path.bak"; then
                   mv "$path.bak" "$path"
@@ -226,9 +216,8 @@ in
             fi
           '' + ''
             cat ${persistFile} > /etc/nixos/persistent
-            set +x
           ''
-        ));
+        )).outPath;
       };
     };
 
