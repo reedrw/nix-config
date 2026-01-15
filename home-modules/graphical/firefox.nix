@@ -1,22 +1,5 @@
 { pkgs, lib, ... }:
-let
-  myFirefox = with pkgs; wrapFirefox firefox-esr-unwrapped {
-    extraPolicies = {
-      CaptivePortal = false;
-      DisableFirefoxStudies = true;
-      DisablePocket = true;
-      DisableTelemetry = true;
-      FirefoxHome = {
-        Pocket = false;
-        Snippets = false;
-      };
-      UserMessaging = {
-        ExtensionRecommendations = false;
-        SkipOnboarding = true;
-      };
-    };
-  };
-in
+
 {
 
   stylix.targets.firefox = {
@@ -30,7 +13,22 @@ in
 
   programs.firefox = {
     enable = true;
-    package = myFirefox;
+    package = pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
+      extraPolicies = {
+        CaptivePortal = false;
+        DisableFirefoxStudies = true;
+        DisablePocket = true;
+        DisableTelemetry = true;
+        FirefoxHome = {
+          Pocket = false;
+          Snippets = false;
+        };
+        UserMessaging = {
+          ExtensionRecommendations = false;
+          SkipOnboarding = true;
+        };
+      };
+    };
 
     profiles."default" = {
       name = "default";
