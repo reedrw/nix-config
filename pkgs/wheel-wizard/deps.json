@@ -15,24 +15,9 @@
     "hash": "sha256-wgtodGf644CsUZEBIpFKcUjYHTbnu7mZmlr8uHIxeKA="
   },
   {
-    "pname": "Avalonia.Controls.ColorPicker",
-    "version": "11.2.5",
-    "hash": "sha256-gWGIqXrac0fOnmGbovcFWv5Uj14hOyC+n0l45N7owMg="
-  },
-  {
-    "pname": "Avalonia.Controls.DataGrid",
-    "version": "11.2.5",
-    "hash": "sha256-eGKc+UnsO5nNiUd7+n3CQW6vIWq2qpazYvYXrVTQY7s="
-  },
-  {
     "pname": "Avalonia.Desktop",
     "version": "11.2.5",
     "hash": "sha256-rDJ1NJM3tEqB7sRszj0AfplwkkvtE3Hvn7acrIsq+yw="
-  },
-  {
-    "pname": "Avalonia.Diagnostics",
-    "version": "11.2.5",
-    "hash": "sha256-WsAMBmNfUKMB2II3AfM8A0klfJR/vgEtRUTGpgC6F3A="
   },
   {
     "pname": "Avalonia.Fonts.Inter",
@@ -68,11 +53,6 @@
     "pname": "Avalonia.Themes.Fluent",
     "version": "11.2.5",
     "hash": "sha256-Wb6H3Vb5gsL8bKzmaJgFZBEsu3MI0CCdlXfO5SLisdo="
-  },
-  {
-    "pname": "Avalonia.Themes.Simple",
-    "version": "11.2.5",
-    "hash": "sha256-EjQ2XA81SS91h8oGUwVxLYewm3Lp5Sa2Lmbj0c8y8BU="
   },
   {
     "pname": "Avalonia.Win32",
@@ -368,6 +348,11 @@
     "pname": "Microsoft.NET.Test.Sdk",
     "version": "17.13.0",
     "hash": "sha256-sc2wvyV8cGm1FrNP2GGHEI584RCvRPu15erYCsgw5QY="
+  },
+  {
+    "pname": "Microsoft.NETCore.App.Host.win-x64",
+    "version": "8.0.22",
+    "hash": "sha256-tIEeEnxdTcs8GJNLJx22MXO/80Hpohp1cjeyT8fKEOk="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
