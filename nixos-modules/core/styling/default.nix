@@ -39,11 +39,11 @@ in
       groups = [ "wheel" ];
       commands = [
         {
-          command = "/nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration switch";
+          command = "/nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration";
           options = [ "NOPASSWD" ];
         }
         {
-          command = "/nix/var/nix/profiles/system/bin/switch-to-configuration switch";
+          command = "/nix/var/nix/profiles/system/bin/switch-to-configuration";
           options = [ "NOPASSWD" ];
         }
       ];
@@ -61,10 +61,12 @@ in
       # check if the current system configuration matches the 'light' specialisation
       if [ "$current_system" == "$light_specialisation" ]; then
          ${lib.getExe pkgs.libnotify} "Switching to Dark"
-         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration test
+         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot &
       else
          ${lib.getExe pkgs.libnotify} "Switching to Light"
-         sudo /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration switch
+         sudo /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration test
+         sudo /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration boot &
       fi
     '')
   ];
