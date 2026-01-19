@@ -45,7 +45,7 @@ jobs:
     #   uses: wimpysworld/nothing-but-nix@main
 
     - name: Install Lix
-      uses: canidae-solutions/lix-quick-install-action@v3
+      uses: canidae-solutions/lix-quick-install-action@v4
 
     - name: Install Doppler CLI
       uses: dopplerhq/cli-action@v3

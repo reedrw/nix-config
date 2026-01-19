@@ -47,7 +47,7 @@ jobs:
         ref: ${{ github.event.inputs.ref }}
 
     - name: Install Lix
-      uses: canidae-solutions/lix-quick-install-action@v3
+      uses: canidae-solutions/lix-quick-install-action@v4
 
     - name: Install Cachix
       uses: cachix/cachix-action@v16
@@ -99,7 +99,7 @@ jobs:
         ref: ${{ github.event.inputs.ref }}
 
     - name: Install Lix
-      uses: canidae-solutions/lix-quick-install-action@v3
+      uses: canidae-solutions/lix-quick-install-action@v4
 
     - name: Install Cachix
       uses: cachix/cachix-action@v16
