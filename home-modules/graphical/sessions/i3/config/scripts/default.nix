@@ -39,7 +39,7 @@
       # Window classes to be suspended while mpv is the active window
       chatApps = [
         "TelegramDesktop"
-        "vesktop"
+        "discord"
       ];
     in pkgs.writeShellScriptBin "mpv-dnd" ''
       ${lib.getExe unwrapped} ${builtins.concatStringsSep " " chatApps} "$@"
