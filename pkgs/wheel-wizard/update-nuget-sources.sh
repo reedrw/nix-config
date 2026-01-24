@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p dotnet-sdk_8 nuget-to-json
+#! nix-shell -i bash
 
 set -x
 set -e
