@@ -14,4 +14,5 @@ let
 in writeShellScriptBin "update-all" ''
   ${echoAndRun} nix flake update
   find . -name update-sources.sh -execdir sh -c '${echoAndRun} "$(realpath {})"&& echo' \;
+  find . -name update.sh -execdir sh -c '${echoAndRun} "$(realpath {})"&& echo' \;
 ''
