@@ -54,6 +54,7 @@
         "browser.proton.places-tooltip.enabled" = false;
         "browser.sessionstore.restore_tabs_lazily" = false;
         "browser.sessionstore.restore_on_demand" = false;
+        "javascript.options.wasm_js_promise_integration" = true;
       };
     };
   };
