@@ -1,41 +1,11 @@
-{ config, lib, pkgs, util, ... }:
+{ config, osConfig, lib, pkgs, util, ... }:
 let
   sources = (util.importFlake ./plugins).inputs or {};
 in
 {
   imports = [
-    sources.direnv-instant.homeModules.direnv-instant
-    ({
-      programs.direnv = {
-        enable = true;
-        nix-direnv = {
-          enable = true;
-        };
-        config = {
-          hide_env_diff = true;
-          load_dotenv = true;
-        };
-      };
-
-      programs.direnv-instant = {
-        enable = true;
-        package = sources.direnv-instant.packages."${pkgs.stdenv.hostPlatform.system}".default;
-      };
-
-      custom.persistence.directories = [
-        ".local/share/direnv"
-      ];
-    })
-    ({
-      programs.zoxide = {
-        enable = true;
-        enableZshIntegration = true;
-      };
-
-      custom.persistence.directories = [
-        ".local/share/zoxide"
-      ];
-    })
+    ./direnv.nix
+    ./zoxide.nix
   ];
 
   stylix.targets.fzf.enable = true;
@@ -95,13 +65,11 @@ in
         file = "fzf-tab.plugin.zsh";
       })
       (mkZshPlugin { pkg = zsh-syntax-highlighting; })
-      (mkZshPlugin {
-        pkg = {
-          pname = "zsh-simple-abbreviations";
-          src = sources.zsh-simple-abbreviations;
-        };
+      {
+        name = "zsh-simple-abbreviations";
+        src = sources.zsh-simple-abbreviations;
         file = "zsh-simple-abbreviations.zsh";
-      })
+      }
     ];
     autocd = true;
     defaultKeymap = "emacs";
@@ -248,8 +216,8 @@ in
       zle -N termwwidget
       bindkey '^[^M' termwwidget
 
-      if [[ -f "${config.programs.zsh.dotDir}/zsh_history" ]]; then
-        HISTFILE="${config.programs.zsh.dotDir}/zsh_history"
+      if [[ -f "${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history" ]]; then
+        HISTFILE="${osConfig.custom.persistDir}/${config.xdg.dataHome}/zsh/zsh_history"
       else
         HISTFILE="$HOME/.zsh_history"
       fi
