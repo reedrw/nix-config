@@ -4,6 +4,7 @@
   dotnetCorePackages,
   nuget-to-json,
   writeShellScript,
+  nix-update,
   lib,
   ...
 }:
@@ -40,6 +41,7 @@ buildDotnetModule (self: {
   passthru.updateScript = writeShellScript "update.sh" ''
     PATH=$PATH:${lib.makeBinPath [
       dotnetCorePackages.sdk_8_0
+      nix-update
       nuget-to-json
     ]}
     set -x
