@@ -6,6 +6,10 @@ on:
 
 jobs:
   update:
+    strategy:
+      matrix:
+        cachixName:
+          - reedrw
     runs-on: ubuntu-latest
     steps:
     - name: Install Doppler CLI
@@ -26,6 +30,15 @@ jobs:
 
     - name: Install Lix
       uses: canidae-solutions/lix-quick-install-action@v4
+
+    - name: Install Cachix
+      uses: cachix/cachix-action@v16
+      continue-on-error: true
+      with:
+        useDaemon: false
+        name: ${{ matrix.cachixName }}
+        signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
+        pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
 
     - name: Checkout repository
       uses: actions/checkout@v6
