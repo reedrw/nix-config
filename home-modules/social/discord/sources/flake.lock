@@ -85,7 +85,24 @@
     },
     "root": {
       "inputs": {
-        "nixcord": "nixcord"
+        "nixcord": "nixcord",
+        "vencord": "vencord"
+      }
+    },
+    "vencord": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770346306,
+        "narHash": "sha256-1459x8G0++jH6NO5n4B5LVjDFjAFkLKFAQygVdqgOAk=",
+        "owner": "Vendicated",
+        "repo": "Vencord",
+        "rev": "50c5124e1cc95062a883c58fc2551b302bd5994f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Vendicated",
+        "repo": "Vencord",
+        "type": "github"
       }
     }
   },

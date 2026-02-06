@@ -1,16 +1,21 @@
-{ config, util, ... }:
+{ config, util, pkgs, ... }:
 let
-  nixcord = (util.importFlake ./sources).inputs.nixcord;
+  sources = (util.importFlake ./sources).inputs;
 in
 {
   imports = [
-    nixcord.homeModules.nixcord
+    sources.nixcord.homeModules.nixcord
   ];
 
   programs.nixcord = {
     enable = true;
     discord = {
       autoscroll.enable = true;
+      vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
+        src = sources.vencord // {
+          inherit (old.src) owner repo;
+        };
+      });
     };
     config = {
       frameless = true;
