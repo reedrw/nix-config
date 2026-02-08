@@ -16,21 +16,12 @@ in
         src = sources.vencord // {
           inherit (old.src) owner repo;
         };
-        postPatch = lib.optionalString (plugins != {}) <| (old.postPatch or "") + (''
+        postPatch = (old.postPatch or "") + lib.optionalString (plugins != {}) (''
           mkdir -p src/userplugins
         '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (n: v: ''
           cp -r ${v} src/userplugins/${n}
         '') plugins));
       });
-    };
-    extraConfig = {
-      plugins = {
-        # https://github.com/ScattrdBlade/bigFileUpload/blob/main/index.tsx#L800
-        BigFileUpload = {
-          enabled = true;
-          autoFormat = "Yes";
-        };
-      };
     };
     config = {
       frameless = true;
@@ -65,6 +56,13 @@ in
         unindent.enable = true;
         voiceMessages.enable = true;
         youtubeAdblock.enable = true;
+      };
+    };
+    extraConfig.plugins = {
+      # https://github.com/ScattrdBlade/bigFileUpload/blob/main/index.tsx#L800
+      BigFileUpload = {
+        enabled = true;
+        autoFormat = "Yes";
       };
     };
   };
