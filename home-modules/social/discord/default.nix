@@ -28,6 +28,7 @@ in
         # https://github.com/ScattrdBlade/bigFileUpload/blob/main/index.tsx#L800
         BigFileUpload = {
           enabled = true;
+          autoFormat = "Yes";
         };
       };
     };
