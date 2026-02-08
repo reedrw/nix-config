@@ -23,7 +23,10 @@ in
         betterSettings.enable = true;
         betterUploadButton.enable = true;
         ClearURLs.enable = true;
-        fakeNitro.enable = true;
+        fakeNitro = {
+          enable = true;
+          transformCompoundSentence = true;
+        };
         fixImagesQuality.enable = true;
         fixYoutubeEmbeds.enable = true;
         iLoveSpam.enable = true;
