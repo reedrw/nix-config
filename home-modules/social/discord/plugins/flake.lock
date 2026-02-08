@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "bigFileUpload": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769718708,
+        "narHash": "sha256-76ZcxVKpIWr5PRcTZMoMOdF/kHxUt2Y1EquV+fcX9kg=",
+        "owner": "ScattrdBlade",
+        "repo": "bigFileUpload",
+        "rev": "5b5699c17036d80e312c66c5dad8977540bcc9a7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ScattrdBlade",
+        "repo": "bigFileUpload",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "bigFileUpload": "bigFileUpload"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

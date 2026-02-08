@@ -1,6 +1,7 @@
-{ config, util, pkgs, ... }:
+{ config, util, pkgs, lib, ... }:
 let
   sources = (util.importFlake ./sources).inputs;
+  plugins = (util.importFlake ./plugins).inputs;
 in
 {
   imports = [
@@ -15,7 +16,20 @@ in
         src = sources.vencord // {
           inherit (old.src) owner repo;
         };
+        postPatch = lib.optionalString (plugins != {}) <| (old.postPatch or "") + (''
+          mkdir -p src/userplugins
+        '' + lib.concatStringsSep "\n" (lib.mapAttrsToList (n: v: ''
+          cp -r ${v} src/userplugins/${n}
+        '') plugins));
       });
+    };
+    extraConfig = {
+      plugins = {
+        # https://github.com/ScattrdBlade/bigFileUpload/blob/main/index.tsx#L800
+        BigFileUpload = {
+          enabled = true;
+        };
+      };
     };
     config = {
       frameless = true;
