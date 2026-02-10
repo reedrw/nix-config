@@ -1,4 +1,12 @@
 {
+  "balatro-mod-manager": {
+    "0.4.0": {
+      "note": "https://github.com/NixOS/nixpkgs/pull/488158",
+      "rev": "7e1c99c464bea0b32ccdebcc052ed1091a5ae89d",
+      "sha256": "0gxkp8l89gkv34yh5l57mg09b5nnhhcj2krx408s5lxxzrs0czx8"
+    },
+    "default": "0.4.0"
+  },
   "bat": {
     "0.25.0": {
       "note": "TODO: figure out why 0.26.0 breaks fzf-tab",
