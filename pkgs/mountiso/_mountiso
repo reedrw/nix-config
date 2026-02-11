@@ -1,0 +1,22 @@
+#compdef mountiso
+
+_mountiso() {
+  local state
+
+  _arguments \
+    '1: :->first_arg' \
+    '2: :->second_arg'
+
+  case $state in
+    first_arg)
+      _alternative \
+        'options:options:((-l\:"Unmount an ISO"))' \
+        'files:ISO files:_files -g "*.iso"'
+      ;;
+    second_arg)
+      _path_files -/
+      ;;
+  esac
+}
+
+_mountiso "$@"

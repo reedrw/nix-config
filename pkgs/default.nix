@@ -4,6 +4,7 @@ let
     gc = pkgs.callPackage ./gc { };
     jdownloader = pkgs.callPackage ./jdownloader { };
     ldp = self.callPackage ./ldp { };
+    mountiso = pkgs.callPackage ./mountiso { };
     pin = pkgs.callPackage ./pin { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
     update-all = pkgs.callPackage ./update-all { };

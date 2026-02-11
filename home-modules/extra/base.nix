@@ -5,6 +5,7 @@ let
     gc        # garbage collection script
     jq        # json processor
     moreutils # more scripting tools
+    mountiso  # easy iso mounting
     pin       # easy nix package pinning
     rar       # rar unzipper
     ripgrep   # recursive grep
