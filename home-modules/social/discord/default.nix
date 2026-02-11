@@ -25,10 +25,14 @@ in
     };
     config = {
       frameless = true;
+      themeLinks = [
+        "https://raw.codeberg.page/AllPurposeMat/Disblock-Origin/DisblockOrigin.theme.css"
+      ];
       plugins = {
         betterSettings.enable = true;
         betterUploadButton.enable = true;
         ClearURLs.enable = true;
+        disableCallIdle.enable = true;
         fakeNitro = {
           enable = true;
           transformCompoundSentence = true;
