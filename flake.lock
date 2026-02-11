@@ -354,11 +354,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1770500058,
-        "narHash": "sha256-PdQCLC4LCIINrzYKBZObPfrRAWegbVBriO+/2P1M07s=",
+        "lastModified": 1770819480,
+        "narHash": "sha256-xlcf+fVcYM7Fix0UQfQPNR3gBuiyv3bX9N/Pl+x3tKE=",
         "ref": "refs/heads/main",
-        "rev": "b983c15336532f6a7b1b7089e1dfcfe5f6f90e66",
-        "revCount": 18914,
+        "rev": "505d0669dcb47e5f8b054cbb17543ab2186c496a",
+        "revCount": 18925,
         "type": "git",
         "url": "https://git.lix.systems/lix-project/lix.git"
       },

@@ -28,8 +28,6 @@ in
     doCheck = false;
     patches = (old.patches or []) ++ [
       ./patches/nix/compadd.patch
-      # https://git.lix.systems/lix-project/lix/issues/1116
-      ./patches/nix/36b8681.diff
     ];
   })).override {
     aws-sdk-cpp = null;
