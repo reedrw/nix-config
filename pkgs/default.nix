@@ -7,6 +7,7 @@ let
     mountiso = pkgs.callPackage ./mountiso { };
     pin = pkgs.callPackage ./pin { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
+    unscene = self.callPackage ./unscene { };
     update-all = pkgs.callPackage ./update-all { };
     wheel-wizard = pkgs.callPackage ./wheel-wizard { };
   };

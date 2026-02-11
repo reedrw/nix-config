@@ -1,0 +1,22 @@
+#compdef unscene
+
+_unscene() {
+  local state
+
+  _arguments \
+    '1: :->first_arg' \
+    '2: :->second_arg'
+
+  case $state in
+    first_arg)
+      _alternative \
+        'options:options:((-l\:"Unmount an ISO"))' \
+        'files:RAR files:_files -g "*.rar"'
+      ;;
+    second_arg)
+      _path_files -/
+      ;;
+  esac
+}
+
+_unscene "$@"
