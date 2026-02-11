@@ -28,6 +28,13 @@
       auto-optimise-store = true;
       builders-use-substitutes = true;
       experimental-features = [ "flakes" "nix-command" "pipe-operator" ];
+      # check if there's still warning spam in 26.05
+      extra-deprecated-features = [
+        "broken-string-escape"
+        "or-as-identifier"
+        "broken-string-indentation"
+        "rec-set-dynamic-attrs"
+      ];
       extra-substituters = util.nixConfig.extra-substituters ++ [ ];
       extra-trusted-public-keys = util.nixConfig.extra-trusted-public-keys ++ [
         "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
