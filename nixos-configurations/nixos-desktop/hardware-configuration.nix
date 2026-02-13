@@ -58,14 +58,6 @@
       fsType = "vfat";
     };
 
-  swapDevices =
-    [
-      {
-        device = "/var/subvols/swap/swapfile";
-        size = 32768;
-      }
-    ];
-
   zramSwap = {
     enable = true;
     memoryPercent = 100;
