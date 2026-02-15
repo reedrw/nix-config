@@ -13,7 +13,13 @@
   boot.kernelModules = [ "kvm-amd"  "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" ];
   boot.extraModulePackages = [ ];
 
-  boot.initrd.luks.devices."enc".device = "/dev/vg01/nixos";
+  boot.initrd.luks.devices."enc" = {
+    device = "/dev/vg01/nixos";
+    # https://nicholaslyz.com/blog/2025/05/14/dm-crypt-causing-system-freezes/
+    bypassWorkqueues = true;
+  };
+
+  hardware.block.defaultScheduler = "bfq";
 
   fileSystems."/" =
     { device = "/dev/disk/by-label/nixos";
