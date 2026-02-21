@@ -14,11 +14,11 @@
     # xterm. i3-sensible-terminal uses the -e flag to execute a command.
     package = pkgs.wrapPackage pkgs.kitty (kitty: ''
       #!${pkgs.stdenv.shell}
-      if [[ "\$1" == "-e" ]]; then
+      if [[ "$1" == "-e" ]]; then
         shift
-        exec ${kitty} --session=none "\$@"
+        exec ${kitty} --session=none "$@"
       else
-        exec ${kitty} "\$@"
+        exec ${kitty} "$@"
       fi
     '');
     # shellIntegration.enableZshIntegration = true;

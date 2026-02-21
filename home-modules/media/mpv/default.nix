@@ -59,10 +59,10 @@ in
     in pkgs.wrapPackage package (x: ''
       #!${pkgs.runtimeShell}
       loginFile="${osConfig.custom.persistDir}/secrets/jellyfin/login"
-      if test -f "\$loginFile"; then
-        ${x} "\$@" < "\$loginFile"
+      if test -f "$loginFile"; then
+        ${x} "$@" < "$loginFile"
       else
-        ${x} "\$@"
+        ${x} "$@"
       fi
     '');
     mpvConfig = config.programs.mpv.config;
