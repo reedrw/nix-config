@@ -39,11 +39,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1771375681,
-        "narHash": "sha256-qDDw0ruBZ1kt63j4uVP5Xrd1OxGKIYrSFnig0z6ozSw=",
+        "lastModified": 1771604425,
+        "narHash": "sha256-+Dn0nMcA+ceg+t3jsj9EdVl38CANXOs2xFc58CxXar4=",
         "owner": "kaylorben",
         "repo": "nixcord",
-        "rev": "d030dbb48ab020092681a39c878c1d48a553ffc1",
+        "rev": "62c92eca62b733c2b36da480d70cc1f5a9a0e5a7",
         "type": "github"
       },
       "original": {
@@ -92,11 +92,11 @@
     "vencord": {
       "flake": false,
       "locked": {
-        "lastModified": 1770682757,
-        "narHash": "sha256-KYOdA41BCP3gnwM/yqmgh/qV+zKaR12c04k52RG6q6g=",
+        "lastModified": 1771575643,
+        "narHash": "sha256-9nD8NrhW3RqMdm+8dYpn5ak6Mii3/l+rtNE1T7bOLjI=",
         "owner": "Vendicated",
         "repo": "Vencord",
-        "rev": "f9c404c229af828b362086ae954252647c80b208",
+        "rev": "dc25c8f0461972918b2d73a0d93a3d4b6772b99a",
         "type": "github"
       },
       "original": {
