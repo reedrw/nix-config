@@ -10,6 +10,7 @@
       ''}"
     ];
     run = [
+      "systemctl --user restart pipewire wireplumber easyeffects"
       "xrandr --output DisplayPort-0 --mode 1920x1080 --rate 144"
       "xrandr --output DisplayPort-1 --mode 1920x1080 --rate 144"
       "xrandr --output DisplayPort-2 --mode 1920x1080 --rate 144"
