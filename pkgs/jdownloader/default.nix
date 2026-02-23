@@ -20,7 +20,8 @@ let
   src = fetchFromMegaNz {
     name= "JDownloader";
     url = "https://mega.nz/file/nJdklRLT#aGoGo2JDPucYttONaTV5LXd4HgEMNKrKPQzy_LWdsSc";
-    sha256="sha256-6k0PYN9XDaTSxaQlgpMh5hLANxC2Vwl0VfEzPq3IkN4=";
+    sha256="sha256-vI92rkSV0F54GcoBKdriT+fNKNyQTy5bu9jnJbCXWmA=";
+    isDir = true;
   };
 
   icon = fetchurl {
