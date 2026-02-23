@@ -39,11 +39,11 @@ buildDotnetModule (self: {
   };
 
   passthru.updateScript = writeShellScript "update.sh" ''
-    PATH=$PATH:${lib.makeBinPath [
+    PATH="${lib.makeBinPath [
       dotnetCorePackages.sdk_8_0
       nix-update
       nuget-to-json
-    ]}
+    ]}:$PATH"
     set -x
     set -e
 
