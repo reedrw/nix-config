@@ -19,8 +19,8 @@ let
 
   src = fetchFromMegaNz {
     name= "JDownloader";
-    url = "https://mega.nz/file/3dkXRLTb#tBmI9K0jrbjkh57CArqkVPbmMZ8l11JypDbM8RncqdU";
-    sha256="sha256-stMfQwRhng+apYtUaDx7eavP4Zmb3cucISIviVButtQ=";
+    url = "https://mega.nz/file/nJdklRLT#aGoGo2JDPucYttONaTV5LXd4HgEMNKrKPQzy_LWdsSc";
+    sha256="sha256-6k0PYN9XDaTSxaQlgpMh5hLANxC2Vwl0VfEzPq3IkN4=";
   };
 
   icon = fetchurl {
