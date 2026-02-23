@@ -6,5 +6,8 @@
     |> builtins.attrNames
     |> map (x: ./${x});
 
-  home.packages = [ pkgs.unscene ];
+  home.packages = with pkgs; [
+    cksfv
+    unscene
+  ];
 }
