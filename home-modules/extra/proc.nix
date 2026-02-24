@@ -9,4 +9,14 @@
       highlight_base_name = 1;
     };
   };
+
+  stylix.targets.btop.enable = true;
+  programs.btop = {
+    enable = true;
+    settings = {
+      proc_filter_kernel = true;
+      proc_gradient = false;
+      proc_tree = true;
+    };
+  };
 }
