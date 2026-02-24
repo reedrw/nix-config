@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     mkdir -p $HOME
 
     mkdir tmpdir
-    cd tmpdir
+    pushd tmpdir
     mega-get ${url}
 
     ${
@@ -26,6 +26,7 @@ stdenv.mkDerivation {
       then ''
         mkdir $out
         mv * $out
+        popd
       ''
       else ''
         if [ $(ls -A | wc -l) -ne 1 ]; then
@@ -33,9 +34,8 @@ stdenv.mkDerivation {
           ls -A
           exit 1
         fi
-        mkdir $out
-        cd ..
-        mv tmpdir $out
+        popd
+        mv tmpdir/* $out
       ''
     }
   '';

@@ -17,11 +17,10 @@
 let
   fetchFromMegaNz = callPackage ./fetchFromMegaNz.nix { };
 
-  src = fetchFromMegaNz {
-    name= "JDownloader";
+  jar = fetchFromMegaNz {
+    name= "JDownloader.jar";
     url = "https://mega.nz/file/nJdklRLT#aGoGo2JDPucYttONaTV5LXd4HgEMNKrKPQzy_LWdsSc";
-    sha256="sha256-vI92rkSV0F54GcoBKdriT+fNKNyQTy5bu9jnJbCXWmA=";
-    isDir = true;
+    sha256="sha256-AQuueYVfZvH1VPlG0HAk+YMtWQmE2Q68XuwTdrjh0/w=";
   };
 
   icon = fetchurl {
@@ -77,7 +76,7 @@ let
     fi
 
     if [ ! -f "$XDG_DATA_HOME/jdownloader/JDownloader.jar" ]; then
-      install -m 644 ${src}/JDownloader.jar "$XDG_DATA_HOME/jdownloader"
+      install -m 644 ${jar} "$XDG_DATA_HOME/jdownloader/JDownloader.jar"
     fi
 
     if [ ! -d "$XDG_DATA_HOME/jdownloader/cfg" ]; then
