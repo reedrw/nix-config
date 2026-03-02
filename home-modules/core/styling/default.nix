@@ -23,8 +23,11 @@
   ];
 
   stylix.targets = {
-    gtk.enable = true;
-    qt.enable = true;
+    gtk.enable = osConfig.stylix.targets.gtk.enable;
+    qt = {
+      enable = osConfig.stylix.targets.qt.enable;
+      standardDialogs = "xdgdesktopportal";
+    };
   };
 
   gtk = {
