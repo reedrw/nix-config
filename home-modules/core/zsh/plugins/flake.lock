@@ -7,17 +7,16 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1770964431,
-        "narHash": "sha256-KeuYe66d5laJaLZVMJJZEZMCJOfQnEwYfe342FNMKRw=",
-        "owner": "XYenon",
+        "lastModified": 1772792619,
+        "narHash": "sha256-hgsn0VS6H1GsuYeq5Y02FmjxHDEv6dnHWFcKVgoYiTI=",
+        "owner": "Mic92",
         "repo": "direnv-instant",
-        "rev": "86fd7cbb4a6d893a87090162fe9e875ae72e6da4",
+        "rev": "fb9079adcef8b8ef97f91a1385be7ab5e3ff2b18",
         "type": "github"
       },
       "original": {
-        "owner": "XYenon",
+        "owner": "Mic92",
         "repo": "direnv-instant",
-        "rev": "86fd7cbb4a6d893a87090162fe9e875ae72e6da4",
         "type": "github"
       }
     },
@@ -44,11 +43,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767892417,
-        "narHash": "sha256-dhhvQY67aboBk8b0/u0XB6vwHdgbROZT3fJAjyNh5Ww=",
+        "lastModified": 1772198003,
+        "narHash": "sha256-I45esRSssFtJ8p/gLHUZ1OUaaTaVLluNkABkk6arQwE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3497aa5c9457a9d88d71fa93a4a8368816fbeeba",
+        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
         "type": "github"
       },
       "original": {
