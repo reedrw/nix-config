@@ -38,7 +38,6 @@ in
         loadingQuotes.enable = true;
         messageLinkEmbeds.enable = true;
         noBlockedMessages.enable = true;
-        normalizeMessageLinks.enable = true;
         replaceGoogleSearch = {
           enable = true;
           customEngineName = "DuckDuckGo";
