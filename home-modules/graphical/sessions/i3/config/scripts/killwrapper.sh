@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xdotool xorg.xwininfo killall
+#! nix-shell -i bash -p xdotool xorg.xwininfo killall procps
 
 set -x
 
@@ -15,7 +15,10 @@ main() {
 
   case "$activewindowclass" in
     "steam")
-      closeLast steam steam
+      closeLast steam steam killall
+    ;;
+    "vesktop")
+      closeLast vesktop vesktop killfuzzy
     ;;
     *)
       closeAny
@@ -27,9 +30,14 @@ closeAny() {
   i3-msg kill
 }
 
+killfuzzy(){
+  kill $(pgrep -f "$1")
+}
+
 closeLast() {
   # @param $1: The window class to search xwininfo for
   # @param $2: The process name to pkill
+  # @param $3: kill command
   local numOpenWindows
   numOpenWindows="$(xwininfo -tree -root \
     | grep "$1" \
@@ -37,7 +45,7 @@ closeLast() {
   )"
 
   if [ "$numOpenWindows" -eq 1 ]; then
-    killall "$2"
+    $3 "$2"
   else
     i3-msg kill
   fi
