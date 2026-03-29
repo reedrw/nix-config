@@ -76,7 +76,7 @@
                                                             "percent": 0.5,
                                                             "swallows": [
                                                                {
-                                                                    "class": "^vesktop$",
+                                                                    "class": "^discord$",
                                                                     "title": "^(?!.*discord).*$"
                                                                }
                                                             ],

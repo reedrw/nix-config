@@ -1,4 +1,4 @@
-{ util, ... }:
+{ config, util, ... }:
 let
   sources = (util.importFlake ./sources).inputs;
 in
@@ -9,14 +9,13 @@ in
 
   programs.nixcord = {
     enable = true;
-    discord.enable = false;
-    vesktop = {
-      enable = true;
+    discord = {
       autoscroll.enable = true;
-      settings = {
-        minimizeToTray = false;
-        enableSplashScreen = false;
-      };
+      # vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
+      #   src = sources.vencord // {
+      #     inherit (old.src) owner repo;
+      #   };
+      # });
     };
     config = {
       frameless = true;
@@ -27,7 +26,6 @@ in
         betterSettings.enable = true;
         betterUploadButton.enable = true;
         ClearURLs.enable = true;
-        disableCallIdle.enable = true;
         fakeNitro = {
           enable = true;
           transformCompoundSentence = true;
@@ -58,7 +56,23 @@ in
     };
   };
 
+  home.activation.extraDiscordSettings = let
+    extraSettings = {
+      OPEN_ON_STARTUP = false;
+      MINIMIZE_TO_TRAY = false;
+    };
+  in config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    set -euo pipefail
+    mkdir -p "${config.programs.nixcord.discord.configDir}"
+    config_dir="${config.programs.nixcord.discord.configDir}"
+    if [ -f "$config_dir/settings.json" ]; then
+      jq '. + ${builtins.toJSON extraSettings}' "$config_dir/settings.json" > "$config_dir/settings.json.tmp" && mv "$config_dir/settings.json.tmp" "$config_dir/settings.json"
+    else
+      echo '${builtins.toJSON extraSettings}' > "$config_dir/settings.json"
+    fi
+  '';
+
   custom.persistence.directories = [
-    ".config/vesktop"
+    ".config/discord"
   ];
 }

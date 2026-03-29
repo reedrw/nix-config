@@ -16,7 +16,7 @@ launchPrograms(){
     ;;
     # Chat
     "2" )
-      (mullvad-exclude vesktop &)
+      (mullvad-exclude discord &)
       (signal-desktop &)
       (Telegram &)
     ;;
