@@ -17,7 +17,7 @@ function main(){
     return 0
   fi
 
-  sudo sh -c "rar x '$rar' && mountiso '$iso'"
+  sudo sh -c "rar x '$rar' && mountiso '$iso' '$mountpoint'"
 }
 
 main "$@"
