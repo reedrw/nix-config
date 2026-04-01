@@ -38,7 +38,7 @@ jobs:
       uses: canidae-solutions/lix-quick-install-action@v4
 
     - name: Install Cachix
-      uses: cachix/cachix-action@v16
+      uses: cachix/cachix-action@v17
       continue-on-error: true
       with:
         useDaemon: false
