@@ -77,7 +77,7 @@
                                                             "swallows": [
                                                                {
                                                                     "class": "^discord$",
-                                                                    "title": "^(?!.*discord).*$"
+                                                                    "title": "^(?!.*Discord Updater).*$"
                                                                }
                                                             ],
                                                             "type": "con"

@@ -11,6 +11,7 @@ in
     enable = true;
     discord = {
       autoscroll.enable = true;
+      openASAR.enable = false;
       # vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
       #   src = sources.vencord // {
       #     inherit (old.src) owner repo;
