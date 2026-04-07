@@ -33,25 +33,9 @@ in
     base16Scheme = "${schemes}/base16/ayu-dark.yaml";
   };
 
-  # Allow `wheel` group to change colorscheme
-  security.sudo.extraRules = [
-    {
-      groups = [ "wheel" ];
-      commands = [
-        {
-          command = "/nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration";
-          options = [ "NOPASSWD" ];
-        }
-        {
-          command = "/nix/var/nix/profiles/system/bin/switch-to-configuration";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "toggle-theme" ''
+      PATH="${lib.makeBinPath [ pkgs.libnotify ]}:$PATH"
       # get current active system configuration
       current_system=$(readlink /run/current-system)
 
@@ -60,16 +44,72 @@ in
 
       # check if the current system configuration matches the 'light' specialisation
       if [ "$current_system" == "$light_specialisation" ]; then
-         ${lib.getExe pkgs.libnotify} "Switching to Dark"
-         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration test
-         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot &
+         notify-send "Switching to Dark"
+         systemctl start switch-to-dark
       else
-         ${lib.getExe pkgs.libnotify} "Switching to Light"
-         sudo /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration test
-         sudo /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration boot &
+         notify-send "Switching to Light"
+         systemctl start switch-to-light
       fi
+
+      systemctl restart --user authentication-agent
     '')
   ];
+
+  systemd.services = {
+    "switch-to-dark" = {
+      unitConfig = {
+        Description = "Switch to dark specialization";
+      };
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = (pkgs.writeShellScript "switch-to-dark" ''
+          /nix/var/nix/profiles/system/bin/switch-to-configuration test
+          /nix/var/nix/profiles/system/bin/switch-to-configuration boot &
+        '').outPath;
+      };
+    };
+    "switch-to-light" = {
+      unitConfig = {
+        Description = "Switch to dark specialization";
+      };
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = (pkgs.writeShellScript "switch-to-dark" ''
+          /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration test
+          /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration boot &
+        '').outPath;
+      };
+    };
+  };
+
+  security.polkit.extraConfig = lib.mkBefore ''
+    polkit.addRule(function(action, subject) {
+      if (action.id !== "org.freedesktop.systemd1.manage-units") {
+        return polkit.Result.NOT_HANDLED;
+      }
+
+      var allowedUnits = [
+        "switch-to-light.service",
+        "switch-to-dark.service"
+      ];
+
+      var allowedVerbs = ["start"];
+
+      if (!subject.isInGroup("wheel")) {
+        return polkit.Result.NOT_HANDLED;
+      }
+
+      var unit = action.lookup("unit");
+      var verb = action.lookup("verb");
+
+      if (allowedVerbs.indexOf(verb) !== -1 &&
+        allowedUnits.indexOf(unit) !== -1) {
+        return polkit.Result.YES;
+      }
+
+      return polkit.Result.NOT_HANDLED;
+    });
+  '';
 
   stylix.icons = {
     enable = true;

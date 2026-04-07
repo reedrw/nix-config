@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./rofi-askpass.nix
     ./theme.nix
   ];
 

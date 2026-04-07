@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 {
   stylix.targets.kitty = {
     enable = true;
@@ -12,7 +12,7 @@
     # The -e flag doesn't work when a startup_session is specified.
     # This disgusting hack is needed to keep backwards compatibility with
     # xterm. i3-sensible-terminal uses the -e flag to execute a command.
-    package = pkgs.wrapPackage pkgs.kitty (kitty: ''
+    package = pkgs.wrapPackage pkgs-unstable.kitty (kitty: ''
       #!${pkgs.stdenv.shell}
       if [[ "$1" == "-e" ]]; then
         shift
@@ -21,7 +21,7 @@
         exec ${kitty} "$@"
       fi
     '');
-    # shellIntegration.enableZshIntegration = true;
+    shellIntegration.mode = null;
     settings = let
       family = "FantasqueSansM Nerd Font";
     in {
