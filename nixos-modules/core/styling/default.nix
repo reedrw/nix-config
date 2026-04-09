@@ -84,29 +84,18 @@ in
 
   security.polkit.extraConfig = lib.mkBefore ''
     polkit.addRule(function(action, subject) {
-      if (action.id !== "org.freedesktop.systemd1.manage-units") {
-        return polkit.Result.NOT_HANDLED;
+      if (action.id.indexOf("org.freedesktop.systemd1.") == 0) {
+        var allowedUnits = [
+          "switch-to-light.service",
+          "switch-to-dark.service"
+        ];
+
+        var unit = action.lookup("unit");
+
+        if (allowedUnits.indexOf(unit) !== -1) {
+          return polkit.Result.YES;
+        }
       }
-
-      var allowedUnits = [
-        "switch-to-light.service",
-        "switch-to-dark.service"
-      ];
-
-      var allowedVerbs = ["start"];
-
-      if (!subject.isInGroup("wheel")) {
-        return polkit.Result.NOT_HANDLED;
-      }
-
-      var unit = action.lookup("unit");
-      var verb = action.lookup("verb");
-
-      if (allowedVerbs.indexOf(verb) !== -1 &&
-        allowedUnits.indexOf(unit) !== -1) {
-        return polkit.Result.YES;
-      }
-
       return polkit.Result.NOT_HANDLED;
     });
   '';
