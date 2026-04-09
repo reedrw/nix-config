@@ -64,7 +64,7 @@ in
         Type = "oneshot";
         ExecStart = (pkgs.writeShellScript "switch-to-dark" ''
           /nix/var/nix/profiles/system/bin/switch-to-configuration test
-          /nix/var/nix/profiles/system/bin/switch-to-configuration boot &
+          /nix/var/nix/profiles/system/bin/switch-to-configuration boot
         '').outPath;
       };
     };
@@ -76,7 +76,7 @@ in
         Type = "oneshot";
         ExecStart = (pkgs.writeShellScript "switch-to-dark" ''
           /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration test
-          /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration boot &
+          /nix/var/nix/profiles/system/specialisation/light/bin/switch-to-configuration boot
         '').outPath;
       };
     };
