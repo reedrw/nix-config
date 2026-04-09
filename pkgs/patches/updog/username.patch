@@ -1,18 +1,18 @@
 diff --git a/updog/__main__.py b/updog/__main__.py
-index 63d5e06..1359948 100644
+index c71afd9..e1a6b30 100644
 --- a/updog/__main__.py
 +++ b/updog/__main__.py
-@@ -31,7 +31,8 @@ def parse_arguments():
-                              '[Default=.]')
+@@ -34,7 +34,8 @@ def parse_arguments():
+                         help='Specify alternate bind address [Default=0.0.0.0]')
      parser.add_argument('-p', '--port', type=int, default=9090,
                          help='Port to serve [Default=9090]')
 -    parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
 +    parser.add_argument('--password', type=str, default='', help='Use a password to access the page.')
 +    parser.add_argument('--username', type=str, default='', help='Use a username to access the page.')
-     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
-     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
-
-@@ -153,7 +154,7 @@ def main():
+     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection (ad-hoc certificate)')
+     parser.add_argument('--ssl-cert', type=str, default=None, help='Path to SSL certificate file')
+     parser.add_argument('--ssl-key', type=str, default=None, help='Path to SSL key file')
+@@ -172,7 +173,7 @@ def main():
 
      # Password functionality is without username
      users = {

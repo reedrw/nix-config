@@ -14,5 +14,12 @@
       "sha256": "0zr033ybqjc5spwh7xnzkhbqgc6gh8waw6z76rpvadxckyqlfgiq"
     },
     "default": "7.2.5"
+  },
+  "updog": {
+    "2.0.1": {
+      "rev": "09061f748ee21f68a089cd5d91ec1859cd93d0be",
+      "sha256": "1g6w3rk9di8p2ram44rbcnp4g6lpmr6j6d6mynp8pnkzdp2p2b4z"
+    },
+    "default": "2.0.1"
   }
 }
