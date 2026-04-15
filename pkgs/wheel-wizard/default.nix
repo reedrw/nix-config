@@ -11,13 +11,13 @@
 
 buildDotnetModule (self: {
   pname = "wheel-wizard";
-  version = "2.4.3";
+  version = "2.4.4";
 
   src = fetchFromGitHub {
     owner = "TeamWheelWizard";
     repo = "WheelWizard";
     rev = self.version;
-    sha256 = "sha256-WJVEofU41ZoOYLgD2TMPy50KQ44SPuLKS2piRmI9wV8=";
+    sha256 = "sha256-uuEAJPV3P9SRs77nDC9nR3XtnGJreD+H1Xweyx4tU2s=";
   };
 
   projectFile = "WheelWizard.sln";
