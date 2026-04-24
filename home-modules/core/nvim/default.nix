@@ -1,6 +1,7 @@
 { config, lib, pkgs, pkgs-unstable, util, ... }:
 let
-  sources = (util.importFlake ./plugins).inputs;
+  plugins = (util.importFlake ./plugins).inputs;
+  sources = (util.importFlake ./sources).inputs;
 in
 {
   stylix.targets.neovim.enable = true;
@@ -17,8 +18,11 @@ in
     vimAlias = true;
     vimdiffAlias = true;
     withPython3 = true;
-    extraPackages = [
+    extraPackages = with pkgs; [
+      beancount-language-server
       pkgs-unstable.nil
+      sources.rustledger.packages."${pkgs.stdenv.hostPlatform.system}".rustledger
+
     ];
     extraPython3Packages = (ps: with ps; [
       black
@@ -37,6 +41,11 @@ in
         };
         "pyright" = {
           "inlayHints"."enable" = false;
+        };
+        beancount = {
+          command = "rledger-lsp";
+          filetypes = [ "beancount" ];
+          rootPatterns = [ ".git" "*.beancount" ];
         };
         # "tsserver" = {
         #   "log" = "verbose";
@@ -107,7 +116,7 @@ in
       pkgs.vimUtils.buildVimPlugin {
         inherit pname version src;
       }
-    ) sources;
+    ) plugins;
     extraConfig = ''
       let g:suda_smart_edit = 1
 

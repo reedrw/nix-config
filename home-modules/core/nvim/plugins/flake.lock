@@ -2,7 +2,24 @@
   "nodes": {
     "root": {
       "inputs": {
+        "vim-beancount": "vim-beancount",
         "vim-fugitive-blame-ext": "vim-fugitive-blame-ext"
+      }
+    },
+    "vim-beancount": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1732578525,
+        "narHash": "sha256-tbnB67O39OgozgknCZ1crnPZ9OBKtlGrvTeoFPnbLhc=",
+        "owner": "nathangrigg",
+        "repo": "vim-beancount",
+        "rev": "589a4f06f3b2fd7cd2356c2ef1dafadf6b7a97cf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nathangrigg",
+        "repo": "vim-beancount",
+        "type": "github"
       }
     },
     "vim-fugitive-blame-ext": {
