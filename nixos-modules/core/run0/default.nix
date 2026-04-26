@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, util, ... }:
+{ pkgs, util, ... }:
 let
   sources = (util.importFlake ./sources).inputs;
 in
@@ -31,20 +31,5 @@ in
     };
   };
 
-  security.polkit = {
-    # package = pkgs.polkit.overrideAttrs (old: {
-    #   inherit (pkgs-unstable.polkit) version patches src;
-    # });
-    persistentAuthentication = true;
-    debug = true;
-    # extraConfig = ''
-    #   polkit.addRule(function(action, subject) {
-    #     if (action.id == "org.freedesktop.policykit.exec" ||
-    #       action.id.indexOf("org.freedesktop.systemd1.") == 0) {
-    #       polkit.log("AAAAAAAAAA");
-    #       return polkit.Result.AUTH_ADMIN_KEEP;
-    #     }
-    #   });
-    # '';
-  };
+  security.polkit.persistentAuthentication = true;
 }
