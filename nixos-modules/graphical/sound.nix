@@ -8,6 +8,8 @@
       support32Bit = true;
     };
 
+    systemWide = true;
+
     pulse.enable = true;
     jack.enable = true;
     extraConfig.pipewire = {
@@ -74,5 +76,9 @@
     (aliasToPackage {
       helvum = "qpwgraph";
     })
+  ];
+
+  custom.persistence.directories = [
+    "/var/lib/pipewire"
   ];
 }

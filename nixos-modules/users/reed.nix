@@ -5,6 +5,7 @@
     isNormalUser = true;
     extraGroups = [
       "audio"
+      "pipewire"
       "docker"
       "input"
       "libvirtd"
