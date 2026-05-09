@@ -150,11 +150,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1777944128,
-        "narHash": "sha256-RFMWmFN78xasugXHI48i3PUsIQ60hCN94Dtx8Q6AgxU=",
+        "lastModified": 1778343511,
+        "narHash": "sha256-YRcQ1fZkc2sACE4Xfjzdg5hGGaaCSxelIJ+5/V6DlqI=",
         "owner": "rustledger",
         "repo": "rustledger",
-        "rev": "c36491a78e5e44c7ce67ce352cba309215f2ac5e",
+        "rev": "1f0dfdfa52565f00be2c755374a16083a7b5117e",
         "type": "github"
       },
       "original": {
