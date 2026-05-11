@@ -18,6 +18,7 @@ in
     vimAlias = true;
     vimdiffAlias = true;
     withPython3 = true;
+    withRuby = false;
     extraPackages = with pkgs; [
       beancount-language-server
       pkgs-unstable.nil
@@ -57,7 +58,6 @@ in
       camelcasemotion
       caw-vim
       coc-pyright
-      coc-tsserver
       context_filetype-vim
       # copilot-vim
       editorconfig-vim

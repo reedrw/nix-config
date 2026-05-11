@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xorg.xmodmap xorg.xset xdotool
+#! nix-shell -i bash -p xmodmap xset xdotool
 
 set -x
 

@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p xdotool xorg.xwininfo killall procps
+#! nix-shell -i bash -p xdotool xwininfo killall procps
 
 set -x
 

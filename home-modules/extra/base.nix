@@ -52,6 +52,7 @@ in
     mimeApps.enable = true;
     userDirs = {
       enable = true;
+      setSessionVariables = true;
       desktop = "\$HOME";
       documents = "\$HOME/files";
       download = "\$HOME/downloads";

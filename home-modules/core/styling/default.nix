@@ -45,12 +45,15 @@
       gtk-xft-hintstyle= "hintmedium";
       gtk-decoration-layout = ":close";
     };
-    gtk4.extraConfig = {
-      gtk-font-name = "${config.stylix.fonts.sansSerif.name} ${toString config.stylix.fonts.sizes.applications}";
-      gtk-xft-antialias = 1;
-      gtk-xft-hinting = 1;
-      gtk-xft-hintstyle= "hintmedium";
-      gtk-decoration-layout = ":close";
+    gtk4 = {
+      theme = config.gtk.theme;
+      extraConfig = {
+        gtk-font-name = "${config.stylix.fonts.sansSerif.name} ${toString config.stylix.fonts.sizes.applications}";
+        gtk-xft-antialias = 1;
+        gtk-xft-hinting = 1;
+        gtk-xft-hintstyle= "hintmedium";
+        gtk-decoration-layout = ":close";
+      };
     };
   };
 

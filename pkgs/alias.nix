@@ -37,6 +37,11 @@ in
     nix = self.nix;
   };
 
+  # https://github.com/NixOS/nixpkgs/issues/514113
+  openldap = pkgs.openldap.overrideAttrs {
+    doCheck = !pkgs.stdenv.hostPlatform.isi686;
+  };
+
   updog = pkgs.updog.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/updog/username.patch

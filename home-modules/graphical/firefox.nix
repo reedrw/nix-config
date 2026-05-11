@@ -13,6 +13,7 @@
 
   programs.firefox = {
     enable = true;
+    configPath = ".mozilla/firefox";
     package = pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       extraPolicies = {
         CaptivePortal = false;
