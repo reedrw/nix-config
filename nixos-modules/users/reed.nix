@@ -5,11 +5,11 @@
     isNormalUser = true;
     extraGroups = [
       "audio"
-      "pipewire"
       "docker"
       "input"
       "libvirtd"
       "networkmanager"
+      "pipewire"
       "wheel"
     ];
     packages = with pkgs; [ home-manager ];
