@@ -60,6 +60,7 @@
     "root": {
       "inputs": {
         "direnv-instant": "direnv-instant",
+        "zsh-progress-pane": "zsh-progress-pane",
         "zsh-simple-abbreviations": "zsh-simple-abbreviations"
       }
     },
@@ -82,6 +83,19 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "type": "github"
+      }
+    },
+    "zsh-progress-pane": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1,
+        "narHash": "sha256-F9e6ffddZlg58ivHq+Qr47uHFlznNtZCd1uRdBr9uZo=",
+        "path": "./zsh-progress-pane",
+        "type": "path"
+      },
+      "original": {
+        "path": "./zsh-progress-pane",
+        "type": "path"
       }
     },
     "zsh-simple-abbreviations": {

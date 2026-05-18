@@ -58,18 +58,23 @@ in
   {
     enable = true;
     dotDir = "${config.xdg.dataHome}/zsh";
-    plugins = with pkgs; [
-      (mkZshPlugin { pkg = zsh-autosuggestions; })
-      (mkZshPlugin {
+    plugins = with pkgs; map lib.fix [
+      (_: mkZshPlugin { pkg = zsh-autosuggestions; })
+      (_: mkZshPlugin {
         pkg = zsh-fzf-tab;
         file = "fzf-tab.plugin.zsh";
       })
-      (mkZshPlugin { pkg = zsh-syntax-highlighting; })
-      {
+      (_: mkZshPlugin { pkg = zsh-syntax-highlighting; })
+      (self: {
         name = "zsh-simple-abbreviations";
-        src = sources.zsh-simple-abbreviations;
+        src = sources.${self.name};
         file = "zsh-simple-abbreviations.zsh";
-      }
+      })
+      (self: {
+        name = "zsh-progress-pane";
+        src = sources.${self.name};
+        file = "${self.name}.plugin.zsh";
+      })
     ];
     autocd = true;
     defaultKeymap = "emacs";
