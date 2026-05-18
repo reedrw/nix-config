@@ -4,6 +4,7 @@
   imports = [
     ../reed.nix
     ./xsession.nix
+    ./syncthing.nix
     ezModules.core
     ezModules.extra
     ezModules.filesharing
