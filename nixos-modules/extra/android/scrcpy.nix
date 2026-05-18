@@ -6,7 +6,7 @@
   ];
 
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="usb", TAG+="systemd", ENV{SYSTEMD_WANTS}+="scrcpy-audio.service"
+    ACTION=="add", SUBSYSTEM=="usb", TAG+="systemd", ENV{ID_USB_INTERFACES}=="*:ff4201:*", ENV{SYSTEMD_WANTS}+="scrcpy-audio.service"
   '';
 
   users.users.adb.extraGroups = [ "pipewire" ];

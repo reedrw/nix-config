@@ -3,7 +3,7 @@
 {
 
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="usb", TAG+="systemd", ENV{SYSTEMD_WANTS}+="adb-dismiss-popup.service"
+    ACTION=="add", SUBSYSTEM=="usb", TAG+="systemd", ENV{ID_USB_INTERFACES}=="*:ff4201:*", ENV{SYSTEMD_WANTS}+="adb-dismiss-popup.service"
   '';
 
   systemd.services.adb-dismiss-popup= {
