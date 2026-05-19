@@ -2,7 +2,7 @@
 # Auto-open a tmux pane at the bottom showing `progress -mp PID`
 # for any foreground command that runs longer than $PROGRESS_PANE_DELAY.
 
-: ${PROGRESS_PANE_DELAY:=5}     # seconds before the pane appears
+: ${PROGRESS_PANE_DELAY:=2}     # seconds before the pane appears
 : ${PROGRESS_PANE_HEIGHT:=8}    # pane height in lines
 
 # Commands progress knows about by default. Extend via PROGRESS_PANE_EXTRA.

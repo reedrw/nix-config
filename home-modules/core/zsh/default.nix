@@ -72,7 +72,7 @@ in
       })
       (self: {
         name = "zsh-progress-pane";
-        src = sources.${self.name};
+        src = ./plugins + "/${self.name}";
         file = "${self.name}.plugin.zsh";
       })
     ];
