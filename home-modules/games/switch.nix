@@ -6,6 +6,8 @@
   ];
 
   custom.persistence.directories = [
+    ".cache/eden"
+    ".config/eden"
     ".local/share/eden"
   ];
 }
