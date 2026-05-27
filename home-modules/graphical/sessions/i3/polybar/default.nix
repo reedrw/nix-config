@@ -4,9 +4,10 @@ let
 in
 {
   lib.scripts = {
-    calnotify = pkgs.writeNixShellScript "calnotify"     <| builtins.readFile ./calnotify.sh;
+    calnotify   = pkgs.writeNixShellScript "calnotify"   <| builtins.readFile ./calnotify.sh;
     screenthing = pkgs.writeShellScriptBin "screenthing" <| builtins.readFile ./screenthing.sh;
-    bataverage = pkgs.writeShellScriptBin "bataverage"   <| builtins.readFile ./bataverage.sh;
+    bataverage  = pkgs.writeShellScriptBin "bataverage"  <| builtins.readFile ./bataverage.sh;
+    adb-device  = pkgs.writeNixShellScript "adb-device"  <| builtins.readFile ./adb-device.sh;
   };
 
   services.polybar = with pkgs; {
@@ -18,7 +19,7 @@ in
         foreground = "#${base05}";
         modules-left = "i3";
         modules-center = "mpris";
-        modules-right = "screen light-dark battery date";
+        modules-right = "screen light-dark adb-device battery date";
         border-left-size = 1;
         border-left-color = "#${base00}";
         border-right-size = 1;
@@ -29,6 +30,13 @@ in
         border-bottom-color = "#${base00}";
         font-0 = "FantasqueSansMNerdFont:size=9:weight=bold:style=Bold;1";
         font-1 = "Kochi Gothic:style=bold:weight=bold:size=9;1";
+      };
+      "module/adb-device" = {
+        type = "custom/script";
+        exec = "${lib.getExe scripts.adb-device} icon";
+        click-left = lib.getExe scripts.adb-device;
+        interval = 10;
+        label-padding = 2;
       };
       "module/battery" = {
         type = "custom/script";
