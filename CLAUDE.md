@@ -113,9 +113,8 @@ These are added to the pkgs set, so `pkgs.<helper>` works anywhere:
 - `pkgs.wrapEnv pkg { VAR = "val"; }` — wrap a package's main program with exported env vars
 - `pkgs.wrapPackage pkg (binPath: "shell script body")` — generic wrapper around a package's main program
 - `pkgs.aliasToPackage { name1 = "shell body"; name2 = "..."; }` — turn a set of one-liners into a single derivation containing those binaries (used for "global aliases")
-- `pkgs.writeNixShellScript name text` / `pkgs.writeBunNixShellScript` — promote a `nix-shell` shebang script to a `writeShellApplication` with runtime inputs parsed from the shebang. The script's **second line** must be `#! nix-shell -i bash -p <pkg1> <pkg2>` — packages listed there become the Nix `runtimeInputs`. Typical usage: `pkgs.writeNixShellScript "foo" (builtins.readFile ./foo.sh)`
+- `pkgs.writeNixShellScript name text` — promote a `nix-shell` shebang script to a `writeShellApplication` with runtime inputs parsed from the shebang. The script's **second line** must be `#! nix-shell -i bash -p <pkg1> <pkg2>` — packages listed there become the Nix `runtimeInputs`. Typical usage: `pkgs.writeNixShellScript "foo" (builtins.readFile ./foo.sh)`
 - `pkgs.matchPackage "foo.bar.baz"` — resolve a dotted package path against the pkgs set
-- `pkgs.versionConditionalOverride version pkg override` — apply `override` only while `pkg.version` is older than `version`
 
 ### Theming
 

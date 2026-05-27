@@ -4,16 +4,6 @@ let
   lib = pkgs.lib;
 in
 {
-  # hasMainProgram :: Package -> Bool
-  ########################################
-  # Given a package, return true if the package has a meta.mainProgram attribute.
-  # Ex.
-  # hasMainProgram hello
-  #
-  # Returns:
-  # true
-  hasMainProgram = x: builtins.hasAttr "mainProgram" x.meta;
-
   # aliasToPackage :: AttrSet -> Package
   ########################################
   # Takes an attribute set and converts into shell scripts to act as "global aliases"
@@ -37,27 +27,6 @@ in
     if numAliases < 2
     then builtins.head paths
     else pkgs.symlinkJoin { inherit name paths; };
-
-  # versionConditionalOverride :: String -> Package -> Package -> Package
-  ########################################################################
-  # Override a package until next release. Takes current version, package, and override as arguments.
-  # Ex.
-  # versionConditionalOverride "1.4.1" distrobox
-  #   (distrobox.overrideAttrs (
-  #     old: {
-  #       src = pkgs.fetchFromGitHub {
-  #         owner = "89luca89";
-  #         repo = "distrobox";
-  #         rev = "acb36a427a35f451b42dd5d0f29f1c4e2fe447b9";
-  #         sha256 = "nIqkptnP3fOviGcm8WWJkBQ0NcTE9z/BNLH/ox6qIoA=";
-  #       };
-  #     }
-  #   ))
-  versionConditionalOverride = version: package: override:
-    if builtins.compareVersions package.version version < 1
-    then override
-    else lib.warn "versionConditionalOverride: ${package.name} is already at version ${package.version}. No override applied."
-         package;
 
   # writeShellApplication :: Either Set Function -> Package
   # #########################################################
@@ -103,50 +72,6 @@ in
       inherit name text runtimeInputs;
       meta.mainProgram = name;
     };
-
-  # writeNixShellScriptBin :: String -> String -> wrapPackage
-  ############################################################
-  # Given a name and the text of a bun typescript script with a nix-shell shebang, return a package that
-  # has the packages specified in the shebang as dependencies.
-  # Ex.
-  # writeNixShellScriptBin "hello-world" (builtins.readFile ./hello-world.ts)
-  #
-  # Contents of ./hello-world.ts:
-  # #!/usr/bin/env nix-shell
-  # /*
-  # #! nix-shell -i bun -p bun
-  # */
-  #
-  # import { $ } from "bun";
-  # await $`echo "Hello, world!"`;
-  writeBunNixShellScript = name: text:
-    let
-      buildInputs = lib.pipe text [
-        # Get the third line of the script, which contains the packages
-        (lib.splitString "\n")
-        (x: lib.elemAt x 2)
-        # Get the packages from the third line
-        (lib.splitString " -p bun ")
-        (x: lib.elemAt x 1)
-        # Convert the package names to nixpkgs packages
-        (lib.splitString " ")
-        (map self.matchPackage)
-      ];
-
-      unwrappedScript = pkgs.writeScript name ''
-        #! ${pkgs.bun}/bin/bun
-        ${lib.pipe text [
-          (lib.splitString "\n")
-          lib.tail
-          (lib.concatStringsSep "\n")
-        ]}
-      '';
-    in # Wrap the script with a shell script that sets the PATH
-    pkgs.writeShellScriptBin name ''
-      export PATH=${lib.makeBinPath buildInputs}:$PATH
-      shift;
-      exec ${unwrappedScript} "$@"
-    '';
 
   # matchPackageCommand :: String -> String
   ########################################
