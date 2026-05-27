@@ -46,6 +46,20 @@
     ];
   };
 
+  # Tailscale's `ip mangle OUTPUT` rule clobbers mullvad's split-tunnel
+  # ct mark (mole fwmark 0x6d6f6c65 collides with tailscale's 0x00ff0000
+  # mask), which breaks mullvad-exclude. Restore it after tailscale runs.
+  networking.nftables.tables.mullvadTailscaleFix = lib.mkIf config.services.tailscale.enable {
+    enable = true;
+    family = "inet";
+    content = ''
+      chain restoreExcludeCtMark {
+        type filter hook output priority -100; policy accept;
+        meta mark 0x6d6f6c65 ct mark set 0x00000f41;
+      }
+    '';
+  };
+
   custom.persistence.directories = [
     "/etc/mullvad-vpn"
   ];
