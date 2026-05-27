@@ -33,7 +33,6 @@ in
         };
         fixImagesQuality.enable = true;
         fixYoutubeEmbeds.enable = true;
-        iLoveSpam.enable = true;
         loadingQuotes.enable = true;
         messageLinkEmbeds.enable = true;
         noBlockedMessages.enable = true;
