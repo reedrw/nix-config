@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(nix flake show:*)",
+      "Bash(nix flake check:*)",
+      "Bash(nix flake metadata:*)",
+      "Bash(nix eval:*)",
+      "Bash(nix-instantiate --parse:*)",
+      "Bash(nix-instantiate --eval:*)",
+      "Bash(nix path-info:*)",
+      "Bash(nix derivation show:*)",
+      "Bash(nix store --query:*)",
+      "Bash(nix why-depends:*)",
+      "Bash(nix tree:*)",
+      "Bash(nix build --dry-run:*)",
+      "Bash(nix repl:*)",
+      "Bash(nixos-option:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git remote -v)",
+      "Bash(git config --get:*)",
+      "Bash(git stash list:*)",
+      "Bash(git stash show:*)",
+      "Bash(ldp --list-outputs)",
+      "Bash(ldp --list-systems)",
+      "Bash(ldp --help)",
+      "Bash(ldp --build:*)",
+      "Bash(rg:*)",
+      "Bash(fd:*)",
+      "Bash(tree:*)",
+      "Bash(shellcheck:*)",
+      "Bash(pre-commit run:*)"
+    ]
+  }
+}
