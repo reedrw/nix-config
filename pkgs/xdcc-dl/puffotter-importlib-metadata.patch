@@ -1,0 +1,12 @@
+--- a/puffotter/init.py
++++ b/puffotter/init.py
+@@ -55,8 +55,8 @@ def cli_start(
+         if release_name is None:
+             if package_name is not None:
+-                import pkg_resources
+-                version = pkg_resources.get_distribution(package_name).version
++                from importlib.metadata import version as _get_version
++                version = _get_version(package_name)
+                 release_name = package_name + "-" + version
+             else:
+                 release_name = "Unknown"

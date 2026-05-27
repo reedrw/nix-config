@@ -11,6 +11,7 @@ let
     unscene = self.callPackage ./unscene { };
     update-all = pkgs.callPackage ./update-all { };
     wheel-wizard = pkgs.callPackage ./wheel-wizard { };
+    xdcc-dl = pkgs.callPackage ./xdcc-dl { };
   };
 in
 {
