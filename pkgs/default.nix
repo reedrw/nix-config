@@ -12,6 +12,7 @@ let
     update-all = pkgs.callPackage ./update-all { };
     wheel-wizard = pkgs.callPackage ./wheel-wizard { };
     xdcc-dl = pkgs.callPackage ./xdcc-dl { };
+    xdcc-tar = pkgs.callPackage ./xdcc-tar { };
   };
 in
 {
