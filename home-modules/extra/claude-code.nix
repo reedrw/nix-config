@@ -1,12 +1,8 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 {
-  home.packages = [ pkgs.claude-code ];
-
-  home.file.".claude/settings.json" = {
-    force = true;
-    text = builtins.toJSON {
-      theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
-    };
+  programs.claude-code = {
+    enable = true;
+    settings.theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
   };
 
   custom.persistence = {
