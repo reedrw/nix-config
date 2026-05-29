@@ -35,7 +35,11 @@ python3Packages.buildPythonApplication (self: {
 
   build-system = with python3Packages; [ setuptools ];
 
-  patches = [ ./case-insensitive-message.patch ];
+  patches = [
+    ./case-insensitive-message.patch
+    ./disable-sentry.patch
+    ./fix-send-acks-broken-pipe.patch
+  ];
 
   pythonRemoveDeps = [ "bs4" "typing" ];
 

@@ -1,0 +1,11 @@
+--- a/xdcc_dl/__init__.py
++++ b/xdcc_dl/__init__.py
+@@ -19,6 +19,6 @@ along with xdcc-dl.  If not, see <http://www.gnu.org/licenses/>.
+ LICENSE"""
+
+
+-sentry_dsn = "https://f20c5998b8fc46109e71fd9ddeebd64b@sentry.namibsun.net/7"
++sentry_dsn = None
+ """
+ The sentry DSN used for logging exceptions
+ """

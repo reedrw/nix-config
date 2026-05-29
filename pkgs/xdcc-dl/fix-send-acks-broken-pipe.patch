@@ -1,0 +1,11 @@
+--- a/xdcc_dl/xdcc/XDCCClient.py
++++ b/xdcc_dl/xdcc/XDCCClient.py
+@@ -591,6 +591,8 @@ class XDCCClient(SimpleIRCClient):
+             except AttributeError:
+                 self.logger.warning("Missing XDCC socket")
+                 # This happens sometimes, don't ask me why though
+                 continue
++            except OSError:
++                continue
+             finally:
+                 self.ack_lock.release()
