@@ -5,11 +5,13 @@ in
 {
   imports = [ sources.run0-sudo-shim.nixosModules.default ];
 
+  nixpkgs.overlays = [ sources.run0-sudo-shim.overlays.default ];
+
   security.run0-sudo-shim = {
     enable = true;
     package = pkgs.symlinkJoin {
       name = "sudo";
-      paths = [ sources.run0-sudo-shim.packages.${pkgs.stdenv.hostPlatform.system}.run0-sudo-shim ];
+      paths = [ pkgs.run0-sudo-shim ];
       nativeBuildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/sudo --add-flags "--run0-extra-arg=--background="
