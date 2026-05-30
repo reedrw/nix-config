@@ -40,8 +40,11 @@
               | into filesize
             }
             | reject DiffBin
-            | sort-by -r Diff; print \$table; \$table
-            | math sum
+            | sort-by -r Diff
+            if (\$table | is-not-empty) {
+              print \$table
+              \$table | math sum
+            }
           }
         "
       fi
