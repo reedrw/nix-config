@@ -35,12 +35,6 @@ let self = {
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lix = {
-      url = "git+https://git.lix.systems/lix-project/lix.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       #url = "github:nix-community/home-manager";

@@ -1,4 +1,3 @@
-inputs:
 self: pkgs:
 let
   lib = pkgs.lib;
@@ -26,8 +25,9 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  nix = (inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
+  nix = (pkgs.lixPackageSets.latest.lix.overrideAttrs (old: {
     doCheck = false;
+    doInstallCheck = false;
     patches = (old.patches or []) ++ [
       ./patches/nix/compadd.patch
     ];
