@@ -28,6 +28,7 @@ in
     enable = true;
     settings = {
       theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
+      autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       hooks = {
         Stop = [{
@@ -149,31 +150,6 @@ in
       **Why:** Unnecessary `let` bindings add indirection without benefit when the value is only referenced once.
 
       **How to apply:** When writing a `pkgs.writeShellScript` (or similar) for a single-use command, write it inline as the attribute value rather than binding it at the top of the file.
-    '';
-  };
-
-  home.file.".claude/memory/feedback_scripts_in_files.md" = {
-    force = true;
-    text = ''
-      ---
-      name: scripts-in-separate-files
-      description: When a shell script body is non-trivial, read it from a sibling .sh file rather than inlining it in the Nix expression
-      type: feedback
-      ---
-
-      When writing a `pkgs.writeShellApplication` (or similar builder) with a non-trivial script body, put the script in a sibling `.sh` file and reference it with `builtins.readFile`:
-
-      ```nix
-      pkgs.writeShellApplication {
-        name = "my-tool";
-        runtimeInputs = [ pkgs.curl ];
-        text = builtins.readFile ./my-tool.sh;
-      }
-      ```
-
-      **Why:** Large inline strings make Nix files harder to read and lose syntax highlighting and editor support for the script language.
-
-      **Threshold:** Apply when the script is large enough that inlining it noticeably clutters the Nix expression — a few lines is fine inline. `pkgs.writeNixShellScript` (a repo helper) already encourages this pattern; apply the same to `writeShellApplication` and similar builders.
     '';
   };
 
