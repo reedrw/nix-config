@@ -1,10 +1,2 @@
 {
-  "flameshot": {
-    "13.3.0": {
-      "note": "Flameshot removing X11 support",
-      "rev": "b86751bc4085f48661017fa226dee99fab6c651b",
-      "sha256": "0z1xwfdy3blm5n06lyabyjhadiy79rbm5z4kf309z85kg65mih3b"
-    },
-    "default": "13.3.0"
-  }
 }
