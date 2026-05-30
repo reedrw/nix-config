@@ -1,8 +1,9 @@
-{ pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 {
+
   home.packages = [
-    pkgs.bitwarden-desktop
+    pkgs-unstable.bitwarden-desktop
   ];
 
   custom.persistence.directories = [

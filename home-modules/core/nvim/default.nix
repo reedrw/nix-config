@@ -1,7 +1,6 @@
 { config, lib, pkgs, pkgs-unstable, util, ... }:
 let
   plugins = (util.importFlake ./plugins).inputs;
-  sources = (util.importFlake ./sources).inputs;
 in
 {
   stylix.targets.neovim.enable = true;
@@ -22,8 +21,6 @@ in
     extraPackages = with pkgs; [
       beancount-language-server
       pkgs-unstable.nil
-      sources.rustledger.packages."${pkgs.stdenv.hostPlatform.system}".rustledger
-
     ];
     extraPython3Packages = (ps: with ps; [
       black

@@ -28,6 +28,7 @@ let
     fi
 
     lutgen apply \
+      -R \
       --preserve \
       -s 128 \
       $image \
@@ -155,7 +156,7 @@ in
         ++ commandForWindows {
           command = "border pixel 0";
         } [
-          "Signal"
+          "signal"
           "TelegramDesktop"
           "Zathura"
           "discord"
