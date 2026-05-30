@@ -1,16 +1,39 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
+let
+  cfg = config.programs.claude-code;
+in
 {
   programs.claude-code = {
     enable = true;
     settings = {
       theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
-      permissions.allow = [ "Read(/nix/store/**)" ];
+      permissions = { allow = [ "Read(/nix/store/**)" ]; };
     };
+    package = pkgs.wrapPackage pkgs.claude-code (binPath: ''
+      #! ${pkgs.runtimeShell}
+      settings="${cfg.configDir}/settings.json"
+      mkdir -p "${cfg.configDir}"
+      if [ -f "$settings" ]; then
+        tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1:
+          ".${n1}=${builtins.toJSON v1}"
+        ) cfg.settings)}' \
+          "$settings"
+        )" && cat <<< "$tmp" > "$settings"
+      else
+        [ -L "$settings" ] \
+          && rm "$settings" \
+        echo '${builtins.toJSON cfg.settings}' > "$settings"
+      fi
+      chmod 644 "$settings"
+      exec ${binPath} "$@"
+    '');
     mcpServers.nixos = {
       type = "stdio";
       command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
     };
   };
+
+  home.file."${cfg.configDir}/settings.json".enable = false;
 
   home.file.".claude/memory/feedback_nix_config_first.md" = {
     force = true;
