@@ -152,6 +152,23 @@ treewide: update to 26.05
 
 Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `fix <x>`, `pin <x>`, `unpin <x>`.
 
+### Querying machine config
+
+Prefer `nix eval` over reading source files to answer questions about configuration. Examples:
+
+```sh
+# What packages are installed for a user?
+nix eval .#homeConfigurations."reed@nixos-desktop".config.home.packages --apply 'ps: map (p: p.name) ps' --json
+
+# Is a NixOS option enabled?
+nix eval .#nixosConfigurations.nixos-desktop.config.services.openssh.enable
+
+# What value does an option have?
+nix eval .#nixosConfigurations.nixos-desktop.config.networking.hostName
+```
+
+This gives the evaluated, final config rather than requiring you to trace through module imports manually.
+
 ### Nix
 
 - Use `nix build .#<attr>` to build flake packages — don't fall back to `nix-build repo/compat.nix` (compat.nix is for legacy tooling only).
