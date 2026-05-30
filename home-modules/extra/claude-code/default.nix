@@ -203,6 +203,29 @@ in
     '';
   };
 
+  home.file.".claude/commands/remember.md" = {
+    force = true;
+    text = ''
+      ---
+      description: Save a Claude Code behavior to memory at the appropriate scope
+      ---
+
+      The user wants you to remember: $ARGUMENTS
+
+      This is always about how *Claude Code itself* should behave. There are exactly two scopes:
+
+      1. **Universal (machine-level)** — applies whenever Claude Code is running on this machine, regardless of project. Written as a `home.file.".claude/memory/<name>.md"` entry inside the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}` (grep for `programs.claude-code`). **Never write directly to `~/.claude`.**
+
+      2. **Repo-scoped** — applies only when Claude Code is working inside one specific repo. Written into that repo's `CLAUDE.md` (typically `<repo>/.claude/CLAUDE.md` or `<repo>/CLAUDE.md`).
+
+      **If currently working inside the nix-config repo (`${pkgs.flakePath}`):** scope is ambiguous — pick the scope you think is correct, then **stop and confirm with the user via `AskUserQuestion` before writing anything**.
+
+      **Otherwise:** default to universal (machine-level) and proceed without asking.
+
+      After writing, if the change landed in nix-config (`${pkgs.flakePath}`), run `ldp --switch` to apply.
+    '';
+  };
+
   custom.persistence = {
     files = [ ".claude.json" ];
     directories = [ ".claude" ];
