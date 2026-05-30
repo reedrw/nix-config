@@ -180,6 +180,29 @@ in
     '';
   };
 
+  home.file.".claude/memory/feedback_nix_eval_config.md" = {
+    force = true;
+    text = ''
+      ---
+      name: Prefer nix eval to query machine config
+      description: Use nix eval to inspect evaluated NixOS/home-manager config rather than reading source files manually
+      type: feedback
+      ---
+
+      When answering questions about what is configured on this machine, prefer `nix eval` over tracing through source files. Examples:
+
+      ```sh
+      nix eval .#homeConfigurations."reed@nixos-desktop".config.home.packages --apply 'ps: map (p: p.name) ps' --json
+      nix eval .#nixosConfigurations.nixos-desktop.config.services.openssh.enable
+      nix eval .#nixosConfigurations.nixos-desktop.config.networking.hostName
+      ```
+
+      **Why:** `nix eval` gives the final merged config after all modules are applied — no need to manually trace imports.
+
+      **How to apply:** Any time asked "is X enabled?", "what packages are installed?", or "what value does option Y have?" — reach for `nix eval` first.
+    '';
+  };
+
   custom.persistence = {
     files = [ ".claude.json" ];
     directories = [ ".claude" ];
