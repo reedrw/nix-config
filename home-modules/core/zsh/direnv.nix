@@ -1,4 +1,4 @@
-{ pkgs, util, ... }:
+{ util, ... }:
 let
   sources = (util.importFlake ./plugins).inputs or {};
 in
@@ -18,10 +18,7 @@ in
     };
   };
 
-  programs.direnv-instant = {
-    enable = true;
-    package = sources.direnv-instant.packages."${pkgs.stdenv.hostPlatform.system}".default;
-  };
+  programs.direnv-instant.enable = true;
 
   custom.persistence.directories = [
     ".local/share/direnv"
