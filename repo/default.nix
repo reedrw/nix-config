@@ -53,7 +53,6 @@ in
     };
 
     home.users = lib.genAttrs [
-      "root"
       "reed"
       "nixos"
       "reed@nixos-desktop"
@@ -63,11 +62,11 @@ in
     ] (n: { nameFunction = _: n; });
 
     nixos.hosts = lib.mergeAttrsList [
-      (mkUserHomeModules "nixos-desktop" [ "reed" "root" ])
-      (mkUserHomeModules "nixos-t480"    [ "reed" "root" ])
-      (mkUserHomeModules "nixos-t400"    [ "reed" "root" ])
-      (mkUserHomeModules "nixos-vm"      [ "reed" "root" ])
-      { nixos-iso.userHomeModules = [ "nixos" "root" ]; }
+      (mkUserHomeModules "nixos-desktop" [ "reed" ])
+      (mkUserHomeModules "nixos-t480"    [ "reed" ])
+      (mkUserHomeModules "nixos-t400"    [ "reed" ])
+      (mkUserHomeModules "nixos-vm"      [ "reed" ])
+      { nixos-iso.userHomeModules = [ "nixos" ]; }
     ];
   };
 

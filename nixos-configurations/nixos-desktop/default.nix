@@ -8,6 +8,7 @@
     ezModules.networking
     ezModules.virtualization
     ezModules'.users.reed
+    ezModules'.users.root
     ./configuration.nix
   ];
 }
