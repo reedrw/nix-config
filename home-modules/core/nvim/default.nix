@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgs-unstable, util, ... }:
+{ config, lib, pkgs, util, ... }:
 let
   plugins = (util.importFlake ./plugins).inputs;
 in
@@ -20,7 +20,7 @@ in
     withRuby = false;
     extraPackages = with pkgs; [
       beancount-language-server
-      pkgs-unstable.nil
+      nil
     ];
     extraPython3Packages = (ps: with ps; [
       black
