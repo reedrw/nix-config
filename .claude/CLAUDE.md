@@ -118,7 +118,15 @@ These are added to the pkgs set, so `pkgs.<helper>` works anywhere:
 
 ### Theming
 
-Theming uses **Stylix** (`github:nix-community/stylix`). In home-manager modules, use `config.stylix.polarity` (`"dark"` or `"light"`) to branch between light/dark theme variants. Use `force = true` on `home.file` entries for declaratively-managed config files that tools may otherwise overwrite.
+Theming uses **Stylix** (`github:nix-community/stylix`). `config.stylix.polarity` is `"dark"` or `"light"` in any home-manager module (re-exported from `osConfig` by the core styling module). Use it to branch theme values:
+
+```nix
+theme = if config.stylix.polarity == "light" then "light-value" else "dark-value";
+darkTheme = config.stylix.polarity == "dark";
+color-scheme = "prefer-${config.stylix.polarity}";
+```
+
+Use `force = true` on `home.file` entries for declaratively-managed config files that tools may otherwise overwrite.
 
 ### Impermanence / persistence
 
@@ -129,3 +137,33 @@ Theming uses **Stylix** (`github:nix-community/stylix`). In home-manager modules
 `pkgs/default.nix` returns `{ inherit myPkgs; } // myPkgs`, so the overlay both exposes `pkgs.myPkgs.*` (for `flake.packages`) and merges every package directly into `pkgs` — call them as `pkgs.<name>` in modules.
 
 Only add a package to `pkgs/` when it needs **global scope** — i.e. it must be reachable as `pkgs.<name>` across the whole repo.
+
+## Working Conventions
+
+### Commits
+
+`scope(path): description` — scope is the top-level dir (`home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `treewide`), path is the subdir in parens using `/` separators. Lowercase imperative description, no period. No body, no co-author lines.
+
+```
+home-modules(extra/claude-code): apply config at runtime
+pkgs(alias/lix): use from nixpkgs instead of flake input
+treewide: update to 26.05
+```
+
+Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `fix <x>`, `pin <x>`, `unpin <x>`.
+
+### Nix
+
+- Use `nix build .#<attr>` to build flake packages — don't fall back to `nix-build repo/compat.nix` (compat.nix is for legacy tooling only).
+- Avoid `rec`; many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
+- Don't hoist `let` bindings for single-use derivations; pass inline and let Nix string-coerce the store path (`builtins.toString` is not needed).
+- Patches go in `pkgs/patches/<package-name>/`; reference as `../patches/<package-name>/...` from `default.nix`.
+- Non-trivial shell scripts in `writeShellApplication` (and similar) belong in a sibling `.sh` file: `text = builtins.readFile ./script.sh`.
+
+### Running tools
+
+If a tool isn't installed, run it via Nix instead of reporting command-not-found or asking the user to install it: `nix run nixpkgs#<package> -- <args>` or `nix-shell -p <package> --run '<command>'`.
+
+## Memory
+
+This file serves as the persistent memory for this project. When you learn something worth remembering — a correction, a confirmed approach, a project convention — write it back here under the relevant section, exactly as you would write an auto-memory entry.
