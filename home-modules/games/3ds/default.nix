@@ -1,7 +1,4 @@
-{ pkgs, util, ... }:
-let
-  tlaterpkgs = (util.importFlake ./sources).inputs.tlaterpkgs;
-in
+{ pkgs, ... }:
 {
   home.packages = (with pkgs; [
     azahar # Arctic Base
@@ -9,8 +6,6 @@ in
     ctrtool
     cxitool
     makerom
-  ]) ++ (with tlaterpkgs.packages."${pkgs.stdenv.hostPlatform.system}"; [
-    servefiles
   ]);
 
   custom.persistence.directories = [
