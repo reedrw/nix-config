@@ -162,6 +162,24 @@ in
     '';
   };
 
+  home.file.".claude/memory/feedback_claude_config_scope.md" = {
+    force = true;
+    text = ''
+      ---
+      name: Claude Code config scope — machine vs repo
+      description: Project CLAUDE.md is for repo interaction; machine-level Claude Code config belongs in the home-manager module
+      type: feedback
+      ---
+
+      Two distinct scopes — do not mix them:
+
+      - **Repo-level `CLAUDE.md`** is for guidance on how Claude Code should interact with *that repo*: its conventions, architecture, key commands.
+      - **Machine-level Claude Code config** (settings, memories, hooks, MCP servers, permissions, status line) belongs in the Claude Code home-manager module inside the nix-config repo at `${pkgs.flakePath}`. Grep for `programs.claude-code` to find it.
+
+      **How to apply:** When the user asks to update Claude Code's own configuration or to remember something globally across all projects, edit the home-manager module — do not add it to a project's `CLAUDE.md`, and do not write to `~/.claude` directly.
+    '';
+  };
+
   custom.persistence = {
     files = [ ".claude.json" ];
     directories = [ ".claude" ];
