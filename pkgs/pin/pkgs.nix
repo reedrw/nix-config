@@ -1,21 +1,15 @@
 pkgs: let
   lib = pkgs.lib;
   json = lib.importJSON ./pinned.json;
-  pinnedVersionToPkg = { rev, sha256, ... }: lib.pipe (import (builtins.fetchTarball {
+  pinnedVersionToPkg = { rev, sha256, ... }: import (builtins.fetchTarball {
     inherit sha256;
     url = "https://github.com/nixos/nixpkgs/archive/${rev}.tar.gz";
   }) {
     inherit (pkgs.stdenv.hostPlatform) system;
-  }) [
     # `config` backwards incompatible after
     # https://github.com/NixOS/nixpkgs/commit/8a5aae22c02b8d0f8306abb1bed314c569c3700f
-    (prev: import "${prev.path}" {
-      config = pkgs.config // {
-        replaceStdenv = _: prev.stdenv;
-      };
-      inherit (prev.stdenv.hostPlatform) system;
-    })
-  ];
+    config.replaceStdenv = { pkgs }: pkgs.stdenv;
+  };
 
   mapToPackage = package: a: lib.mapAttrs' (n: v: let
     pinnedPkgs =
