@@ -1,6 +1,9 @@
 { config, pkgs, lib, ... }:
 let
   cfg = config.programs.claude-code;
+
+  statuslineScript = pkgs.writeNixShellScript "claude-statusline"
+    (builtins.readFile ./claude-statusline.sh);
 in
 {
   programs.claude-code = {
@@ -8,6 +11,10 @@ in
     settings = {
       theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
+      statusLine = {
+        type = "command";
+        command = "${statuslineScript}/bin/claude-statusline";
+      };
     };
     package = pkgs.wrapPackage pkgs.claude-code (binPath: ''
       #! ${pkgs.runtimeShell}
