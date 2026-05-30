@@ -4,7 +4,7 @@
   stylix.targets.telegram-desktop.enable = true;
 
   home.packages = with pkgs; [
-    (wrapEnv pkgs-unstable.telegram-desktop {
+    (wrapEnv telegram-desktop {
       XDG_CURRENT_DESKTOP = "gnome";
       # stylix qt module breaks tdesktop right-click shadow
       QT_QPA_PLATFORMTHEME = "";
