@@ -1,12 +1,4 @@
 {
-  "easyeffects": {
-    "7.2.5": {
-      "note": "8.0.0 is unpolished/ugly Qt UI",
-      "rev": "12c1f0253aa9a54fdf8ec8aecaafada64a111e24",
-      "sha256": "0zr033ybqjc5spwh7xnzkhbqgc6gh8waw6z76rpvadxckyqlfgiq"
-    },
-    "default": "7.2.5"
-  },
   "flameshot": {
     "13.3.0": {
       "note": "Flameshot removing X11 support",

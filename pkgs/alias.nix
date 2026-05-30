@@ -4,6 +4,8 @@ let
   lib = pkgs.lib;
 in
 {
+  easyeffects = pkgs.callPackage ./easyeffects_7_2_5 { };
+
   adwsteamgtk = pkgs.adwsteamgtk.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/adwsteamgtk/fix_custom_css_permissions.patch
