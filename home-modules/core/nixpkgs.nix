@@ -5,10 +5,10 @@
   # Must be applied, not at flake level, so that it inherits per-system
   # nixpkgs overlays and configuration.
   _module.args = {
-    pkgs-unstable = import inputs.unstable {
+    pkgs-unstable = pkgs.pkgs-unstable or (import inputs.unstable {
       inherit (pkgs) config;
       inherit (pkgs.stdenv.hostPlatform) system;
-    };
+    });
     rootAbsolute = util.rootAbsolute' osConfig.networking.hostName;
   };
 
