@@ -87,16 +87,25 @@ in
     '';
   };
 
-  home.file.".claude/memory/reference_claude_code_config.md" = {
+  home.file.".claude/memory/feedback_claude_config_in_nix.md" = {
     force = true;
     text = ''
       ---
-      name: Claude Code config location
-      description: Where to edit Claude Code's own configuration — in the nix-config repo, not global config files
-      type: reference
+      name: All Claude Code config lives in Nix — never edit ~/.claude directly
+      description: Claude Code settings, memories, hooks, MCP servers, and permissions are all managed via home-manager. Do NOT write to ~/.claude manually.
+      type: feedback
       ---
 
-      Claude Code is configured via the home-manager module at `home-modules/extra/claude-code/default.nix` inside the nix-config repo at `${pkgs.flakePath}`. Any changes to Claude Code settings, environment, permissions, or behavior must be made there — not by editing global Claude config files directly.
+      **CRITICAL:** Do NOT edit files under `~/.claude` directly. Everything in `~/.claude` is managed declaratively by the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}`. Grep for `programs.claude-code` to find it.
+
+      This includes:
+      - `settings.json` (theme, permissions, hooks, MCP servers, status line)
+      - `memory/*.md` files (all memories are declared as `home.file` entries)
+      - Any other config under `~/.claude`
+
+      **Why:** The system uses impermanence — direct edits to `~/.claude` may survive reboots only because `.claude` is in the persistence list, but they are still wrong. More importantly, changes must be declared in Nix to be consistent and reproducible across all machines.
+
+      **How to apply:** When asked to update settings, add a memory, change permissions, add an MCP server, or modify any Claude Code behavior — make the change in the home-manager module, then rebuild with `ldp --switch`. Never write to `~/.claude` directly.
     '';
   };
 
