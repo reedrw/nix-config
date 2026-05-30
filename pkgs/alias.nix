@@ -26,7 +26,9 @@ in
     screenshotCommand = "${lib.getExe pkgs.maim} -u";
   };
 
-  nix = (inputs.lix.packages.x86_64-linux.nix.overrideAttrs (old: {
+  nix = let
+    pkgsWithLix = pkgs.extend inputs.lix.overlays.default;
+  in (pkgsWithLix.nix.overrideAttrs (old: {
     doCheck = false;
     patches = (old.patches or []) ++ [
       ./patches/nix/compadd.patch
