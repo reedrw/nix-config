@@ -595,7 +595,6 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
         "stylix": "stylix",
-        "tx-calculator": "tx-calculator",
         "unstable": "unstable"
       }
     },
@@ -729,29 +728,6 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
-        "type": "github"
-      }
-    },
-    "tx-calculator": {
-      "inputs": {
-        "flake-parts": [
-          "flake-parts"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1736961597,
-        "narHash": "sha256-xaXEDFvQ09WO4ci44oqtkIpcHnbW4x5QfDGkapEsjts=",
-        "owner": "reedrw",
-        "repo": "tx-calculator",
-        "rev": "077dd83726f9241c127dfa8a2376baf1564260e4",
-        "type": "github"
-      },
-      "original": {
-        "owner": "reedrw",
-        "repo": "tx-calculator",
         "type": "github"
       }
     },

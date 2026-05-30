@@ -41,12 +41,6 @@ let self = {
       inputs.flake-compat.follows = "flake-compat";
     };
 
-    tx-calculator = {
-      url = "github:reedrw/tx-calculator";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       #url = "github:nix-community/home-manager";

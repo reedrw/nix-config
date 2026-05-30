@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, rootAbsolute, ... }:
+{ config, pkgs, rootAbsolute, ... }:
 let
   packagesMinimal = with pkgs; [
     # utilities
@@ -13,8 +13,6 @@ let
     wget      # download utility
     progress  # progress viewer
     p7zip     # 7z unzipper
-    inputs.tx-calculator.packages.${pkgs.stdenv.hostPlatform.system}.tx-calculator
-
     # global aliases
     (aliasToPackage {
       hms = ''home-manager switch -L "$@"'';
