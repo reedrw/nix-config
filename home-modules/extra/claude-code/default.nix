@@ -4,20 +4,9 @@ let
 
   statuslineScript = pkgs.writeNixShellScript "claude-statusline"
     (builtins.readFile ./claude-statusline.sh);
-in
-{
-  programs.claude-code = {
-    enable = true;
-    settings = {
-      theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
-      permissions = { allow = [ "Read(/nix/store/**)" ]; };
-      statusLine = {
-        type = "command";
-        command = "${statuslineScript}/bin/claude-statusline";
-      };
-    };
-    package = pkgs.wrapPackage pkgs.claude-code (binPath: ''
-      #! ${pkgs.runtimeShell}
+
+    writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
+      PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
       settings="${cfg.configDir}/settings.json"
       mkdir -p "${cfg.configDir}"
       if [ -f "$settings" ]; then
@@ -32,6 +21,40 @@ in
         echo '${builtins.toJSON cfg.settings}' > "$settings"
       fi
       chmod 644 "$settings"
+    '';
+in
+{
+  programs.claude-code = {
+    enable = true;
+    settings = {
+      theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
+      permissions = { allow = [ "Read(/nix/store/**)" ]; };
+      hooks = {
+        Stop = [{
+          hooks = [{
+            type = "command";
+            command = pkgs.writeShellScript "claude-notify-stop" ''
+              exec ${pkgs.libnotify}/bin/notify-send "Claude Code" "Waiting for input"
+            '';
+          }];
+        }];
+        Notification = [{
+          hooks = [{
+            type = "command";
+            command = pkgs.writeShellScript "claude-notify-attention" ''
+              exec ${pkgs.libnotify}/bin/notify-send "Claude Code" "Attention needed"
+            '';
+          }];
+        }];
+      };
+      statusLine = {
+        type = "command";
+        command = "${statuslineScript}/bin/claude-statusline";
+      };
+    };
+    package = pkgs.wrapPackage pkgs.claude-code (binPath: ''
+      #! ${pkgs.runtimeShell}
+      ${writeConfig}
       exec ${binPath} "$@"
     '');
     mcpServers.nixos = {
@@ -41,6 +64,10 @@ in
   };
 
   home.file."${cfg.configDir}/settings.json".enable = false;
+
+  home.activation.claudeCodeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${writeConfig}
+  '';
 
   home.file.".claude/memory/feedback_nix_config_first.md" = {
     force = true;
@@ -68,7 +95,85 @@ in
       type: reference
       ---
 
-      Claude Code is configured via the home-manager module at `home-modules/extra/claude-code.nix` inside the nix-config repo at `${pkgs.flakePath}`. Any changes to Claude Code settings, environment, permissions, or behavior must be made there — not by editing global Claude config files directly.
+      Claude Code is configured via the home-manager module at `home-modules/extra/claude-code/default.nix` inside the nix-config repo at `${pkgs.flakePath}`. Any changes to Claude Code settings, environment, permissions, or behavior must be made there — not by editing global Claude config files directly.
+    '';
+  };
+
+  home.file.".claude/memory/feedback_nix_flake_git_staging.md" = {
+    force = true;
+    text = ''
+      ---
+      name: Nix Flake Git Staging Requirement
+      description: Nix flakes only read files that are staged (git add) in the git tree — untracked files are invisible to nix commands
+      type: feedback
+      ---
+
+      Newly created (untracked) files must be staged with `git add` before Nix will see them in a flake. Modifications to already-tracked files are picked up automatically — no staging needed for edits.
+
+      **Why:** Nix flakes use the git index to determine which files are part of the flake source, so brand-new files that have never been staged simply don't exist from Nix's perspective.
+
+      **How to apply:** After creating a new file, remind the user to `git add` it before running any `nix` evaluation commands. Don't do this for edits to existing files — those are fine without staging.
+    '';
+  };
+
+  home.file.".claude/memory/feedback_no_rec.md" = {
+    force = true;
+    text = ''
+      ---
+      name: Avoid rec keyword; prefer self-referencing function
+      description: Don't use rec in Nix; try passing a self-referencing function first
+      type: feedback
+      ---
+
+      Avoid the `rec` keyword in Nix. Many build functions (including `buildPythonPackage`, `buildPythonApplication`, and others) natively accept a function argument `(self: { ... })` for self-reference. Try that first before reaching for `rec` or `lib.fix`.
+
+      **Why:** The self-referencing function pattern is cleaner and more idiomatic; `rec` can cause subtle issues with overrides.
+
+      **How to apply:** Any time self-reference is needed in a derivation attrset (e.g. `inherit pname version` in `src`), write `buildFoo (self: { pname = "..."; src = use self.pname; })` instead of `buildFoo rec { pname = "..."; src = use pname; }`. Only fall back to `lib.fix` if the function doesn't natively support it.
+    '';
+  };
+
+  home.file.".claude/memory/feedback_nix_inline_derivations.md" = {
+    force = true;
+    text = ''
+      ---
+      name: nix-inline-derivations
+      description: Don't extract let bindings for values used in only one place; pass derivations inline and rely on Nix string coercion
+      type: feedback
+      ---
+
+      Don't hoist a `let` binding just because a value is a derivation. If it's only used in one spot, write it inline at the point of use.
+
+      Derivations coerce to their store path in string contexts — including inside `builtins.toJSON` — so `builtins.toString` is unnecessary. Just pass the derivation directly as the attribute value and let Nix coerce it.
+
+      **Why:** Unnecessary `let` bindings add indirection without benefit when the value is only referenced once.
+
+      **How to apply:** When writing a `pkgs.writeShellScript` (or similar) for a single-use command, write it inline as the attribute value rather than binding it at the top of the file.
+    '';
+  };
+
+  home.file.".claude/memory/feedback_scripts_in_files.md" = {
+    force = true;
+    text = ''
+      ---
+      name: scripts-in-separate-files
+      description: When a shell script body is non-trivial, read it from a sibling .sh file rather than inlining it in the Nix expression
+      type: feedback
+      ---
+
+      When writing a `pkgs.writeShellApplication` (or similar builder) with a non-trivial script body, put the script in a sibling `.sh` file and reference it with `builtins.readFile`:
+
+      ```nix
+      pkgs.writeShellApplication {
+        name = "my-tool";
+        runtimeInputs = [ pkgs.curl ];
+        text = builtins.readFile ./my-tool.sh;
+      }
+      ```
+
+      **Why:** Large inline strings make Nix files harder to read and lose syntax highlighting and editor support for the script language.
+
+      **Threshold:** Apply when the script is large enough that inlining it noticeably clutters the Nix expression — a few lines is fine inline. `pkgs.writeNixShellScript` (a repo helper) already encourages this pattern; apply the same to `writeShellApplication` and similar builders.
     '';
   };
 
