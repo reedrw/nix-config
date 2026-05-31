@@ -1,0 +1,69 @@
+Handle hybrid cgroup hierarchies in get_cgroupid_for_pidfd.
+
+In hybrid mode (cgroupv2 unified mount plus any v1 controller still mounted,
+e.g. net_cls from mullvad-vpn's split-tunnel feature), /proc/<pid>/cgroup
+contains multiple lines. The old parser blindly took the first ':' it
+found, producing a garbage path; name_to_handle_at then failed and every
+subject ended up with cgroupid=0. That tripped the a_cgroup==0 guard in
+subject_equal_for_authz, so AUTH_ADMIN_KEEP could never reuse a cached
+authorization.
+
+Pick the v2 (unified) line explicitly: per cgroups(7) it's the line whose
+hierarchy ID is 0 and controller list is empty, i.e. starts with "0::".
+
+--- a/src/polkit/polkitunixprocess.c	1969-12-31 19:00:01.000000000 -0500
++++ b/src/polkit/polkitunixprocess.c	2026-05-31 08:33:44.606052902 -0400
+@@ -1400,29 +1400,37 @@
+   if (!g_file_get_contents (filename, &contents, &length, error))
+     goto out;
+
+-  /* The format is '0::/cgroup/path\n */
+-  p = strchr (contents, ':');
+-  if (p == NULL)
++  /* /proc/<pid>/cgroup can have multiple lines in hybrid mode (v2 unified +
++   * any v1 controllers still mounted). Each line is '<id>:<controllers>:<path>';
++   * the cgroup v2 entry has hierarchy id 0 and an empty controller list, so it
++   * starts with "0::". Find it explicitly instead of taking the first ':'. */
++  p = NULL;
++  {
++    gchar *line = contents;
++    gchar *buf_end = contents + length;
++    while (line < buf_end)
++      {
++        gchar *line_end = memchr (line, '\n', buf_end - line);
++        if (line_end == NULL)
++          line_end = buf_end;
++        *line_end = '\0';
++        if (g_str_has_prefix (line, "0::"))
++          {
++            p = line + 3; /* skip '0::' */
++            break;
++          }
++        line = line_end + 1;
++      }
++  }
++  if (p == NULL || *p == '\0')
+     {
+       g_set_error (error,
+                    POLKIT_ERROR,
+                    POLKIT_ERROR_FAILED,
+-                   "Error parsing file %s",
++                   "No cgroup v2 entry found in %s",
+                    filename);
+       goto out;
+     }
+-  p += 2; /* skip '::' */
+-  if (p - contents >= (int) length)
+-    {
+-      g_set_error (error,
+-                   POLKIT_ERROR,
+-                   POLKIT_ERROR_FAILED,
+-                   "Error parsing file %s",
+-                   filename);
+-      goto out;
+-    }
+-
+-  contents[length - 1] = '\0'; /* remove the newline */
+
+   cgroup_path = g_strdup_printf ("/sys/fs/cgroup%s", p);
+
