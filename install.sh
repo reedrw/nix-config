@@ -62,6 +62,12 @@ main(){
   logFormat=(--log-format bar-with-logs)
   flake="$(getFlakeRef)"
 
+  for arg in "${@}"; do
+    if [ "$arg" == "--" ]; then
+      exec claude "/ldp $*"
+    fi
+  done
+
   case $1 in
     --boot)
       hostname="${2:-$(hostname)}"
