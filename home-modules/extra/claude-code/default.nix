@@ -30,6 +30,8 @@ in
       theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
       autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
+      advisorModel = "opus";
+      skipAutoPermissionPrompt = true;
       hooks = {
         Stop = [{
           hooks = [{
