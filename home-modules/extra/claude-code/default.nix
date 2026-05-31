@@ -17,7 +17,7 @@ let
         )" && cat <<< "$tmp" > "$settings"
       else
         [ -L "$settings" ] \
-          && rm "$settings" \
+          && rm "$settings"
         echo '${builtins.toJSON cfg.settings}' > "$settings"
       fi
       chmod 644 "$settings"
@@ -30,7 +30,6 @@ in
       theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
       autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
-      advisorModel = "opus";
       skipAutoPermissionPrompt = true;
       hooks = {
         Stop = [{
@@ -241,6 +240,6 @@ in
 
   custom.persistence = {
     files = [ ".claude.json" ];
-    directories = [ ".claude/sessions" ];
+    directories = [ ".claude" ];
   };
 }
