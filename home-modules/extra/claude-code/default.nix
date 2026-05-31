@@ -226,8 +226,5 @@ in
     '';
   };
 
-  custom.persistence = {
-    files = [ ".claude.json" ];
-    directories = [ ".claude" ];
-  };
+  custom.persistence.files = [ ".claude.json" ];
 }
