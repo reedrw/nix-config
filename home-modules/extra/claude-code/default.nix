@@ -32,6 +32,34 @@ in
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       skipAutoPermissionPrompt = true;
       hooks = {
+        PreToolUse = [
+          {
+            matcher = "Bash";
+            hooks = [{
+              type = "command";
+              command = pkgs.writeShellScript "claude-deny-nix-store-search" ''
+                PATH="${lib.makeBinPath [ pkgs.jq pkgs.gnugrep ]}:$PATH"
+                cmd=$(jq -r '.tool_input.command // empty')
+                if [[ -n "$cmd" ]] && echo "$cmd" | grep -qE '^\s*(find|grep|egrep|fgrep|rg|awk|sed)\b' && echo "$cmd" | grep -qP '/nix/store(?!/[a-z0-9]{32}-)'; then
+                  jq -n '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Searching /nix/store/ directly is not allowed - use nix eval to resolve store paths instead."}}'
+                fi
+              '';
+            }];
+          }
+          {
+            matcher = "Write|Edit";
+            hooks = [{
+              type = "command";
+              command = pkgs.writeShellScript "claude-deny-claude-config-edit" ''
+                PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
+                file=$(jq -r '.tool_input.file_path // empty')
+                if [[ "$file" == "${cfg.configDir}" || "$file" == "${cfg.configDir}/"* ]]; then
+                  jq -n '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"~/.claude is managed by home-manager — edit the claude-code module in ${pkgs.flakePath} and rebuild instead."}}'
+                fi
+              '';
+            }];
+          }
+        ];
         Stop = [{
           hooks = [{
             type = "command";
@@ -88,27 +116,6 @@ in
     '';
   };
 
-  home.file.".claude/memory/feedback_claude_config_in_nix.md" = {
-    force = true;
-    text = ''
-      ---
-      name: All Claude Code config lives in Nix — never edit ~/.claude directly
-      description: Claude Code settings, memories, hooks, MCP servers, and permissions are all managed via home-manager. Do NOT write to ~/.claude manually.
-      type: feedback
-      ---
-
-      **CRITICAL:** Do NOT edit files under `~/.claude` directly. Everything in `~/.claude` is managed declaratively by the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}`. Grep for `programs.claude-code` to find it.
-
-      This includes:
-      - `settings.json` (theme, permissions, hooks, MCP servers, status line)
-      - `memory/*.md` files (all memories are declared as `home.file` entries)
-      - Any other config under `~/.claude`
-
-      **Why:** The system uses impermanence — direct edits to `~/.claude` may survive reboots only because `.claude` is in the persistence list, but they are still wrong. More importantly, changes must be declared in Nix to be consistent and reproducible across all machines.
-
-      **How to apply:** When asked to update settings, add a memory, change permissions, add an MCP server, or modify any Claude Code behavior — make the change in the home-manager module, then rebuild with `/ldp --switch`. Never write to `~/.claude` directly.
-    '';
-  };
 
   home.file.".claude/memory/feedback_nix_flake_git_staging.md" = {
     force = true;
@@ -163,24 +170,6 @@ in
     '';
   };
 
-  home.file.".claude/memory/feedback_claude_config_scope.md" = {
-    force = true;
-    text = ''
-      ---
-      name: Claude Code config scope — machine vs repo
-      description: Project CLAUDE.md is for repo interaction; machine-level Claude Code config belongs in the home-manager module
-      type: feedback
-      ---
-
-      Two distinct scopes — do not mix them:
-
-      - **Repo-level `CLAUDE.md`** is for guidance on how Claude Code should interact with *that repo*: its conventions, architecture, key commands.
-      - **Machine-level Claude Code config** (settings, memories, hooks, MCP servers, permissions, status line) belongs in the Claude Code home-manager module inside the nix-config repo at `${pkgs.flakePath}`. Grep for `programs.claude-code` to find it.
-
-      **How to apply:** When the user asks to update Claude Code's own configuration or to remember something globally across all projects, edit the home-manager module — do not add it to a project's `CLAUDE.md`, and do not write to `~/.claude` directly.
-    '';
-  };
-
   home.file.".claude/memory/feedback_nix_eval_config.md" = {
     force = true;
     text = ''
@@ -204,6 +193,7 @@ in
     '';
   };
 
+
   home.file.".claude/commands/ldp.md" = {
     force = true;
     text = ''
@@ -223,6 +213,30 @@ in
       ---
 
       The user wants you to remember: $ARGUMENTS
+
+      ## Step 1: Hook or memory?
+
+      First assess whether this is better implemented as a **hook** (automatic behavior triggered by an event) rather than a memory instruction.
+
+      **Hook signals — the request describes something that should happen *automatically* when an event occurs:**
+      - "after writing/editing files, do X" → PostToolUse hook (Write|Edit matcher)
+      - "before/after running bash commands, do X" → Pre/PostToolUse hook (Bash matcher)
+      - "when you stop, do X" → Stop hook
+      - "before compacting, do X" → PreCompact hook
+      - "every time a session starts, do X" → SessionStart hook
+      - "when a tool/command fails, do X" → PostToolUseFailure hook
+
+      **Memory signals — the request describes a standing preference, style, or instruction for Claude:**
+      - Coding style or formatting preferences
+      - Communication style or response format
+      - Things to always avoid or always include
+      - Project-specific context or conventions
+
+      **If hook-suited:** use `AskUserQuestion` to confirm with the user before proceeding — explain that this sounds like it needs a hook in `settings.json` (not just memory, since memory cannot trigger automatic actions), and ask whether to set it up as a hook via `/update-config` or save it as a memory instruction anyway.
+
+      **If memory-suited:** proceed to Step 2.
+
+      ## Step 2: Scope
 
       This is always about how *Claude Code itself* should behave. There are exactly two scopes:
 

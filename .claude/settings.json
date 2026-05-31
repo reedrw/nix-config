@@ -36,5 +36,22 @@
       "Bash(shellcheck:*)",
       "Bash(pre-commit run:*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); if [[ -n \"$cmd\" ]] && echo \"$cmd\" | grep -qE '^\\s*(find|grep|egrep|fgrep|rg|awk|sed)\\b' && echo \"$cmd\" | grep -qP '/nix/store(?!/[a-z0-9]{32}-)'; then jq -n '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Searching /nix/store/ directly is not allowed - use nix eval to resolve store paths instead.\"}}'; fi"
+          },
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); if echo \"$cmd\" | grep -qE '^\\s*nix-build\\b' && echo \"$cmd\" | grep -q 'compat\\.nix'; then jq -n '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"nix-build repo/compat.nix is for legacy tooling only — use nix build .#<attr> instead.\"}}'; fi"
+          }
+        ]
+      }
+    ]
   }
 }

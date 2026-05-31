@@ -171,11 +171,11 @@ This gives the evaluated, final config rather than requiring you to trace throug
 
 ### Nix
 
-- Use `nix build .#<attr>` to build flake packages — don't fall back to `nix-build repo/compat.nix` (compat.nix is for legacy tooling only).
 - Avoid `rec`; many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
 - Don't hoist `let` bindings for single-use derivations; pass inline and let Nix string-coerce the store path (`builtins.toString` is not needed).
 - Patches go in `pkgs/patches/<package-name>/`; reference as `../patches/<package-name>/...` from `default.nix`.
 - Non-trivial shell scripts in `writeShellApplication` (and similar) belong in a sibling `.sh` file: `text = builtins.readFile ./script.sh`.
+- Never search all of `/nix/store/` with `find`, `grep`, or similar — it's enormous. Resolve store paths with `nix eval` instead (e.g. `nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw`).
 
 ### Running tools
 
