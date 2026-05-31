@@ -105,7 +105,7 @@ in
 
       **Why:** The system uses impermanence — direct edits to `~/.claude` may survive reboots only because `.claude` is in the persistence list, but they are still wrong. More importantly, changes must be declared in Nix to be consistent and reproducible across all machines.
 
-      **How to apply:** When asked to update settings, add a memory, change permissions, add an MCP server, or modify any Claude Code behavior — make the change in the home-manager module, then rebuild with `ldp --switch`. Never write to `~/.claude` directly.
+      **How to apply:** When asked to update settings, add a memory, change permissions, add an MCP server, or modify any Claude Code behavior — make the change in the home-manager module, then rebuild with `/ldp --switch`. Never write to `~/.claude` directly.
     '';
   };
 
@@ -203,6 +203,17 @@ in
     '';
   };
 
+  home.file.".claude/commands/ldp.md" = {
+    force = true;
+    text = ''
+      First, run `ldp $ARGUMENTS`.
+
+      If `$ARGUMENTS` contains ` -- `, treat everything before ` -- ` as the ldp arguments and everything after as additional instructions to follow *after* the command has been run.
+
+      After completing any additional instructions, always rerun the original ldp command (the part before ` -- `, or the full `$ARGUMENTS` if there was no ` -- `) to confirm the changes achieved what the user asked for.
+    '';
+  };
+
   home.file.".claude/commands/remember.md" = {
     force = true;
     text = ''
@@ -222,9 +233,12 @@ in
 
       **Otherwise:** default to universal (machine-level) and proceed without asking.
 
-      After writing, if the change landed in nix-config (`${pkgs.flakePath}`), run `ldp --switch` to apply.
+      After writing, if the change landed in nix-config (`${pkgs.flakePath}`), run `/ldp --switch` to apply.
     '';
   };
 
-  custom.persistence.files = [ ".claude.json" ];
+  custom.persistence = {
+    files = [ ".claude.json" ];
+    directories = [ ".claude/sessions" ];
+  };
 }
