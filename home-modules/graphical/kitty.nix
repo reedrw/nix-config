@@ -42,6 +42,9 @@
         launch tmux
       ''}";
     };
+    keybindings = {
+      "shift+return" = "send_text all \\x1b\\r";
+    };
     extraConfig = ''
       modify_font underline_position 2
       text_composition_strategy legacy
