@@ -1,6 +1,6 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
 { inputs, pkgs, config, ... }:
 {
@@ -8,8 +8,6 @@
     ./hardware-configuration.nix
     "${inputs.nixos-hardware}/lenovo/thinkpad/t480"
   ];
-
-  custom.persistJSON = ./persist.json;
 
   networking.hostName = "nixos-t480";
 
@@ -36,44 +34,42 @@
     acpilight.enable = true;
   };
 
-  custom.steam = {
-    enable = true;
-    mullvad-exclude = false;
-  };
-
-  services.btrfs.autoScrub.enable = true;
-
   custom = {
+    persistJSON = ./persist.json;
     persistDir = "/var/persist";
     prevDir = "/var/prev";
-  };
-
-  custom.boot = {
-    keyfile-unlock = {
+    steam = {
       enable = true;
-      device = "enc";
-      keyFile = "/dev/disk/by-id/usb-SanDisk_Cruzer_Glide_4C530001240706109524-0:0-part2";
+      mullvad-exclude = false;
     };
-    wipe.enable = true;
-    efi.enable = true;
-  };
-
-  custom.snapper = {
-    enable = true;
-    allowedUsers = [ "reed" ];
-  };
-
-  services.libinput = {
-    enable = true;
-    mouse = {
-      accelProfile = "flat";
-      accelSpeed = "10";
+    boot = {
+      keyfile-unlock = {
+        enable = true;
+        device = "enc";
+        keyFile = "/dev/disk/by-id/usb-SanDisk_Cruzer_Glide_4C530001240706109524-0:0-part2";
+      };
+      wipe.enable = true;
+      efi.enable = true;
+    };
+    snapper = {
+      enable = true;
+      allowedUsers = [ "reed" ];
     };
   };
 
-  services.xserver.displayManager.sessionCommands = ''
-    xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Accel Speed" 1
-  '';
+  services = {
+    btrfs.autoScrub.enable = true;
+    libinput = {
+      enable = true;
+      mouse = {
+        accelProfile = "flat";
+        accelSpeed = "10";
+      };
+    };
+    xserver.displayManager.sessionCommands = ''
+      xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Accel Speed" 1
+    '';
+  };
 
   programs.droidcam.enable = true;
 

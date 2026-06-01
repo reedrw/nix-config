@@ -1,4 +1,4 @@
-info: final: prev:
+_: final: prev:
 
 {
   self = builtins.getFlake "self";

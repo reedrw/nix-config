@@ -4,6 +4,7 @@ with pkgs;
 mkShell ({
   name = "nix-config";
   packages = [
+    deadnix
     doppler
     git
     home-manager
@@ -12,6 +13,7 @@ mkShell ({
     nix-update
     pre-commit
     shellcheck
+    statix
     update-all
   ];
   PRE_COMMIT_COLOR = "never";

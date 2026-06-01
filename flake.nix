@@ -72,7 +72,7 @@ let self = {
     experimental-features = "flakes nix-command pipe-operator";
   };
 
-  outputs = { flake-parts, nixpkgs, ... } @ inputs:
+  outputs = { flake-parts, ... } @ inputs:
     flake-parts.lib.mkFlake {
       inherit inputs;
     } {

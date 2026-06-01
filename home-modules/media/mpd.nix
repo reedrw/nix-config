@@ -1,20 +1,24 @@
 { pkgs, ... }:
 
 {
-  services.mpd = {
-    enable = true;
-    extraConfig = ''
-      audio_output {
-        type            "pulse"
-        name            "pulse audio"
-      }
-      audio_output {
-        type                    "fifo"
-        name                    "my_fifo"
-        path                    "/tmp/mpd.fifo"
-        format                  "44100:16:2"
-      }
-    '';
+  services = {
+    mpd = {
+      enable = true;
+      extraConfig = ''
+        audio_output {
+          type            "pulse"
+          name            "pulse audio"
+        }
+        audio_output {
+          type                    "fifo"
+          name                    "my_fifo"
+          path                    "/tmp/mpd.fifo"
+          format                  "44100:16:2"
+        }
+      '';
+    };
+    mpd-mpris.enable = true;
+    playerctld.enable = true;
   };
   systemd.user.services.mpd = {
     Unit = {
@@ -24,10 +28,6 @@
       Requires = [ "playerctld.service" ];
     };
   };
-
-  services.mpd-mpris.enable = true;
-
-  services.playerctld.enable = true;
   systemd.user.services.playerctld = {
     Unit = {
       After = [ "graphical.target" ];

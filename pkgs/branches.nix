@@ -1,5 +1,5 @@
 inputs:
-self: pkgs:
+_: pkgs:
 {
   nur = import inputs.NUR {
     inherit pkgs;

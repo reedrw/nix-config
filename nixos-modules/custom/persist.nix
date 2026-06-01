@@ -1,7 +1,7 @@
 { config, inputs, lib, pkgs, ... }:
 let
   homeManagerUserDirs = config.home-manager.users
-  |> lib.mapAttrs (n: v: v.home.homeDirectory);
+  |> lib.mapAttrs (_: v: v.home.homeDirectory);
 
   partitionPathsForUser = user: paths: lib.partition (x:
     lib.hasPrefix homeManagerUserDirs.${user} x

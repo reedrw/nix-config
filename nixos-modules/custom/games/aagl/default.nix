@@ -15,9 +15,9 @@ in
       enable = true;
       package = with pkgs; let
         aagl = aaglPkgs.anime-game-launcher.override (old: {
-          unwrapped = (old.unwrapped.override {
+          unwrapped = old.unwrapped.override {
             inherit customIcon;
-          });
+          };
         });
       in if cfg.mullvad-exclude then mullvadExclude aagl else aagl;
     };

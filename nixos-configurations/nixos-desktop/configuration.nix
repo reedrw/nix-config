@@ -46,7 +46,11 @@
 
   programs.persist-path-manager.enable = lib.mkForce false;
 
-  services.lvm.boot.thin.enable = true;
+  services = {
+    lvm.boot.thin.enable = true;
+    btrfs.autoScrub.enable = true;
+    xserver.videoDrivers = [ "amdgpu" ];
+  };
 
   users = {
     mutableUsers = false;
@@ -57,8 +61,6 @@
     enable = true;
     mullvad-exclude = true;
   };
-
-  services.btrfs.autoScrub.enable = true;
 
   custom.snapper = {
     enable = true;
@@ -71,8 +73,6 @@
   };
 
   time.timeZone = "America/New_York";
-
-  services.xserver.videoDrivers = [ "amdgpu" ];
 
   nix.settings.cores = 8;
 

@@ -3,8 +3,8 @@
 let
   cfg = config.custom.steam;
   steam-custom = with pkgs; steam.override {
-    extraLibraries = pkgs: [ gtk4 libadwaita config.hardware.graphics.package];
-    extraPkgs = pkgs: [ mangohud steamtinkerlaunch winetricks ];
+    extraLibraries = _: [ gtk4 libadwaita config.hardware.graphics.package];
+    extraPkgs = _: [ mangohud steamtinkerlaunch winetricks ];
     extraEnv = {
       # https://github.com/ValveSoftware/Source-1-Games/issues/5043
       LD_PRELOAD = "$LD_PRELOAD:/run/current-system/sw/lib/libtcmalloc_minimal.so";
@@ -29,9 +29,9 @@ in
       enable = true;
       # package = steam-custom;
       package = with pkgs; emptyDirectory // {
-        override = (x: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
-          run = steam-custom.run;
-        });
+        override = _: optionalApply cfg.mullvad-exclude mullvadExclude steam-custom // {
+          inherit (steam-custom) run;
+        };
       };
     };
     environment.systemPackages = let

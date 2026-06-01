@@ -22,11 +22,11 @@ in
       beancount-language-server
       nil
     ];
-    extraPython3Packages = (ps: with ps; [
+    extraPython3Packages = ps: with ps; [
       black
       flake8
       jedi
-    ]);
+    ];
     coc = {
       enable = true;
       settings = {

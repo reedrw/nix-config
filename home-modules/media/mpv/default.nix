@@ -50,7 +50,7 @@ in
           rm jellyfin_mpv_shim/gui_mgr.py
         '';
         propagatedBuildInputs = old.propagatedBuildInputs
-        |> lib.flip (lib.foldl' (acc: x: lib.filter (y: !lib.hasInfix x y))) [
+        |> lib.flip (lib.foldl' (_: x: lib.filter (y: !lib.hasInfix x y))) [
           "pillow"
           "pystray"
           "tkinter"

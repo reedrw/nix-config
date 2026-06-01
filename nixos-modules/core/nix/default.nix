@@ -5,7 +5,7 @@
   nixpkgs = {
     inherit (util.nixpkgs-options.nixpkgs) config;
     overlays = util.nixpkgs-options.nixpkgs.overlays ++ [
-      (final: prev: { flakePath = rootAbsolute; })
+      (_: _: { flakePath = rootAbsolute; })
     ];
   };
 
@@ -31,7 +31,7 @@
         "broken-string-indentation"
         "rec-set-dynamic-attrs"
       ];
-      extra-substituters = util.nixConfig.extra-substituters ++ [ ];
+      extra-substituters = util.nixConfig.extra-substituters;
       extra-trusted-public-keys = util.nixConfig.extra-trusted-public-keys ++ [
         "nixos-desktop:iIOpYCH+cVzPsrJDkYQq/P3SV1dD1eeBe6++C7aY/dc="
       ];
@@ -48,7 +48,7 @@
       trusted-users = [ "root" "@wheel" ];
       use-xdg-base-directories = true;
     };
-    nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
-    registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
+    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") inputs;
+    registry = lib.mapAttrs (_: v: { flake = v; }) inputs;
   };
 }

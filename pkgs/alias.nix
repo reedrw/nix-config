@@ -1,6 +1,6 @@
 self: pkgs:
 let
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
 in
 {
   easyeffects = pkgs.callPackage ./easyeffects_7_2_5 { };
@@ -36,7 +36,7 @@ in
   };
 
   nixos-option = pkgs.nixos-option.override {
-    nix = self.nix;
+    inherit (self) nix;
   };
 
   # https://github.com/NixOS/nixpkgs/issues/514113

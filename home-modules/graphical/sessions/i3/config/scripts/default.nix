@@ -23,7 +23,7 @@
         coreutils
         clipnotify
         xclip
-        (python3.withPackages(ps: [ unalix ]))
+        (python3.withPackages(_: [ unalix ]))
       ];
       text = builtins.readFile ./clipboard-clean.sh;
     };
@@ -31,7 +31,7 @@
     droidcam-fix = pkgs.writeShellApplication {
       name = "droidcam-fix";
       runtimeInputs = [ osConfig.boot.kernelPackages.v4l2loopback.bin ];
-      text = (builtins.readFile ./droidcam-fix.sh);
+      text = builtins.readFile ./droidcam-fix.sh;
     };
 
     mpv-dnd = let

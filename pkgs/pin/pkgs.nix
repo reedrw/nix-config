@@ -1,5 +1,5 @@
 pkgs: let
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
   json = lib.importJSON ./pinned.json;
   pinnedVersionToPkg = { rev, sha256, ... }: import (builtins.fetchTarball {
     inherit sha256;

@@ -13,3 +13,16 @@ repos:
   rev: v0.0.18
   hooks:
   - id: shellcheck
+
+- repo: local
+  hooks:
+  - id: statix
+    name: statix
+    language: system
+    entry: statix check
+    pass_filenames: false
+  - id: deadnix
+    name: deadnix
+    language: system
+    entry: deadnix
+    pass_filenames: false

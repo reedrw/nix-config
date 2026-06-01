@@ -1,4 +1,4 @@
-{ config, lib, util, ... }:
+{ config, lib, ... }:
 let
   cfg = config.custom.boot.keyfile-unlock;
 in
@@ -20,7 +20,7 @@ in
   config = lib.mkIf cfg.enable {
     boot.initrd = {
       luks.devices."${cfg.device}" = {
-        keyFile = cfg.keyFile;
+        inherit (cfg) keyFile;
         keyFileTimeout = 5;
       };
     };

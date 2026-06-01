@@ -1,4 +1,4 @@
-{ pkgs, inputs, osConfig, lib, util, rootAbsolute, ... }:
+{ osConfig, lib, util, rootAbsolute, ... }:
 
 {
 

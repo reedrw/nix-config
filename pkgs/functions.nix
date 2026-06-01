@@ -1,7 +1,7 @@
 inputs:
 self: pkgs:
 let
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
 in
 {
   # aliasToPackage :: AttrSet -> Package

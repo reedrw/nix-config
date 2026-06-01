@@ -3,12 +3,13 @@
 {
   boot.loader.grub.configurationName = lib.mkDefault "Default - ${util.versionSuffix}";
   environment.etc."nixos/tree-version".text = util.versionSuffix;
-  services.journald.extraConfig = "SystemMaxUse=500M";
-  services.udisks2.enable = true;
-
-  services.dbus.implementation = "broker";
-  services.irqbalance.enable = true;
-  services.fstrim.enable = true;
+  services = {
+    journald.extraConfig = "SystemMaxUse=500M";
+    udisks2.enable = true;
+    dbus.implementation = "broker";
+    irqbalance.enable = true;
+    fstrim.enable = true;
+  };
 
   # set console colors
   stylix.targets.console.enable = true;

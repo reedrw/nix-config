@@ -70,7 +70,7 @@ in
     ];
   };
 
-  perSystem = { pkgs, lib, ... }: let
+  perSystem = { pkgs, ... }: let
     pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.stdenv.hostPlatform.system;
   in {
     packages = pkgs'.myPkgs;

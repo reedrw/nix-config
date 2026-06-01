@@ -66,11 +66,31 @@ in
     ./scripts
   ];
 
-  home.packages = with pkgs; [
-    xclip
-    xsel
-    lockProgram
-  ];
+  home = {
+    packages = with pkgs; [
+      xclip
+      xsel
+      lockProgram
+    ];
+    activation = let
+      restartScript = pkgs.writeShellScript "restart" ''
+        restartFunc() {
+          while ${pkgs.procps}/bin/pidof i3lock > /dev/null; do
+            sleep 1
+          done
+          ${pkgs.i3}/bin/i3-msg restart
+        }
+        restartFunc &
+      '';
+    in {
+      reloadI3 = config.lib.dag.entryAfter ["writeBoundary"] ''
+        run ${restartScript}
+      '';
+    };
+    sessionVariables = {
+      XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
+    };
+  };
 
   programs.zsh.initContent = lib.mkAfter ''
     function c(){
@@ -85,27 +105,7 @@ in
     alias pbpaste='xclip -o -selection clipboard'
   '';
 
-  home.activation = let
-    restartScript = pkgs.writeShellScript "restart" ''
-      restartFunc() {
-        while ${pkgs.procps}/bin/pidof i3lock > /dev/null; do
-          sleep 1
-        done
-        ${pkgs.i3}/bin/i3-msg restart
-      }
-      restartFunc &
-    '';
-  in {
-    reloadI3 = config.lib.dag.entryAfter ["writeBoundary"] ''
-      run ${restartScript}
-    '';
-  };
-
   stylix.targets.i3.enable = true;
-
-  home.sessionVariables = {
-    XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
-  };
 
   xresources.path = "${config.xdg.dataHome}/X11/Xresources";
   xsession = {
@@ -126,13 +126,10 @@ in
           style = "Bold";
           size = 10.0;
         };
-        window.border = 5;
-        window.titlebar = false;
-        floating.border = 5;
-        floating.titlebar = false;
-        modifier = "Mod1";
-        terminal = config.home.sessionVariables.TERMINAL;
-        window.commands = let
+        window = {
+          border = 5;
+          titlebar = false;
+          commands = let
           commandForWindows = { command }: map (window: {
             inherit command;
             criteria = if builtins.isAttrs window
@@ -140,8 +137,7 @@ in
                 class = window;
               };
           });
-        in [ ]
-        ++ commandForWindows {
+        in commandForWindows {
           command = "floating enable";
         } [
           "An Anime Game Launcher"
@@ -175,6 +171,11 @@ in
             title = "Media viewer";
           }
         ];
+        };
+        floating.border = 5;
+        floating.titlebar = false;
+        modifier = "Mod1";
+        terminal = config.home.sessionVariables.TERMINAL;
         startup = map ( command: {
           inherit command;
           always = true;
