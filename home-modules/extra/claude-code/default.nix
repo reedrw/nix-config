@@ -47,19 +47,6 @@ in
               '';
             }];
           }
-          {
-            matcher = "Write|Edit";
-            hooks = [{
-              type = "command";
-              command = pkgs.writeShellScript "claude-deny-claude-config-edit" ''
-                PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
-                file=$(jq -r '.tool_input.file_path // empty')
-                if [[ "$file" == "${cfg.configDir}" || "$file" == "${cfg.configDir}/"* ]]; then
-                  jq -n '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"~/.claude is managed by home-manager — edit the claude-code module in ${pkgs.flakePath} and rebuild instead."}}'
-                fi
-              '';
-            }];
-          }
         ];
         Stop = [{
           hooks = [{
@@ -96,8 +83,9 @@ in
       github = {
         type = "stdio";
         command = pkgs.writeShellScript "github-mcp-wrapper" ''
-          export GITHUB_PERSONAL_ACCESS_TOKEN="$(${pkgs.gh}/bin/gh auth token 2>/dev/null)"
-          exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
+          PATH=${lib.makeBinPath [ pkgs.gh pkgs.github-mcp-server ]}
+          export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
+          exec github-mcp-server stdio "$@"
         '';
       };
       context7 = {
@@ -114,86 +102,20 @@ in
 
     file = {
       "${cfg.configDir}/settings.json".enable = false;
-      ".claude/memory/feedback_nix_config_first.md" = {
+      ".claude/CLAUDE.md" = {
         force = true;
         text = ''
-          ---
-          name: All config goes through Nix
-          description: All system and user configuration on this machine is managed declaratively via nix-config — never edit config files directly
-          type: feedback
-          ---
+          # Global Claude Code Instructions
 
-          Nearly all configuration on this machine is managed through the nix-config repo at `${pkgs.flakePath}`. Before editing any config file directly, check whether it is (or should be) managed by a NixOS or home-manager module first.
+          ## Machine configuration
 
-          **Why:** The system uses impermanence — direct edits to config files may be wiped on reboot. Declarative Nix config is the only durable place to make changes.
+          All system and user configuration on this machine is managed declaratively via the nix-config repo at `${pkgs.flakePath}`. Before editing any config file directly, check whether it is (or should be) managed by a NixOS or home-manager module first.
 
-          **How to apply:** When asked to configure anything (a tool, a service, a dotfile, a system setting), default to writing or editing the appropriate module in nix-config rather than touching the live file.
-        '';
-      };
+          The system uses impermanence — direct edits to config files may be wiped on reboot. Declarative Nix config is the only durable place to make changes.
 
-      ".claude/memory/feedback_nix_flake_git_staging.md" = {
-        force = true;
-        text = ''
-          ---
-          name: Nix Flake Git Staging Requirement
-          description: Nix flakes only read files that are staged (git add) in the git tree — untracked files are invisible to nix commands
-          type: feedback
-          ---
+          ## Querying machine config
 
-          Newly created (untracked) files must be staged with `git add` before Nix will see them in a flake. Modifications to already-tracked files are picked up automatically — no staging needed for edits.
-
-          **Why:** Nix flakes use the git index to determine which files are part of the flake source, so brand-new files that have never been staged simply don't exist from Nix's perspective.
-
-          **How to apply:** After creating a new file, remind the user to `git add` it before running any `nix` evaluation commands. Don't do this for edits to existing files — those are fine without staging.
-        '';
-      };
-
-      ".claude/memory/feedback_no_rec.md" = {
-        force = true;
-        text = ''
-          ---
-          name: Avoid rec keyword; prefer self-referencing function
-          description: Don't use rec in Nix; try passing a self-referencing function first
-          type: feedback
-          ---
-
-          Avoid the `rec` keyword in Nix. Many build functions (including `buildPythonPackage`, `buildPythonApplication`, and others) natively accept a function argument `(self: { ... })` for self-reference. Try that first before reaching for `rec` or `lib.fix`.
-
-          **Why:** The self-referencing function pattern is cleaner and more idiomatic; `rec` can cause subtle issues with overrides.
-
-          **How to apply:** Any time self-reference is needed in a derivation attrset (e.g. `inherit pname version` in `src`), write `buildFoo (self: { pname = "..."; src = use self.pname; })` instead of `buildFoo rec { pname = "..."; src = use pname; }`. Only fall back to `lib.fix` if the function doesn't natively support it.
-        '';
-      };
-
-      ".claude/memory/feedback_nix_inline_derivations.md" = {
-        force = true;
-        text = ''
-          ---
-          name: nix-inline-derivations
-          description: Don't extract let bindings for values used in only one place; pass derivations inline and rely on Nix string coercion
-          type: feedback
-          ---
-
-          Don't hoist a `let` binding just because a value is a derivation. If it's only used in one spot, write it inline at the point of use.
-
-          Derivations coerce to their store path in string contexts — including inside `builtins.toJSON` — so `builtins.toString` is unnecessary. Just pass the derivation directly as the attribute value and let Nix coerce it.
-
-          **Why:** Unnecessary `let` bindings add indirection without benefit when the value is only referenced once.
-
-          **How to apply:** When writing a `pkgs.writeShellScript` (or similar) for a single-use command, write it inline as the attribute value rather than binding it at the top of the file.
-        '';
-      };
-
-      ".claude/memory/feedback_nix_eval_config.md" = {
-        force = true;
-        text = ''
-          ---
-          name: Prefer nix eval to query machine config
-          description: Use nix eval to inspect evaluated NixOS/home-manager config rather than reading source files manually
-          type: feedback
-          ---
-
-          When answering questions about what is configured on this machine, prefer `nix eval` over tracing through source files. Examples:
+          Prefer `nix eval` over reading source files to answer questions about what is configured:
 
           ```sh
           nix eval .#homeConfigurations."reed@nixos-desktop".config.home.packages --apply 'ps: map (p: p.name) ps' --json
@@ -201,9 +123,11 @@ in
           nix eval .#nixosConfigurations.nixos-desktop.config.networking.hostName
           ```
 
-          **Why:** `nix eval` gives the final merged config after all modules are applied — no need to manually trace imports.
+          ## Nix conventions
 
-          **How to apply:** Any time asked "is X enabled?", "what packages are installed?", or "what value does option Y have?" — reach for `nix eval` first.
+          - **Git staging:** Nix flakes only read staged files — new files must be `git add`-ed before any `nix` command will see them. Edits to already-tracked files need no staging.
+          - **No `rec`:** Avoid the `rec` keyword. Many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
+          - **Inline derivations:** Don't hoist `let` bindings for single-use derivations. Pass inline and let Nix string-coerce the store path — `builtins.toString` is not needed.
         '';
       };
 
@@ -253,7 +177,7 @@ in
 
           This is always about how *Claude Code itself* should behave. There are exactly two scopes:
 
-          1. **Universal (machine-level)** — applies whenever Claude Code is running on this machine, regardless of project. Written as a `home.file.".claude/memory/<name>.md"` entry inside the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}` (grep for `programs.claude-code`). **Never write directly to `~/.claude`.**
+          1. **Universal (machine-level)** — applies whenever Claude Code is running on this machine, regardless of project. Add a concise bullet or sentence to the relevant section of `home.file.".claude/CLAUDE.md"` inside the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}` (grep for `programs.claude-code`). **Never write directly to `~/.claude`.**
 
           2. **Repo-scoped** — applies only when Claude Code is working inside one specific repo. Written into that repo's `CLAUDE.md` (typically `<repo>/.claude/CLAUDE.md` or `<repo>/CLAUDE.md`).
 
