@@ -31,6 +31,7 @@ in
       autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       skipAutoPermissionPrompt = true;
+      showThinkingSummaries = true;
       hooks = {
         PreToolUse = [
           {
@@ -87,9 +88,22 @@ in
       ${writeConfig}
       exec ${binPath} "$@"
     '');
-    mcpServers.nixos = {
-      type = "stdio";
-      command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+    mcpServers = {
+      nixos = {
+        type = "stdio";
+        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+      };
+      github = {
+        type = "stdio";
+        command = pkgs.writeShellScript "github-mcp-wrapper" ''
+          export GITHUB_PERSONAL_ACCESS_TOKEN="$(${pkgs.gh}/bin/gh auth token 2>/dev/null)"
+          exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
+        '';
+      };
+      context7 = {
+        type = "stdio";
+        command = "${pkgs.context7-mcp}/bin/context7-mcp";
+      };
     };
   };
 
