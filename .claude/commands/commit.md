@@ -7,6 +7,6 @@ Commit the current changes following this repo's commit conventions (see Working
 
 **Staging:** Stage files individually by name (`git add <file>`). Never use `git add .` or `git add -A`. If you haven't read a file's diff yet, read it before staging it.
 
-**Commit message:** One line, `scope(path): description` format. No body, no bullet points, no co-author lines.
+**Commit message:** `scope(path): description` subject line. A body is allowed when useful. Always include a co-author trailer: a blank line, then `Co-Authored-By: <model> <noreply@anthropic.com>` where `<model>` is your actual current model name (e.g. `Claude Opus 4.7`, `Claude Sonnet 4.6`, `Claude Haiku 4.5`).
 
 If there are many unrelated changes across files, make multiple smaller commits rather than one large one.
