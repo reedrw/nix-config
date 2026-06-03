@@ -12,6 +12,5 @@ mkShell ({
     nix-update
     update-all
   ];
-  PRE_COMMIT_COLOR = "never";
   SHELLCHECK_OPTS = "-e SC1008";
 } // extraArgs)
