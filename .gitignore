@@ -2,5 +2,6 @@
 ,*
 .direnv/
 .secrets
+.pre-commit-config.yaml
 result
 result-*

@@ -4,16 +4,12 @@ with pkgs;
 mkShell ({
   name = "nix-config";
   packages = [
-    deadnix
     doppler
     git
     home-manager
     ncurses
     nix
     nix-update
-    pre-commit
-    shellcheck
-    statix
     update-all
   ];
   PRE_COMMIT_COLOR = "never";

@@ -43,6 +43,7 @@ in
 {
   imports = [
     ./extraEzModules.nix
+    inputs.git-hooks-nix.flakeModule
   ];
 
   ezConfigs = {
@@ -70,14 +71,23 @@ in
     ];
   };
 
-  perSystem = { pkgs, ... }: let
+  perSystem = { pkgs, config, ... }: let
     pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.stdenv.hostPlatform.system;
   in {
+    imports = [
+      ./git-hooks.nix
+    ];
     packages = pkgs'.myPkgs;
     legacyPackages = { inherit util; };
 
-    devShells.default = import ../shell.nix {
+    devShells.default = (import ../shell.nix {
       pkgs = pkgs';
-    };
+    }).overrideAttrs (old: {
+      shellHook = old.shellHook + ''
+        ${config.pre-commit.settings.shellHook}
+      '';
+      nativeBuildInputs = old.nativeBuildInputs
+        ++ config.pre-commit.settings.enabledPackages;
+    });
   };
 }
