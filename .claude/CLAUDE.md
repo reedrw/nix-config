@@ -17,10 +17,11 @@ ldp --switch [hostname]   # defaults to $(hostname)
 ldp --boot [hostname]
 ```
 
-**Enter the dev shell** (provides home-manager, nix-update, shellcheck, update-all, doppler):
+**Enter the dev shell** (provides home-manager, nix-update, shellcheck, update-all, doppler; also activates pre-commit hooks):
 ```sh
 nix develop
 ```
+`.envrc` uses `use flake`, so direnv enters this shell automatically.
 
 **List all flake outputs:**
 ```sh
@@ -42,6 +43,7 @@ This is a NixOS + home-manager configuration managed as a flake using **flake-pa
 - `flake.nix` — inputs and flake-parts entry point; delegates to `./repo`
 - `repo/default.nix` — configures ez-configs, maps hosts to users, exposes `util` helpers
 - `repo/extraEzModules.nix` — makes all modules available as `ezModules'` special arg via haumea
+- `repo/git-hooks.nix` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace) via `git-hooks-nix`; injected into the dev shell automatically
 - `repo/compat.nix` — flake-compat shim for `shell.nix` and legacy tooling
 
 ### Module auto-loading
