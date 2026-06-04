@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "flake-utils": {
+      "inputs": {
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
@@ -37,6 +55,28 @@
         "type": "github"
       }
     },
+    "polkit-stdin-agent": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "run0-sudo-shim",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1779895539,
+        "narHash": "sha256-Nl/+IBbUEsxSKSWLXwUB3mV4iAG0z9mv+Bl6CSeFzR4=",
+        "ref": "refs/heads/main",
+        "rev": "95beb16b78de357ac11de2b492597c1add2503b7",
+        "revCount": 16,
+        "type": "git",
+        "url": "https://git.grimmauld.de/mirrors/polkit-stdin-agent"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.grimmauld.de/mirrors/polkit-stdin-agent"
+      }
+    },
     "root": {
       "inputs": {
         "run0-sudo-shim": "run0-sudo-shim"
@@ -46,19 +86,35 @@
       "inputs": {
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": "nixpkgs",
+        "polkit-stdin-agent": "polkit-stdin-agent",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1780170201,
-        "narHash": "sha256-la9NmkQnoiYy6KEPfoZgn3rRfKO8X/Gy4JD0h54SMkE=",
+        "lastModified": 1780341427,
+        "narHash": "sha256-uaGJmGr+qHTlC2+jlVPzLF1Qf0Vid8DmxmYtxuG6WH4=",
         "owner": "lordgrimmauld",
         "repo": "run0-sudo-shim",
-        "rev": "c97b3ce5478e11d621e8f81dd3a94eeea93dc873",
+        "rev": "ae23e03851a4536ac5dd06dd203391fddd72ab13",
         "type": "github"
       },
       "original": {
         "owner": "lordgrimmauld",
         "repo": "run0-sudo-shim",
+        "type": "github"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
         "type": "github"
       }
     },
