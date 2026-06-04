@@ -171,6 +171,18 @@ nix eval .#nixosConfigurations.nixos-desktop.config.networking.hostName
 
 This gives the evaluated, final config rather than requiring you to trace through module imports manually.
 
+**Batch related lookups in one call.** Each `nix eval` invocation pays a ~0.5 s flake-setup + module-instantiation cost that the on-disk eval cache does not amortize. When you need several attrs from the same configuration, compose them into a single `--apply` instead of running N separate evals (~2× faster for 3 attrs, ~4× for 15):
+
+```sh
+nix eval --json .#nixosConfigurations.nixos-desktop --apply '{ config, ... }: {
+  hostName = config.networking.hostName;
+  openssh  = config.services.openssh.enable;
+  pkgCount = builtins.length config.environment.systemPackages;
+}'
+```
+
+The same pattern works against `homeConfigurations.<user>` — destructure with `{ config, ... }:` and pull as many leaves as you need in one shot.
+
 ### Nix
 
 - Avoid `rec`; many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
