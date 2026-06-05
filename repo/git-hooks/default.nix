@@ -9,7 +9,7 @@
         enable = true;
         name = "no-empty-module-arg";
         description = "ban a bare `_:` at the top of nix files; opt out with `# keep-arg`";
-        entry = ./no-empty-module-arg.sh;
+        entry = "${./no-empty-module-arg.sh}";
         files = "\\.nix$";
         language = "system";
       };
