@@ -1,0 +1,79 @@
+--- a/media/pulseaudiocontroller.h
++++ b/media/pulseaudiocontroller.h
+@@ -20,6 +20,7 @@
+     bool setCardProfile(const QString &cardName, const QString &profileName);
+     QString getCardNameForDevice(const QString &macAddress);
+     bool isProfileAvailable(const QString &cardName, const QString &profileName);
++    QString getActiveCardProfile(const QString &cardName);
+
+ private:
+     pa_threaded_mainloop *m_mainloop;
+--- a/media/pulseaudiocontroller.cpp
++++ b/media/pulseaudiocontroller.cpp
+@@ -284,6 +284,47 @@
+     return data.available;
+ }
+
++QString PulseAudioController::getActiveCardProfile(const QString &cardName)
++{
++    if (!m_initialized) return QString();
++
++    struct CallbackData {
++        QString activeProfile;
++        QString targetCard;
++        pa_threaded_mainloop *mainloop;
++    } data;
++    data.targetCard = cardName;
++    data.mainloop = m_mainloop;
++
++    auto callback = [](pa_context *c, const pa_card_info *info, int eol, void *userdata) {
++        CallbackData *d = static_cast<CallbackData*>(userdata);
++        if (eol > 0)
++        {
++            pa_threaded_mainloop_signal(d->mainloop, 0);
++            return;
++        }
++        if (info && QString::fromUtf8(info->name) == d->targetCard)
++        {
++            if (info->active_profile)
++            {
++                d->activeProfile = QString::fromUtf8(info->active_profile->name);
++            }
++            pa_threaded_mainloop_signal(d->mainloop, 0);
++        }
++    };
++
++    pa_threaded_mainloop_lock(m_mainloop);
++    pa_operation *op = pa_context_get_card_info_by_name(m_context, cardName.toUtf8().constData(), callback, &data);
++    if (op)
++    {
++        waitForOperation(op);
++        pa_operation_unref(op);
++    }
++    pa_threaded_mainloop_unlock(m_mainloop);
++
++    return data.activeProfile;
++}
++
+ bool PulseAudioController::waitForOperation(pa_operation *op)
+ {
+     if (!op) return false;
+--- a/media/mediacontroller.cpp
++++ b/media/mediacontroller.cpp
+@@ -97,7 +97,15 @@
+ bool MediaController::isActiveOutputDeviceAirPods() {
+   QString defaultSink = m_pulseAudio->getDefaultSink();
+   LOG_DEBUG("Default sink: " << defaultSink);
+-  return defaultSink.contains(connectedDeviceMacAddress);
++  if (defaultSink.contains(connectedDeviceMacAddress)) {
++    return true;
++  }
++  if (!m_deviceOutputName.isEmpty()) {
++    QString activeProfile = m_pulseAudio->getActiveCardProfile(m_deviceOutputName);
++    LOG_DEBUG("AirPods card active profile: " << activeProfile);
++    return activeProfile.startsWith("a2dp");
++  }
++  return false;
+ }
+
+ void MediaController::handleConversationalAwareness(const QByteArray &data) {
