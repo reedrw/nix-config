@@ -10,7 +10,9 @@ in
   programs.nixcord = {
     enable = true;
     discord = {
-      autoscroll.enable = true;
+      commandLineArgs = [
+        "--enable-blink-features=MiddleClickAutoscroll"
+      ];
       openASAR.enable = false;
       # vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
       #   src = sources.vencord // {
