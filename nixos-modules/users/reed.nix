@@ -7,6 +7,7 @@
       "audio"
       "docker"
       "input"
+      "librepods"
       "libvirtd"
       "networkmanager"
       "pipewire"
