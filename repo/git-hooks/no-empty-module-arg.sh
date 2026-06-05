@@ -1,26 +1,38 @@
-#!/usr/bin/env bash
-# Flag nix files whose first non-blank, non-comment line is `_:`.
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p ast-grep
+
+# Flag nix files whose top-level expression is `_: <expr>`.
 # A bare `_:` lambda takes an argument it never uses; modules can be
-# plain attrsets instead. Opt out per file with `# keep-arg`.
+# plain attrsets instead.
 
 failed=0
 
+rule="$(cat <<'EOF'
+id: no-empty-module-arg
+severity: error
+message: "unnecessary '_:' lambda; drop it (use a plain attrset) or add '# keep-arg' to opt out"
+language: Nix
+rule:
+  pattern: "_: $BODY"
+  inside:
+    kind: source_code
+    stopBy: neighbor
+constraints:
+  BODY:
+    not:
+      kind: function_expression
+EOF
+)"
+
+files=()
 for file in "$@"; do
-  if grep -Fq '# keep-arg' "$file"; then
-    continue
-  fi
-
-  lineno=$(awk '
-    /^[[:space:]]*$/ { next }
-    /^[[:space:]]*#/ { next }
-    /^[[:space:]]*_:[[:space:]]*$/ { print NR; exit }
-    { exit }
-  ' "$file")
-
-  if [ -n "$lineno" ]; then
-    printf "%s:%s: unnecessary '_:' lambda; drop it (use a plain attrset) or add '# keep-arg' to opt out\n" "$file" "$lineno" >&2
-    failed=1
+  if ! grep -Fq '# keep-arg' "$file"; then
+    files+=("$file")
   fi
 done
+
+if [ "${#files[@]}" -gt 0 ]; then
+  ast-grep scan --inline-rules "$rule" "${files[@]}" || failed=1
+fi
 
 exit "$failed"
