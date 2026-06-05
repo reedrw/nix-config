@@ -154,6 +154,8 @@ treewide: update to 26.05
 
 Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `fix <x>`, `pin <x>`, `unpin <x>`.
 
+Always use the `/commit` skill when committing in this repo.
+
 ### Querying machine config
 
 Prefer `nix eval` over reading source files to answer questions about configuration. Examples:
