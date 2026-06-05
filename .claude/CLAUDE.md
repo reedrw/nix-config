@@ -4,18 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Key Commands
 
-**Build a host or user configuration:**
-```sh
-ldp --build <target>   # ldp is a packaged binary wrapping install.sh (pkgs/ldp/)
-# NixOS host:      nixos-desktop, nixos-t480, nixos-t400, nixos-vm, nixos-iso
-# Home-manager:    reed@nixos-desktop, reed@nixos-t480, reed@nixos-t400, reed@nixos-vm
-```
-
-**Switch the running system:**
-```sh
-ldp --switch [hostname]   # defaults to $(hostname)
-ldp --boot [hostname]
-```
+Use the `/ldp` skill to build, switch, or boot configurations.
 
 **Enter the dev shell** (provides home-manager, nix-update, shellcheck, update-all, doppler; also activates pre-commit hooks):
 ```sh
@@ -23,16 +12,9 @@ nix develop
 ```
 `.envrc` uses `use flake`, so direnv enters this shell automatically.
 
-**List all flake outputs:**
-```sh
-ldp --list-outputs
-```
-
 **Important:** Nix flakes only see git-tracked files. New files must be `git add`-ed (staged) before they are visible to `nix build`, `nix flake check`, etc. Untracked files are silently ignored.
 
 The flake requires the `pipe-operator` experimental feature. Commands in `install.sh` pass `--experimental-features 'pipe-operator nix-command flakes'` automatically.
-
-**How `ldp` finds the repo:** `ldp --switch/--boot` writes the repo's absolute path to `nixos-configurations/<hostname>/.flake-path`. The `nixos-modules/core/nix` module reads this file and injects `flakePath` into the pkgs overlay, which `callPackage` then auto-injects into the `ldp` derivation — baking the path into the binary at build time. After the first switch, `ldp` can be run from anywhere. On a fresh clone (no `.flake-path`), `ldp` falls back to `$(pwd)` and must be run from the repo root.
 
 ## Architecture
 
