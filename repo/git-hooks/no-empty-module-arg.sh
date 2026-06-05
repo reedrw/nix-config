@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+#!/usr/bin/env bash
 # Flag nix files whose first non-blank, non-comment line is `_:`.
 # A bare `_:` lambda takes an argument it never uses; modules can be
 # plain attrsets instead. Opt out per file with `# keep-arg`.

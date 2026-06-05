@@ -74,9 +74,7 @@ in
   perSystem = { pkgs, config, ... }: let
     pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.stdenv.hostPlatform.system;
   in {
-    imports = [
-      ./git-hooks.nix
-    ];
+    imports = [ ./git-hooks ];
     packages = pkgs'.myPkgs;
     legacyPackages = { inherit util; };
 
