@@ -9,7 +9,7 @@
 
   services.pipewire.wireplumber.configPackages = [
     (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-bluez-avrcp.conf" ''
-      wireplumber.settings = {
+      monitor.bluez.properties = {
         bluez5.dummy-avrcp-player = true
       }
     '')
