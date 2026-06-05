@@ -144,16 +144,6 @@ Only add a package to `pkgs/` when it needs **global scope** — i.e. it must be
 
 ### Commits
 
-`scope(path): description` — scope is the top-level dir (`home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `treewide`), path is the subdir in parens using `/` separators. Lowercase imperative description, no period. No body, no co-author lines.
-
-```
-home-modules(extra/claude-code): apply config at runtime
-pkgs(alias/lix): use from nixpkgs instead of flake input
-treewide: update to 26.05
-```
-
-Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `fix <x>`, `pin <x>`, `unpin <x>`.
-
 Always use the `/commit` skill when committing in this repo.
 
 ### Querying machine config
