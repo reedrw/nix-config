@@ -64,6 +64,7 @@ main(){
 
   for arg in "${@}"; do
     if [ "$arg" == "--" ]; then
+      pushd "$flakePath" || true
       exec claude "/ldp $*"
     fi
   done
