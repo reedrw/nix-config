@@ -71,15 +71,16 @@ in
     ];
   };
 
-  perSystem = { pkgs, config, ... }: let
-    pkgs' = util.pkgsForSystem inputs.nixpkgs pkgs.stdenv.hostPlatform.system;
+  perSystem = { config, system, ... }: let
+    pkgs = util.pkgsForSystem inputs.nixpkgs system;
   in {
+    _module.args = { inherit pkgs; };
     imports = [ ./git-hooks ];
-    packages = pkgs'.myPkgs;
+    packages = pkgs.myPkgs;
     legacyPackages = { inherit util; };
 
     devShells.default = (import ../shell.nix {
-      pkgs = pkgs';
+      inherit pkgs;
     }).overrideAttrs (old: {
       shellHook = old.shellHook + ''
         ${config.pre-commit.settings.shellHook}
