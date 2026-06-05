@@ -11,13 +11,13 @@
 
 buildDotnetModule (self: {
   pname = "wheel-wizard";
-  version = "2.4.5";
+  version = "2.4.9";
 
   src = fetchFromGitHub {
     owner = "TeamWheelWizard";
     repo = "WheelWizard";
-    rev = self.version;
-    sha256 = "sha256-/85ts++S+A7XEgjCjcqJPWk2NBrvOyQ3+hq7lbSEN0g=";
+    rev = "v${self.version}";
+    sha256 = "sha256-/SlcvLXj1pTTnlYsE6zkLl9zaOG/4Sce2T/UlNDif6Q=";
   };
 
   projectFile = "WheelWizard.sln";
@@ -62,7 +62,8 @@ buildDotnetModule (self: {
     tmpDir="$(mktemp -d)"
 
     pushd "$tmpDir" || exit 1
-      git clone --branch "$version" --depth 1 "https://github.com/TeamWheelWizard/WheelWizard.git" .
+      git clone --branch "$version" --depth 1 "https://github.com/TeamWheelWizard/WheelWizard.git" . || \
+      git clone --branch "v$version" --depth 1 "https://github.com/TeamWheelWizard/WheelWizard.git" .
       dotnet restore --packages deps
       nuget-to-json deps > "$currentDir/deps.json"
     popd || exit 1

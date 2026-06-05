@@ -431,8 +431,8 @@
   },
   {
     "pname": "SharpCompress",
-    "version": "0.39.0",
-    "hash": "sha256-Me88MMn5NUiw5bugFKCKFRnFSXQKIFZJ+k97Ex6jgZE="
+    "version": "0.48.1",
+    "hash": "sha256-Y1lH1TrxBua3Ux6trRUQGeSfYjE3qld6TQDz/ABy6Ws="
   },
   {
     "pname": "SixLabors.ImageSharp",
@@ -463,11 +463,6 @@
     "pname": "SkiaSharp.NativeAssets.Win32",
     "version": "2.88.9",
     "hash": "sha256-kP5XM5GgwHGfNJfe4T2yO5NIZtiF71Ddp0pd1vG5V/4="
-  },
-  {
-    "pname": "System.Buffers",
-    "version": "4.6.0",
-    "hash": "sha256-c2QlgFB16IlfBms5YLsTCFQ/QeKoS6ph1a9mdRkq/Jc="
   },
   {
     "pname": "System.Diagnostics.DiagnosticSource",
@@ -536,8 +531,8 @@
   },
   {
     "pname": "Tmds.DBus.Protocol",
-    "version": "0.20.0",
-    "hash": "sha256-CRW/tkgsuBiBJfRwou12ozRQsWhHDooeP88E5wWpWJw="
+    "version": "0.21.3",
+    "hash": "sha256-HVEIHSeSe29ergHxsNvWYu3o7Ai8VZKo09yFn+miTnI="
   },
   {
     "pname": "xunit",
@@ -578,10 +573,5 @@
     "pname": "xunit.runner.visualstudio",
     "version": "3.0.2",
     "hash": "sha256-Q0IxAFO9EDnIGzRl2HCWBujPZL8kqBcNZez1Y29hjPc="
-  },
-  {
-    "pname": "ZstdSharp.Port",
-    "version": "0.8.4",
-    "hash": "sha256-4bFUNK++6yUOnY7bZQiibClSJUQjH0uIiUbQLBtPWbo="
   }
 ]
