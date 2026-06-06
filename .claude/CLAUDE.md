@@ -159,7 +159,6 @@ The same pattern works against `homeConfigurations.<user>` — destructure with 
 
 ### Nix
 
-- Avoid `rec`; many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
 - Don't hoist `let` bindings for single-use derivations; pass inline and let Nix string-coerce the store path (`builtins.toString` is not needed).
 - Patches go in `pkgs/patches/<package-name>/`; reference as `../patches/<package-name>/...` from `default.nix`.
 - Non-trivial shell scripts in `writeShellApplication` (and similar) belong in a sibling `.sh` file: `text = builtins.readFile ./script.sh`.

@@ -17,6 +17,16 @@
         files = "\\.nix$";
         language = "system";
       };
+      no-rec = {
+        enable = true;
+        name = "no-rec";
+        description = "ban the `rec` keyword in nix files";
+        entry = lib.getExe <| pkgs.writeNixShellScript "no-rec" (
+          builtins.readFile ./no-rec.sh
+        );
+        files = "\\.nix$";
+        language = "system";
+      };
     };
   };
 }
