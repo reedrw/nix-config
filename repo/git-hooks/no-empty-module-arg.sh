@@ -10,7 +10,7 @@ failed=0
 rule="$(cat <<'EOF'
 id: no-empty-module-arg
 severity: error
-message: "unnecessary '_:' lambda; drop it (use a plain attrset) or add '# keep-arg' to opt out"
+message: "unnecessary '_:' lambda; drop it and use a plain attrset instead"
 language: Nix
 rule:
   pattern: "_: $BODY"
@@ -24,15 +24,8 @@ constraints:
 EOF
 )"
 
-files=()
-for file in "$@"; do
-  if ! grep -Fq '# keep-arg' "$file"; then
-    files+=("$file")
-  fi
-done
-
-if [ "${#files[@]}" -gt 0 ]; then
-  ast-grep scan --inline-rules "$rule" "${files[@]}" || failed=1
+if [ "${#@}" -gt 0 ]; then
+  ast-grep scan --inline-rules "$rule" "$@" || failed=1
 fi
 
 exit "$failed"
