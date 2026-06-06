@@ -129,6 +129,10 @@ in
           - **No `rec`:** Avoid the `rec` keyword. Many build functions accept `(self: { })` for self-reference natively — use that first, `lib.fix` only as a last resort.
           - **Inline derivations:** Don't hoist `let` bindings for single-use derivations. Pass inline and let Nix string-coerce the store path — `builtins.toString` is not needed.
           - **New nix packages:** Default to a fresh project-local `flake.nix` from the flake-parts template. Only add to nix-config when you're already working inside it or the package is genuinely system-wide.
+
+          ## Troubleshooting
+
+          - When troubleshooting, don't make a commit until the fix has been validated by the user.
         '';
       };
 
