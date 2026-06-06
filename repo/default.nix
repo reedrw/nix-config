@@ -79,14 +79,19 @@ in
     packages = pkgs.myPkgs;
     legacyPackages = { inherit util; };
 
-    devShells.default = (import ../shell.nix {
-      inherit pkgs;
-    }).overrideAttrs (old: {
-      shellHook = old.shellHook + ''
-        ${config.pre-commit.settings.shellHook}
-      '';
-      nativeBuildInputs = old.nativeBuildInputs
-        ++ config.pre-commit.settings.enabledPackages;
-    });
+    devShells.default = pkgs.mkShell {
+      name = "nix-config";
+      packages = with pkgs; [
+        doppler
+        git
+        home-manager
+        ncurses
+        nix
+        nix-update
+        update-all
+      ] ++ config.pre-commit.settings.enabledPackages;
+      inherit (config.pre-commit.settings) shellHook;
+      SHELLCHECK_OPTS = "-e SC1008";
+    };
   };
 }

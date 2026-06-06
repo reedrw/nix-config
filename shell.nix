@@ -1,16 +1,12 @@
-{ pkgs ? (import ./repo/compat.nix).legacyPackages."${builtins.currentSystem}".util.pkgsForSystem (import ./repo/compat.nix).inputs.nixpkgs builtins.currentSystem, extraArgs ? {} }:
+let
+  lockFile = builtins.fromJSON (builtins.readFile ./flake.lock);
+  flake-compat-node = lockFile.nodes.${lockFile.nodes.root.inputs.flake-compat};
+  flake-compat = builtins.fetchTarball {
+    inherit (flake-compat-node.locked) url;
+    sha256 = flake-compat-node.locked.narHash;
+  };
 
-with pkgs;
-mkShell ({
-  name = "nix-config";
-  packages = [
-    doppler
-    git
-    home-manager
-    ncurses
-    nix
-    nix-update
-    update-all
-  ];
-  SHELLCHECK_OPTS = "-e SC1008";
-} // extraArgs)
+  flake = import flake-compat {
+    src = ./.;
+  };
+in flake.shellNix
