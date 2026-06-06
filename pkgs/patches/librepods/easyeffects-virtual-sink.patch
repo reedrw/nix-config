@@ -10,7 +10,18 @@
      pa_threaded_mainloop *m_mainloop;
 --- a/media/pulseaudiocontroller.cpp
 +++ b/media/pulseaudiocontroller.cpp
-@@ -284,6 +284,47 @@
+@@ -215,7 +215,9 @@
+         if (info)
+         {
+             QString name = QString::fromUtf8(info->name);
+-            if (name.startsWith("bluez") && name.contains(d->targetMac))
++            QString normalizedMac = d->targetMac;
++            normalizedMac.replace(':', '_');
++            if (name.startsWith("bluez") && name.contains(normalizedMac))
+             {
+                 d->cardName = name;
+                 pa_threaded_mainloop_signal(d->mainloop, 0);
+@@ -284,6 +286,47 @@
      return data.available;
  }
 
@@ -60,7 +71,7 @@
      if (!op) return false;
 --- a/media/mediacontroller.cpp
 +++ b/media/mediacontroller.cpp
-@@ -97,7 +97,15 @@
+@@ -97,5 +97,13 @@
  bool MediaController::isActiveOutputDeviceAirPods() {
    QString defaultSink = m_pulseAudio->getDefaultSink();
    LOG_DEBUG("Default sink: " << defaultSink);
@@ -75,5 +86,13 @@
 +  }
 +  return false;
  }
+@@ -203,3 +211,9 @@
+   }
++
++  QString currentProfile = m_pulseAudio->getActiveCardProfile(m_deviceOutputName);
++  if (currentProfile.startsWith("a2dp")) {
++    LOG_DEBUG("Already on A2DP profile " << currentProfile << ", skipping activation");
++    return;
++  }
 
- void MediaController::handleConversationalAwareness(const QByteArray &data) {
+   if (!isA2dpProfileAvailable()) {
