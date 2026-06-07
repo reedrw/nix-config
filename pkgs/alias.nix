@@ -15,12 +15,6 @@ in
     removeWarningPopup = true;
   };
 
-  librepods = pkgs.librepods.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [
-      ./patches/librepods/easyeffects-virtual-sink.patch
-    ];
-  });
-
   jellyfin-mpv-shim = pkgs.jellyfin-mpv-shim.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/jellyfin-mpv-shim/pass.patch

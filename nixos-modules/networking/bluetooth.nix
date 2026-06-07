@@ -12,6 +12,7 @@
       monitor.bluez.properties = {
         bluez5.dummy-avrcp-player = true
         bluez5.codecs = [ aac sbc_xq sbc ]
+        bluez5.auto-connect = [ a2dp_sink ]
       }
     '')
   ];

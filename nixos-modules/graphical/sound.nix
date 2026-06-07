@@ -27,18 +27,17 @@
 
     # https://github.com/wwmm/easyeffects/issues/2521#issuecomment-2134144237
     wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-priority-defaults.conf" ''
+        wireplumber.settings = {
+          node.restore-default-targets = false
+        }
+      '')
       (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-disable-suspension.conf" ''
         monitor.alsa.rules = [
           {
             matches = [
-              {
-                # Matches all sources
-                node.name = "~alsa_input.*"
-              },
-              {
-                # Matches all sinks
-                node.name = "~alsa_output.*"
-              }
+              { node.name = "~alsa_input.*" },
+              { node.name = "~alsa_output.*" }
             ]
             actions = {
               update-props = {
@@ -47,22 +46,16 @@
             }
           }
         ]
-        # bluetooth devices
         monitor.bluez.rules = [
           {
             matches = [
-              {
-                # Matches all sources
-                node.name = "~bluez_input.*"
-              },
-              {
-                # Matches all sinks
-                node.name = "~bluez_output.*"
-              }
+              { node.name = "~bluez_input.*" },
+              { node.name = "~bluez_output.*" }
             ]
             actions = {
               update-props = {
                 session.suspend-timeout-seconds = 0
+                priority.session = 3000
               }
             }
           }
