@@ -1,43 +1,48 @@
-{ lib, pkgs, config, ... }:
+{ pkgs, ... }:
 
 {
   programs.dconf.enable = true;
-  # programs.sway = {
-  #   enable = true;
-  #   package = pkgs.swayfx.overrideAttrs (oldAttrs: {
-  #     passthru.providedSessions = [ "sway" ];
-  #   });
-  # };
-  services.displayManager = {
-    defaultSession = "xsession";
-    gdm = {
-      enable = true;
-    };
-  };
 
-  services.xserver = {
+  programs.sway = lib.mkIf isSway {
     enable = true;
-    displayManager.session = lib.optionals (!config.services.desktopManager.gnome.enable) [
-      {
-        manage = "desktop";
-        name = "xsession";
-        start = ''exec $HOME/.local/share/X11/xsession'';
-      }
-    ];
+    package = pkgs.swayfx.overrideAttrs (old: {
+      passthru = (old.passthru or {}) // {
+        providedSessions = [ "sway" ];
+      };
+    });
   };
 
-  systemd.services."lock-before-suspend" = {
-    description = "Lock the screen before suspending";
-    wantedBy = [ "suspend.target" ];
-    before = [ "systemd-suspend.service" ];
-    environment = {
-      DISPLAY = ":0";
-      XAUTHORITY = "/run/user/1000/gdm/Xauthority";
+  # xdg-desktop-portal-wlr handles screensharing / screencast under sway.
+  xdg.portal = lib.mkIf isSway {
+    extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+    wlr.enable   = true;
+  };
+
+  services = {
+    # Remap PageUp/Down → XF86Back/Forward and Shift+Esc → tilde.
+    # CapsLock → Ctrl is handled in sway's xkb_options (ctrl:nocaps).
+    keyd = lib.mkIf isSway {
+      enable = true;
+      keyboards.default.settings = {
+        main  = { "pageup" = "back"; "pagedown" = "forward"; };
+        shift = { "esc" = "~"; };
+      };
     };
-    serviceConfig = {
-      Type = "forking";
-      User = "reed";
-      ExecStart = "${lib.getExe pkgs.lockProgram}";
+
+    displayManager = {
+      defaultSession = "sway";
+      gdm.enable = true;
+    };
+
+    xserver = lib.mkIf isX11 {
+      enable = true;
+      displayManager.session = lib.optionals (!config.services.desktopManager.gnome.enable) [
+        {
+          manage = "desktop";
+          name = "xsession";
+          start = ''exec $HOME/.local/share/X11/xsession'';
+        }
+      ];
     };
   };
 }
