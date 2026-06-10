@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "Unalix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1645723180,
+        "narHash": "sha256-ioEEtqeyctfKt75cewMe6n/HgWFJ8Kv7gA8pOBVokZQ=",
+        "owner": "AmanoTeam",
+        "repo": "Unalix",
+        "rev": "3dd238df093185390cd5ce9adc5d77aa1ee93d31",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AmanoTeam",
+        "repo": "Unalix",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "Unalix": "Unalix"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
