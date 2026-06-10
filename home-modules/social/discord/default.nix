@@ -12,6 +12,8 @@ in
     discord = {
       commandLineArgs = [
         "--enable-blink-features=MiddleClickAutoscroll"
+        "--enable-features=UseOzonePlatform,WaylandWindowDecorations"
+        "--ozone-platform=wayland"
       ];
       openASAR.enable = false;
       # vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
