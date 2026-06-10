@@ -5,6 +5,7 @@
     ../reed.nix
     ./xsession.nix
     ./syncthing.nix
+    ./sway.nix
     ezModules.core
     ezModules.extra
     ezModules.filesharing
