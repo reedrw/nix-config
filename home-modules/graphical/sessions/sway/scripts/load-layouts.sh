@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p sway
+#! nix-shell -i bash -p sway kitty bluetuith
 
 set -euo pipefail
 
@@ -13,9 +13,6 @@ focus_tiled() {
 }
 
 layout_chat(){
-  swaymsg "workspace 2"
-  systemctl --user stop autotiling-rs.service 2>/dev/null || true
-
   # Open discord inside a dedicated tabbed container
   discord &
   focus_tiled discord
@@ -37,8 +34,21 @@ layout_chat(){
   Telegram &
   focus_tiled org.telegram.desktop
   swaymsg "resize set width 20 ppt"
+}
 
-  systemctl --user start autotiling-rs.service 2>/dev/null || true
+layout_audio(){
+  (kitty --app-id=bluetuith -e bluetuith)&
+  focus_tiled bluetuith
+  swaymsg "layout splitv"
+
+  pwvucontrol &
+  focus_tiled com.saivert.pwvucontrol
+
+  swaymsg "focus parent"
+  swaymsg "focus parent"
+  swaymsg "split h"
+  easyeffects &
+  focus_tiled com.github.wwmm.easyeffects
 }
 
 launchPrograms(){
@@ -48,7 +58,12 @@ launchPrograms(){
       firefox &
       ;;
     "2")
+      swaymsg "workspace 2"
       layout_chat
+      ;;
+    "4")
+      swaymsg "workspace 4"
+      layout_audio
       ;;
   esac
 }
@@ -60,8 +75,8 @@ main(){
   fi
 
   case "$1" in
-    "0") launchPrograms 10 ;;
-    *)   launchPrograms "$1" ;;
+    "0") swaymsg "workspace 10" && launchPrograms 10 ;;
+    *)   swaymsg "workspace $1" && launchPrograms "$1" ;;
   esac
 }
 
