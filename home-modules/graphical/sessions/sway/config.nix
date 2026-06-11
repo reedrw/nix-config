@@ -40,7 +40,7 @@ let
   alwaysRun = [
     "systemctl --user restart autotiling"
     "systemctl --user restart easyeffects"
-    "systemctl --user restart dunst"
+    "systemctl --user restart swaync"
     "systemctl --user import-environment PATH WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
     "systemctl --user restart xdg-desktop-portal.service"
     "systemctl --user restart xdg-desktop-portal-gtk.service"
