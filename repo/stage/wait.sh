@@ -1,15 +1,14 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash -p coreutils sshpass openssh
 
-# vm-wait — block until the staging VM accepts SSH and reports a
-# graphical session is up. Times out after ~120s.
+# wait — block until the staging VM accepts SSH and a graphical session is up.
+# Times out after ~120s.
 #
 # Usage:
-#   ./vm-staging/scripts/vm-wait.sh [VM_PORT]
-#     VM_PORT  default 2222
+#   ./wait.sh [VM_PORT]
 #
 # Exit codes:
-#   0  ssh ok and a display server (Xorg or sway) is running
+#   0  ssh ok and a display server (sway or Xorg) is running
 #   1  timed out waiting for ssh
 #   2  ssh works but no graphical session appeared
 
@@ -27,7 +26,7 @@ ssh_opts=(
   -p "$port"
 )
 
-echo -n "vm-wait: waiting for SSH on localhost:$port" >&2
+echo -n "wait: waiting for SSH on localhost:$port" >&2
 for i in $(seq 1 60); do
   if sshpass -p "$VM_PASSWORD" \
       ssh "${ssh_opts[@]}" "$VM_USER@localhost" true 2>/dev/null; then
@@ -42,11 +41,11 @@ for i in $(seq 1 60); do
   fi
 done
 
-echo -n "vm-wait: waiting for graphical session" >&2
+echo -n "wait: waiting for graphical session" >&2
 for i in $(seq 1 30); do
   if sshpass -p "$VM_PASSWORD" \
       ssh "${ssh_opts[@]}" "$VM_USER@localhost" \
-        'pgrep -x sway >/dev/null 2>&1 || pgrep -x Xorg >/dev/null 2>&1 || pgrep -x i3 >/dev/null 2>&1' \
+        'pgrep -x sway >/dev/null 2>&1 || pgrep -x Xorg >/dev/null 2>&1' \
       2>/dev/null; then
     echo " ok ($((i * 2))s)" >&2
     exit 0
