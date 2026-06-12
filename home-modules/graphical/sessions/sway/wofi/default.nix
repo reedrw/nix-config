@@ -29,7 +29,7 @@
         border-radius: 10px;
         box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.6);
         padding: 0;
-        margin: 10px;
+        margin: 20px;
       }
 
       #input {

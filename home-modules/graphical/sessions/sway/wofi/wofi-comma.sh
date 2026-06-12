@@ -1,13 +1,22 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash -p wofi nix-index libnotify
 
-# Note: unlike rofi's -show run, this uses compgen -c | sort -u for PATH
-# listing. Selection order is alphabetical rather than history-aware.
+# Note: unlike rofi's -show run, selection order is alphabetical rather than history-aware.
 
 wofiArgs="${*}"
 
 # shellcheck disable=SC2086
-cmd="$(compgen -c | sort -u | wofi $wofiArgs --dmenu --prompt "")"
+cmd="$(
+  IFS=: read -ra path_dirs <<< "$PATH"
+  for dir in "${path_dirs[@]}"; do
+    [ -n "$dir" ] && [ -d "$dir" ] || continue
+    for f in "$dir"/*; do
+      if [ -f "$f" ] && [ -x "$f" ]; then
+        printf '%s\n' "${f##*/}"
+      fi
+    done
+  done | sort -u | wofi $wofiArgs --dmenu --prompt ""
+)"
 
 # Count the number of words in input,
 # if number of words > 1, get command and arguments
