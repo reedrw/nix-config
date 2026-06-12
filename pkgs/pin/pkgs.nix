@@ -5,10 +5,8 @@ pkgs: let
     inherit sha256;
     url = "https://github.com/nixos/nixpkgs/archive/${rev}.tar.gz";
   }) {
+    inherit (pkgs) config;
     inherit (pkgs.stdenv.hostPlatform) system;
-    # `config` backwards incompatible after
-    # https://github.com/NixOS/nixpkgs/commit/8a5aae22c02b8d0f8306abb1bed314c569c3700f
-    config.replaceStdenv = { pkgs }: pkgs.stdenv;
   };
 
   mapToPackage = package: a: lib.mapAttrs' (n: v: let

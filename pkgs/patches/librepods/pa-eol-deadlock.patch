@@ -1,0 +1,39 @@
+PulseAudio introspection callbacks are invoked once with eol = -1 when the
+query errors (e.g. pa_context_get_card_info_by_name on a card that doesn't
+exist yet, which happens in the window between the AACP L2CAP connection
+coming up and WirePlumber recreating the bluez card on reconnect). The
+`eol > 0` checks skipped pa_threaded_mainloop_signal in that case, so
+waitForOperation blocked forever and froze the Qt main thread, silently
+killing ear detection until the daemon was restarted.
+
+Signal the mainloop on any end-of-list, including the error case.
+
+--- a/media/pulseaudiocontroller.cpp
++++ b/media/pulseaudiocontroller.cpp
+@@ -125,7 +125,7 @@
+
+     auto callback = [](pa_context *c, const pa_sink_info *info, int eol, void *userdata) {
+         CallbackData *d = static_cast<CallbackData*>(userdata);
+-        if (eol > 0)
++        if (eol)
+         {
+             pa_threaded_mainloop_signal(d->mainloop, 0);
+             return;
+@@ -208,7 +208,7 @@
+
+     auto callback = [](pa_context *c, const pa_card_info *info, int eol, void *userdata) {
+         CallbackData *d = static_cast<CallbackData*>(userdata);
+-        if (eol > 0)
++        if (eol)
+         {
+             pa_threaded_mainloop_signal(d->mainloop, 0);
+             return;
+@@ -253,7 +253,7 @@
+
+     auto callback = [](pa_context *c, const pa_card_info *info, int eol, void *userdata) {
+         CallbackData *d = static_cast<CallbackData*>(userdata);
+-        if (eol > 0)
++        if (eol)
+         {
+             pa_threaded_mainloop_signal(d->mainloop, 0);
+             return;
