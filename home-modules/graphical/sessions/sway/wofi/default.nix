@@ -4,8 +4,8 @@
   programs.wofi = {
     enable = true;
     settings = {
-      width = "40%";
-      lines = 10;
+      width = "50%";
+      lines = 8;
       font = "FantasqueSansM Nerd Font Bold 10";
       hide_scroll = true;
       no_actions = true;
