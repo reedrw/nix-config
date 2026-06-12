@@ -1,17 +1,15 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p wofi nix-index libnotify
+#! nix-shell -i bash -p rofi nix-index
 
-# Note: unlike rofi's -show run, this uses compgen -c | sort -u for PATH
-# listing. Selection order is alphabetical rather than history-aware.
+set -x
+set -e
 
-wofiArgs="${*}"
-
-# shellcheck disable=SC2086
-cmd="$(compgen -c | sort -u | wofi $wofiArgs --dmenu --prompt "")"
+rofiArgs="${*}"
+cmd="$(rofi "$rofiArgs" -show run -run-command 'echo {cmd}')"
 
 # Count the number of words in input,
-# if number of words > 1, get command and arguments
-# shellcheck disable=SC2086
+# if number of word > 1, get command and arguments
+# shellcheck disable=2086
 set -- $cmd
 [ $# -gt 1 ] \
   && read -ra args <<< "${cmd}" \
@@ -27,22 +25,20 @@ else
   if [ -f "$HOME/.cache/nix-index/files" ]; then
     database="$HOME/.cache/nix-index"
   else
-    notify-send "wofi-comma" "No nix-index database."
+    rofi "$rofiArgs" -e 'No database.'
     exit 1
   fi
 
   attr="$(nix-locate -d "$database" --minimal --at-root -w "/bin/$cmd")"
 
   if [ -z "$attr" ]; then
-    notify-send "wofi-comma" "$cmd: command not found"
+    rofi "$rofiArgs" -e "$cmd: command not found"
     exit 127
   fi
 
-  # shellcheck disable=SC2086
-  attr="$(wofi $wofiArgs --dmenu --prompt "" <<< "$attr")"
+  attr="$(rofi "$rofiArgs" -dmenu -p "" <<< "$attr")"
   attr="${attr%.*}"
 
-  branch="nixpkgs"
   timeout 0.30 nix eval "nixpkgs#$attr" &>/dev/null \
     || if [[ "$?" -eq 124 ]]; then
       branch="nixpkgs"
@@ -51,7 +47,7 @@ else
     fi
 
   if [ -f "$HOME/.cache/nix/comma-runcounts" ]; then
-    # shellcheck disable=SC1091
+    # shellcheck disable=1091
     source "$HOME/.cache/nix/comma-runcounts"
   else
     declare -A usage_counts
@@ -72,3 +68,4 @@ else
 
   (nix shell "$branch#$attr" -c "$cmd" "${args[@]}" &)
 fi
+

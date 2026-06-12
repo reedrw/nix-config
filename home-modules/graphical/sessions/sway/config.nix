@@ -70,6 +70,7 @@ in
     packages = with pkgs; [
       wl-clipboard
       grimblast
+      rofimoji
       playerctl
     ];
 
