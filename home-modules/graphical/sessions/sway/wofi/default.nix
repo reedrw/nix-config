@@ -4,8 +4,8 @@
   programs.wofi = {
     enable = true;
     settings = {
-      width = 600;
-      lines = 8;
+      width = "40%";
+      lines = 10;
       font = "FantasqueSansM Nerd Font Bold 10";
       hide_scroll = true;
       no_actions = true;
@@ -27,8 +27,9 @@
       #outer-box {
         background-color: #${base00};
         border-radius: 10px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.6);
         padding: 0;
-        margin: 0;
+        margin: 10px;
       }
 
       #input {

@@ -21,7 +21,7 @@ with pkgs;
     "${sup}+Right"             = "resize grow width 5 px or 5 ppt";
     "${sup}+Down"              = "resize grow height 5 px or 5 ppt";
     "${sup}+Up"                = "resize shrink height 5 px or 5 ppt";
-    "${sup}+space"             = "exec ${getExe scripts.wofi-comma} --lines=10";
+    "${sup}+space"             = "exec ${getExe scripts.wofi-comma}";
     "${mod}+r"                 = "exec ${getExe scripts.record}";
     "${mod}+n"                 = "exec ${osConfig.services.mullvad-vpn.package}/bin/mullvad reconnect";
     "${mod}+Shift+semicolon"   = "exec ${getExe pkgs.wofi-emoji}";

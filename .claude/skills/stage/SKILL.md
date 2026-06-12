@@ -26,13 +26,16 @@ over SSH, and stopping the VM.
 ./repo/stage/stage.sh [output.png]
 ```
 
-- No arg → ephemeral screenshot at `$XDG_RUNTIME_DIR/stage/screenshots/<timestamp>.png`
-- Explicit path inside the repo → persistent PR artifact (commit it intentionally)
+- No arg → screenshot at `repo/stage/screenshots/<timestamp>.png` (gitignored, persists for review)
+- Explicit path → write to that location instead
 
 ## After invocation
 
-Read the screenshot. State what you see, not what you hoped for. If the change
-isn't visible:
+Read the screenshot. State what you see, not what you hoped for. Then show the
+user the screenshot path and **wait for explicit sign-off** before proceeding to
+commit. Do not commit until the user confirms the screenshot looks correct.
+
+If the change isn't visible:
 - Check files were staged (`git diff --cached`)
 - Check the module is actually imported
 - Inspect the running session: `./repo/stage/ssh.sh 2222 -- systemctl --user status waybar`

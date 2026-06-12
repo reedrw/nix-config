@@ -7,8 +7,7 @@
 #   ./stage.sh [output.png]
 #
 #   output.png  where to write the screenshot (default:
-#               $XDG_RUNTIME_DIR/stage/screenshots/<timestamp>.png)
-#               Pass a path under the repo root to keep it as a PR artifact.
+#               repo/stage/screenshots/<timestamp>.png, gitignored)
 #
 # Env overrides (passed through to the primitive scripts):
 #   VM_PORT, VM_MEM, VM_CPUS, VM_DISPLAY, VM_USER, VM_PASSWORD
@@ -18,13 +17,13 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 : "${VM_PORT:=2222}"
 
-run_dir="${XDG_RUNTIME_DIR:-/tmp/stage-$UID}/stage"
-mkdir -p "$run_dir/screenshots"
+screenshots_dir="$script_dir/screenshots"
+mkdir -p "$screenshots_dir"
 
 if [ -n "${1:-}" ]; then
   out="$1"
 else
-  out="$run_dir/screenshots/$(date +%Y%m%d-%H%M%S).png"
+  out="$screenshots_dir/$(date +%Y%m%d-%H%M%S).png"
 fi
 
 # Warn if nothing is staged — the most common reason the VM shows stale output.
