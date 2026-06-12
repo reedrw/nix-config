@@ -7,7 +7,6 @@
   time.timeZone = "America/New_York";
 
   custom = {
-    session = "i3";
     vmStaging.enable = true;
   };
 
