@@ -32,11 +32,19 @@
         margin: 20px;
       }
 
-      #input {
+      entry,
+      entry:focus,
+      #input,
+      #input:focus {
         background-color: #${base01};
         color: #${base05};
         padding: 12px;
         border-radius: 10px 10px 0 0;
+        box-shadow: none;
+        border: none;
+        border-color: transparent;
+        outline: none;
+        outline-color: transparent;
       }
 
       #scroll {
