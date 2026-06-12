@@ -32,7 +32,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf (copyPersistPaths || files != [] || directories != []) {
     home.persistence.${osConfig.custom.persistDir} = lib.foldl' (acc: x: {
       files = (acc.files or []) ++ (x.files or []);
       directories = (acc.directories or []) ++ (x.directories or []);
