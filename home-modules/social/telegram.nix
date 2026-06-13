@@ -22,4 +22,10 @@
   custom.persistence.directories = [
     ".local/share/TelegramDesktop"
   ];
+
+  services.swaync.settings.notification-action-filter.telegram-hide-mark-as-read = {
+    app-name     = "Telegram Desktop";
+    use-regex    = true;
+    text-matcher = "[Mm]ark [Aa]s [Rr]ead";
+  };
 }
