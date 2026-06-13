@@ -30,7 +30,7 @@ in
       plugins = {
         betterSettings.enable = true;
         betterUploadButton.enable = true;
-        ClearURLs.enable = true;
+        clearUrls.enable = true;
         fakeNitro = {
           enable = true;
           transformCompoundSentence = true;
@@ -43,7 +43,7 @@ in
         replaceGoogleSearch = {
           enable = true;
           customEngineName = "DuckDuckGo";
-          customEngineURL = "https://duckduckgo.com/";
+          customEngineUrl = "https://duckduckgo.com/";
         };
         silentTyping = {
           enable = true;
