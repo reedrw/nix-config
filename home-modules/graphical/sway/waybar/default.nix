@@ -105,7 +105,7 @@ in
         clock = {
           format    = "{:%I:%M %p    %a %b %d}";
           tooltip   = false;
-          on-click  = lib.getExe calnotify;
+          on-click  = "${lib.getExe calnotify} ${base0B}";
         };
       }
     ];
