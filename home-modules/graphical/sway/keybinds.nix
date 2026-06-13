@@ -47,7 +47,7 @@ with pkgs;
     "XF86AudioLowerVolume"     = "exec ${getExe scripts.volume} down 5";
   } // (range 0 9
     |> map toString
-    |> map (n: { "${mod}+ctrl+${n}" = ''exec sh -c 'swaymsg "workspace ${n}" && ${getExe scripts.load-layouts} ${n}' ''; })
+    |> map (n: { "${mod}+ctrl+${n}" = "exec ${getExe scripts.load-layouts} ${n}"; })
     |> mergeAttrsList
   ));
 }
