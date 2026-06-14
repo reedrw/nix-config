@@ -17,12 +17,12 @@ cachefile="$cacheDir/outputdev"
 idCacheFile="$cacheDir/outputid"
 descCacheFile="$cacheDir/outputdesc"
 
-notifyCommand="notify-send -h string:x-canonical-private-synchronous:volume"
+id_file="${XDG_CACHE_HOME:-$HOME/.cache}/volume-notify-id"
 
 getInfo(){
   mkdir -p "$cacheDir"
   echo "$outputdev" > "$cachefile"
-  outputdesc="$(pactl list sinks | grep -e 'node.name' -e 'device.description' | grep -vi 'effects' | cut -f2 -d\" | grep -B 1 "$outputdev" | grep -v "$outputdev")"
+  outputdesc="$(pactl list sinks | grep -e 'node.name' -e 'device.description' | grep -vi 'effects' | cut -f2 -d\" | grep -A 1 "$outputdev" | grep -v "$outputdev")"
   echo "$outputdesc" > "$descCacheFile"
   outputid="$(wpctl status | grep "Sinks" -A 20 | grep "$outputdesc" | grep -o -E '[0-9]+' | head -1)"
   echo "$outputid" > "$idCacheFile"
@@ -72,8 +72,12 @@ main(){
 }
 
 main "$@"
-# Print with fixed with. hair space (U+200A) at the end
-# so dunst doesn't cull the whitespace
 status="$(wpctl get-volume "$outputid")"
-status="$(printf '%-20s ' "$status")"
-$notifyCommand "$outputdesc" "$status"
+prev_id="$(cat "$id_file" 2>/dev/null || echo "")"
+mkdir -p "$(dirname "$id_file")"
+if [ -n "$prev_id" ]; then
+  new_id="$(notify-send --print-id --replace-id "$prev_id" "$outputdesc" "$status")"
+else
+  new_id="$(notify-send --print-id "$outputdesc" "$status")"
+fi
+echo "$new_id" > "$id_file"
