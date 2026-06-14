@@ -3,6 +3,24 @@
 
 set -euo pipefail
 
+# Launch an app on the currently-focused workspace.
+#
+# Sway pins any window mapped by a descendant of a keybind `exec` to the
+# workspace that keybind was pressed from. It uses two independent
+# mechanisms: an env-borne activation token (XDG_ACTIVATION_TOKEN for
+# Wayland clients, DESKTOP_STARTUP_ID for X11/GTK), and a parent-PID walk
+# at window-map time. The script does `swaymsg workspace N` before
+# launching the apps, but both mechanisms override that — symptom: the
+# "ws4 flashes then bounces back" bug, where the bluetuith window pulls
+# focus + every subsequent layout_audio window onto the originating
+# workspace. Killing either one alone isn't enough (firefox still respects
+# the activation token via setsid; bluetuith still respects the PID chain
+# via env unset), so do both.
+spawn() {
+  env -u XDG_ACTIVATION_TOKEN -u DESKTOP_STARTUP_ID \
+    setsid -f "$@" </dev/null >/dev/null 2>&1
+}
+
 # Focus a tiled (non-floating) window with the given app_id, retrying
 # until one exists. Returns with the window already focused.
 # This skips transient floating splash windows (e.g. Discord's updater).
@@ -14,14 +32,14 @@ focus_tiled() {
 
 layout_chat(){
   # Open discord inside a dedicated tabbed container
-  discord &
+  spawn discord
   focus_tiled discord
   swaymsg "layout splith"
   swaymsg "split v"
   swaymsg "layout tabbed"
 
   # Signal joins as a second tab
-  signal-desktop &
+  spawn signal-desktop
   focus_tiled signal
 
   # Escape the tabbed container back to workspace level so telegram
@@ -31,23 +49,23 @@ layout_chat(){
   # Re-assert splith in case the escape landed on a splitv container.
   swaymsg "layout splith"
 
-  Telegram &
+  spawn Telegram
   focus_tiled org.telegram.desktop
   swaymsg "resize set width 20 ppt"
 }
 
 layout_audio(){
-  (kitty --app-id=bluetuith -e bluetuith)&
+  spawn kitty --app-id=bluetuith -e bluetuith
   focus_tiled bluetuith
   swaymsg "layout splitv"
 
-  pwvucontrol &
+  spawn pwvucontrol
   focus_tiled com.saivert.pwvucontrol
 
   swaymsg "focus parent"
   swaymsg "focus parent"
   swaymsg "split h"
-  easyeffects &
+  spawn easyeffects
   focus_tiled com.github.wwmm.easyeffects
 }
 
@@ -55,7 +73,7 @@ launchPrograms(){
   case "$1" in
     "1")
       swaymsg "workspace 1"
-      firefox &
+      spawn firefox
       ;;
     "2")
       swaymsg "workspace 2"
