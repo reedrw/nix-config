@@ -3,7 +3,6 @@ let
   myPkgs = {
     gc = pkgs.callPackage ./gc { };
     jdownloader = pkgs.callPackage ./jdownloader { };
-    fluxer = pkgs.callPackage ./fluxer { };
     ldp = self.callPackage ./ldp { };
     mountiso = pkgs.callPackage ./mountiso { };
     pin = pkgs.callPackage ./pin { };
