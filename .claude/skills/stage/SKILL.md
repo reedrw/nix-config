@@ -45,7 +45,43 @@ If the change isn't visible:
 ~30 s warm build + 20 s boot + 5 s shoot. Cold cache: tens of minutes.
 Don't invoke for plumbing changes. Don't invoke speculatively.
 
-## Primitive scripts (for manual debug)
+## Primitive scripts (for manual debug and interactive sessions)
 
-All under `repo/stage/`: `run.sh`, `wait.sh`, `shoot.sh`, `ssh.sh`, `stop.sh`.
-`stage.sh` composes them with auto-cleanup on exit.
+All under `repo/stage/`: `run.sh`, `wait.sh`, `shoot.sh`, `ssh.sh`, `sendkey.sh`,
+`stop.sh`. `stage.sh` composes run+wait+shoot+stop with auto-cleanup on exit.
+
+### Keeping the VM alive across multiple checks
+
+When validating a keybind, a service, or anything that needs more than a
+single shot, drive the primitives by hand instead of calling `stage.sh` — the
+pidfile in `$XDG_RUNTIME_DIR/stage/` persists between invocations:
+
+```sh
+repo/stage/run.sh                          # boot once, returns immediately
+repo/stage/wait.sh 2222                    # block until sway is up
+repo/stage/ssh.sh 2222 -- wpctl get-volume @DEFAULT_AUDIO_SINK@   # baseline
+repo/stage/sendkey.sh volumeup             # simulate XF86AudioRaiseVolume
+repo/stage/ssh.sh 2222 -- wpctl get-volume @DEFAULT_AUDIO_SINK@   # after
+repo/stage/shoot.sh 2222 /tmp/after.png    # optional
+repo/stage/stop.sh                         # when done
+```
+
+`run.sh` exits non-zero if the VM is already up, so re-running it is safe —
+treat it as idempotent boot.
+
+### sendkey.sh
+
+Injects QEMU monitor `sendkey` events. Sway sees them as real libinput key
+events, so XF86Audio*/XF86MonBrightness* keybinds fire end-to-end:
+
+```sh
+repo/stage/sendkey.sh volumeup           # one press
+repo/stage/sendkey.sh volumeup volumeup  # two presses
+repo/stage/sendkey.sh ctrl-alt-t         # chord
+```
+
+Common identifiers: `volumeup`, `volumedown`, `audiomute`, `audionext`,
+`audioprev`, `audioplay`, `audiostop`. Anything QEMU accepts in HMP works.
+
+Requires the monitor socket, which `run.sh` sets up at
+`$XDG_RUNTIME_DIR/stage/nixos-vm.monitor.sock`.

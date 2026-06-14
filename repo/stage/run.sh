@@ -38,8 +38,11 @@ echo "run: building $host VM (fast after the first run)" >&2
 vm_runner="$(nix build --no-link --print-out-paths \
   "$repo_root#nixosConfigurations.$host.config.system.build.vm")"
 
+monitor_sock="$run_dir/$host.monitor.sock"
+rm -f "$monitor_sock"
+
 export QEMU_NET_OPTS="hostfwd=tcp::$VM_PORT-:22"
-export QEMU_OPTS="-display $VM_DISPLAY -snapshot -m $VM_MEM -smp $VM_CPUS -audio none"
+export QEMU_OPTS="-display $VM_DISPLAY -snapshot -m $VM_MEM -smp $VM_CPUS -audio none -monitor unix:$monitor_sock,server,nowait"
 
 echo "run: starting QEMU (logs: $logfile)" >&2
 export TMPDIR=/tmp
@@ -48,4 +51,4 @@ nohup "$vm_runner/bin/run-$host-vm" \
 echo $! >"$pidfile"
 disown
 
-echo "run: pid $(cat "$pidfile"), SSH on localhost:$VM_PORT" >&2
+echo "run: pid $(cat "$pidfile"), SSH on localhost:$VM_PORT, monitor at $monitor_sock" >&2
