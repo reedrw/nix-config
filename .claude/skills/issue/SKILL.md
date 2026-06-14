@@ -41,6 +41,10 @@ Fill in what you know from the conversation and from reading the relevant code.
 Leave sections out rather than writing placeholder text if you have nothing
 meaningful to say.
 
+## Confirmation required
+
+**Always show the user the proposed title and body and ask for explicit confirmation before creating the issue.** Never create an issue autonomously, even when the content is obvious from context.
+
 ## Duplicate check
 
 Before creating, search for existing open issues with similar keywords:
