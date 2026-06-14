@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p glib pulseaudio
+#! nix-shell -i bash -p glib pulseaudio libnotify
 
 # This script is used to control the volume of the output currently selected in easyeffects.
 # It uses the wpctl command from wireplumber to control the volume and
@@ -17,7 +17,7 @@ cachefile="$cacheDir/outputdev"
 idCacheFile="$cacheDir/outputid"
 descCacheFile="$cacheDir/outputdesc"
 
-notifyCommand="dunstify -h string:x-dunst-stack-tag:volume"
+notifyCommand="notify-send -h string:x-canonical-private-synchronous:volume"
 
 getInfo(){
   mkdir -p "$cacheDir"
@@ -41,7 +41,7 @@ runCommand(){
 
 # Get the output device from easyeffects
 outputdev="$(gsettings \
-  --schemadir "$XDG_STATE_HOME"/nix/profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
+  --schemadir "${XDG_STATE_HOME:-$HOME/.local/state}"/nix/profile/share/gsettings-schemas/easyeffects-*/glib-*/schemas \
   get com.github.wwmm.easyeffects.streamoutputs output-device | cut -f2 -d\')"
 
 main(){

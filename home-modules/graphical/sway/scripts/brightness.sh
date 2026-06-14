@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p brightnessctl bc
+#! nix-shell -i bash -p brightnessctl bc libnotify
 
 # This script is used to increase or decrease the brightness of the screen
 # based on the current brightness. This is useful for adjusting brightness to
@@ -10,7 +10,7 @@ set -x
 current="$(brightnessctl g)"
 percentage="$2"
 
-notifyCommand="dunstify -h string:x-dunst-stack-tag:brightness"
+notifyCommand="notify-send -h string:x-canonical-private-synchronous:brightness"
 
 sendNotification(){
   local p;
