@@ -21,13 +21,14 @@ spawn() {
     setsid -f "$@" </dev/null >/dev/null 2>&1
 }
 
-# Focus a tiled (non-floating) window with the given app_id, retrying
-# until one exists. Returns with the window already focused.
-# This skips transient floating splash windows (e.g. Discord's updater).
+# Focus a tiled (non-floating) window with the given app_id. Skips
+# transient floating splash windows (e.g. Discord's updater) and blocks
+# on sway window events between attempts, so we wake the instant a
+# matching window maps instead of paying up to 0.3s of poll latency.
 focus_tiled() {
-  until swaymsg "[app_id=$1 tiling] focus" > /dev/null 2>&1; do
-    sleep 0.3
-  done
+  while ! swaymsg "[app_id=$1 tiling] focus" > /dev/null 2>&1; do
+    read -r _ || sleep 0.3
+  done < <(swaymsg -t subscribe -m '["window"]' 2>/dev/null)
 }
 
 layout_chat(){
