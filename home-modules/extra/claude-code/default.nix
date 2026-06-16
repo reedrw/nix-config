@@ -96,6 +96,7 @@ in
   };
 
   home = {
+    packages = [ pkgs.opencode ];
     activation.claudeCodeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       ${writeConfig}
     '';
@@ -186,6 +187,6 @@ in
 
   custom.persistence = {
     files = [ ".claude.json" ];
-    directories = [ ".claude" ];
+    directories = [ ".claude" ".config/opencode" ".local/share/opencode" ];
   };
 }
