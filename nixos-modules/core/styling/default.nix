@@ -70,7 +70,7 @@ in
     };
     "switch-to-light" = {
       unitConfig = {
-        Description = "Switch to dark specialization";
+        Description = "Switch to light specialization";
       };
       serviceConfig = {
         Type = "oneshot";
