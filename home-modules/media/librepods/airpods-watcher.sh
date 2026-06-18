@@ -17,11 +17,11 @@ sync_librepods() {
         systemctl --user start librepods.service 2>/dev/null || true
     else
         systemctl --user stop librepods.service 2>/dev/null || true
-        sleep 2
-        easyeffects --bypass 1
-        sleep 0.5
-        easyeffects --bypass 2
     fi
+    sleep 2
+    easyeffects --bypass 1
+    sleep 0.5
+    easyeffects --bypass 2
 }
 
 sync_librepods
