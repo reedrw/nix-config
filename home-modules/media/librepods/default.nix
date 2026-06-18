@@ -23,7 +23,7 @@
     Service = {
       ExecStart = "${pkgs.writeShellApplication {
         name = "airpods-watcher";
-        runtimeInputs = [ pkgs.bluez ];
+        runtimeInputs = [ pkgs.bluez pkgs.easyeffects ];
         text = builtins.readFile ./airpods-watcher.sh;
       }}/bin/airpods-watcher";
       Restart = "on-failure";
