@@ -190,6 +190,12 @@ in
 
   custom.persistence = {
     files = [ ".claude.json" ];
-    directories = [ ".claude" ".config/opencode" ".local/share/opencode" ];
+    directories = [
+      ".claude"
+      ".config/opencode"
+      ".cache/opencode"
+      ".local/share/opencode"
+      ".local/state/opencode"
+    ];
   };
 }
