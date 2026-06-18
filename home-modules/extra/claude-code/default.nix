@@ -138,53 +138,6 @@ in
           - When troubleshooting, don't make a commit until the fix has been validated by the user.
         '';
       };
-
-      ".claude/commands/remember.md" = {
-        force = true;
-        text = ''
-          ---
-          description: Save a Claude Code behavior to memory at the appropriate scope
-          ---
-
-          The user wants you to remember: $ARGUMENTS
-
-          ## Step 1: Hook or memory?
-
-          First assess whether this is better implemented as a **hook** (automatic behavior triggered by an event) rather than a memory instruction.
-
-          **Hook signals — the request describes something that should happen *automatically* when an event occurs:**
-          - "after writing/editing files, do X" → PostToolUse hook (Write|Edit matcher)
-          - "before/after running bash commands, do X" → Pre/PostToolUse hook (Bash matcher)
-          - "when you stop, do X" → Stop hook
-          - "before compacting, do X" → PreCompact hook
-          - "every time a session starts, do X" → SessionStart hook
-          - "when a tool/command fails, do X" → PostToolUseFailure hook
-
-          **Memory signals — the request describes a standing preference, style, or instruction for Claude:**
-          - Coding style or formatting preferences
-          - Communication style or response format
-          - Things to always avoid or always include
-          - Project-specific context or conventions
-
-          **If hook-suited:** use `AskUserQuestion` to confirm with the user before proceeding — explain that this sounds like it needs a hook in `settings.json` (not just memory, since memory cannot trigger automatic actions), and ask whether to set it up as a hook via `/update-config` or save it as a memory instruction anyway.
-
-          **If memory-suited:** proceed to Step 2.
-
-          ## Step 2: Scope
-
-          This is always about how *Claude Code itself* should behave. There are exactly two scopes:
-
-          1. **Universal (machine-level)** — applies whenever Claude Code is running on this machine, regardless of project. Add a concise bullet or sentence to the relevant section of `home.file.".claude/CLAUDE.md"` inside the Claude Code home-manager module in the nix-config repo at `${pkgs.flakePath}` (grep for `programs.claude-code`). **Never write directly to `~/.claude`.**
-
-          2. **Repo-scoped** — applies only when Claude Code is working inside one specific repo. Written into that repo's `CLAUDE.md` (typically `<repo>/.claude/CLAUDE.md` or `<repo>/CLAUDE.md`).
-
-          **If currently working inside the nix-config repo (`${pkgs.flakePath}`):** scope is ambiguous — pick the scope you think is correct, then **stop and confirm with the user via `AskUserQuestion` before writing anything**.
-
-          **Otherwise:** default to universal (machine-level) and proceed without asking.
-
-          After writing, if the change landed in nix-config (`${pkgs.flakePath}`), run `/ldp --switch` to apply.
-        '';
-      };
     };
   };
 
