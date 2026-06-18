@@ -78,6 +78,25 @@ jobs:
         signingKey: '${{ env.CACHIX_SIGNING_KEY }}'
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
 
+    - name: Set NIX_CONFIG
+      run: |
+        echo "NIX_CONFIG<<EOF" >> $GITHUB_ENV
+        nix eval --impure --raw --expr 'let
+          mapAttrsToList = f: attrs: builtins.attrValues (builtins.mapAttrs f attrs);
+          pipe = builtins.foldl'\'\ '(x: f: f x);
+        in pipe (import ./flake.nix).nixConfig [
+          (mapAttrsToList (n: v:
+            "${n} = ${
+              if builtins.isList v
+              then builtins.concatStringsSep " " v
+              else v
+            }")
+          )
+          (builtins.concatStringsSep "\n")
+        ]' >> $GITHUB_ENV
+        echo >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
     - name: Build
       run: |
         set -x
