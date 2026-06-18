@@ -1,9 +1,7 @@
 { pkgs, ... }:
 
 {
-  hardware.bluetooth = {
-    enable = true;
-  };
+  hardware.bluetooth.enable = true;
 
   programs.librepods.enable = true;
 
