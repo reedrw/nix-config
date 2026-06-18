@@ -181,6 +181,9 @@ in
       shadow_blur_radius 20
       shadow_color #00000066
       default_dim_inactive 0.05
+      layer_effects "waybar" {
+        shadows enable;
+      }
     '';
   };
 
