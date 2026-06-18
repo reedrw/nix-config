@@ -95,8 +95,11 @@ in
     };
   };
 
+  stylix.targets.opencode.enable = true;
+
+  programs.opencode.enable = true;
+
   home = {
-    packages = [ pkgs.opencode ];
     activation.claudeCodeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       ${writeConfig}
     '';
