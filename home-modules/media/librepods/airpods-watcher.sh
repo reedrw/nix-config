@@ -1,4 +1,6 @@
-# shellcheck shell=bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p easyeffects bluez
+
 airpods_connected() {
   local paired addr info icon connected
   paired=$(bluetoothctl devices Paired 2>/dev/null | awk '{print $2}')

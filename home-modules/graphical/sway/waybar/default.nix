@@ -5,8 +5,9 @@ let
   polarity = config.stylix.polarity;
   lightDarkIcon = if polarity == "light" then " " else "󰃠 ";
 
-  adb-device = pkgs.writeNixShellScript "adb-device" <| builtins.readFile ./adb-device.sh;
-  calnotify   = pkgs.writeNixShellScript "calnotify"  <| builtins.readFile ./calnotify.sh;
+  adb-device      = pkgs.writeNixShellScript "adb-device"      <| builtins.readFile ./adb-device.sh;
+  airpods-battery = pkgs.writeNixShellScript "airpods-battery" <| builtins.readFile ./airpods-battery.sh;
+  calnotify       = pkgs.writeNixShellScript "calnotify"       <| builtins.readFile ./calnotify.sh;
 
   # Screenthing without the polybar tail-sleep; SCREENDIR must be explicit
   # because the systemd user service doesn't inherit it from the login shell.
@@ -57,6 +58,7 @@ in
         modules-right  = [
           "custom/screen"
           "custom/light-dark"
+          "custom/airpods-battery"
           "custom/adb-device"
           "custom/battery"
           "clock"
@@ -85,6 +87,13 @@ in
           exec = ''echo '${lightDarkIcon}' '';
           interval = 0;
           on-click = "toggle-theme";
+          return-type = "";
+        };
+
+        "custom/airpods-battery" = {
+          exec = "${lib.getExe airpods-battery} icon";
+          interval = 10;
+          on-click = lib.getExe airpods-battery;
           return-type = "";
         };
 
