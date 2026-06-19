@@ -136,6 +136,17 @@ in
           ## Troubleshooting
 
           - When troubleshooting, don't make a commit until the fix has been validated by the user.
+
+          ## Proactive tool use
+
+          Never ask for information that a tool can fetch. Before asking the user a clarifying question, check whether a tool can answer it instead:
+
+          - **URLs in the conversation** — always fetch them with WebFetch rather than saying you can't access external sites or asking the user to describe the page.
+          - **System/hardware info** — use Bash (`lspci`, `/sys/class/drm/`, `uname`, `cat /proc/cpuinfo`, etc.) or `nix eval` before asking "what GPU/CPU/kernel do you have?"
+          - **Installed packages or config values** — query with `nix eval` before asking what's installed or enabled.
+          - **File contents** — read the file before asking the user to paste it.
+
+          The pattern to avoid: responding with "I don't know X, could you tell me?" when a tool call would answer the question in seconds.
         '';
       };
     };
