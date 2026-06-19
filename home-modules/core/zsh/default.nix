@@ -45,6 +45,8 @@ in
         set -s escape-time 0
         set -g history-limit 10000
         set -g allow-passthrough on
+        set -s extended-keys on
+        set -as terminal-features 'xterm*:extkeys'
         set -g popup-border-lines none
       '';
     };
