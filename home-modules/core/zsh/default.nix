@@ -47,6 +47,7 @@ in
         set -g allow-passthrough on
         set -s extended-keys on
         set -as terminal-features 'xterm*:extkeys'
+        set -as terminal-features '*:hyperlinks'
         set -g popup-border-lines none
       '';
     };
