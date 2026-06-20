@@ -30,6 +30,7 @@
   nixpkgs.hostPlatform = "x86_64-linux";
 
   custom = {
+    display.verticalResolution = 1080;
     persistDir = "/var/persist";
     copyPersistPaths = true;
     prevDir = "/var/prev";

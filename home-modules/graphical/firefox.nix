@@ -1,5 +1,7 @@
-{ pkgs, lib, ... }:
-
+{ pkgs, lib, osConfig, ... }:
+let
+  inherit (osConfig.custom.display) dp;
+in
 {
 
   stylix.targets.firefox = {
@@ -34,10 +36,10 @@
     profiles."default" = {
       name = "default";
       userChrome = ''
-        .tab-text { font-size: 14px !important; }
+        .tab-text { font-size: ${toString (dp 14)}px !important; }
       '';
       settings = {
-        "font.size.variable.x-western" = lib.mkForce 16;
+        "font.size.variable.x-western" = lib.mkForce (dp 16);
         "browser.contentblocking.report.lockwise.enabled" = false;
         "browser.contentblocking.report.monitor.enabled" = false;
         "browser.display.use_system_colors" = false;

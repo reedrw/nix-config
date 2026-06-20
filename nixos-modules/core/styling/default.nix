@@ -1,7 +1,8 @@
-{ pkgs, lib, util, inputs, ... }:
+{ config, pkgs, lib, util, inputs, ... }:
 let
   # schemes is from https://github.com/tinted-theming/schemes
   schemes = (util.importFlake ./sources).inputs.schemes;
+  inherit (config.custom.display) dp;
 in
 {
   imports = [
@@ -112,13 +113,13 @@ in
       package = pkgs.cantarell-fonts;
       name = "Cantarell";
     };
-    sizes.applications = 10;
+    sizes.applications = dp 10;
   };
 
   stylix.cursor = {
     package = pkgs.openzone-cursors;
     name = "OpenZone_Black";
-    size = 24;
+    size = dp 24;
   };
 
   stylix.targets = {

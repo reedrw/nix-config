@@ -1,7 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 
 let
   colors = config.lib.stylix.colors;
+  inherit (osConfig.custom.display) dp;
   polarity = config.stylix.polarity;
   lightDarkIcon = if polarity == "light" then " " else "󰃠 ";
 
@@ -51,7 +52,6 @@ in
       {
         layer = "top";
         position = "top";
-        height = 28;
 
         modules-left   = [ "sway/workspaces" ];
         modules-center = [ "mpris" ];
@@ -122,7 +122,7 @@ in
     style = with colors; ''
       * {
         font-family: "FantasqueSansMNerdFont", "Kochi Gothic";
-        font-size: 9pt;
+        font-size: ${toString (dp 9)}pt;
         font-weight: bold;
         border: none;
         border-radius: 0;
@@ -135,17 +135,17 @@ in
       window#waybar {
         background-color: #${base00};
         color: #${base05};
-        min-height: 28px;
+        min-height: 2.33em;
       }
 
       .modules-left  { padding-left:  1px; }
       .modules-right { padding-right: 1px; }
 
       #workspaces button {
-        padding: 0 4px;
+        padding: 0 0.33em;
         background: transparent;
         color: #${base03};
-        min-height: 28px;
+        min-height: 2.33em;
       }
 
       #workspaces button:hover {
@@ -170,9 +170,9 @@ in
       #custom-light-dark,
       #custom-adb-device,
       #custom-battery {
-        padding: 0 8px;
+        padding: 0 0.67em;
         color: #${base05};
-        min-height: 28px;
+        min-height: 2.33em;
       }
 
     '';

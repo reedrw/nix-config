@@ -1,7 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 
 let
   inherit (config.lib) scripts functions;
+  inherit (osConfig.custom.display) dp;
 
   wallpaper-colored = let
     fileType = config.stylix.image
@@ -113,16 +114,16 @@ in
       terminal  = config.home.sessionVariables.TERMINAL;
       bars = [ ];
 
-      gaps.inner = 7;
+      gaps.inner = dp 7;
 
       fonts = lib.mkForce {
         names = [ "Fantasque Sans Mono" ];
         style = "Bold";
-        size  = 10.0;
+        size  = (dp 10) * 1.0;
       };
 
       window = {
-        border   = 5;
+        border   = dp 5;
         titlebar = false;
         commands =
           commandForWindows { command = "floating enable"; } [
@@ -151,7 +152,7 @@ in
       };
 
       floating = {
-        border   = 5;
+        border   = dp 5;
         titlebar = false;
       };
 
@@ -176,9 +177,9 @@ in
 
     # swayfx compositor effects (replaces picom)
     extraConfig = ''
-      corner_radius 10
+      corner_radius ${toString (dp 10)}
       shadows enable
-      shadow_blur_radius 20
+      shadow_blur_radius ${toString (dp 20)}
       shadow_color #00000066
       default_dim_inactive 0.05
       layer_effects "waybar" {

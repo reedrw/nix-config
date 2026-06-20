@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, osConfig, ... }:
+let
+  inherit (osConfig.custom.display) dp;
+in
 {
   stylix.targets.kitty = {
     enable = true;
@@ -25,12 +28,12 @@
     settings = let
       family = "FantasqueSansM Nerd Font";
     in {
-      font_size = 10;
+      font_size = dp 10;
       font_family = "${family} Bold";
       bold_font = ''family="${family}" style="Bold"'';
       italic_font = "${family} Italic";
       bold_italic_font = "${family} Bold Italic";
-      window_padding_width = 10;
+      window_padding_width = dp 10;
 
       hide_window_decorations = true;
 
