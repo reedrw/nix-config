@@ -573,5 +573,10 @@
     "pname": "xunit.runner.visualstudio",
     "version": "3.0.2",
     "hash": "sha256-Q0IxAFO9EDnIGzRl2HCWBujPZL8kqBcNZez1Y29hjPc="
+  },
+  {
+    "pname": "YamlDotNet",
+    "version": "17.1.0",
+    "hash": "sha256-Zdlw62rVud2U94BQKqrp5OFQiDcQ9rRrKeaVnNxREjY="
   }
 ]
