@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "ArtCNN": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780755708,
+        "narHash": "sha256-bNlpXqMwjRzcYycXEO8iCbJbXNJCeTSaTZj29QV53GI=",
+        "owner": "Artoriuz",
+        "repo": "ArtCNN",
+        "rev": "df22458553a4b0935835c40d1eff431e52a2b754",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Artoriuz",
+        "repo": "ArtCNN",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "ArtCNN": "ArtCNN"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
