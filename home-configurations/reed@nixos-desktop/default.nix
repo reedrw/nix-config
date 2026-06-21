@@ -3,7 +3,6 @@
 {
   imports = [
     ../reed.nix
-    ./xsession.nix
     ./syncthing.nix
     ./firefox.nix
     ./kitty.nix
