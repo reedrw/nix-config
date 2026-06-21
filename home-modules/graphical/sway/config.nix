@@ -176,6 +176,7 @@ in
 
     # swayfx compositor effects (replaces picom)
     extraConfig = ''
+      animation_duration_ms 30
       corner_radius ${toString (dp 10)}
       shadows enable
       shadow_blur_radius ${toString (dp 20)}
