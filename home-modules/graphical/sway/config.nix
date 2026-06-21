@@ -179,11 +179,18 @@ in
       shadows enable
       shadow_blur_radius ${toString (dp 20)}
       shadow_color #00000066
-      default_dim_inactive 0.05
       layer_effects "waybar" {
         shadows enable;
       }
-    '';
+    ''
+    + (
+      if (config.stylix.polarity == "light")
+      then ''
+        default_dim_inactive 0.01
+      '' else ''
+        default_dim_inactive 0.05
+      ''
+    );
   };
 
   systemd.user.services = lib.mergeAttrsList [
