@@ -104,9 +104,7 @@ in
 
   wayland.windowManager.sway = {
     enable = true;
-    package = pkgs.swayfx.overrideAttrs (old: {
-      passthru = (old.passthru or {}) // { providedSessions = [ "sway" ]; };
-    });
+    package = osConfig.programs.sway.package;
     checkConfig = false;
 
     config = {

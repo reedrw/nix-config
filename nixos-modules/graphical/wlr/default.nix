@@ -1,16 +1,22 @@
-{ pkgs, ... }:
-
+{ pkgs, util, ... }:
+let
+  sources = (util.importFlake ./sources).inputs;
+in
 {
   programs.dconf.enable = true;
 
   programs.sway = {
     enable = true;
-    package = pkgs.swayfx.overrideAttrs (old: {
+    package = sources.swayfx.packages."${pkgs.stdenv.system}".default.overrideAttrs (old: {
       passthru = (old.passthru or {}) // {
         providedSessions = [ "sway" ];
       };
     });
   };
+
+  environment.systemPackages = with pkgs; [
+    ddcui
+  ];
 
   # Portal backends under sway:
   #   wlr      — ScreenCast, Screenshot
