@@ -25,7 +25,7 @@ in
       ];
     };
     config = {
-      profile = "gpu-hq";
+      profile = "high-quality";
       scale = "ewa_lanczossharp";
       cscale = "ewa_lanczossharp";
       osc = "no";
