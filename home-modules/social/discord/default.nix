@@ -13,6 +13,7 @@ in
       commandLineArgs = [
         "--enable-blink-features=MiddleClickAutoscroll"
         "--enable-features=UseOzonePlatform,WaylandWindowDecorations"
+        "--disable-features=LcdTextAntialiasing"
         "--ozone-platform=wayland"
       ];
       openASAR.enable = false;

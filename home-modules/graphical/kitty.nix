@@ -1,4 +1,4 @@
-{ pkgs, osConfig, ... }:
+{ pkgs, config, osConfig, ... }:
 let
   inherit (osConfig.custom.display) dp;
 in
@@ -50,7 +50,14 @@ in
     };
     extraConfig = ''
       modify_font underline_position 2
-      text_composition_strategy legacy
-    '';
+    ''
+    + (
+      if config.stylix.polarity == "dark"
+      then ''
+        text_composition_strategy platform
+      '' else ''
+        text_composition_strategy 1.7 0
+      ''
+    );
   };
 }

@@ -21,7 +21,7 @@
     fontconfig = {
       enable = true;
       cache32Bit = true;
-      subpixel.rgba = "rgb";
+      subpixel.rgba = "none";
       defaultFonts = {
         monospace = [
           "CaskaydiaCove Nerd Font Mono"
