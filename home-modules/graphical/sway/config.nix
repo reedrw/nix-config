@@ -46,6 +46,7 @@ let
     "systemctl --user restart xdg-desktop-portal.service"
     "systemctl --user restart xdg-desktop-portal-gtk.service"
     "systemctl --user restart xdg-desktop-portal-wlr.service"
+    "systemctl --user restart authentication-agent.service"
     "${lib.getExe scripts.toggle-touchpad} disable --silent"
     "sh -c 'sleep 1 && systemctl --user restart swaybg'"
     "sh -c 'sleep 1 && systemctl --user restart waybar'"
