@@ -97,7 +97,14 @@ in
 
   stylix.targets.opencode.enable = true;
 
-  programs.opencode.enable = true;
+  programs.opencode = {
+    enable = true;
+    tui.theme = lib.mkForce (
+      if config.stylix.polarity == "dark"
+      then "stylix"
+      else "system"
+    );
+  };
 
   home = {
     activation.claudeCodeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
