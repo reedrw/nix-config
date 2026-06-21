@@ -142,6 +142,7 @@ in
             "firefox"
             "kitty"
             "mpv"
+            { instance = "steamwebhelper"; }
           ]
           ++ commandForWindows { command = "fullscreen enable"; } [
             "mpv"
