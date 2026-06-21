@@ -27,7 +27,7 @@ in
   programs.claude-code = {
     enable = true;
     settings = {
-      theme = if config.stylix.polarity == "light" then "light-ansi" else "dark-ansi";
+      theme = "dark-ansi";
       autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       skipAutoPermissionPrompt = true;
