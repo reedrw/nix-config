@@ -41,7 +41,7 @@ jobs:
         pushFilter: '(-source$|-src$|\.tar\.gz$|\.xpi$)'
 
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set NIX_CONFIG
       run: |
