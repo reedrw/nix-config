@@ -3,11 +3,11 @@
 {
   imports = [
     ../reed.nix
-    ./syncthing.nix
     ./firefox.nix
     ./kitty.nix
     ./mpv
     ./sway.nix
+    ./syncthing.nix
     ezModules.core
     ezModules.extra
     ezModules.filesharing
