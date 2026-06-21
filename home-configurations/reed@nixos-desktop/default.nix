@@ -5,6 +5,9 @@
     ../reed.nix
     ./xsession.nix
     ./syncthing.nix
+    ./firefox.nix
+    ./kitty.nix
+    ./mpv
     ./sway.nix
     ezModules.core
     ezModules.extra
