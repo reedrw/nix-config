@@ -11,6 +11,16 @@ in
     ".config/coc"
   ];
 
+  home.activation.reloadNeovim = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+    for sock in /run/user/$(id -u)/nvim.*.0; do
+      [ -S "$sock" ] || continue
+      run ${config.programs.neovim.finalPackage}/bin/nvim \
+        --server "$sock" \
+        --remote-expr 'execute("source " . $MYVIMRC)' \
+        >/dev/null 2>&1 || true
+    done
+  '';
+
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -158,7 +168,10 @@ in
           set norelativenumber
         endif
       endfunction
-      call timer_start(100, function('s:ModeCheck'), {'repeat': -1})
+      if exists('s:mode_timer')
+        call timer_stop(s:mode_timer)
+      endif
+      let s:mode_timer = timer_start(100, function('s:ModeCheck'), {'repeat': -1})
 
       " Don't unload abandoned buffers
       set hidden
@@ -209,14 +222,14 @@ in
 
       autocmd BufReadPre *.nfo :setlocal fileencodings=utf-8,cp437
 
-      aunmenu PopUp.How-to\ disable\ mouse
-      aunmenu PopUp.-2-
+      silent! aunmenu PopUp.How-to\ disable\ mouse
+      silent! aunmenu PopUp.-2-
 
       hi CocSearch ctermfg=DarkBlue
 
       " https://stackoverflow.com/questions/1327978/sorting-words-not-lines-in-vim/1328421#1328421
       " sort words in line with SortLine
-      command -nargs=0 -range SortLine <line1>,<line2>call setline('.',join(sort(split(getline('.'),' ')),' '))
+      command! -nargs=0 -range SortLine <line1>,<line2>call setline('.',join(sort(split(getline('.'),' ')),' '))
 
       " https://vi.stackexchange.com/questions/454/whats-the-simplest-way-to-strip-trailing-whitespace-from-all-lines-in-a-file
       fun! TrimWhitespace()
@@ -246,7 +259,7 @@ in
 
       " https://vim.fandom.com/wiki/Move_cursor_by_display_lines_when_wrapping
       noremap <silent> <Leader>w :call ToggleWrap()<CR>
-      function ToggleWrap()
+      function! ToggleWrap()
         if &wrap
           echo "Wrap OFF"
           setlocal nowrap
