@@ -11,6 +11,8 @@
     fstrim.enable = true;
   };
 
+  hardware.i2c.enable = true;
+
   # set console colors
   stylix.targets.console.enable = true;
 
