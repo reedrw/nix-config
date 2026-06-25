@@ -4,6 +4,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    ref:
+      description: 'Choose branch or commit to build.'
+      required: true
+      default: 'main'
 
 jobs:
   build:
