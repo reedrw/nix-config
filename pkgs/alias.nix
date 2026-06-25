@@ -45,6 +45,11 @@ in
     inherit (self) nix;
   };
 
+  pipewire = pkgs.pipewire.override {
+    rocSupport = false;
+    ffadoSupport = false;
+  };
+
   updog = pkgs.updog.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/updog/username.patch
