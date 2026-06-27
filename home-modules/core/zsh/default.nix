@@ -49,6 +49,8 @@ in
         set -as terminal-features 'xterm*:extkeys'
         set -as terminal-features '*:hyperlinks'
         set -g popup-border-lines none
+        bind-key -T copy-mode / command-prompt -T search -p "(search down)" { send-keys -X search-forward -- "%%" }
+        bind-key -T copy-mode ? command-prompt -T search -p "(search up)" { send-keys -X search-backward -- "%%" }
       '';
     };
 
