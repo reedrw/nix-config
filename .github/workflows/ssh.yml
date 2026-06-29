@@ -77,6 +77,19 @@ jobs:
         echo >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
+    - name: Set NIX_PATH
+      run: |
+        echo "NIX_PATH<<EOF" >> $GITHUB_ENV
+        nix eval --impure --raw --expr 'let
+          mapAttrsToList = f: attrs: builtins.attrValues (builtins.mapAttrs f attrs);
+          pipe = builtins.foldl'\'\ '(x: f: f x);
+        in pipe (import ./repo/compat.nix).inputs [
+          (lib.mapAttrsToList (n: v: "${n}=${v.outPath}"))
+          (builtins.concatStringsSep ":")
+        ]' >> $GITHUB_ENV
+        echo >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
     - name: Start SSH via tmate
       uses: P3TERX/ssh2actions@v1.0.0
       env:
@@ -144,6 +157,19 @@ jobs:
             }")
           )
           (builtins.concatStringsSep "\n")
+        ]' >> $GITHUB_ENV
+        echo >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Set NIX_PATH
+      run: |
+        echo "NIX_PATH<<EOF" >> $GITHUB_ENV
+        nix eval --impure --raw --expr 'let
+          mapAttrsToList = f: attrs: builtins.attrValues (builtins.mapAttrs f attrs);
+          pipe = builtins.foldl'\'\ '(x: f: f x);
+        in pipe (import ./repo/compat.nix).inputs [
+          (lib.mapAttrsToList (n: v: "${n}=${v.outPath}"))
+          (builtins.concatStringsSep ":")
         ]' >> $GITHUB_ENV
         echo >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
