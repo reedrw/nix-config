@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p sway jq libnotify
+#! nix-shell -i bash -p swayfx jq libnotify
 
 set -euo pipefail
 
