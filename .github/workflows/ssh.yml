@@ -84,7 +84,7 @@ jobs:
           mapAttrsToList = f: attrs: builtins.attrValues (builtins.mapAttrs f attrs);
           pipe = builtins.foldl'\'\ '(x: f: f x);
         in pipe (import ./repo/compat.nix).inputs [
-          (lib.mapAttrsToList (n: v: "${n}=${v.outPath}"))
+          (mapAttrsToList (n: v: "${n}=${v.outPath}"))
           (builtins.concatStringsSep ":")
         ]' >> $GITHUB_ENV
         echo >> $GITHUB_ENV
@@ -168,7 +168,7 @@ jobs:
           mapAttrsToList = f: attrs: builtins.attrValues (builtins.mapAttrs f attrs);
           pipe = builtins.foldl'\'\ '(x: f: f x);
         in pipe (import ./repo/compat.nix).inputs [
-          (lib.mapAttrsToList (n: v: "${n}=${v.outPath}"))
+          (mapAttrsToList (n: v: "${n}=${v.outPath}"))
           (builtins.concatStringsSep ":")
         ]' >> $GITHUB_ENV
         echo >> $GITHUB_ENV
