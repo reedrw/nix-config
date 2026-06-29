@@ -10,6 +10,7 @@ in
   programs.nixcord = {
     enable = true;
     discord = {
+      vencord.enable = true;
       commandLineArgs = [
         "--enable-blink-features=MiddleClickAutoscroll"
         "--enable-features=UseOzonePlatform,WaylandWindowDecorations"
