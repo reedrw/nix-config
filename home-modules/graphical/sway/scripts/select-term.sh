@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p slurp sway jq
+#! nix-shell -i bash -p slurp swayfx jq
 
 set -euo pipefail
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p sway kitty bluetuith
+#! nix-shell -i bash -p swayfx kitty bluetuith
 
 set -euo pipefail
 

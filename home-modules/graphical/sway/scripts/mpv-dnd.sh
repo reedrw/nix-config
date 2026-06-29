@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p sway jq procps
+#! nix-shell -i bash -p swayfx jq procps
 
 # Suspends chat-app processes while mpv/Zathura is focused.
 # Runs as a systemd user service; called with process names to manage.
