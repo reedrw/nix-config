@@ -27,8 +27,8 @@ index 632fc24..3e158b8 100644
 +## Conversion done with mk-ca-bundle.pl version 1.33.
 +## SHA256: 77130ef91213772844561fbd3aa31d413b25c2ac7f576fea3bc3bbff7ef93489
  ##
-
-
+ 
+ 
 -GlobalSign Root CA
 -==================
 ------BEGIN CERTIFICATE-----
@@ -101,7 +101,7 @@ index 632fc24..3e158b8 100644
 @@ -110,408 +46,6 @@ W3iDVuycNsMm4hH2Z0kdkquM++v/eu6FSqdQgPCnXEqULl8FmTxSQeDNtGPPAUO6nIPcj2A781q0
  tHuu2guQOHXvgR1m0vdXcDazv/wor3ElhVsT/h5/WrQ8
  -----END CERTIFICATE-----
-
+ 
 -Comodo AAA Services root
 -========================
 ------BEGIN CERTIFICATE-----
@@ -510,7 +510,7 @@ index 632fc24..3e158b8 100644
 @@ -529,28 +63,6 @@ FAkK+qDmfQjGGoe9GKhzvSbKYAydzpmfz1wPMOG+FDHqAjAU9JM8SaczepBGR7NjfRObTrdvGDeA
  U/7dIOA1mjbRxwG55tzd8/8dLDoWV9mSOdY=
  -----END CERTIFICATE-----
-
+ 
 -Certigna
 -========
 ------BEGIN CERTIFICATE-----
@@ -539,7 +539,7 @@ index 632fc24..3e158b8 100644
 @@ -582,26 +94,6 @@ sP6SHhYKGvzZ8/gntsm+HbRsZJB/9OTEW9c3rkIO3aQab3yIVMUWbuF6aC74Or8NpDyJO3inTmOD
  BCEIZ43ygknQW/2xzQ+DhNQ+IIX3Sj0rnP0qCglN6oH4EZw=
  -----END CERTIFICATE-----
-
+ 
 -certSIGN ROOT CA
 -================
 ------BEGIN CERTIFICATE-----
@@ -566,7 +566,7 @@ index 632fc24..3e158b8 100644
 @@ -626,47 +118,6 @@ NwUASZQDhETnv0Mxz3WLJdH0pmT1kvarBes96aULNmLazAZfNou2XjG4Kvte9nHfRCaexOYNkbQu
  dZWAUWpLMKawYqGT8ZvYzsRjdT9ZR7E=
  -----END CERTIFICATE-----
-
+ 
 -Hongkong Post Root CA 1
 -=======================
 ------BEGIN CERTIFICATE-----
@@ -614,7 +614,7 @@ index 632fc24..3e158b8 100644
 @@ -712,39 +163,6 @@ YIvDQVETI53O9zJrlAGomecsMx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7r
  kpeDMdmztcpHWD9f
  -----END CERTIFICATE-----
-
+ 
 -Autoridad de Certificacion Firmaprofesional CIF A62634068
 -=========================================================
 ------BEGIN CERTIFICATE-----
@@ -654,7 +654,7 @@ index 632fc24..3e158b8 100644
 @@ -845,90 +263,6 @@ iEDPfUYd/x7H4c7/I9vG+o1VTqkC50cRRj70/b17KSa7qWFiNyi2LSr2EIZkyXCn0q23KXB56jza
  YyWf/Wi3MOxw+3WKt21gZ7IeyLnp2KhvAotnDU0mV3HaIPzBSlCNsSi6
  -----END CERTIFICATE-----
-
+ 
 -AffirmTrust Commercial
 -======================
 ------BEGIN CERTIFICATE-----
@@ -745,7 +745,7 @@ index 632fc24..3e158b8 100644
 @@ -993,60 +327,6 @@ tnRGEmyR7jTV7JqR50S+kDFy1UkC9gLl9B/rfNmWVan/7Ir5mUf/NVoCqgTLiluHcSmRvaS0eg29
  mvVXIwAHIRc/SjnRBUkLp7Y3gaVdjKozXoEofKd9J+sAro03
  -----END CERTIFICATE-----
-
+ 
 -EC-ACC
 -======
 ------BEGIN CERTIFICATE-----
@@ -806,7 +806,7 @@ index 632fc24..3e158b8 100644
 @@ -1309,69 +589,6 @@ EHiGG3njxPPyBJUgriOCxLM6AGK/5jYk4Ve6xx6QddVfP5VhK8E7zeWzaGHQRiapIVJpLesux+t3
  zqY6tQMzT3bR51xUAV3LePTJDL/PEo4XLSNolOer/qmyKwbQBM0=
  -----END CERTIFICATE-----
-
+ 
 -TeliaSonera Root CA v1
 -======================
 ------BEGIN CERTIFICATE-----
@@ -876,7 +876,7 @@ index 632fc24..3e158b8 100644
 @@ -1708,36 +925,6 @@ uglB4Zf4+/2a4n0Sye18ZNPLBSWLVtmg515dTguDnFt2KaAJJiFqYgIwcdK1j1zqO+F4CYWodZI7
  yFz9SO8NdCKoCOJuxUnOxwy8p2Fp8fc74SrL+SvzZpA3
  -----END CERTIFICATE-----
-
+ 
 -Staat der Nederlanden EV Root CA
 -================================
 ------BEGIN CERTIFICATE-----
@@ -913,7 +913,7 @@ index 632fc24..3e158b8 100644
 @@ -1798,50 +985,6 @@ ZHTetBXZ9FRUGi8c15dxVJCO2SCdUyt/q4/i6jC8UDfv8Ue1fXwsBOxonbRJRBD0ckscZOf85muQ
  3Wl9af0AVqW3rLatt8o+Ae+c
  -----END CERTIFICATE-----
-
+ 
 -Entrust Root Certification Authority - G2
 -=========================================
 ------BEGIN CERTIFICATE-----
@@ -964,7 +964,7 @@ index 632fc24..3e158b8 100644
 @@ -2189,87 +1332,6 @@ F8Io2c9Si1vIY9RCPqAzekYu9wogRlR+ak8x8YF+QnQ4ZXMn7sZ8uI7XpTrXmKGcjBBV09tL7ECQ
  aaApJUqlyyvdimYHFngVV3Eb7PVHhPOeMTd61X8kreS8/f3MboPoDKi3QWwH3b08hpcv0g==
  -----END CERTIFICATE-----
-
+ 
 -TrustCor RootCert CA-1
 -======================
 ------BEGIN CERTIFICATE-----
@@ -1052,7 +1052,7 @@ index 632fc24..3e158b8 100644
 @@ -2613,40 +1675,6 @@ hcErulWuBurQB7Lcq9CClnXO0lD+mefPL5/ndtFhKvshuzHQqp9HpLIiyhY6UFfEW0NnxWViA0kB
  dBb9HxEGmpv0
  -----END CERTIFICATE-----
-
+ 
 -Entrust Root Certification Authority - G4
 -=========================================
 ------BEGIN CERTIFICATE-----
@@ -1093,7 +1093,7 @@ index 632fc24..3e158b8 100644
 @@ -2739,71 +1767,6 @@ NMn5X7azKFGnpyuqSfqNZSlO42sTp5SjLVFteAxEy9/eCG/Oo2Sr05WE1LlSVHJ7liXMvGnjSG4N
  0MedJ5qq+BOS3R7fY581qRY27Iy4g/Q9iY/NtBde17MXQRBdJ3NghVdJIgc=
  -----END CERTIFICATE-----
-
+ 
 -Trustwave Global Certification Authority
 -========================================
 ------BEGIN CERTIFICATE-----
@@ -1165,7 +1165,7 @@ index 632fc24..3e158b8 100644
 @@ -2896,36 +1859,6 @@ vLtoURMMA/cVi4RguYv/Uo7njLwcAjA8+RHUjE7AwWHCFUyqqx0LMV87HOIAl0Qx5v5zli/altP+
  CAezNIm8BZ/3Hobui3A=
  -----END CERTIFICATE-----
-
+ 
 -GLOBALTRUST 2020
 -================
 ------BEGIN CERTIFICATE-----
@@ -1202,7 +1202,7 @@ index 632fc24..3e158b8 100644
 @@ -3250,36 +2183,6 @@ FL//2wmUspO8IFgV6dtxQ/PeEMMA3KgqlbbC1j+Qa3bbbP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3
  gm3c
  -----END CERTIFICATE-----
-
+ 
 -GTS Root R2
 -===========
 ------BEGIN CERTIFICATE-----
