@@ -23,12 +23,12 @@
   xdg.portal = {
     extraPortals = with pkgs; [
       xdg-desktop-portal-wlr
-      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
       xdg-desktop-portal-gnome
     ];
     wlr.enable = true;
     config.sway = {
-      "org.freedesktop.impl.portal.GlobalShortcuts" = "hyprland";
+      "org.freedesktop.impl.portal.GlobalShortcuts" = "gtk";
       "org.freedesktop.impl.portal.Background"     = "gnome";
       "org.freedesktop.impl.portal.Clipboard"      = "gnome";
       "org.freedesktop.impl.portal.InputCapture"   = "gnome";
