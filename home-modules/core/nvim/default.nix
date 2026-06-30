@@ -90,9 +90,10 @@ in
       {
         plugin = indent-blankline-nvim;
         type = "lua";
-        config = ''
+        config = with config.lib.stylix.colors; ''
+          vim.api.nvim_set_hl(0, "IblIndent", { fg = "#${base03}", ctermfg = 8 })
           require "ibl".setup {
-            indent = { char = '┊' },
+            indent = { char = '┊', highlight = "IblIndent" },
           }
         '';
       }
