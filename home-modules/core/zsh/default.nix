@@ -8,7 +8,6 @@ in
     ./zoxide.nix
   ];
 
-  stylix.targets.fzf.enable = false;
   stylix.targets.bat.enable = true;
 
   # We set ZDOTDIR at system level, so we don't need
