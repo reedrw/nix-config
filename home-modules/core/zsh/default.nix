@@ -8,7 +8,7 @@ in
     ./zoxide.nix
   ];
 
-  stylix.targets.fzf.enable = true;
+  stylix.targets.fzf.enable = false;
   stylix.targets.bat.enable = true;
 
   # We set ZDOTDIR at system level, so we don't need
@@ -29,6 +29,7 @@ in
         "--layout=reverse"
         "--multi"
         "--tiebreak=begin"
+        "--color=bg:-1,bg+:19,fg:7,fg+:15,header:4,hl:4,hl+:4,info:3,marker:6,pointer:6,prompt:3,spinner:6"
       ];
     };
 
@@ -49,6 +50,7 @@ in
         set -as terminal-features 'xterm*:extkeys'
         set -as terminal-features '*:hyperlinks'
         set -g popup-border-lines none
+        set -g popup-style 'bg=default'
         bind-key -T copy-mode / command-prompt -T search -p "(search down)" { send-keys -X search-forward -- "%%" }
         bind-key -T copy-mode ? command-prompt -T search -p "(search up)" { send-keys -X search-backward -- "%%" }
       '';
@@ -101,7 +103,6 @@ in
       '';
       initContent =
       with pkgs;
-      with config.lib.stylix.colors;
       ''
         autoload -Uz add-zsh-hook
         autoload -Uz colors
@@ -125,7 +126,7 @@ in
 
         colors
         setopt promptsubst
-        PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(?..%{%K{#${base02}}%F{red}%}!%?%{$reset_color%} )%(!.#.$) '
+        PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(?..%{%K{19}%F{red}%}!%?%{$reset_color%} )%(!.#.$) '
 
         # show hostname if in ssh session
         if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$DISTROBOX_ENTER_PATH" ]; then
@@ -141,7 +142,7 @@ in
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#${base02}"
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"
         ZSH_AUTOSUGGEST_STRATEGY="completion"
         ZSH_AUTOSUGGEST_USE_ASYNC="yes"
 
@@ -180,7 +181,9 @@ in
         force_draw=0
         function draw-separator-line() {
           if [[ $first_command_sent -eq 1 || force_draw -eq 1 ]] && [[ $line_not_drawn -eq 1 ]]; then
-            PROMPT=$'%{%F{#${base02}}%}%{\e(0%}''${(r:$COLUMNS::q:)}%{\e(B%}'$PROMPT
+            if [[ "$TERM" != "linux" ]]; then
+              PROMPT=$'%{%F{8}%}%{\e(0%}''${(r:$COLUMNS::q:)}%{\e(B%}'$PROMPT
+            fi
             line_not_drawn=0
           fi
           first_command_sent=1
