@@ -38,13 +38,13 @@ let
   '');
 
   # Alpha suffix applied to focused/unfocused/urgent border colors below (RRGGBBAA)
-  borderAlpha = "0d";
+  borderAlpha = "15";
 
   mkBorderColors = borderBase: {
     background  = "#${config.lib.stylix.colors.base00}";
     border      = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
     childBorder = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
-    indicator   = "#${config.lib.stylix.colors.base0B}${borderAlpha}";
+    indicator   = "#${config.lib.stylix.colors.base04}${borderAlpha}";
     text        = "#${config.lib.stylix.colors.base05}";
   };
 
@@ -129,10 +129,10 @@ in
 
       colors = lib.mkForce {
         background      = "#${config.lib.stylix.colors.base00}";
-        focused         = mkBorderColors "base0D";
-        focusedInactive = mkBorderColors "base03";
-        placeholder     = mkBorderColors "base03";
-        unfocused       = mkBorderColors "base03";
+        focused         = mkBorderColors "base03";
+        focusedInactive = mkBorderColors "base02";
+        placeholder     = mkBorderColors "base02";
+        unfocused       = mkBorderColors "base02";
         urgent          = mkBorderColors "base08";
       };
 
@@ -157,14 +157,9 @@ in
             "signal"
             "bluetuith"
             "org.telegram.desktop"
-            "org.pwmt.zathura"
             "discord"
             "com.github.wwmm.easyeffects"
             "com.saivert.pwvucontrol"
-            "firefox"
-            "kitty"
-            "mpv"
-            { instance = "steamwebhelper"; }
           ]
           ++ commandForWindows { command = "fullscreen enable"; } [
             "mpv"
