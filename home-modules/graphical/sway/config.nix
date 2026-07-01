@@ -120,7 +120,9 @@ in
     });
     checkConfig = false;
 
-    config = {
+    config = let
+      windowBorder = dp 5;
+    in {
       modifier = "Mod1";
       terminal  = config.home.sessionVariables.TERMINAL;
       bars = [ ];
@@ -143,10 +145,22 @@ in
       };
 
       window = {
-        border   = dp 5;
+        border   = windowBorder;
         titlebar = false;
         commands =
-          commandForWindows { command = "floating enable"; } [
+          # Explicitly (re)assert the border on every window as it maps. Without
+          # this, windows that become floating via a `floating enable` for_window
+          # command (below) can get stuck with a CSD (borderless/shadowless)
+          # border instead of the configured pixel border - a long-standing sway
+          # bug (see swaywm/sway#5066) where the floating transition resets
+          # saved_border to csd. An explicit for_window border command survives
+          # the transition where the global default_border/default_floating_border
+          # directives don't.
+          commandForWindows { command = "border pixel ${toString windowBorder}"; } [
+            { app_id = ".*"; }
+            { class = ".*"; }
+          ]
+          ++ commandForWindows { command = "floating enable"; } [
             "An Anime Game Launcher"
             "The Honkers Railway Launcher"
             "Honkers Launcher"
