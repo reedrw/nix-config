@@ -37,6 +37,17 @@ let
       -o $out -- ${colorScheme}
   '');
 
+  # Alpha suffix applied to focused/unfocused/urgent border colors below (RRGGBBAA)
+  borderAlpha = "0d";
+
+  mkBorderColors = borderBase: {
+    background  = "#${config.lib.stylix.colors.base00}";
+    border      = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
+    childBorder = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
+    indicator   = "#${config.lib.stylix.colors.base0B}${borderAlpha}";
+    text        = "#${config.lib.stylix.colors.base05}";
+  };
+
   # Commands to run on every sway (re)start
   alwaysRun = [
     "systemctl --user restart autotiling"
@@ -115,6 +126,15 @@ in
       bars = [ ];
 
       gaps.inner = dp 7;
+
+      colors = lib.mkForce {
+        background      = "#${config.lib.stylix.colors.base00}";
+        focused         = mkBorderColors "base0D";
+        focusedInactive = mkBorderColors "base03";
+        placeholder     = mkBorderColors "base03";
+        unfocused       = mkBorderColors "base03";
+        urgent          = mkBorderColors "base08";
+      };
 
       fonts = lib.mkForce {
         names = [ "Fantasque Sans Mono" ];
