@@ -181,6 +181,9 @@ in
 
       " auto-update gitgutter
       set updatetime=300
+      " let define_highlights() actually update GitGutterAdd/Change/Delete's
+      " background instead of leaving it frozen at whatever it was on first load
+      let g:gitgutter_set_sign_backgrounds = 1
 
       " Yank to system clipboard
       if has('clipboard')
@@ -307,6 +310,14 @@ in
       nnoremap <Space> za
 
       luafile ${builtins.toFile "generatedConfig.lua" config.programs.neovim.generatedConfigs.lua}
+
+      " mini.base16 (stylix's colorscheme plugin) never fires the ColorScheme
+      " autocmd, so gitgutter's SignColumn-derived sign backgrounds go stale
+      " when this config is re-sourced after a light/dark specialization switch.
+      if exists('g:loaded_gitgutter')
+        call gitgutter#highlight#define_highlights()
+        call gitgutter#highlight#define_signs()
+      endif
     '';
   };
 }
