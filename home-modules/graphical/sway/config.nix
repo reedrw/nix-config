@@ -19,34 +19,22 @@ let
       |> builtins.attrValues
       |> builtins.concatStringsSep " "
     ;
-  in pkgs.runCommand filename { buildInputs = with pkgs; [ lutgen imagemagick ]; } <|
-  ((lib.optionalString (config.stylix.polarity == "light") ''
-    convert ${config.stylix.image} -channel RGB -negate out.${fileType}
-  '') + ''
-    if test -f "out.${fileType}"; then
-      image="out.${fileType}"
-    else
-      image="${config.stylix.image}"
-    fi
-
+    image =
+      if config.stylix.polarity == "light"
+      then (
+        pkgs.runCommand "image.${fileType}" { buildInputs = [ pkgs.imagemagick ]; } ''
+          convert ${config.stylix.image} -channel RGB -negate $out
+        ''
+      ).outPath
+      else config.stylix.image;
+  in pkgs.runCommand filename { buildInputs = [ pkgs.lutgen ]; } ''
     lutgen apply \
       -R \
       --preserve \
       -s 128 \
-      $image \
+      ${image} \
       -o $out -- ${colorScheme}
-  '');
-
-  # Alpha suffix applied to focused/unfocused/urgent border colors below (RRGGBBAA)
-  borderAlpha = "15";
-
-  mkBorderColors = borderBase: {
-    background  = "#${config.lib.stylix.colors.base00}";
-    border      = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
-    childBorder = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
-    indicator   = "#${config.lib.stylix.colors.base04}${borderAlpha}";
-    text        = "#${config.lib.stylix.colors.base05}";
-  };
+  '';
 
   # Commands to run on every sway (re)start
   alwaysRun = [
@@ -67,11 +55,6 @@ let
   run = [
     "swaymsg workspace 1"
   ];
-
-  commandForWindows = { command }: map (window: {
-    inherit command;
-    criteria = if builtins.isAttrs window then window else { app_id = window; };
-  });
 
 in
 {
@@ -121,6 +104,22 @@ in
     checkConfig = false;
 
     config = let
+      commandForWindows = { command }: map (window: {
+        inherit command;
+        criteria = if builtins.isAttrs window then window else { app_id = window; };
+      });
+
+      # Alpha suffix applied to focused/unfocused/urgent border colors below (RRGGBBAA)
+      borderAlpha = "15";
+
+      mkBorderColors = borderBase: {
+        background  = "#${config.lib.stylix.colors.base00}";
+        border      = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
+        childBorder = "#${config.lib.stylix.colors.${borderBase}}${borderAlpha}";
+        indicator   = "#${config.lib.stylix.colors.base04}${borderAlpha}";
+        text        = "#${config.lib.stylix.colors.base05}";
+      };
+
       windowBorder = dp 5;
     in {
       modifier = "Mod1";
@@ -148,17 +147,9 @@ in
         border   = windowBorder;
         titlebar = false;
         commands =
-          # Explicitly (re)assert the border on every window as it maps. Without
-          # this, windows that become floating via a `floating enable` for_window
-          # command (below) can get stuck with a CSD (borderless/shadowless)
-          # border instead of the configured pixel border - a long-standing sway
-          # bug (see swaywm/sway#5066) where the floating transition resets
-          # saved_border to csd. An explicit for_window border command survives
-          # the transition where the global default_border/default_floating_border
-          # directives don't.
           commandForWindows { command = "border pixel ${toString windowBorder}"; } [
             { app_id = ".*"; }
-            { class = ".*"; }
+            { class  = ".*"; }
           ]
           ++ commandForWindows { command = "floating enable"; } [
             "An Anime Game Launcher"
@@ -169,11 +160,8 @@ in
           ]
           ++ commandForWindows { command = "border pixel 0"; } [
             "signal"
-            "bluetuith"
             "org.telegram.desktop"
             "discord"
-            "com.github.wwmm.easyeffects"
-            "com.saivert.pwvucontrol"
           ]
           ++ commandForWindows { command = "fullscreen enable"; } [
             "mpv"
@@ -201,8 +189,8 @@ in
       };
 
       startup =
-        map (command: { inherit command; always = true; }) alwaysRun
-        ++ map (command: { inherit command; }) run;
+        map (command: { inherit command; always = true; }) alwaysRun ++
+        map (command: { inherit command; }) run;
     };
 
     # swayfx compositor effects (replaces picom)
