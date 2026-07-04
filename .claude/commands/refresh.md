@@ -35,8 +35,11 @@ Focus your reading on:
 
 A change is notable if a future reader of CLAUDE.md would benefit from knowing it exists. Rough tests:
 
-- **Add:** New module category or subdirectory, new pkgs helper, new custom package, new flake input that affects how modules are written, meaningful new option or convention, new `ldp` flag.
-- **Skip:** Routine config tweaks (enabling a service, changing a setting value), package version bumps, one-host-only quirks with no reuse implications, things already documented, cosmetic renames.
+- **Add:** New module category or subdirectory, new pkgs helper, new custom package, new flake input that affects how modules are written, meaningful new option or convention, new `ldp` flag, new pre-commit hook that constrains how code is written.
+- **Fix:** Anything CLAUDE.md already mentions by name that was since removed, renamed, or moved (a dropped package, a renamed module, a restructured `repo/` file). Stale facts are worse than missing ones — grep CLAUDE.md for names touched by the diff.
+- **Skip:** Routine config tweaks (enabling a service, changing a setting value), package version bumps, one-host-only quirks with no reuse implications, things already documented, renames of things CLAUDE.md doesn't mention.
+
+Also skim the other instruction files (`.claude/commands/*.md`, `.claude/skills/*/SKILL.md`) for facts invalidated by the same diff — e.g. host/target lists, commit scopes, referenced script paths.
 
 If there are no notable changes, stop here and tell the user "No notable changes since CLAUDE.md was last updated."
 

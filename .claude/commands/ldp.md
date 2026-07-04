@@ -1,8 +1,10 @@
 Run `ldp $ARGUMENTS`.
 
 **Targets:**
-- NixOS hosts: `nixos-desktop`, `nixos-t480`, `nixos-t400`, `nixos-vm`, `nixos-iso`
-- Home-manager: `reed@nixos-desktop`, `reed@nixos-t480`, `reed@nixos-t400`, `reed@nixos-vm`
+- NixOS hosts: `nixos-desktop`, `nixos-t480`, `nixos-t400`, `nixos-vm`, `nixos-iso`, plus `<host>-no-home-manager` variants of desktop/t480/t400
+- Home-manager: `reed`, `nixos`, `reed@nixos-desktop`, `reed@nixos-t480`, `reed@nixos-t400`, `reed@nixos-vm`
+
+(`ldp --list-outputs` prints the authoritative list.)
 
 **Common flags:**
 ```sh

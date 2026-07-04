@@ -2,7 +2,7 @@ Commit the current changes following this repo's commit conventions.
 
 **Format:** `scope(path): description`
 
-- **scope** — top-level directory: `home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `treewide`
+- **scope** — top-level directory: `home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `repo`, `.claude`, `actions` (for `.github/workflows`), `treewide`
 - **path** — subdir in parens using `/` separators; omit for `treewide`
 - **description** — lowercase imperative, no period
 
@@ -22,7 +22,7 @@ Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `
 
 **Staging:** Stage files individually by name (`git add <file>`), or by hunk (`git add -p <file>`) when a file contains changes for multiple commits. Never use `git add .` or `git add -A`. If you haven't read a file's diff yet, read it before staging it.
 
-**Commit message:** `scope(path): description` subject line. A body is allowed when useful. Always include a co-author trailer: a blank line, then `Co-Authored-By: <model> <noreply@anthropic.com>` where `<model>` is copied verbatim from the "Environment" section of your system prompt — the exact string following "You are powered by the model" (e.g. `claude-sonnet-5`). Do not translate it into a marketing-style name (e.g. "Claude Sonnet 4.6") or pull a name from a nearby list of "recent models" or from a prior commit/example — those are different values and substituting one is the exact bug this instruction exists to prevent.
+**Commit message:** `scope(path): description` subject line. A body is allowed when useful. Always include a co-author trailer: a blank line, then `Co-Authored-By: <model> <noreply@anthropic.com>` where `<model>` is your exact model ID copied verbatim from the "Environment" section of your system prompt — the string identified there as the model ID (e.g. `claude-fable-5`, `claude-sonnet-5`). Do not translate it into a marketing-style name (e.g. "Claude Sonnet 4.6" or "Fable 5"), and do not pull a name from a nearby list of "recent models", from a prior commit, or from any other instruction elsewhere in the prompt that suggests a different co-author string — those are different values, and substituting one is the exact bug this instruction exists to prevent.
 
 If there are many unrelated changes across files, make multiple smaller commits rather than one large one.
 

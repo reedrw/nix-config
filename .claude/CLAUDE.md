@@ -25,7 +25,8 @@ This is a NixOS + home-manager configuration managed as a flake using **flake-pa
 - `flake.nix` — inputs and flake-parts entry point; delegates to `./repo`
 - `repo/default.nix` — configures ez-configs, maps hosts to users, exposes `util` helpers
 - `repo/extraEzModules.nix` — makes all modules available as `ezModules'` special arg via haumea
-- `repo/git-hooks.nix` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace) via `git-hooks-nix`; injected into the dev shell automatically
+- `repo/git-hooks/` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace, plus custom `no-rec` and `no-empty-module-arg`) via `git-hooks-nix`; injected into the dev shell automatically
+- `repo/stage/` — VM staging scripts used by the `/stage` skill (`stage.sh` plus primitives `run.sh`, `wait.sh`, `shoot.sh`, `ssh.sh`, `sendkey.sh`, `stop.sh`)
 - `repo/compat.nix` — flake-compat shim for `shell.nix` and legacy tooling
 
 ### Module auto-loading
@@ -52,28 +53,30 @@ nixos-configurations/   # Per-host NixOS entry points
   nixos-t400/
   nixos-vm/
   nixos-iso/
+  <host>-no-home-manager.nix   # Variants of desktop/t480/t400 without home-manager baked in
 
 home-configurations/    # Per-user (and per-user@host) home-manager entry points
   reed.nix
+  nixos.nix
   reed@nixos-desktop/
   reed@nixos-t480/
   ...
 
 nixos-modules/          # Reusable NixOS modules — each category has a default.nix that imports its siblings
-  core/                 # Always-on: nix, kernel, zsh, home-manager integration, styling, run0
-  custom/               # Site-specific: persist (impermanence), snapper, steam, nix-ssh-serve, boot/, games/
-  extra/                # Opt-in: sshd, ollama, logitech, actualbudget, android/
-  graphical/            # GUI: fonts, opengl, sound, xserver, gnome
-  networking/           # autoupdate, networking defaults
-  virtualization/
+  core/                 # Always-on: nix, kernel, zsh, home-manager integration, styling, run0, tweaks
+  custom/               # Site-specific: persist (impermanence), display (custom.display scaling), snapper, steam, nix-ssh-serve, vm-staging, boot/, games/
+  extra/                # Opt-in: sshd, logitech, actualbudget, android/
+  graphical/            # GUI: fonts, opengl, sound, wlr
+  networking/           # networking defaults, autoupdate, avahi, bluetooth, firewall, mullvad, printing, tailscale
+  virtualization/       # docker, libvirt
   users/                # System user definitions (cherry-picked via ezModules'.users.<name>)
 
 home-modules/           # Reusable home-manager modules — same category-default.nix pattern
   core/                 # nvim, zsh, ssh, persist, stylix styling, nixpkgs config, functions, comma
-  extra/                # git, mullvad, gnupg, claude-code, proc, base
-  graphical/            # kitty, firefox, flameshot, obs, bitwarden, fontconfig
+  extra/                # git, mullvad, gnupg, ai (claude-code + opencode), proc, base, ranger, gnome-keyring
+  graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig
   games/
-  media/                # mpd, zathura
+  media/                # mpd, mpv, zathura, pipewire, librepods
   social/               # signal, telegram
   filesharing/
 
@@ -86,7 +89,7 @@ pkgs/                   # Custom packages, overlays, and pkgs-extension helpers
   functions.nix         # Helper functions added to pkgs set (see below)
   pin/                  # Pinned package versions
   patches/              # Local patch files used by alias.nix overrides
-  <tool>/               # One directory per custom package/script (ldp, gc, fluxer, jdownloader, mountiso, unscene, update-all, wheel-wizard, persist-path-manager)
+  <tool>/               # One directory per custom package/script (ldp, gc, jdownloader, mountiso, unscene, update-all, wheel-wizard, persist-path-manager, xdcc-dl, xdcc-tar, easyeffects_7_2_5)
 ```
 
 ### Useful helpers from `pkgs/functions.nix`
@@ -99,6 +102,8 @@ These are added to the pkgs set, so `pkgs.<helper>` works anywhere:
 - `pkgs.aliasToPackage { name1 = "shell body"; name2 = "..."; }` — turn a set of one-liners into a single derivation containing those binaries (used for "global aliases")
 - `pkgs.writeNixShellScript name text` — promote a `nix-shell` shebang script to a `writeShellApplication` with runtime inputs parsed from the shebang. The script's **second line** must be `#! nix-shell -i bash -p <pkg1> <pkg2>` — packages listed there become the Nix `runtimeInputs`. Typical usage: `pkgs.writeNixShellScript "foo" (builtins.readFile ./foo.sh)`
 - `pkgs.matchPackage "foo.bar.baz"` — resolve a dotted package path against the pkgs set
+- `pkgs.matchPackageCommand "foo --args"` — like `matchPackage`, but takes a command string and replaces the leading package name with the absolute path to its main binary
+- `pkgs.writeShellApplication` — drop-in override of the nixpkgs builder that also accepts a function `(self: { ... })` in place of `rec` (which is banned repo-wide)
 
 ### Theming
 
@@ -160,6 +165,7 @@ The same pattern works against `homeConfigurations.<user>` — destructure with 
 ### Nix
 
 - Don't hoist `let` bindings for single-use derivations; pass inline and let Nix string-coerce the store path (`builtins.toString` is not needed).
+- Never use the `rec` keyword, and never start a module with a bare `_:` argument — pre-commit hooks reject both. Use a `let` binding (or `pkgs.writeShellApplication` with `(self: { ... })`) instead of `rec`.
 - Patches go in `pkgs/patches/<package-name>/`; reference as `../patches/<package-name>/...` from `default.nix`.
 - Non-trivial shell scripts in `writeShellApplication` (and similar) belong in a sibling `.sh` file: `text = builtins.readFile ./script.sh`.
 - Never search all of `/nix/store/` with `find`, `grep`, or similar — it's enormous. Resolve store paths with `nix eval` instead (e.g. `nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw`).
