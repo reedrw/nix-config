@@ -168,14 +168,20 @@ in
           in pkgs.writeShellScript "copyPath" ''
             path="$1"
 
-            if ! mountpoint -q "$path"; then
-              if ${useSnapper}; then
-                snapper -c persist create --command "
-                  ${copyIfNotEmpty} '$path'
-                " -d "persist $path"
-              else
-                ${copyIfNotEmpty} "$path"
-              fi
+            # Skip if impermanence already owns this path (bind mount, or a
+            # symlink it created for a not-yet-existing persist target), or if
+            # there is simply nothing to copy. Otherwise snapper create --command
+            # would take a useless pre/post snapshot pair on every activation.
+            if mountpoint -q "$path" || [ -L "$path" ] || [ -z "$(ls -A "$path" 2> /dev/null)" ]; then
+              exit 0
+            fi
+
+            if ${useSnapper}; then
+              snapper -c persist create --command "
+                ${copyIfNotEmpty} '$path'
+              " -d "persist $path"
+            else
+              ${copyIfNotEmpty} "$path"
             fi
           '';
         in (pkgs.writeShellScript "copy-existing-persist-paths.sh" (
