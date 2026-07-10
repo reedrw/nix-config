@@ -27,7 +27,7 @@ with pkgs;
     "${mod}+Shift+semicolon"   = "exec ${getExe pkgs.wofi-emoji}";
     "${mod}+Shift+s"           = "sticky toggle";
     "${mod}+Shift+r"           = "reload";
-    "${mod}+Shift+q"           = "kill";
+    "${mod}+Shift+q"           = "exec ${getExe scripts.killwrapper}";
     "${mod}+2"                 = "exec ${writeShellScript "workspace2" ''
       swaymsg workspace 2
       ${getExe scripts.mpv-dnd} --resume

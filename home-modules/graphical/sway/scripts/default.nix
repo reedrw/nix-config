@@ -4,6 +4,7 @@
   lib.scripts = lib.genAttrs [
     "brightness"
     "dwebp-serv"
+    "killwrapper"
     "load-layouts"
     "record"
     "select-term"
