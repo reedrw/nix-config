@@ -19,6 +19,10 @@
     lib.nameValuePair "nix/inputs/${n}" <| { source = v.outPath; }
   ) inputs;
 
+  environment.systemPackages = [
+    pkgs.nix-tree
+  ];
+
   nix = {
     settings = {
       auto-optimise-store = true;
