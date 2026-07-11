@@ -46,17 +46,19 @@ in
     }
   ];
 
-  xdg = {
+  xdg = let
+    HOME = config.home.homeDirectory;
+  in {
     mimeApps.enable = true;
     userDirs = {
       enable = true;
       setSessionVariables = true;
-      desktop = "\$HOME";
-      documents = "\$HOME/files";
-      download = "\$HOME/downloads";
-      music = "\$HOME/music";
-      pictures = "\$HOME/images";
-      videos = "\$HOME/videos";
+      desktop = "${HOME}";
+      documents = "${HOME}/files";
+      download = "${HOME}/downloads";
+      music = "${HOME}/music";
+      pictures = "${HOME}/images";
+      videos = "${HOME}/videos";
     };
   };
 
