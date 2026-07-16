@@ -60,7 +60,6 @@ in
       "reed@nixos-t400"
       "reed@nixos-t480"
       "reed@nixos-vm"
-      "reed@nixos-vm-sway"
     ] (n: { nameFunction = _: n; });
 
     nixos.hosts = lib.mergeAttrsList [
@@ -68,7 +67,6 @@ in
       (mkUserHomeModules "nixos-t480"     [ "reed" ])
       (mkUserHomeModules "nixos-t400"     [ "reed" ])
       (mkUserHomeModules "nixos-vm"       [ "reed" ])
-      (mkUserHomeModules "nixos-vm-sway"  [ "reed" ])
       { nixos-iso.userHomeModules = [ "nixos" ]; }
     ];
   };
