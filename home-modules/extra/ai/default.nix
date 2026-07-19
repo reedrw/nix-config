@@ -32,6 +32,7 @@ in
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       skipAutoPermissionPrompt = true;
       showThinkingSummaries = true;
+      respondToBashCommands = false;
       hooks = {
         PreToolUse = [
           {
