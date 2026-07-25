@@ -100,6 +100,7 @@ in
 
   programs.opencode = {
     enable = true;
+    package = pkgs.pkgs-unstable.opencode;
     tui.theme = lib.mkForce (
       if config.stylix.polarity == "dark"
       then "stylix"
