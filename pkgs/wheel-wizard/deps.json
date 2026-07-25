@@ -351,8 +351,8 @@
   },
   {
     "pname": "Microsoft.NETCore.App.Host.win-x64",
-    "version": "8.0.27",
-    "hash": "sha256-LhtdVHKdAZu9jAtMkJ/rPJ6v+lhtdQkCWCUIvXvWyoM="
+    "version": "8.0.29",
+    "hash": "sha256-nV5CSuzE/el7yQOstA29wWV6FOL/tb36sEDNTpZ6LqU="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
