@@ -98,7 +98,15 @@ in
 
   wayland.windowManager.sway = {
     enable = true;
-    package = pkgs.swayfx.overrideAttrs (old: {
+    package = let
+      wrapSway = lib.flip pkgs.wrapPackage (sway: ''
+        #!${pkgs.runtimeShell}
+        if [ -f "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh" ]; then
+          . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
+        fi
+        exec ${sway} "$@"
+      '');
+    in wrapSway <| pkgs.swayfx.overrideAttrs (old: {
       passthru = (old.passthru or {}) // { providedSessions = [ "sway" ]; };
     });
     checkConfig = false;

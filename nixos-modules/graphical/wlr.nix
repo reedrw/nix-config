@@ -10,16 +10,6 @@
         providedSessions = [ "sway" ];
       };
     });
-
-    # Sway is launched directly by the display manager, not from a login
-    # shell, so it (and everything it execs, e.g. wofi) never sources
-    # home-manager's session-vars script and misses vars like
-    # XDG_DATA_HOME. Import them here, before sway starts.
-    extraSessionCommands = ''
-      if [ -f "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
-        . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
-      fi
-    '';
   };
 
   # Portal backends under sway:
