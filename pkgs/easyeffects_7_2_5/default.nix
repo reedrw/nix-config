@@ -46,14 +46,14 @@ let
   speexdsp' = speexdsp.override { withFftw3 = false; };
 in
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (self: {
   pname = "easyeffects";
   version = "7.2.5";
 
   src = fetchFromGitHub {
     owner = "wwmm";
     repo = "easyeffects";
-    tag = "v${version}";
+    tag = "v${self.version}";
     hash = "sha256-w3Mb13LOSF8vgcdJrqbesLqyyilI5AoA19jFquE5lEw=";
   };
 
@@ -123,10 +123,10 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Audio effects for PipeWire applications";
     homepage = "https://github.com/wwmm/easyeffects";
-    changelog = "https://github.com/wwmm/easyeffects/blob/v${version}/CHANGELOG.md";
+    changelog = "https://github.com/wwmm/easyeffects/blob/v${self.version}/CHANGELOG.md";
     license = lib.licenses.gpl3Plus;
     maintainers = with lib.maintainers; [ getchoo aleksana ];
     mainProgram = "easyeffects";
     platforms = lib.platforms.linux;
   };
-}
+})
