@@ -27,6 +27,16 @@
         files = "\\.nix$";
         language = "system";
       };
+      check-coauthor = {
+        enable = true;
+        name = "check-coauthor";
+        description = "require a Co-Authored-By trailer on AI-agent commits";
+        entry = lib.getExe <| pkgs.writeNixShellScript "check-coauthor" (
+          builtins.readFile ./check-coauthor.sh
+        );
+        stages = [ "commit-msg" ];
+        language = "system";
+      };
     };
   };
 }
