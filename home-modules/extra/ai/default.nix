@@ -100,7 +100,7 @@ in
 
   programs.opencode = {
     enable = true;
-    package = pkgs.wrapEnv pkgs.opencode { COAUTHOR_REQUIRED = "1"; };
+    package = pkgs.wrapEnv pkgs.pkgs-unstable.opencode { COAUTHOR_REQUIRED = "1"; };
     tui.theme = lib.mkForce (
       if config.stylix.polarity == "dark"
       then "stylix"
