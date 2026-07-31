@@ -35,6 +35,9 @@
       "Bash(tree:*)",
       "Bash(shellcheck:*)",
       "Bash(pre-commit run:*)"
+    ],
+    "deny": [
+      "Bash(home-manager switch:*)"
     ]
   },
   "hooks": {
@@ -49,6 +52,10 @@
           {
             "type": "command",
             "command": "cmd=$(jq -r '.tool_input.command // empty'); if echo \"$cmd\" | grep -qE '^\\s*nix-build\\b' && echo \"$cmd\" | grep -q 'compat\\.nix'; then jq -n '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"nix-build repo/compat.nix is for legacy tooling only — use nix build .#<attr> instead.\"}}'; fi"
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-switch.sh"
           },
           {
             "type": "command",
