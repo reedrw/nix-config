@@ -29,7 +29,6 @@ in
     withPython3 = true;
     withRuby = false;
     extraPackages = with pkgs; [
-      beancount-language-server
       nil
     ];
     extraPython3Packages = ps: with ps; [
@@ -49,11 +48,6 @@ in
         };
         "pyright" = {
           "inlayHints"."enable" = false;
-        };
-        beancount = {
-          command = "rledger-lsp";
-          filetypes = [ "beancount" ];
-          rootPatterns = [ ".git" "*.beancount" ];
         };
         # "tsserver" = {
         #   "log" = "verbose";
