@@ -5,23 +5,29 @@ let
   statuslineScript = pkgs.writeNixShellScript "claude-statusline"
     (builtins.readFile ./claude-statusline.sh);
 
-    writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
-      PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
-      settings="${cfg.configDir}/settings.json"
-      mkdir -p "${cfg.configDir}"
-      if [ -f "$settings" ]; then
-        tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1:
-          ".${n1}=${builtins.toJSON v1}"
-        ) cfg.settings)}' \
-          "$settings"
-        )" && cat <<< "$tmp" > "$settings"
-      else
-        [ -L "$settings" ] \
-          && rm "$settings"
-        echo '${builtins.toJSON cfg.settings}' > "$settings"
-      fi
-      chmod 644 "$settings"
-    '';
+  githubMcpWrapper = pkgs.writeShellScript "github-mcp-wrapper" ''
+    PATH=${lib.makeBinPath [ pkgs.gh pkgs.github-mcp-server ]}
+    export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
+    exec github-mcp-server stdio "$@"
+  '';
+
+  writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
+    settings="${cfg.configDir}/settings.json"
+    mkdir -p "${cfg.configDir}"
+    if [ -f "$settings" ]; then
+      tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1:
+        ".${n1}=${builtins.toJSON v1}"
+      ) cfg.settings)}' \
+        "$settings"
+      )" && cat <<< "$tmp" > "$settings"
+    else
+      [ -L "$settings" ] \
+        && rm "$settings"
+      echo '${builtins.toJSON cfg.settings}' > "$settings"
+    fi
+    chmod 644 "$settings"
+  '';
 in
 {
   programs.claude-code = {
@@ -83,11 +89,7 @@ in
       };
       github = {
         type = "stdio";
-        command = pkgs.writeShellScript "github-mcp-wrapper" ''
-          PATH=${lib.makeBinPath [ pkgs.gh pkgs.github-mcp-server ]}
-          export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
-          exec github-mcp-server stdio "$@"
-        '';
+        command = "${githubMcpWrapper}";
       };
       context7 = {
         type = "stdio";
@@ -106,7 +108,46 @@ in
       then "stylix"
       else "system"
     );
-    settings.autoupdate = false;
+    settings = {
+      autoupdate = false;
+      instructions = [
+        (pkgs.writeText "informational.md" ''
+          # Informational and historical questions
+
+          For informational, educational, conceptual, or historical questions — anything asking how something developed, what something is, or how something works — answer thoroughly instead of tersely.
+
+          Give a complete answer:
+
+          - Open with one or two sentences that directly state the core answer.
+          - Cover the full arc: the major phases or milestones in chronological order, with dates, key actors, causes, and consequences where relevant.
+          - Structure multi-phase answers with markdown headings or bolded lead-ins, and use bullets for parallel points.
+          - Close with a one- or two-sentence synthesis drawing the through-line of the story.
+
+          This verbose style applies only to informational content. Software-engineering tasks, code questions, and repo work stay terse and to the point.
+        '')
+        ./opencode-behavior.md
+      ];
+      lsp = {
+        nix = {
+          command = [ "${pkgs.nil}/bin/nil" ];
+          extensions = [ ".nix" ];
+        };
+      };
+      mcp = {
+        nixos = {
+          type = "local";
+          command = [ "${pkgs.mcp-nixos}/bin/mcp-nixos" ];
+        };
+        github = {
+          type = "local";
+          command = [ "${githubMcpWrapper}" ];
+        };
+        context7 = {
+          type = "local";
+          command = [ "${pkgs.context7-mcp}/bin/context7-mcp" ];
+        };
+      };
+    };
   };
 
   home = {
