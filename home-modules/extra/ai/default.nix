@@ -103,11 +103,18 @@ in
   programs.opencode = {
     enable = true;
     package = pkgs.wrapEnv pkgs.pkgs-unstable.opencode { COAUTHOR_REQUIRED = "1"; };
-    tui.theme = lib.mkForce (
-      if config.stylix.polarity == "dark"
-      then "stylix"
-      else "system"
-    );
+    tui = {
+      theme = lib.mkForce (
+        if config.stylix.polarity == "dark"
+        then "stylix"
+        else "system"
+      );
+      keybinds = {
+        agent_cycle = "none";
+        agent_cycle_reverse = "none";
+      };
+      plugin = [ ./opencode-mode-cycle.ts ];
+    };
     settings = {
       autoupdate = false;
       instructions = [
