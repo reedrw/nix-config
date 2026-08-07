@@ -154,6 +154,10 @@ in
           type = "local";
           command = [ "${pkgs.context7-mcp}/bin/context7-mcp" ];
         };
+        exa = {
+          type = "remote";
+          url = "https://mcp.exa.ai/mcp";
+        };
       };
     };
   };
