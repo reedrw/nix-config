@@ -54,5 +54,6 @@
     };
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") inputs;
     registry = lib.mapAttrs (_: v: { flake = v; }) inputs;
+    channel.enable = false;
   };
 }
