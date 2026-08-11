@@ -3,9 +3,8 @@ let self = {
 
   # {{{ Inputs
   inputs = {
-    # uncomment once 26.05 released
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
-    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    multiverse.url = "github:fzakaria/nixpkgs-multiverse";
     # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";

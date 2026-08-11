@@ -3,7 +3,8 @@ let
   inherit (pkgs) lib;
 in
 {
-  easyeffects = pkgs.callPackage ./easyeffects_7_2_5 { };
+  # last gtk easyeffects version
+  easyeffects = pkgs.mv.version "easyeffects" "7.2.5";
 
   adwsteamgtk = pkgs.adwsteamgtk.overrideAttrs (old: {
     patches = (old.patches or []) ++ [

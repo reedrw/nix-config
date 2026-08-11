@@ -6,8 +6,8 @@ _: pkgs:
     nurpkgs = pkgs;
   };
 
-  pkgs-unstable = import inputs.unstable {
-    inherit (pkgs) config;
+  mv = inputs.multiverse.lib.mkMultiverse {
+    config = import ./config.nix;
     inherit (pkgs.stdenv.hostPlatform) system;
   };
 }

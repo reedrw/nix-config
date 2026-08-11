@@ -17,7 +17,7 @@
 
   xdg.configFile = {
     "nixpkgs/config.nix".text = ''
-      import ${rootAbsolute}/pkgs/config.nix {}
+      import ${rootAbsolute}/pkgs/config.nix
     '';
     # "nixpkgs/overlays.nix".text = ''
     #   import ${pkgs.flakePath}/pkgs/overlays.nix {}

@@ -8,9 +8,7 @@ let
     overlays = import ../pkgs/overlays.nix {
       flake = inputs.self;
     };
-    config = import ../pkgs/config.nix {
-      flake = inputs.self;
-    };
+    config = import ../pkgs/config.nix;
   };
 
   root = ../.;

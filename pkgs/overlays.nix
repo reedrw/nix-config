@@ -3,7 +3,6 @@
 [
   (import ./branches.nix inputs)
   (import ./.)
-  (import ./pin/overlay.nix)
   (import ./alias.nix)
   (import ./functions.nix inputs)
 ]
