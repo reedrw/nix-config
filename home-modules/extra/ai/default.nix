@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   cfg = config.programs.claude-code;
+  claudeThemeSlug = "dark-ansi-fixed";
 
   statuslineScript = pkgs.writeNixShellScript "claude-statusline"
     (builtins.readFile ./claude-statusline.sh);
@@ -33,7 +34,7 @@ in
   programs.claude-code = {
     enable = true;
     settings = {
-      theme = "dark-ansi";
+      theme = "custom:${claudeThemeSlug}";
       autoMemoryEnabled = false;
       permissions = { allow = [ "Read(/nix/store/**)" ]; };
       skipAutoPermissionPrompt = true;
@@ -169,6 +170,19 @@ in
 
     file = {
       "${cfg.configDir}/settings.json".enable = false;
+      "${cfg.configDir}/themes/${claudeThemeSlug}.json" = {
+        force = true;
+        text = builtins.toJSON {
+          name = "Dark ANSI (Fixed)";
+          base = "dark-ansi";
+          overrides = {
+            userMessageBackground = "ansi:blackBright";
+            userMessageBackgroundHover = "ansi:blackBright";
+            bashMessageBackgroundColor = "ansi:black";
+            memoryBackgroundColor = "ansi:black";
+          };
+        };
+      };
       ".config/opencode/plugins/opencode-intent.ts" = {
         source = ./opencode-intent.ts;
       };
