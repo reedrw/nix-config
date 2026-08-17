@@ -42,6 +42,7 @@ in
         "font.size.variable.x-western" = lib.mkForce (dp 16);
         "browser.contentblocking.report.lockwise.enabled" = false;
         "browser.contentblocking.report.monitor.enabled" = false;
+        "browser.tabs.groups.enabled" = false;
         "browser.display.use_system_colors" = false;
         "browser.download.useDownloadDir" = false;
         "devtools.theme" = "auto";
