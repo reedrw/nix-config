@@ -3,7 +3,7 @@ let self = {
 
   # {{{ Inputs
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
     multiverse.url = "github:fzakaria/nixpkgs-multiverse";
     # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
