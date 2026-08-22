@@ -25,7 +25,7 @@ This is a NixOS + home-manager configuration managed as a flake using **flake-pa
 - `flake.nix` — inputs and flake-parts entry point; delegates to `./repo`
 - `repo/default.nix` — configures ez-configs, maps hosts to users, exposes `util` helpers
 - `repo/extraEzModules.nix` — makes all modules available as `ezModules'` special arg via haumea
-- `repo/git-hooks/` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace, plus custom `no-rec` and `no-empty-module-arg`) via `git-hooks-nix`; injected into the dev shell automatically
+- `repo/git-hooks/` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace, plus custom `no-rec` and `no-empty-module-arg`) via `git-hooks-nix`; injected into the dev shell automatically. `check-coauthor` runs at the `commit-msg` stage and requires a `Co-Authored-By` trailer whenever `COAUTHOR_REQUIRED` is set in the environment (the wrapped `opencode` binary exports it, so only agent commits are enforced)
 - `repo/stage/` — VM staging scripts used by the `/stage` skill (`stage.sh` plus primitives `run.sh`, `wait.sh`, `shoot.sh`, `ssh.sh`, `sendkey.sh`, `stop.sh`)
 - `repo/compat.nix` — flake-compat shim for `shell.nix` and legacy tooling
 
@@ -81,15 +81,14 @@ home-modules/           # Reusable home-manager modules — same category-defaul
   filesharing/
 
 pkgs/                   # Custom packages, overlays, and pkgs-extension helpers
-  overlays.nix          # Lists the overlays composed in order: branches, default, pin, alias, functions
+  overlays.nix          # Lists the overlays composed in order: branches, default, alias, functions
   default.nix           # myPkgs attrset → inherited and spread via `// myPkgs` so packages are accessible as `pkgs.<name>`
-  config.nix            # nixpkgs config (allowUnfree, packageOverrides exposing `flake` legacy access)
-  branches.nix          # Adds `nur` and `pkgs-unstable` to the pkgs set
+  config.nix            # nixpkgs config (allowUnfree, permittedInsecurePackages)
+  branches.nix          # Adds `nur` and `mv` (nixpkgs-multiverse) to the pkgs set
   alias.nix             # Overrides specific upstream packages (patches for adwsteamgtk, jellyfin-mpv-shim, lix, updog, etc.)
   functions.nix         # Helper functions added to pkgs set (see below)
-  pin/                  # Pinned package versions
   patches/              # Local patch files used by alias.nix overrides
-  <tool>/               # One directory per custom package/script (ldp, gc, jdownloader, mountiso, unscene, update-all, wheel-wizard, persist-path-manager, xdcc-dl, xdcc-tar, easyeffects_7_2_5)
+  <tool>/               # One directory per custom package/script (ldp, gc, jdownloader, mountiso, unscene, update-all, wheel-wizard, persist-path-manager, xdcc-dl, xdcc-tar)
 ```
 
 ### Useful helpers from `pkgs/functions.nix`
@@ -127,11 +126,27 @@ Use `force = true` on `home.file` entries for declaratively-managed config files
 
 Only add a package to `pkgs/` when it needs **global scope** — i.e. it must be reachable as `pkgs.<name>` across the whole repo.
 
+### Package versions
+
+There is no `unstable` input and no `pkgs/pin` tree — both were replaced by **nixpkgs-multiverse** (`multiverse` flake input), exposed on the pkgs set as `pkgs.mv` by `pkgs/branches.nix`. The base `nixpkgs` input is the `nixos-26.05` channel tarball.
+
+- `pkgs.mv.version "<attr>" "<version>"` — a specific historical version (e.g. `pkgs.mv.version "easyeffects" "7.2.5"`)
+- `pkgs.mv.tip.<attr>` — the attr as of the newest indexed nixpkgs revision (what `pkgs-unstable` used to provide)
+- `pkgs.mv.latest.<attr>` — the newest version of that attr, whichever revision shipped it
+
+Every indexed attribute/version pair is browsable at <https://nixmultiverse.com/>.
+
 ## Working Conventions
 
 ### Commits
 
 Always use the `/commit` skill when committing in this repo.
+
+### Agent instruction files
+
+`.claude/` and `.opencode/` are parallel trees (`commands/`, `skills/`). The `.opencode/` files are ports of the `.claude/` originals with agent-specific frontmatter and wording — when you change one, mirror the change into the other.
+
+Some commands are blocked by policy, not preference: `home-manager switch` is denied outright, and `ldp --switch <target>` is denied unless `<target>` is the current hostname (bare `ldp --switch` is fine; use `ldp --build <target>` for other hosts). Enforced by `.claude/settings.json` + `.claude/hooks/check-switch.sh` for Claude Code and by `.opencode/opencode.json` for opencode. `.claude/hooks/check-coauthor.sh` additionally validates the `Co-Authored-By` trailer on `git commit -m` against the model ID recorded in the session transcript.
 
 ### Querying machine config
 
