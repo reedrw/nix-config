@@ -213,6 +213,10 @@ in
           - **Inline derivations:** Don't hoist `let` bindings for single-use derivations. Pass inline and let Nix string-coerce the store path — `builtins.toString` is not needed.
           - **New nix packages:** Default to a fresh project-local `flake.nix` from the flake-parts template. Only add to nix-config when you're already working inside it or the package is genuinely system-wide.
 
+          ## Code comments
+
+          Keep comments to one short line, only when the why is genuinely non-obvious. Don't write multi-line comment blocks, don't quote changelogs or upstream release notes, don't restate what the code already says. A one-line config toggle gets a one-line reason, not a paragraph.
+
           ## Troubleshooting
 
           - When troubleshooting, don't make a commit until the fix has been validated by the user.
