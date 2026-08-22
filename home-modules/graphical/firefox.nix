@@ -117,6 +117,8 @@ in
         "gfx.webrender.all" = true;
         "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
         "media.cubeb_latency_playback_ms" = 10;
+        # Mesa AV1 VAAPI decode corrupts frames on navi21 below 26.1.8
+        "media.av1.enabled" = lib.versionAtLeast osConfig.hardware.graphics.package.version "26.1.8";
         "widget.content.allow-gtk-dark-theme" = false;
         "browser.proton.contextmenus.enabled" = false;
         "browser.proton.doorhangers.enabled" = false;
