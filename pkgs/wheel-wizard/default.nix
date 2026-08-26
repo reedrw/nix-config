@@ -11,20 +11,20 @@
 
 buildDotnetModule (self: {
   pname = "wheel-wizard";
-  version = "2.4.11";
+  version = "2.5.1";
 
   src = fetchFromGitHub {
     owner = "TeamWheelWizard";
     repo = "WheelWizard";
     rev = "v${self.version}";
-    sha256 = "sha256-8Dex2PDgwnxKguf0jtC1T0+jm7bA7jDfvspwkiqJgUg=";
+    sha256 = "sha256-lLGtzdE5MFfwwlGm5eA+MKYiY9oQhohtiVTqtmglols=";
   };
 
   projectFile = "WheelWizard.sln";
   nugetDeps = ./deps.json;
 
-  dotnet-sdk = dotnetCorePackages.sdk_8_0;
-  dotnet-runtime = dotnetCorePackages.runtime_8_0;
+  dotnet-sdk = dotnetCorePackages.sdk_10_0;
+  dotnet-runtime = dotnetCorePackages.runtime_10_0;
 
   preConfigure = ''
    dotnet tool uninstall csharpier
@@ -40,7 +40,7 @@ buildDotnetModule (self: {
 
   passthru.updateScript = writeShellScript "update.sh" ''
     PATH="${lib.makeBinPath [
-      dotnetCorePackages.sdk_8_0
+      dotnetCorePackages.sdk_10_0
       nix-update
       nuget-to-json
     ]}:$PATH"
