@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Key Commands
 
-Use the `/ldp` skill to build, switch, or boot configurations.
+Run `ldp` to build and switch the current host (`ldp --help` for boot/build variants).
 
 **Enter the dev shell** (provides home-manager, nix-update, shellcheck, update-all, doppler; also activates pre-commit hooks):
 ```sh
