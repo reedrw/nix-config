@@ -38,8 +38,9 @@ getFlakeRef(){
 
   pushd "$flakePath" > /dev/null
     ref=""
-    # check if repo is dirty
-    if git diff --quiet; then
+    # check if repo is dirty (unstaged OR staged changes); untracked files are
+    # invisible to flakes anyway, so they don't count as dirty here
+    if git diff --quiet && git diff --cached --quiet; then
       ref="?ref=$(git rev-parse --abbrev-ref HEAD)"
     fi
   popd > /dev/null
