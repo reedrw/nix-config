@@ -1,16 +1,16 @@
 ---
 name: refresh
-description: Scan repo changes since CLAUDE.md was last updated and document what's notable
+description: Scan repo changes since AGENTS.md was last updated and document what's notable
 ---
-Scan changes made to this repo since CLAUDE.md was last updated, and update CLAUDE.md if anything notable warrants documentation.
+Scan changes made to this repo since AGENTS.md was last updated, and update AGENTS.md if anything notable warrants documentation.
 
 ## Step 1 — Find the baseline
 
 ```sh
-git log --follow -1 --format="%H %ai" .claude/CLAUDE.md
+git log --follow -1 --format="%H %ai" AGENTS.md
 ```
 
-This gives the commit hash and date of the last CLAUDE.md change. Use that hash as the baseline.
+This gives the commit hash and date of the last AGENTS.md change. Use that hash as the baseline.
 
 ## Step 2 — Enumerate changes since baseline
 
@@ -37,19 +37,19 @@ Focus your reading on:
 
 ## Step 3 — Decide what's notable
 
-A change is notable if a future reader of CLAUDE.md would benefit from knowing it exists. Rough tests:
+A change is notable if a future reader of AGENTS.md would benefit from knowing it exists. Rough tests:
 
 - **Add:** New module category or subdirectory, new pkgs helper, new custom package, new flake input that affects how modules are written, meaningful new option or convention, new `ldp` flag, new pre-commit hook that constrains how code is written.
-- **Fix:** Anything CLAUDE.md already mentions by name that was since removed, renamed, or moved (a dropped package, a renamed module, a restructured `repo/` file). Stale facts are worse than missing ones — grep CLAUDE.md for names touched by the diff.
-- **Skip:** Routine config tweaks (enabling a service, changing a setting value), package version bumps, one-host-only quirks with no reuse implications, things already documented, renames of things CLAUDE.md doesn't mention.
+- **Fix:** Anything AGENTS.md already mentions by name that was since removed, renamed, or moved (a dropped package, a renamed module, a restructured `repo/` file). Stale facts are worse than missing ones — grep AGENTS.md for names touched by the diff.
+- **Skip:** Routine config tweaks (enabling a service, changing a setting value), package version bumps, one-host-only quirks with no reuse implications, things already documented, renames of things AGENTS.md doesn't mention.
 
-Also skim the other instruction files (`.agents/skills/*/SKILL.md` and its symlinks in `.claude/commands/`, `.claude/skills/`, `.pi/prompts/`) for facts invalidated by the same diff — e.g. host/target lists, commit scopes, referenced script paths. Remember CLAUDE.md is read by both pi and Claude Code, so keep agent-specific framing out of it.
+Also skim the other instruction files (`.agents/skills/*/SKILL.md` and its symlinks in `.claude/commands/`, `.claude/skills/`, `.pi/prompts/`) for facts invalidated by the same diff — e.g. host/target lists, commit scopes, referenced script paths. Remember AGENTS.md is read by both pi and Claude Code, so keep agent-specific framing out of it.
 
-If there are no notable changes, stop here and tell the user "No notable changes since CLAUDE.md was last updated."
+If there are no notable changes, stop here and tell the user "No notable changes since AGENTS.md was last updated."
 
-## Step 4 — Update CLAUDE.md
+## Step 4 — Update AGENTS.md
 
-Read `.claude/CLAUDE.md` in full, then make targeted edits:
+Read `AGENTS.md` in full, then make targeted edits:
 - Add new helpers to the "Useful helpers from `pkgs/functions.nix`" list.
 - Add new packages to the "Custom packages" section or the directory layout tree.
 - Add new modules to the directory layout tree.
