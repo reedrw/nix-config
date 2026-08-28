@@ -35,6 +35,11 @@ in
         source = ./co-author.ts;
       };
 
+      ".pi/agent/extensions/statusline.ts" = {
+        force = true;
+        source = ./statusline.ts;
+      };
+
       ".pi/agent/extensions/exit-alias.ts" = {
         force = true;
         text = ''
