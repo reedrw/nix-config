@@ -1,1 +1,1 @@
-../../.claude/commands/commit.md
+../../.agents/skills/commit/SKILL.md
