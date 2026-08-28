@@ -85,18 +85,21 @@ in
 
         "custom/light-dark" = {
           format = lightDarkIcon;
+          tooltip   = false;
           on-click = "toggle-theme";
         };
 
         "custom/airpods-battery" = {
           exec = "${lib.getExe airpods-battery} icon";
           interval = 10;
+          tooltip   = false;
           on-click = lib.getExe airpods-battery;
           return-type = "";
         };
 
         "custom/adb-device" = {
           exec = "${lib.getExe adb-device} icon";
+          tooltip   = false;
           interval = 10;
           on-click = lib.getExe adb-device;
           return-type = "";
@@ -105,6 +108,7 @@ in
         "custom/battery" = {
           exec = lib.getExe batteryExec;
           interval = 30;
+          tooltip   = false;
           on-click = "${pkgs.libnotify}/bin/notify-send \"$(${pkgs.acpi}/bin/acpi | sed -e 's/%[^,]*/%/g')\"";
           return-type = "";
         };
