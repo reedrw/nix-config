@@ -46,6 +46,7 @@ in
         set -g history-limit 10000
         set -g allow-passthrough on
         set -s extended-keys on
+        set -g extended-keys-format csi-u
         set -as terminal-features 'xterm*:extkeys'
         set -as terminal-features '*:hyperlinks'
         set -g popup-border-lines none
