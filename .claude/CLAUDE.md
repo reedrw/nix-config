@@ -144,7 +144,7 @@ Always use the `/commit` skill when committing in this repo.
 
 ### Agent policy
 
-Some commands are blocked by policy, not preference: `home-manager switch` is denied outright, and `ldp --switch <target>` is denied unless `<target>` is the current hostname (bare `ldp --switch` is fine; use `ldp --build <target>` for other hosts). Enforced by `.claude/settings.json` + `.claude/hooks/check-switch.sh` for Claude Code. `.claude/hooks/check-coauthor.sh` additionally validates the `Co-Authored-By` trailer on `git commit -m` against the model ID recorded in the session transcript.
+Some commands are blocked by policy, not preference: `home-manager switch` is denied outright in `.claude/settings.json`. To build and switch, run `ldp`.
 
 ### Querying machine config
 

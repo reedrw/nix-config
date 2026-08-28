@@ -14,7 +14,7 @@ ldp --boot [hostname]    # build and set boot entry
 ldp --list-outputs       # list all flake outputs
 ```
 
-A PreToolUse hook denies `ldp --switch <target>` when `<target>` isn't the current hostname. Use a bare `ldp --switch`, or `ldp --build <target>` for other hosts.
+A bare `ldp` builds and switches the current hostname — that's the normal case. Use `ldp --build <target>` to build other hosts without switching.
 
 **Important:** New files must be `git add`-ed before running ldp — Nix flakes only see tracked files.
 
