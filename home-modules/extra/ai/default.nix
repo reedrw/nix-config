@@ -3,6 +3,15 @@ let
   cfg = config.programs.claude-code;
   claudeThemeSlug = "dark-ansi-fixed";
 
+  # Mirrors home-manager's programs/pi-coding-agent module (not yet in release-26.05):
+  # extraPackages wrap + declarative settings.json with pi packages, which pi
+  # auto-installs on startup when missing or version-mismatched.
+  jsonFormat = pkgs.formats.json { };
+  piPackage = pkgs.wrapPackage pkgs.mv.tip.pi-coding-agent (x: ''
+    export PATH="$PATH:${lib.makeBinPath [ pkgs.nodejs ]}"
+    exec ${x} "$@"
+  '');
+
   statuslineScript = pkgs.writeNixShellScript "claude-statusline"
     (builtins.readFile ./claude-statusline.sh);
 
@@ -99,71 +108,21 @@ in
     };
   };
 
-  stylix.targets.opencode.enable = true;
-
-  programs.opencode = {
-    enable = true;
-    package = pkgs.wrapEnv pkgs.mv.tip.opencode { COAUTHOR_REQUIRED = "1"; };
-    tui = {
-      theme = lib.mkForce (
-        if config.stylix.polarity == "dark"
-        then "stylix"
-        else "system"
-      );
-      keybinds = {
-        agent_cycle = "none";
-        agent_cycle_reverse = "none";
-      };
-      plugin = [ ./opencode-mode-cycle.ts ];
-    };
-    settings = {
-      autoupdate = false;
-      instructions = [
-        (pkgs.writeText "informational.md" ''
-          # Informational and historical questions
-
-          For informational, educational, conceptual, or historical questions — anything asking how something developed, what something is, or how something works — answer thoroughly instead of tersely.
-
-          Give a complete answer:
-
-          - Open with one or two sentences that directly state the core answer.
-          - Cover the full arc: the major phases or milestones in chronological order, with dates, key actors, causes, and consequences where relevant.
-          - Structure multi-phase answers with markdown headings or bolded lead-ins, and use bullets for parallel points.
-          - Close with a one- or two-sentence summary drawing the through-line of the story.
-
-          This verbose style applies only to informational content. Software-engineering tasks, code questions, and repo work stay terse and to the point.
-        '')
-        ./opencode-behavior.md
-        ./opencode-intent.md
-      ];
-      lsp = {
-        nix = {
-          command = [ "${pkgs.nil}/bin/nil" ];
-          extensions = [ ".nix" ];
-        };
-      };
-      mcp = {
-        nixos = {
-          type = "local";
-          command = [ "${pkgs.mcp-nixos}/bin/mcp-nixos" ];
-        };
-        github = {
-          type = "local";
-          command = [ "${githubMcpWrapper}" ];
-        };
-        context7 = {
-          type = "local";
-          command = [ "${pkgs.context7-mcp}/bin/context7-mcp" ];
-        };
-        exa = {
-          type = "remote";
-          url = "https://mcp.exa.ai/mcp";
-        };
-      };
-    };
-  };
-
   home = {
+    packages = [ piPackage ];
+
+    file.".pi/agent/settings.json" = {
+      force = true;
+      source = jsonFormat.generate "pi-settings.json" {
+        lastChangelogVersion = "0.84.2";
+        defaultProvider = "openrouter";
+        defaultModel = "z-ai/glm-5.3-flash";
+        defaultThinkingLevel = "high";
+        theme = "dark";
+        packages = [ ];
+      };
+    };
+
     activation.claudeCodeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       ${writeConfig}
     '';
@@ -182,9 +141,6 @@ in
             memoryBackgroundColor = "ansi:black";
           };
         };
-      };
-      ".config/opencode/plugins/opencode-intent.ts" = {
-        source = ./opencode-intent.ts;
       };
       ".claude/CLAUDE.md" = {
         force = true;
@@ -240,10 +196,7 @@ in
     files = [ ".claude.json" ];
     directories = [
       ".claude"
-      ".config/opencode"
-      ".cache/opencode"
-      ".local/share/opencode"
-      ".local/state/opencode"
+      ".pi"
     ];
   };
 }

@@ -25,7 +25,7 @@ This is a NixOS + home-manager configuration managed as a flake using **flake-pa
 - `flake.nix` — inputs and flake-parts entry point; delegates to `./repo`
 - `repo/default.nix` — configures ez-configs, maps hosts to users, exposes `util` helpers
 - `repo/extraEzModules.nix` — makes all modules available as `ezModules'` special arg via haumea
-- `repo/git-hooks/` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace, plus custom `no-rec` and `no-empty-module-arg`) via `git-hooks-nix`; injected into the dev shell automatically. `check-coauthor` runs at the `commit-msg` stage and requires a `Co-Authored-By` trailer whenever `COAUTHOR_REQUIRED` is set in the environment (the wrapped `opencode` binary exports it, so only agent commits are enforced)
+- `repo/git-hooks/` — pre-commit hooks (statix, deadnix, shellcheck, trim-whitespace, plus custom `no-rec` and `no-empty-module-arg`) via `git-hooks-nix`; injected into the dev shell automatically
 - `repo/stage/` — VM staging scripts used by the `/stage` skill (`stage.sh` plus primitives `run.sh`, `wait.sh`, `shoot.sh`, `ssh.sh`, `sendkey.sh`, `stop.sh`)
 - `repo/compat.nix` — flake-compat shim for `shell.nix` and legacy tooling
 
@@ -73,7 +73,7 @@ nixos-modules/          # Reusable NixOS modules — each category has a default
 
 home-modules/           # Reusable home-manager modules — same category-default.nix pattern
   core/                 # nvim, zsh, ssh, persist, stylix styling, nixpkgs config, functions, comma
-  extra/                # git, mullvad, gnupg, ai (claude-code + opencode), proc, base, ranger, gnome-keyring
+  extra/                # git, mullvad, gnupg, ai (claude-code + pi-agent), proc, base, ranger, gnome-keyring
   graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
@@ -142,11 +142,9 @@ Every indexed attribute/version pair is browsable at <https://nixmultiverse.com/
 
 Always use the `/commit` skill when committing in this repo.
 
-### Agent instruction files
+### Agent policy
 
-`.claude/` and `.opencode/` are parallel trees (`commands/`, `skills/`). The `.opencode/` files are ports of the `.claude/` originals with agent-specific frontmatter and wording — when you change one, mirror the change into the other.
-
-Some commands are blocked by policy, not preference: `home-manager switch` is denied outright, and `ldp --switch <target>` is denied unless `<target>` is the current hostname (bare `ldp --switch` is fine; use `ldp --build <target>` for other hosts). Enforced by `.claude/settings.json` + `.claude/hooks/check-switch.sh` for Claude Code and by `.opencode/opencode.json` for opencode. `.claude/hooks/check-coauthor.sh` additionally validates the `Co-Authored-By` trailer on `git commit -m` against the model ID recorded in the session transcript.
+Some commands are blocked by policy, not preference: `home-manager switch` is denied outright, and `ldp --switch <target>` is denied unless `<target>` is the current hostname (bare `ldp --switch` is fine; use `ldp --build <target>` for other hosts). Enforced by `.claude/settings.json` + `.claude/hooks/check-switch.sh` for Claude Code. `.claude/hooks/check-coauthor.sh` additionally validates the `Co-Authored-By` trailer on `git commit -m` against the model ID recorded in the session transcript.
 
 ### Querying machine config
 
