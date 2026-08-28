@@ -84,10 +84,8 @@ in
         };
 
         "custom/light-dark" = {
-          exec = ''echo '${lightDarkIcon}' '';
-          interval = 0;
+          format = lightDarkIcon;
           on-click = "toggle-theme";
-          return-type = "";
         };
 
         "custom/airpods-battery" = {
