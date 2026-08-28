@@ -1,4 +1,4 @@
-{ config, util, ... }:
+{ config, osConfig, lib, util, ... }:
 let
   sources = (util.importFlake ./sources).inputs;
 in
@@ -16,6 +16,9 @@ in
         "--enable-features=UseOzonePlatform,WaylandWindowDecorations"
         "--disable-features=LcdTextAntialiasing"
         "--ozone-platform=wayland"
+      ] ++ lib.optionals (lib.hasAttr "autossh-mullvad-exclude-proxy" osConfig.systemd.services) [
+        "--proxy-server=socks5://127.0.0.1:1337"
+        "--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1"
       ];
       openASAR.enable = false;
       # vencord.package = sources.nixcord.packages.${pkgs.stdenv.hostPlatform.system}.vencord.overrideAttrs (old: {
