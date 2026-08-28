@@ -58,6 +58,23 @@ in
         source = ./statusline.ts;
       };
 
+      ".pi/agent/extensions/clear-alias.ts" = {
+        force = true;
+        text = ''
+          import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+          export default function (pi: ExtensionAPI) {
+            pi.registerCommand("clear", {
+              description: "Start a new session (alias for /new)",
+              handler: async (_args, ctx) => {
+                await ctx.waitForIdle();
+                await ctx.newSession();
+              },
+            });
+          }
+        '';
+      };
+
       ".pi/agent/extensions/exit-alias.ts" = {
         force = true;
         text = ''
