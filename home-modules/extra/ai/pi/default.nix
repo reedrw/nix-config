@@ -26,13 +26,31 @@ in
           defaultModel = "z-ai/glm-5.3-flash";
           defaultThinkingLevel = "high";
           theme = "dark";
-          packages = [ ];
+          # pi-image-view is vendored and loaded
+          # from a local path; relative paths resolve against ~/.pi/agent.
+          packages = [
+            "./pi-image-view"
+          ];
+          # image-history.ts renders tool-result images inside the tool box via
+          # kitty placeholders; disable pi's built-in Image path, which draws
+          # outside the box (and is tmux-disabled anyway).
+          terminal.showImages = false;
         };
       };
 
       ".pi/agent/extensions/co-author.ts" = {
         force = true;
         source = ./co-author.ts;
+      };
+
+      ".pi/agent/pi-image-view" = {
+        force = true;
+        source = ./pi-image-view;
+      };
+
+      ".pi/agent/extensions/image-history.ts" = {
+        force = true;
+        source = ./image-history.ts;
       };
 
       ".pi/agent/extensions/statusline.ts" = {

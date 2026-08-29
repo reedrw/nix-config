@@ -1,0 +1,66 @@
+{
+  "name": "pi-image-view",
+  "version": "0.3.1",
+  "description": "Paste screenshots into the Pi coding agent without pasting file paths — stable [Image #N] references, clickable history, and compact 480px model thumbnails",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-coding-agent",
+    "pi",
+    "image",
+    "images",
+    "screenshot",
+    "screenshots",
+    "clipboard",
+    "paste",
+    "drag-and-drop",
+    "attachment",
+    "preview",
+    "thumbnail",
+    "resize",
+    "vision",
+    "multimodal",
+    "kitty",
+    "kitty-graphics",
+    "tmux",
+    "terminal",
+    "osc8",
+    "wsl"
+  ],
+  "license": "MIT",
+  "author": "alchemistklk",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "files": [
+    "index.ts",
+    "src/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "image": "https://raw.githubusercontent.com/alchemistklk/pi-image-view/main/screenshot.png"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alchemistklk/pi-image-view.git"
+  },
+  "homepage": "https://github.com/alchemistklk/pi-image-view#readme",
+  "bugs": {
+    "url": "https://github.com/alchemistklk/pi-image-view/issues"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "vitest": "^4.1.9"
+  }
+}
