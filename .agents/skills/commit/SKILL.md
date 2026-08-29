@@ -26,7 +26,7 @@ Common verbs: `init`, `init at <version>`, `use <x>`, `add <x>`, `remove <x>`, `
 
 **Staging:** Stage files individually by name (`git add <file>`), or by hunk (`git add -p <file>`) when a file contains changes for multiple commits. Never use `git add .` or `git add -A`. If you haven't read a file's diff yet, read it before staging it.
 
-**Commit message:** `scope(path): description` subject line. A body is allowed when useful, but skip it when the change already explains itself via in-code comments — don't restate what the diff already says. Always include a co-author trailer: a blank line, then `Co-Authored-By: <model-id> <noreply@<provider-domain>>` where `<model-id>` is your exact model ID (e.g. `claude-fable-5`, `glm-5.3-flash`), not a marketing name, and the email uses your provider's noreply domain.
+**Commit message:** `scope(path): description` subject line. A body is allowed when useful, but skip it when the change already explains itself via in-code comments — don't restate what the diff already says. The co-author trailer is handled automatically by a pi extension (it appends or fixes it after the commit), so just commit normally — do not add the trailer yourself unless running outside pi.
 
 If there are many unrelated changes across files, make multiple smaller commits rather than one large one.
 

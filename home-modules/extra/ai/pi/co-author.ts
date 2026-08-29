@@ -1,93 +1,166 @@
-// Enforces a Co-Authored-By trailer on commits made by the agent.
-// Blocks `git commit` bash calls whose message lacks the correct trailer for
-// the running model, and injects the expected trailer into the system prompt
-// so commits are right on the first try.
+// Appends the Co-Authored-By trailer to commits made by the agent.
+//
+// Earlier versions blocked `git commit` bash calls up front unless the trailer
+// appeared verbatim in the command text - fragile with && chains, --fixup,
+// -F files, and quoting (the parser saw everything after the closing quote on
+// the same line). Now the agent commits however it likes; this extension
+// checks the resulting commits afterwards and amends the correct trailer on
+// when it is missing or wrong.
 
-import { readFileSync } from "node:fs";
+import { writeFileSync, unlinkSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+const MARKER = "[co-author]";
 
 // Vendor segment (before "/") of the model id -> noreply domain. Vendors not
 // listed here accept any noreply email rather than guessing a wrong domain.
 const VENDOR_DOMAINS: Record<string, string> = {
-  "z-ai": "z.ai",
-  anthropic: "anthropic.com",
-  openai: "openai.com",
-  google: "google.com",
-  deepseek: "deepseek.com",
-  moonshotai: "moonshot.ai",
-  qwen: "qwen.ai",
-  mistralai: "mistral.ai",
+	"z-ai": "z.ai",
+	anthropic: "anthropic.com",
+	openai: "openai.com",
+	google: "google.com",
+	deepseek: "deepseek.com",
+	moonshotai: "moonshot.ai",
+	qwen: "qwen.ai",
+	mistral: "mistral.ai",
 };
 
 function vendorOf(modelId: string): string {
-  return modelId.split("/")[0];
+	return modelId.split("/")[0];
 }
 
 function expectedTrailer(modelId: string): string | undefined {
-  const domain = VENDOR_DOMAINS[vendorOf(modelId)];
-  return domain ? `Co-Authored-By: ${modelId} <noreply@${domain}>` : undefined;
+	const domain = VENDOR_DOMAINS[vendorOf(modelId)];
+	return domain ? `Co-Authored-By: ${modelId} <noreply@${domain}>` : undefined;
 }
 
-function trailerMatches(value: string, modelId: string): boolean {
-  const expected = expectedTrailer(modelId);
-  if (expected) return value === expected.replace(/^Co-Authored-By:\s*/, "");
-  const match = /^([^<>]+?)\s*<([^<>]+)>$/.exec(value);
-  return match !== null && match[1].trim() === modelId;
+function trailerValue(trailer: string): string {
+	return trailer.replace(/^Co-Authored-By:\s*/i, "");
 }
 
-function extractTrailers(text: string): string[] {
-  // Trim trailing whitespace and shell quote chars left over from -m "...".
-  return [...text.matchAll(/Co-Authored-By:\s*([^\n]+)/gi)].map((m) =>
-    m[1].replace(/[\s"']+$/g, ""),
-  );
+function hasTrailer(body: string, trailer: string): boolean {
+	const expected = trailerValue(trailer);
+	return body
+		.split("\n")
+		.some((line) => /^co-authored-by:/i.test(line) && trailerValue(line).trim() === expected);
+}
+
+function stripTrailerLines(body: string): string {
+	return body
+		.split("\n")
+		.filter((line) => !/^co-authored-by:/i.test(line))
+		.join("\n");
 }
 
 export default function coAuthorExtension(pi: ExtensionAPI) {
-  pi.on("tool_call", async (event, ctx) => {
-    if (event.toolName !== "bash") return;
-    const command: string = event.input.command ?? "";
-    if (!/\bgit\s+commit\b/.test(command)) return;
+	// toolCallId -> HEAD before the call ran, so tool_result knows which commits
+	// are new. Only tracked for bash calls that run git commit.
+	const headBefore = new Map<string, string>();
 
-    const modelId = ctx.model?.id;
-    if (!modelId) return;
+	pi.on("tool_call", async (event, ctx) => {
+		if (event.toolName !== "bash") return;
+		if (!/\bgit\s+commit\b/.test(commandOf(event.input))) return;
+		const rev = await pi
+			.exec("git", ["rev-parse", "HEAD"], { signal: ctx.signal })
+			.catch(() => undefined);
+		headBefore.set(event.toolCallId, rev && rev.code === 0 ? rev.stdout.trim() : "");
+	});
 
-    // Collect candidate message text: the command itself plus any -F/--file
-    // message files (readable at preflight since the agent writes them first).
-    let text = command;
-    for (const [, file] of command.matchAll(/(?:-F|--file)(?:=|\s+)([^\s"']+)/g)) {
-      try {
-        text += `\n${readFileSync(file, "utf8")}`;
-      } catch {
-        // File may not exist yet; the command itself is still checked.
-      }
-    }
+	pi.on("tool_result", async (event, ctx) => {
+		if (event.toolName !== "bash") return;
+		const before = headBefore.get(event.toolCallId);
+		if (before === undefined) return;
+		headBefore.delete(event.toolCallId);
 
-    const trailers = extractTrailers(text);
-    const ok = trailers.some((t) => trailerMatches(t, modelId));
-    if (ok) return;
+		const modelId = ctx.model?.id;
+		if (!modelId) return;
+		const trailer = expectedTrailer(modelId);
+		if (!trailer) return;
 
-    const expected = expectedTrailer(modelId);
-    const shown =
-      expected ??
-      `Co-Authored-By: ${modelId} <noreply@${vendorOf(modelId)}...>`;
-    const problem =
-      trailers.length === 0
-        ? "Commit message is missing the required co-author trailer."
-        : "Commit message has the wrong Co-Authored-By trailer.";
-    return {
-      block: true,
-      reason: `${problem} Append exactly this line after a blank line at the end of the commit message, then retry:\n\n  ${shown}\n\nUse the exact model ID you are running as, not a marketing name.`,
-    };
-  });
+		const rev = await pi
+			.exec("git", ["rev-parse", "HEAD"], { signal: ctx.signal })
+			.catch(() => undefined);
+		if (!rev || rev.code !== 0) return;
+		const after = rev.stdout.trim();
+		if (after === before) return; // nothing committed
 
-  // Give the model the trailer up front so commits pass on the first try.
-  pi.on("before_agent_start", async (event, ctx) => {
-    const modelId = ctx.model?.id;
-    if (!modelId) return;
-    const trailer = expectedTrailer(modelId);
-    if (!trailer) return;
-    return {
-      systemPrompt: `${event.systemPrompt}\n\n## Commit attribution\n\nWhen you create commits with git commit, end the commit message with this exact trailer:\n\n${trailer}`,
-    };
-  });
+		// Commits created by this call.
+		const rangeArgs = before ? [`${before}..${after}`] : [after];
+		const list = await pi
+			.exec("git", ["rev-list", "--reverse", ...rangeArgs], { signal: ctx.signal })
+			.catch(() => undefined);
+		if (!list || list.code !== 0) return;
+		const newCommits = list.stdout.split("\n").map((l) => l.trim()).filter(Boolean);
+
+		const bad: string[] = [];
+		for (const sha of newCommits) {
+			const body = await gitBody(sha, ctx.signal);
+			if (body !== undefined && !hasTrailer(body, trailer)) bad.push(sha);
+		}
+		if (bad.length === 0) return;
+
+		// Fast path: one new bad commit and no push in the command -> amend it
+		// ourselves. Never amend when the command also pushed, since the commit
+		// may already be on the remote.
+		const pushInCommand = /\bgit\s+push\b/.test(commandOf(event.input));
+		if (bad.length === 1 && bad[0] === after && !pushInCommand) {
+			const body = await gitBody(bad[0], ctx.signal);
+			if (body !== undefined) {
+				const message = `${stripTrailerLines(body).trimEnd()}\n\n${trailer}\n`;
+				const file = join(tmpdir(), `co-author-${Date.now()}.txt`);
+				writeFileSync(file, message);
+				try {
+					const amend = await pi
+						.exec("git", ["commit", "--amend", "-F", file], { signal: ctx.signal })
+						.catch(() => undefined);
+					if (amend && amend.code === 0) {
+						if (ctx.hasUI) {
+							ctx.ui.notify(`${MARKER} appended trailer to ${bad[0].slice(0, 7)}`, "info");
+						}
+						return;
+					}
+				} finally {
+					unlinkSync(file);
+				}
+			}
+		}
+
+		// Fallback: tell the agent to fix it.
+		const fixHint =
+			bad.length === 1
+				? "Amend it and add exactly this line after a blank line at the end of the message:"
+				: "Fix them (e.g. git rebase -i) and add exactly this line after a blank line at the end of each message:";
+		return {
+			content: [
+				...event.content,
+				{
+					type: "text",
+					text: `${MARKER} commit(s) ${bad.map((s) => s.slice(0, 7)).join(", ")} ${bad.length === 1 ? "is" : "are"} missing the required Co-Authored-By trailer. ${fixHint}\n\n  ${trailer}\n\nUse the exact model ID you are running as, not a marketing name.`,
+				},
+			],
+		};
+	});
+
+	async function gitBody(sha: string, signal?: AbortSignal): Promise<string | undefined> {
+		const log = await pi
+			.exec("git", ["log", "-1", "--format=%B", sha], { signal })
+			.catch(() => undefined);
+		return log && log.code === 0 ? log.stdout : undefined;
+	}
+
+	function commandOf(input: unknown): string {
+		return input && typeof input === "object" && "command" in input
+			? String((input as { command: unknown }).command ?? "")
+			: "";
+	}
+
+	// The agent never needs to think about the trailer; say so up front.
+	pi.on("before_agent_start", async (event) => {
+		if (event.systemPrompt.includes(`${MARKER} extension automatically amends`)) return;
+		return {
+			systemPrompt: `${event.systemPrompt}\n\n## Commit attribution\n\nDo not add Co-Authored-By trailers to commit messages. The ${MARKER} extension automatically amends the correct trailer (derived from the running model) onto every commit you make. Just commit normally; if a commit somehow ends up with a missing or wrong trailer, a tool-result note will tell you which commit to fix.`,
+		};
+	});
 }
