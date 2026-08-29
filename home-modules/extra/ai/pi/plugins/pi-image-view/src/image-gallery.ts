@@ -213,6 +213,7 @@ function buildPlaceholderRow(
 export class ImageGallery implements Component {
 	private images: GalleryImage[] = [];
 	private theme: GalleryTheme;
+	private detailArmed = false;
 	private cachedLines?: string[];
 	private cachedWidth?: number;
 	private activeImageIds: number[] = [];
@@ -223,6 +224,11 @@ export class ImageGallery implements Component {
 
 	setImages(images: GalleryImage[]): void {
 		this.images = images;
+		this.invalidate();
+	}
+
+	setDetailArmed(armed: boolean): void {
+		this.detailArmed = armed;
 		this.invalidate();
 	}
 
@@ -258,13 +264,15 @@ export class ImageGallery implements Component {
 		const lines: string[] = [];
 		const imageProtocol = detectImageProtocol();
 
-		// Header
+		// Header — shows the resolution the next submission will use, and how to
+		// toggle it with ctrl+q.
 		const count = this.images.length;
-		const headerText =
-			count === 1
-				? " 📎 1 image attached"
-				: ` 📎 ${count} images attached`;
-		lines.push(this.theme.accent(headerText));
+		const countText = count === 1 ? "1 image" : `${count} images`;
+		const headerText = this.detailArmed
+			? ` 📎 ${countText} attached · 1280px detail armed`
+			: ` 📎 ${countText} attached · 480p preview`;
+		const headerHint = this.detailArmed ? " (ctrl+q to revert)" : " (ctrl+q → 1280)";
+		lines.push(this.theme.accent(headerText) + this.theme.dim(headerHint));
 
 		const allPng = this.images.every((image) => image.mimeType === "image/png");
 		if (imageProtocol === "kitty" && allPng) {

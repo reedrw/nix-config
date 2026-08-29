@@ -9,6 +9,7 @@ import { ImageGallery, type GalleryImage } from "./image-gallery.ts";
 import { extractImagePaths } from "./image-paths.ts";
 import { upgradeScreenshotToolResult } from "./tool-result-upgrader.ts";
 import { debugLog } from "./debug.ts";
+import { matchesKey } from "@earendil-works/pi-tui";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -157,7 +158,7 @@ export function registerImagePreviewExtension(
 	let detailNextSubmission = false;
 
 	pi.registerCommand?.("pi-image-view", {
-		description: "Clear existing image context or arm 1280px detail mode",
+		description: "Clear existing image context or arm 1280px detail mode (or press ctrl+q with images attached)",
 		handler: (args, ctx) => {
 			const action = args.trim();
 			if (action === "detail") {
@@ -301,6 +302,7 @@ export function registerImagePreviewExtension(
 
 				gallery = new ImageGallery(galleryTheme);
 				gallery.setImages(galleryImages);
+				gallery.setDetailArmed(detailNextSubmission);
 				return gallery;
 			},
 			{ placement: "aboveEditor" },
@@ -511,6 +513,24 @@ export function registerImagePreviewExtension(
 			if (deps.isImagePasteInput && ctx.ui.onTerminalInput) {
 				unsubscribeTerminalInput = ctx.ui.onTerminalInput((data) => {
 					if (deps.isImagePasteInput!(data)) schedulePasteScans(ctx);
+					// ctrl+q toggles 480p preview ↔ 1280px detail for the next
+					// submission, but only while images are pending in the editor
+					// (ctrl+q is unbound otherwise, so it passes through).
+					if (tracked.size > 0 && matchesKey(data, "ctrl+q")) {
+						detailNextSubmission = !detailNextSubmission;
+						refreshWidget(ctx);
+						try {
+							ctx.ui.notify(
+								detailNextSubmission
+									? "Next image submission will use 1280px detail mode"
+									: "Image submission reverted to 480p preview",
+								"info",
+							);
+						} catch {
+							// notify may be unavailable while a dialog owns the UI
+						}
+						return { consume: true };
+					}
 					return undefined;
 				});
 			}
