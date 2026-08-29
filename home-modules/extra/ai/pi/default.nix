@@ -5,9 +5,43 @@
 }:
 let
   # Mirrors home-manager's programs/pi-coding-agent module (not yet in release-26.05):
-  # extraPackages wrap + declarative settings.json with pi packages, which pi
-  # auto-installs on startup when missing or version-mismatched.
+  # extraPackages wrap + declarative settings.json with pi packages.
   jsonFormat = pkgs.formats.json { };
+
+
+  # Everything in ./plugins is installed automatically: *.ts files as
+  # extensions, everything else (vendored or pinned npm — see plugins/) as
+  # local-dir packages. Install/uninstall by editing the plugins dir or
+  # pins.json (then run its update.sh).
+  # callPackage wraps its result with override helpers; strip them so the set
+  # is uniformly iterable.
+  plugins = builtins.removeAttrs (pkgs.callPackage ./plugins { }) [
+    "override"
+    "overrideDerivation"
+  ];
+
+  extensionPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "extension") plugins;
+  dirPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "package") plugins;
+
+  extensionFiles = lib.listToAttrs (
+    lib.mapAttrsToList (name: plugin: {
+      name = ".pi/agent/extensions/${name}.ts";
+      value = {
+        force = true;
+        source = "${plugin}/${name}.ts";
+      };
+    }) extensionPlugins
+  );
+
+  dirPackageFiles = lib.listToAttrs (
+    lib.mapAttrsToList (name: plugin: {
+      name = ".pi/agent/${name}";
+      value = {
+        force = true;
+        source = plugin;
+      };
+    }) dirPlugins
+  );
 in
 {
   home = {
@@ -15,7 +49,7 @@ in
     # home-modules/core/comma/default.nix, so no wrapper needed.
     packages = [ pkgs.mv.tip.pi-coding-agent ];
 
-    file = {
+    file = extensionFiles // dirPackageFiles // {
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
@@ -24,74 +58,12 @@ in
           defaultModel = "z-ai/glm-5.3-flash";
           defaultThinkingLevel = "high";
           theme = "dark";
-          # pi-image-view is vendored and loaded
-          # from a local path; relative paths resolve against ~/.pi/agent.
-          packages = [
-            "./pi-image-view"
-          ];
+          packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
           # image-history.ts renders tool-result images inside the tool box via
           # kitty placeholders; disable pi's built-in Image path, which draws
           # outside the box (and is tmux-disabled anyway).
           terminal.showImages = false;
         };
-      };
-
-      ".pi/agent/extensions/co-author.ts" = {
-        force = true;
-        source = ./co-author.ts;
-      };
-
-      ".pi/agent/pi-image-view" = {
-        force = true;
-        source = ./pi-image-view;
-      };
-
-      ".pi/agent/extensions/image-history.ts" = {
-        force = true;
-        source = ./image-history.ts;
-      };
-
-      ".pi/agent/extensions/nix-comma.ts" = {
-        force = true;
-        source = ./nix-comma.ts;
-      };
-
-      ".pi/agent/extensions/statusline.ts" = {
-        force = true;
-        source = ./statusline.ts;
-      };
-
-      ".pi/agent/extensions/clear-alias.ts" = {
-        force = true;
-        text = ''
-          import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-
-          export default function (pi: ExtensionAPI) {
-            pi.registerCommand("clear", {
-              description: "Start a new session (alias for /new)",
-              handler: async (_args, ctx) => {
-                await ctx.waitForIdle();
-                await ctx.newSession();
-              },
-            });
-          }
-        '';
-      };
-
-      ".pi/agent/extensions/exit-alias.ts" = {
-        force = true;
-        text = ''
-          import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-
-          export default function (pi: ExtensionAPI) {
-            pi.registerCommand("exit", {
-              description: "Exit pi (alias for /quit)",
-              handler: async (_args, ctx) => {
-                ctx.shutdown();
-              },
-            });
-          }
-        '';
       };
     };
   };

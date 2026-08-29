@@ -74,6 +74,11 @@ nixos-modules/          # Reusable NixOS modules — each category has a default
 home-modules/           # Reusable home-manager modules — same category-default.nix pattern
   core/                 # nvim, zsh, ssh, persist, stylix styling, nixpkgs config, functions, comma
   extra/                # git, mullvad, gnupg, ai (claude-code + pi-agent), proc, base, ranger, gnome-keyring
+                        #   pi module: everything under extra/ai/pi/plugins/ is installed
+                        #   automatically — *.ts files become extensions; subdirs with a
+                        #   package.json are vendored; pins.json roots are npm tarballs
+                        #   pinned with SRI hashes (update pins via plugins/update.sh,
+                        #   also run by `update-all`)
   graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
