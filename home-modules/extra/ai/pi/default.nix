@@ -21,6 +21,7 @@ let
   ];
 
   extensionPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "extension") plugins;
+  libPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "lib") plugins;
   dirPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "package") plugins;
 
   extensionFiles = lib.listToAttrs (
@@ -31,6 +32,18 @@ let
         source = "${plugin}/${name}.ts";
       };
     }) extensionPlugins
+  );
+
+  # Shared extension libraries (pi doesn't auto-load extensions/lib/*, but the
+  # extensions' ./lib/… relative imports resolve there at runtime).
+  libFiles = lib.listToAttrs (
+    lib.mapAttrsToList (name: plugin: {
+      name = ".pi/agent/extensions/${name}.ts";
+      value = {
+        force = true;
+        source = "${plugin}/${name}.ts";
+      };
+    }) libPlugins
   );
 
   dirPackageFiles = lib.listToAttrs (
@@ -49,7 +62,7 @@ in
     # home-modules/core/comma/default.nix, so no wrapper needed.
     packages = [ pkgs.mv.tip.pi-coding-agent ];
 
-    file = extensionFiles // dirPackageFiles // {
+    file = extensionFiles // libFiles // dirPackageFiles // {
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
@@ -59,7 +72,11 @@ in
           defaultThinkingLevel = "high";
           theme = "dark";
           packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
-          # image-history.ts renders tool-result images inside the tool box via
+          # Claude Code style tool rendering (one-line calls, terse results).
+          # Flip to false to fall back to pi's default boxed tool rendering;
+          # takes effect on restart or /reload.
+          claudeStyle = true;
+          # image-history.ts renders tool-result images inside the tool row via
           # kitty placeholders; disable pi's built-in Image path, which draws
           # outside the box (and is tmux-disabled anyway).
           terminal.showImages = false;

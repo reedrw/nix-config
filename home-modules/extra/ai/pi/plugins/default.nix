@@ -7,6 +7,10 @@
 # pins.json, then rerun ./update.sh (also run automatically by `update-all`):
 #   - extension:  any *.ts file in this dir, symlinked to
 #                 ~/.pi/agent/extensions/<name>.ts
+#   - lib:        any *.ts file in lib/, symlinked to
+#                 ~/.pi/agent/extensions/lib/<name>.ts — NOT auto-loaded by
+#                 pi (only extensions/*.ts and */index.ts are); it's shared
+#                 code that extension files import via ./lib/… relative paths
 #   - vendored:   any subdirectory with a package.json (+ default.nix), e.g. a
 #                 fork like pi-image-view; symlinked to ~/.pi/agent/<name>
 #   - pinned npm: roots of pins.json, tarballs fetched at pinned versions with
@@ -57,6 +61,25 @@ let
     }
   ) (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".ts" file) dir);
 
+  # Shared library modules for the extensions (lib/claude-style.ts etc.). Not
+  # auto-discovered by pi, but the extensions' ./lib/… imports resolve against
+  # ~/.pi/agent/extensions/lib/ at runtime, so the files must land there.
+  libPlugins = lib.mapAttrs' (
+    file: _:
+    let
+      name = lib.removeSuffix ".ts" file;
+    in
+    {
+      name = "lib/${name}";
+      value = runCommand "pi-extension-lib-${name}"
+        {
+          passthru.piKind = "lib";
+        }
+        ''
+          install -Dm644 ${./lib/${file}} "$out/lib/${file}"
+        '';
+    }
+  ) (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".ts" file) (builtins.readDir ./lib));
   # Vendored packages: subdirectories with a package.json, built by their
   # default.nix (the version lives in package.json).
   vendoredPlugins = lib.mapAttrs (
@@ -71,4 +94,4 @@ let
     }) pins.roots
   );
 in
-extensionPlugins // vendoredPlugins // npmPlugins
+extensionPlugins // libPlugins // vendoredPlugins // npmPlugins

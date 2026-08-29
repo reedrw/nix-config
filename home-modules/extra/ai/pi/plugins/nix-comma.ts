@@ -28,7 +28,8 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { Type } from "typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { createBashTool } from "@earendil-works/pi-coding-agent";
+import { createBashToolDefinition } from "@earendil-works/pi-coding-agent";
+import { bash as claudeStyleBash, claudeStyleEnabled } from "./lib/claude-style.ts";
 
 const NIX_INDEX_DB = join(homedir(), ".cache/nix-index");
 const PRIMARY_BRANCH = "nixpkgs";
@@ -193,7 +194,9 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		}
 	}
 
-	const bashTool = createBashTool(process.cwd(), {
+	// The *definition* (not the wrapped AgentTool) is spread so the built-in
+	// render slots survive; the claude-style slots below replace them.
+	const bashTool = createBashToolDefinition(process.cwd(), {
 		spawnHook: ({ command, cwd, env }) => {
 			if (sessionPaths.length === 0) return { command, cwd, env };
 			return {
@@ -207,11 +210,18 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		},
 	});
 
-	// Override the built-in bash tool so the spawn hook applies to agent commands.
+	// Override the built-in bash tool so the spawn hook applies to agent
+	// commands. When claude-style rendering is enabled, render it that way
+	// (one-line call, terse result); otherwise keep pi's default rendering.
 	pi.registerTool({
 		...bashTool,
-		execute: async (id, params, signal, onUpdate, ctx) =>
-			bashTool.execute(id, params, signal, onUpdate, ctx),
+		...(claudeStyleEnabled()
+			? {
+					renderShell: claudeStyleBash.renderShell,
+					renderCall: claudeStyleBash.renderCall,
+					renderResult: claudeStyleBash.renderResult,
+				}
+			: {}),
 	});
 
 	// Explicit provisioning: pick a variant among ambiguous candidates, override

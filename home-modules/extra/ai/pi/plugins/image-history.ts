@@ -18,12 +18,14 @@
 // Messages with image blocks but no blob markers (e.g. storeImage failed) fall
 // back to a custom session entry rendered below the message.
 //
-// Images returned by tools are rendered INSIDE the tool result's box: the
-// extension overrides the built-in `read` tool's `renderResult` slot to emit a
-// Container with the text output plus a HistoryImageCell per image block.
-// (pi's built-in tool image rendering uses pi-tui's Image component, which is
-// hard-disabled under tmux, and always draws outside the box anyway — so it is
-// turned off via terminal.showImages=false and replaced by this.)
+// Images returned by tools are rendered INSIDE the tool row: the extension
+// overrides the built-in `read` tool's `renderResult` slot to emit a Container
+// with the text output plus a HistoryImageCell per image block. (pi's built-in
+// tool image rendering uses pi-tui's Image component, which is hard-disabled
+// under tmux, and always draws outside the box anyway — so it is turned off
+// via terminal.showImages=false and replaced by this.) Collapsed rows show
+// their images only while they are the newest read that returned one; any row
+// shows them when expanded.
 //
 // Inline images must be PNG (kitty's f=100 transmission requires PNG);
 // blob-store previews always are. Full-resolution non-PNG attachments never
@@ -33,6 +35,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { convertToPng, createReadToolDefinition, resizeImage } from "@earendil-works/pi-coding-agent";
+import { claudeStyleEnabled, readCallSlot, readTextResult, settleStatus } from "./lib/claude-style.ts";
 import {
 	calculateImageRows,
 	Container,
@@ -310,6 +313,85 @@ class HistoryImageCell implements Component {
 	}
 }
 
+// ── Newest image-carrying read ─────────────
+
+// Collapsed `read` rows hide their images unless they are the newest read
+// that returned one (expanded rows always show them). Tracked live via
+// tool_call/tool_result events and rebuilt from session history on
+// session_start so restored sessions behave the same. The image therefore
+// stays visible until a newer image read replaces it — plain text reads
+// don't evict it.
+
+function imagesInContent(content: unknown): number {
+	if (!Array.isArray(content)) return 0;
+	return content.filter(
+		(part) =>
+			part !== null && typeof part === "object" &&
+			(part as { type?: unknown }).type === "image" &&
+			typeof (part as { data?: unknown }).data === "string" &&
+			(part as { data: string }).data.length > 0,
+	).length;
+}
+
+// "Newest" is decided by CALL order (= display order in the TUI), never by
+// event arrival: parallel reads settle out of order, so the last tool_result
+// event is not necessarily the last row on screen.
+let readCallCounter = 0;
+const readCallOrder = new Map<string, number>();
+const imageReadCallIds = new Set<string>();
+
+function newestImageReadCallId(): string | undefined {
+	let newest: string | undefined;
+	for (const id of imageReadCallIds) {
+		if (newest === undefined || (readCallOrder.get(id) ?? 0) > (readCallOrder.get(newest) ?? 0)) {
+			newest = id;
+		}
+	}
+	return newest;
+}
+
+function trackReadCall(toolCallId: string): void {
+	readCallOrder.set(toolCallId, ++readCallCounter);
+}
+
+function trackReadResult(toolCallId: string, content: unknown): void {
+	if (imagesInContent(content) > 0) imageReadCallIds.add(toolCallId);
+}
+
+function resetReadTracking(): void {
+	readCallCounter = 0;
+	readCallOrder.clear();
+	imageReadCallIds.clear();
+}
+
+function scanHistoryForReadTracking(entries: Iterable<{ type: string; message?: unknown }>): void {
+	resetReadTracking();
+	for (const entry of entries) {
+		if (entry.type !== "message") continue;
+		const message = entry.message as { role?: unknown; toolCallId?: unknown; toolName?: unknown; content?: unknown } | undefined;
+		if (!message) continue;
+		if (message.role === "assistant" && Array.isArray(message.content)) {
+			// toolCall blocks appear in call order within one assistant message.
+			for (const part of message.content) {
+				if (
+					part !== null && typeof part === "object" &&
+					(part as { type?: unknown }).type === "toolCall" &&
+					(part as { name?: unknown }).name === "read" &&
+					typeof (part as { id?: unknown }).id === "string"
+				) {
+					trackReadCall((part as { id: string }).id);
+				}
+			}
+		} else if (
+			message.role === "toolResult" &&
+			message.toolName === "read" &&
+			typeof message.toolCallId === "string"
+		) {
+			trackReadResult(message.toolCallId, message.content);
+		}
+	}
+}
+
 // ── Extension ───────────────────────────────────────────────
 
 function imagesInMessage(message: { role?: unknown; content?: unknown }): HistoryImage[] {
@@ -372,6 +454,31 @@ async function toHistoryImage(image: HistoryImage): Promise<HistoryImage> {
 }
 
 export default function imageHistoryExtension(pi: import("@earendil-works/pi-coding-agent").ExtensionAPI) {
+	// Invalidators for read rows currently showing an image, so the
+	// previously-newest row can collapse its image when a newer one arrives.
+	const readInvalidators = new Map<string, () => void>();
+
+	function evictPreviouslyNewest(previous: string | undefined, current: string): void {
+		if (!previous || previous === current) return;
+		const invalidate = readInvalidators.get(previous);
+		readInvalidators.delete(previous);
+		invalidate?.();
+	}
+
+	pi.on("tool_call", async (event) => {
+		const e = event as { toolName?: string; toolCallId?: string };
+		if (e.toolName !== "read" || typeof e.toolCallId !== "string") return;
+		trackReadCall(e.toolCallId);
+	});
+
+	pi.on("tool_result", async (event) => {
+		const e = event as { toolName?: string; toolCallId?: string; content?: unknown };
+		if (e.toolName !== "read" || typeof e.toolCallId !== "string") return;
+		const previous = newestImageReadCallId();
+		trackReadResult(e.toolCallId, e.content);
+		evictPreviouslyNewest(previous, e.toolCallId);
+	});
+
 	// Inline rendering: replace blob markers in user messages with placeholder
 	// rows so the image appears inside the message box. Runs for restored
 	// sessions and width changes too, so images survive restarts and resizes.
@@ -403,58 +510,116 @@ export default function imageHistoryExtension(pi: import("@earendil-works/pi-cod
 		pi.appendEntry("image-history", { images });
 	});
 
-	// Tool result images (e.g. `read` on an image) are rendered inside the tool
-	// result's box via a `read` renderResult override. Spreading the built-in
-	// definition keeps its execute/renderCall/prompt metadata; only the result
-	// slot changes. Re-registered on session_start to pick up the session cwd.
+	// Tool result images (e.g. `read` on an image) are rendered inside the
+	// tool row via a `read` renderResult override. Spreading the built-in
+	// definition keeps its execute/prompt metadata. Re-registered on
+	// session_start to pick up the session cwd and rebuild the
+	// newest-image-read pointer from history. With claudeStyle enabled the
+	// call/result slots come from lib/claude-style.ts; otherwise the row uses
+	// pi's boxed rendering with the built-in text preview.
 	pi.on("session_start", async (_event, ctx) => {
 		if (ctx.mode === "print" || ctx.mode === "json") return;
+		scanHistoryForReadTracking(
+			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
+		);
+		readInvalidators.clear();
 		const readDefinition = createReadToolDefinition(ctx.cwd);
+
+		// The image half of the result row, shared by both render styles:
+		// images show on the newest image-carrying read and on expanded rows;
+		// older collapsed rows get a one-line pointer instead. Returns undefined
+		// when the result carries no images.
+		function imagePortion(
+			result: unknown,
+			options: { expanded?: boolean },
+			theme: { fg: (color: string, text: string) => string },
+			context: { toolCallId: string; invalidate: () => void },
+		): Container | undefined {
+			const content = Array.isArray((result as { content?: unknown })?.content)
+				? (result as { content: unknown[] }).content
+				: [];
+			const images = content.filter(
+				(part): part is { type: "image"; data: string; mimeType: string } =>
+					part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
+				);
+			if (images.length === 0) return undefined;
+
+			const stack = new Container();
+			if (!(options.expanded === true || context.toolCallId === newestImageReadCallId())) {
+				const noun = images.length === 1 ? "image" : "images";
+				stack.addChild(
+					new Text(`  ${theme.fg("muted", "⎿")}  ${theme.fg("dim", `${images.length} ${noun} — expand to show`)}`, 0, 0),
+				);
+				return stack;
+			}
+			readInvalidators.set(context.toolCallId, () => context.invalidate());
+
+			const protocol = detectImageProtocol();
+			for (const image of images) {
+				if (protocol === null) {
+					const dims = getImageDimensions(image.data, image.mimeType);
+					const size = dims ? ` ${dims.widthPx}x${dims.heightPx}` : "";
+					stack.addChild(new Text(theme.fg("dim", `[Image: ${image.mimeType}${size}]`), 0, 0));
+					continue;
+				}
+				const dims = getImageDimensions(image.data, image.mimeType);
+				if (dims) {
+					stack.addChild(new Text(theme.fg("dim", `${dims.widthPx}×${dims.heightPx}`), 0, 0));
+				}
+				stack.addChild(
+					new HistoryImageCell({ data: image.data, mimeType: image.mimeType }, (s) => theme.fg("dim", s), {
+						autoPrepare: true,
+						onPrepared: () => context.invalidate(),
+					}),
+				);
+			}
+			return stack;
+		}
+
+		if (!claudeStyleEnabled()) {
+			// Default pi look: boxed row with the built-in fallback text preview
+			// (mirrors what tool-execution.ts renders when no renderResult is set).
+			pi.registerTool({
+				...readDefinition,
+				renderResult(result, options, theme, context) {
+					if (!options.isPartial) settleStatus(context, context.isError === true);
+					const content = Array.isArray(result?.content) ? result.content : [];
+					const text = content
+						.filter((part): part is { type: "text"; text: string } =>
+							part?.type === "text" && typeof part.text === "string")
+						.map((part) => part.text)
+						.join("\n");
+
+					const stack = new Container();
+					if (text) {
+						const lines = text.split("\n");
+						const visible = options.expanded ? lines : lines.slice(0, FALLBACK_PREVIEW_LINES);
+						let output = visible.map((line) => theme.fg("toolOutput", line)).join("\n");
+						const remaining = lines.length - visible.length;
+						if (remaining > 0) {
+							output += theme.fg("muted", `\n... (${remaining} more lines)`);
+						}
+						stack.addChild(new Text(output, 0, 0));
+					}
+					const images = imagePortion(result, options, theme, context);
+					if (images) stack.addChild(images);
+					return stack;
+				},
+			});
+			return;
+		}
+
 		pi.registerTool({
 			...readDefinition,
+			renderShell: "self",
+			renderCall: readCallSlot,
 			renderResult(result, options, theme, context) {
-				const content = Array.isArray(result?.content) ? result.content : [];
-				const text = content
-					.filter((part): part is { type: "text"; text: string } =>
-						part?.type === "text" && typeof part.text === "string")
-					.map((part) => part.text)
-					.join("\n");
-				const images = content.filter(
-					(part): part is { type: "image"; data: string; mimeType: string } =>
-						part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
-					);
-
+				if (!options.isPartial) settleStatus(context, context.isError === true);
+				// Claude-style one-line call + "N lines" summary, images appended.
 				const stack = new Container();
-				if (text) {
-					// Mirror the built-in fallback's collapsed preview behavior.
-					const lines = text.split("\n");
-					const visible = options.expanded ? lines : lines.slice(0, FALLBACK_PREVIEW_LINES);
-					let output = visible.map((line) => theme.fg("toolOutput", line)).join("\n");
-					const remaining = lines.length - visible.length;
-					if (remaining > 0) {
-						output += theme.fg("muted", `\n... (${remaining} more lines)`);
-					}
-					stack.addChild(new Text(output, 0, 0));
-				}
-				const protocol = detectImageProtocol();
-				for (const image of images) {
-					if (protocol === null) {
-						const dims = getImageDimensions(image.data, image.mimeType);
-						const size = dims ? ` ${dims.widthPx}x${dims.heightPx}` : "";
-						stack.addChild(new Text(theme.fg("dim", `[Image: ${image.mimeType}${size}]`), 0, 0));
-						continue;
-					}
-					const dims = getImageDimensions(image.data, image.mimeType);
-					if (dims) {
-						stack.addChild(new Text(theme.fg("dim", `${dims.widthPx}×${dims.heightPx}`), 0, 0));
-					}
-					stack.addChild(
-						new HistoryImageCell({ data: image.data, mimeType: image.mimeType }, (s) => theme.fg("dim", s), {
-							autoPrepare: true,
-							onPrepared: () => context.invalidate(),
-						}),
-					);
-				}
+				stack.addChild(readTextResult(result, options, theme));
+				const images = imagePortion(result, options, theme, context);
+				if (images) stack.addChild(images);
 				return stack;
 			},
 		});
