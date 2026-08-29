@@ -7,7 +7,10 @@
     ./command-not-found.nix
   ];
 
-  home.packages = with pkgs; [ comma ];
+  home.packages = with pkgs; [
+    comma
+    nix-index
+  ];
 
   programs.nix-index = {
     symlinkToCacheHome = true;

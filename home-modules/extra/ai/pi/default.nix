@@ -8,14 +8,12 @@ let
   # extraPackages wrap + declarative settings.json with pi packages, which pi
   # auto-installs on startup when missing or version-mismatched.
   jsonFormat = pkgs.formats.json { };
-  piPackage = pkgs.wrapPackage pkgs.mv.tip.pi-coding-agent (x: ''
-    export PATH="$PATH:${lib.makeBinPath [ pkgs.nodejs ]}"
-    exec ${x} "$@"
-  '');
 in
 {
   home = {
-    packages = [ piPackage ];
+    # nix-locate (for nix-comma.ts) is already on PATH via home.packages in
+    # home-modules/core/comma/default.nix, so no wrapper needed.
+    packages = [ pkgs.mv.tip.pi-coding-agent ];
 
     file = {
       ".pi/agent/settings.json" = {
@@ -51,6 +49,11 @@ in
       ".pi/agent/extensions/image-history.ts" = {
         force = true;
         source = ./image-history.ts;
+      };
+
+      ".pi/agent/extensions/nix-comma.ts" = {
+        force = true;
+        source = ./nix-comma.ts;
       };
 
       ".pi/agent/extensions/statusline.ts" = {
