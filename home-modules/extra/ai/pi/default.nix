@@ -56,6 +56,20 @@ let
     }) dirPlugins
   );
 
+  # Web-search skill: SKILL.md + a wrapper script that pins ddgr as a
+  # runtimeInput, so the skill works regardless of what's on the agent's PATH.
+  webSearchScript = pkgs.writeShellApplication {
+    name = "web-search";
+    runtimeInputs = [ pkgs.ddgr ];
+    text = builtins.readFile ./skills/web-search/search.sh;
+  };
+
+  skillFiles = {
+    ".pi/agent/skills/web-search/SKILL.md".source = ./skills/web-search/SKILL.md;
+    ".pi/agent/skills/web-search/scripts/web-search".source =
+      "${webSearchScript}/bin/web-search";
+  };
+
   # Base16 palette for the extensions' TUI colors (lib/claude-style.ts reads
   # it at runtime), rendered from the same scheme stylix uses — so extension
   # greys/accents follow theme changes instead of being hardcoded.
@@ -79,7 +93,7 @@ in
     # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
     sessionVariables.PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
 
-    file = extensionFiles // libFiles // dirPackageFiles // {
+    file = extensionFiles // libFiles // dirPackageFiles // skillFiles // {
       # Palette consumed by lib/claude-style.ts (see base16Json above).
       ".pi/agent/extensions/lib/base16.json" = {
         force = true;

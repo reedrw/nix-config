@@ -79,6 +79,10 @@ home-modules/           # Reusable home-manager modules — same category-defaul
                         #   package.json are vendored; pins.json roots are npm tarballs
                         #   pinned with SRI hashes (update pins via plugins/update.sh,
                         #   also run by `update-all`)
+                        # skills/ — pi agent skills (dirs with SKILL.md), installed
+                        #   to ~/.pi/agent/skills/ by pi/default.nix; helper scripts
+                        #   there are writeShellApplication wrappers so they pin
+                        #   their own deps (e.g. web-search bundles ddgr)
   graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig, anki
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
