@@ -63,7 +63,7 @@ home-configurations/    # Per-user (and per-user@host) home-manager entry points
   ...
 
 nixos-modules/          # Reusable NixOS modules — each category has a default.nix that imports its siblings
-  core/                 # Always-on: nix, kernel, zsh, home-manager integration, styling, run0, tweaks
+  core/                 # Always-on: nix, kernel, zsh, home-manager integration, styling, run0, tweaks, gnupg, power
   custom/               # Site-specific: persist (impermanence), display (custom.display scaling), snapper, steam, nix-ssh-serve, vm-staging, boot/, games/
   extra/                # Opt-in: sshd, logitech, actualbudget, android/
   graphical/            # GUI: fonts, opengl, sound, wlr
@@ -79,10 +79,10 @@ home-modules/           # Reusable home-manager modules — same category-defaul
                         #   package.json are vendored; pins.json roots are npm tarballs
                         #   pinned with SRI hashes (update pins via plugins/update.sh,
                         #   also run by `update-all`)
-  graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig
+  graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig, anki
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
-  social/               # signal, telegram
+  social/               # signal, telegram, discord, weechat
   filesharing/
 
 pkgs/                   # Custom packages, overlays, and pkgs-extension helpers
@@ -200,7 +200,7 @@ This file serves as the persistent memory for this project. When you learn somet
 
 The pi extensions in `home-modules/extra/ai/pi/plugins/` implement a Claude Code-style tool UI. Non-obvious constraints learned building it:
 
-- **Tool-name ownership is exclusive**: only one extension may `registerTool` a given name (pi errors on conflicts). `bash` is owned by `nix-comma.ts` (spawn hook), `read` by `image-history.ts` (inline images), the rest by `claude-style-ui.ts`. Rendering slots are shared via `plugins/lib/claude-style.ts` (a `lib/` plugin kind — not auto-loaded by pi, but installed to `~/.pi/agent/extensions/lib/` for `./lib/…` relative imports).
+- **Tool-name ownership is exclusive**: only one extension may `registerTool` a given name (pi errors on conflicts). `bash` is owned by `nix-comma.ts` (spawn hook); `claude-style-ui.ts` owns everything else, including `read` with inline kitty-placeholder image rendering (functionality merged from the former image-history.ts — no separate extension anymore). Rendering slots are shared via `plugins/lib/claude-style.ts` (a `lib/` plugin kind — not auto-loaded by pi, but installed to `~/.pi/agent/extensions/lib/` for `./lib/…` relative imports).
 - **Shared state must live on `globalThis`**: each extension may get its own module instance of the lib, so cross-extension state (e.g. tool batch tracking) uses a `globalThis` singleton, not module scope.
 - **Never call `context.invalidate()` synchronously from a render slot**: it re-enters the row's `updateDisplay()` mid-rebuild and duplicates every component. Defer with `setTimeout(0)` (see `settleStatus`).
 - **Renderer exceptions are silent**: pi catches slot exceptions and swaps in its fallback renderer (raw truncated output). A TDZ/ReferenceError in a renderer looks like "glances disappeared". `/tmp`-style replay harness: run a real session JSONL through `scanToolGroupsFromHistory` + renderers with a mock theme and count throws.
