@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }:
 let
@@ -54,6 +55,18 @@ let
       };
     }) dirPlugins
   );
+
+  # Base16 palette for the extensions' TUI colors (lib/claude-style.ts reads
+  # it at runtime), rendered from the same scheme stylix uses — so extension
+  # greys/accents follow theme changes instead of being hardcoded.
+  base16Json = jsonFormat.generate "pi-base16.json" (
+    lib.getAttrs
+      (map (b: "base${b}") [
+        "00" "01" "02" "03" "04" "05" "06" "07"
+        "08" "09" "0A" "0B" "0C" "0D" "0E" "0F"
+      ])
+      (config.stylix.base16.mkSchemeAttrs config.stylix.base16Scheme)
+  );
 in
 {
   home = {
@@ -63,6 +76,11 @@ in
     packages = [ pkgs.pi-coding-agent ];
 
     file = extensionFiles // libFiles // dirPackageFiles // {
+      # Palette consumed by lib/claude-style.ts (see base16Json above).
+      ".pi/agent/extensions/lib/base16.json" = {
+        force = true;
+        source = base16Json;
+      };
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {

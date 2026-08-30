@@ -491,19 +491,61 @@ function formatThought(ms: number): string {
 }
 
 export function groupHeaderLine(theme: Theme, count: number, thoughtMs?: number): string {
-	// Same style as pi's "Thought for Ns" labels: italic muted grey.
+	// Full ANSI yellow (33 — same as the statusline git segment), italic label.
 	const label = `Ran ${count} tool call${count === 1 ? " " : "s"}`;
 	const thought = thoughtMs === undefined ? "" : `Thought for ${formatThought(thoughtMs)} · `;
-	return theme.fg("muted", `✻ ${theme.italic(`${thought}${label} (${keyText("app.tools.expand")} to expand)`)}`);
+	return `\x1b[33m✻ ${theme.italic(`${thought}${label} (${keyText("app.tools.expand")} to expand)`)}\x1b[0m`;
 }
 
-// One-line collapsed representation: `⎿ Bash(cmd) · 51 lines`. The argument
-// gets the accent color; `summary` is passed pre-colored by the caller.
-// One-line collapsed representation: `⎿ Bash(cmd) · 51 lines`. All dim —
-// color is reserved for signal: exit codes (red) and edit diffs (green/red),
-// which callers pass pre-colored in `summary`.
+// ── Terminal theme (base16) colors ────────────────────────────
+//
+// home-modules/extra/ai/pi/default.nix renders the stylix base16 scheme to
+// ~/.pi/agent/extensions/lib/base16.json, so TUI colors here can follow the
+// terminal theme instead of being hardcoded. Read once per process and
+// cached on globalThis (this lib is loaded by several independent extension
+// module instances); a missing/unreadable file falls back to the Ayu Dark
+// defaults.
+const BASE16_PATH = join(homedir(), ".pi/agent/extensions/lib/base16.json");
+const base16State = globalThis as Record<string, unknown>;
+
+function base16(name: string): string | undefined {
+	if (typeof base16State.__piClaudeStyleBase16 === "undefined") {
+		try {
+			base16State.__piClaudeStyleBase16 = JSON.parse(readFileSync(BASE16_PATH, "utf8"));
+		} catch {
+			base16State.__piClaudeStyleBase16 = {};
+		}
+	}
+	const palette = base16State.__piClaudeStyleBase16 as Record<string, string>;
+	return palette[name];
+}
+
+// Truecolor SGR foreground for a base16 color (hex without '#'); falls back
+// to `fallbackHex` when the palette is unavailable.
+function base16Fg(name: string, fallbackHex: string): string {
+	let hex = base16(name);
+	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) hex = fallbackHex;
+	const n = parseInt(hex, 16);
+	return `\x1b[38;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
+}
+
+// Truecolor SGR background for a base16 color (hex without '#'); falls back
+// to `fallbackHex` when the palette is unavailable.
+export function base16Bg(name: string, fallbackHex: string): string {
+	let hex = base16(name);
+	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) hex = fallbackHex;
+	const n = parseInt(hex, 16);
+	return `\x1b[48;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
+}
+
+// One-line collapsed representation: `⎿ Bash(cmd) · 51 lines`. The call
+// head recedes to base03 (comments grey, from the base16 palette) so color
+// is reserved for signal — exit codes, diffs, and pre-colored summaries.
+// Expanded/most-recent call lines keep their normal theme colors via
+// callLine.
 export function glanceLine(label: string, arg: string, summary: string, theme: Theme): Text {
-	const head = `${theme.fg("dim", label)}${theme.fg("dim", "(")}${theme.fg("dim", clip(arg, 56))}${theme.fg("dim", ")")}`;
+	const base03 = base16Fg("base03", "3e4b59");
+	const head = `${base03}${label}(${clip(arg, 56)})\x1b[39m`;
 	return new Text(`  ${theme.fg("muted", "⎿")}  ${head} · ${summary}`, 0, 0);
 }
 
@@ -666,6 +708,9 @@ export const edit: RenderSlots = withToolNotes({
 		}
 		const text = resultText(result);
 		if (context.isError) {
+			// Expanded views show the full error (Text word-wraps); collapsed
+			// rows keep the single clipped line.
+			if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
 			return resultLine(theme, clip(firstLine(text) || "error", 90), true);
 		}
 		const diff: string | undefined = result.details?.diff;
@@ -711,8 +756,10 @@ export const write: RenderSlots = {
 		const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
 		return callLine("Write", shortenPath(args.path ?? ""), theme, suffix, context);
 	},
-	renderResult(result, { isPartial }, theme, context) {
+	renderResult(result, { expanded, isPartial }, theme, context) {
 		const args = context.args ?? {};
+		const mode = groupMode(context?.toolCallId);
+		const expandedNow = expanded || mode.kind === "latest";
 		if (isPartial && !glance(context)) return resultLine(theme, "Writing…");
 		settleStatus(context, context.isError);
 		if (glance(context)) {
@@ -722,7 +769,9 @@ export const write: RenderSlots = {
 			return glanceLine("Write", shortenPath(args.path ?? ""), summary, theme);
 		}
 		if (context.isError) {
-			return resultLine(theme, clip(firstLine(resultText(result)) || "error", 90), true);
+			const text = resultText(result);
+			if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
+			return resultLine(theme, clip(firstLine(text) || "error", 90), true);
 		}
 		return resultLine(theme, "Written");
 	},
@@ -759,6 +808,7 @@ function countResult(unitSingular: string, unitPlural: string, label: string, ar
 				return glanceLine(label, argOf(args), summary, theme);
 			}
 			if (context.isError) {
+				if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
 				return resultLine(theme, clip(firstLine(text) || "error", 90), true);
 			}
 			if (expandedNow) {

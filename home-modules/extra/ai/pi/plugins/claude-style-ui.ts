@@ -44,6 +44,7 @@ import {
 	genericSlots,
 	claudeStyleEnabled,
 	edit,
+	base16Bg,
 	find,
 	foldToolGroup,
 	glanceLine,
@@ -719,9 +720,14 @@ function installCompactUserMessages(getTheme: () => Theme | undefined): void {
 			const railWidth = visibleWidth(rail);
 			const body = markdown.render(width - railWidth);
 			if (!Array.isArray(body) || body.length === 0) return fallback();
-			const lines = body.map((line) =>
-				truncateToWidth(`${rail}${trimMarkdownPadding(line)}`, width, ""),
-			);
+			// Full-width base01 band behind the message (from the stylix
+			// palette; see base16Bg in ./lib/claude-style.ts).
+			const bg = base16Bg("base01", "131721");
+			const lines = body.map((line) => {
+				const content = truncateToWidth(`${rail}${trimMarkdownPadding(line)}`, width, "");
+				const pad = " ".repeat(Math.max(0, width - visibleWidth(content)));
+				return bg + content + pad + "\x1b[0m";
+			});
 			lines[0] = OSC_ZONE_START + lines[0];
 			lines[lines.length - 1] = OSC_ZONE_END + OSC_ZONE_FINAL + lines[lines.length - 1];
 			return lines;
