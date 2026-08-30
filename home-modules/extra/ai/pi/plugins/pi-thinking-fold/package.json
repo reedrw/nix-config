@@ -1,0 +1,40 @@
+{
+  "name": "@99percentpeople/pi-thinking-fold",
+  "version": "0.1.9",
+  "private": true,
+  "description": "Fold streaming reasoning into a live tail preview and expand it with Pi's thinking shortcut",
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "keywords": [
+    "pi-package",
+    "pi",
+    "coding-agent",
+    "thinking",
+    "reasoning",
+    "tui"
+  ],
+  "author": "99percentpeople",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/99percentpeople/pi-extensions.git",
+    "directory": "extensions/thinking-fold"
+  },
+  "bugs": {
+    "url": "https://github.com/99percentpeople/pi-extensions/issues"
+  },
+  "homepage": "https://github.com/99percentpeople/pi-extensions#thinking-fold",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  }
+}

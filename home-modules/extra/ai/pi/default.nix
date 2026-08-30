@@ -8,7 +8,6 @@ let
   # extraPackages wrap + declarative settings.json with pi packages.
   jsonFormat = pkgs.formats.json { };
 
-
   # Everything in ./plugins is installed automatically: *.ts files as
   # extensions, everything else (vendored or pinned npm — see plugins/) as
   # local-dir packages. Install/uninstall by editing the plugins dir or
@@ -58,9 +57,10 @@ let
 in
 {
   home = {
-    # nix-locate (for nix-comma.ts) is already on PATH via home.packages in
-    # home-modules/core/comma/default.nix, so no wrapper needed.
-    packages = [ pkgs.mv.tip.pi-coding-agent ];
+    # Through the alias overlay so pkgs/patches-style tweaks (wheel scroll
+    # speed) apply; no wrapper needed — nix-locate (for nix-comma.ts) is
+    # already on PATH via home.packages in home-modules/core/comma/default.nix.
+    packages = [ pkgs.pi-coding-agent ];
 
     file = extensionFiles // libFiles // dirPackageFiles // {
       ".pi/agent/settings.json" = {
@@ -71,12 +71,13 @@ in
           defaultModel = "z-ai/glm-5.3-flash";
           defaultThinkingLevel = "high";
           theme = "dark";
+          tuiMode = "fullscreen";
           packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
           # Claude Code style tool rendering (one-line calls, terse results).
           # Flip to false to fall back to pi's default boxed tool rendering;
           # takes effect on restart or /reload.
           claudeStyle = true;
-          # image-history.ts renders tool-result images inside the tool row via
+          # claude-style-ui renders tool-result images inside the tool row via
           # kitty placeholders; disable pi's built-in Image path, which draws
           # outside the box (and is tmux-disabled anyway).
           terminal.showImages = false;

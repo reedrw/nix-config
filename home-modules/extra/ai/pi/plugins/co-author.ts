@@ -113,13 +113,20 @@ export default function coAuthorExtension(pi: ExtensionAPI) {
 				writeFileSync(file, message);
 				try {
 					const amend = await pi
-						.exec("git", ["commit", "--amend", "-F", file], { signal: ctx.signal })
+						// --allow-empty: amending an empty commit (message-only change)
+						// would otherwise be refused; for non-empty commits it is a no-op.
+						.exec("git", ["commit", "--amend", "--allow-empty", "-F", file], { signal: ctx.signal })
 						.catch(() => undefined);
 					if (amend && amend.code === 0) {
-						if (ctx.hasUI) {
-							ctx.ui.notify(`${MARKER} appended trailer to ${bad[0].slice(0, 7)}`, "info");
-						}
-						return;
+						// Note rides in the tool result rather than ctx.ui.notify —
+						// notifications render as raw chat rows that interleave with
+						// the claude-style batch glance lines.
+						return {
+							content: [
+								...event.content,
+								{ type: "text", text: `${MARKER} appended trailer to ${bad[0].slice(0, 7)}` },
+							],
+						};
 					}
 				} finally {
 					unlinkSync(file);

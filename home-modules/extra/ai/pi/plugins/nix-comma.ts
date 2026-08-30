@@ -28,8 +28,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { Type } from "typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { createBashToolDefinition } from "@earendil-works/pi-coding-agent";
-import { bash as claudeStyleBash, claudeStyleEnabled } from "./lib/claude-style.ts";
+import type { Type as TType } from "typebox";
 
 const NIX_INDEX_DB = join(homedir(), ".cache/nix-index");
 const PRIMARY_BRANCH = "nixpkgs";
@@ -194,42 +193,24 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		}
 	}
 
-	// The *definition* (not the wrapped AgentTool) is spread so the built-in
-	// render slots survive; the claude-style slots below replace them.
-	const bashTool = createBashToolDefinition(process.cwd(), {
-		spawnHook: ({ command, cwd, env }) => {
-			if (sessionPaths.length === 0) return { command, cwd, env };
-			return {
-				command,
-				cwd,
-				env: {
-					...env,
-					PATH: `${sessionPaths.join(":")}:${env.PATH ?? process.env.PATH ?? ""}`,
-				},
-			};
-		},
-	});
+	// PATH injection hook, published for whoever owns the `bash` tool
+	// registration (claude-style-ui loads first and consults it; without it
+	// pi's built-in bash runs un-provisioned). Publishing a hook instead of
+	// registering bash keeps this extension independent of any UI.
+	(globalThis as Record<string, unknown>).__nixCommaSpawnHook = ({ env }: { env: Record<string, string | undefined> }) =>
+		sessionPaths.length === 0
+			? undefined
+			: { env: { ...env, PATH: `${sessionPaths.join(":")}:${env.PATH ?? process.env.PATH ?? ""}` } };
 
-	// Override the built-in bash tool so the spawn hook applies to agent
-	// commands. When claude-style rendering is enabled, render it that way
-	// (one-line call, terse result); otherwise keep pi's default rendering.
-	pi.registerTool({
-		...bashTool,
-		...(claudeStyleEnabled()
-			? {
-					renderShell: claudeStyleBash.renderShell,
-					renderCall: claudeStyleBash.renderCall,
-					renderResult: claudeStyleBash.renderResult,
-				}
-			: {}),
-	});
 
 	// Explicit provisioning: pick a variant among ambiguous candidates, override
 	// an earlier auto-provision, or make a known attr available on demand.
-	pi.registerTool({
+	// Opts into claude-style rendering via its runtime API (if loaded); without
+	// it the tool registers plain.
+	const provisionTool = {
 		name: "nix_provision",
 		label: "Nix Provision",
-		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override a previously provisioned variant, or to make a known attr available on demand.`,
+		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
 		promptSnippet: "Provision a nixpkgs attr onto this session's PATH",
 		promptGuidelines: [
 			`Use nix_provision when a ${MARKER} tool result lists multiple candidate attrs and you need a specific variant, or to swap a previously provisioned binary for a different variant.`,
@@ -256,27 +237,29 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 				);
 			}
 			prependSessionPaths(resolution.binDirs);
-			if (ctx.hasUI) {
-				ctx.ui.notify(
-					`${MARKER} provisioned ${resolution.branch}#${params.attr}`,
-					"info",
-				);
-			}
 			const shadowNote =
 				sessionPaths.length > resolution.binDirs.length
 					? " These shadow earlier provisions of same-named binaries."
 					: "";
+			const note = `${MARKER} provisioned ${resolution.branch}#${params.attr}; added ${resolution.binDirs.join(", ")} to PATH for the rest of the session.${shadowNote} Re-run your command.`;
+			// UI note via ctx.ui.notify: folded into the claude-style batch when
+			// that UI is loaded; the model reads the content copy either way.
+			ctx.ui?.notify?.(note);
 			return {
-				content: [
-					{
-						type: "text",
-						text: `${MARKER} provisioned ${resolution.branch}#${params.attr}; added ${resolution.binDirs.join(", ")} to PATH for the rest of the session.${shadowNote} Re-run your command.`,
-					},
-				],
+				content: [{ type: "text", text: note }],
 				details: { attr: params.attr, branch: resolution.branch, binDirs: resolution.binDirs },
 			};
 		},
-	});
+	};
+	const styleApi = (globalThis as Record<string, unknown>).__piClaudeStyle as
+		| { maybeDecorate: (tool: any, opts?: { label?: string; argOf?: (args: any) => string }) => any }
+		| undefined;
+	pi.registerTool(
+		styleApi?.maybeDecorate(provisionTool, {
+			label: "Nix Provision",
+			argOf: (args: any) => `${args.attr ?? ""}${args.cmd ? ` · ${args.cmd}` : ""}`,
+		}) ?? provisionTool,
+	);
 
 	// Tell the agent up front that missing commands resolve themselves.
 	pi.on("before_agent_start", async (event) => {
@@ -348,8 +331,10 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		}
 
 		if (notes.length === 0) return;
+		const joined = notes.join("\n\n");
+		ctx.ui?.notify?.(joined);
 		return {
-			content: [...event.content, { type: "text", text: notes.join("\n\n") }],
+			content: [...event.content, { type: "text", text: joined }],
 		};
 	});
 
@@ -491,9 +476,6 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 			const resolution = await resolveAttr(attr, cmd, signal);
 			if (resolution.kind === "ok") {
 				prependSessionPaths(resolution.binDirs);
-				if (ctx.hasUI) {
-					ctx.ui.notify(`${MARKER} provisioned ${resolution.branch}#${attr} for \`${cmd}\``, "info");
-				}
 				return {
 					kind: "provisioned",
 					provision: {

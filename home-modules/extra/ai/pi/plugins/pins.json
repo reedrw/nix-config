@@ -1,14 +1,9 @@
 {
   "_comment": "Versions and SRI hashes for npm-sourced pi packages, pinned natively. 'roots' are the pi plugins exposed by plugins/default.nix (loaded by pi from local dirs); 'packages' holds every pinned package including transitive deps — entries with a 'dependencies' list get those pinned packages symlinked into their node_modules (flat layout, matching npm). Regenerate with ./update.sh (also run automatically by `update-all`).",
   "roots": [
-    "pi-context-view",
-    "@99percentpeople/pi-thinking-fold"
+    "pi-context-view"
   ],
   "packages": {
-    "@99percentpeople/pi-thinking-fold": {
-      "version": "0.1.9",
-      "hash": "sha512-g4xD+64k//L9dk1XzcRvNmImMFdmHCduOUvR1dMjs80/SDfG2RZUVGlWDta5WXDjexGR5cJa7VjQsjeQax1pZQ=="
-    },
     "pi-context-view": {
       "version": "0.4.3",
       "hash": "sha512-iKwFmK+3SOiVtwNR1gfi+ssFQtO94Onv3aUve1s2VltgwzidZTYknEgmPgapTZr/jocauvBfbEo7RJJC37AkvQ=="

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "openai-compatible-trace",
+      "api": "^openai-completions$",
+      "behavior": "trace"
+    },
+    {
+      "id": "anthropic-compatible-trace",
+      "api": "^anthropic-messages$",
+      "behavior": "trace"
+    },
+    {
+      "id": "bedrock-converse-trace",
+      "api": "^bedrock-converse-stream$",
+      "behavior": "trace"
+    },
+    {
+      "id": "mistral-conversations-trace",
+      "api": "^mistral-conversations$",
+      "behavior": "trace"
+    },
+    {
+      "id": "pi-messages-trace",
+      "api": "^pi-messages$",
+      "behavior": "trace"
+    },
+    {
+      "id": "responses-summary",
+      "api": "responses$",
+      "behavior": "summary"
+    },
+    {
+      "id": "google-summary",
+      "api": "^google-(?:generative-ai|vertex)$",
+      "behavior": "summary"
+    },
+    {
+      "id": "anthropic-first-party-summary",
+      "api": "^anthropic-messages$",
+      "provider": "^anthropic$",
+      "behavior": "summary"
+    },
+    {
+      "id": "deepseek-trace",
+      "provider": "^deepseek$",
+      "model": "^deepseek-.*$",
+      "behavior": "trace"
+    }
+  ]
+}
