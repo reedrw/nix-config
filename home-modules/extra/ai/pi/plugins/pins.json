@@ -6,8 +6,8 @@
   ],
   "packages": {
     "pi-context-view": {
-      "version": "0.4.3",
-      "hash": "sha512-iKwFmK+3SOiVtwNR1gfi+ssFQtO94Onv3aUve1s2VltgwzidZTYknEgmPgapTZr/jocauvBfbEo7RJJC37AkvQ=="
+      "version": "0.5.0",
+      "hash": "sha512-9NID030s3Oqi0gH4NNVYxdayY2kKZ5Rv/gm429mTgjoKv0UKnzI82THLlAtoOVT/3lyBxn9LnqrR5wCabbB4Zw=="
     },
     "pi-output-styles": {
       "version": "0.3.3",
