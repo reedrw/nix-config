@@ -6,7 +6,10 @@
 //
 // While the agent is working (between agent_start and agent_settled) the
 // effort label animates: the level's color pulses through grey text, and
-// "maximum" gets a rolling rainbow. When idle, everything is static.
+// "maximum" gets a rolling rainbow. A live tok/s meter (rolling 3s window
+// over output tokens) and turn timer sit between the ctx bar and spend
+// meter while streaming; once the turn settles they freeze into a dimmed
+// summary of the last turn.
 //
 // Uses raw ANSI codes matching claude-statusline.sh so the palette matches
 // the terminal theme, not pi's internal theme.
@@ -43,6 +46,13 @@ function pctColor(pct: number): string {
   if (pct < 50) return GREEN;
   if (pct < 75) return YELLOW;
   return RED;
+}
+
+// output tok/s: red < 30, yellow < 80, green >= 80
+function tokColor(rate: number): string {
+  if (rate < 30) return RED;
+  if (rate < 80) return YELLOW;
+  return GREEN;
 }
 
 function bar(pct: number): string {
@@ -87,6 +97,12 @@ function sessionSpend(ctx: any): number {
   return total;
 }
 
+function fmtDuration(ms: number): string {
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m${String(s % 60).padStart(2, "0")}s`;
+}
+
 function repoName(cwd: string): string {
   try {
     const url = execFileSync("git", ["remote", "get-url", "origin"], {
@@ -106,17 +122,58 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   let tuiRef: { requestRender(): void } | null = null;
   let cachedRepo: string | null = null;
 
-  // Animation state: a tick timer that runs only while the agent is working
-  // at max effort (the only animated label).
+  // Animation state: a tick timer that runs while the agent is working
+  // (drives the max-effort rainbow and keeps the turn timer ticking).
   let waiting = false;
   let timer: ReturnType<typeof setInterval> | null = null;
   let tickCount = 0;
 
+  // tok/s + turn timer state. rate is a rolling rate over the last
+  // RATE_WINDOW_MS of output tokens; turnTokens is a strictly monotonic
+  // cumulative counter (samples are only ever pushed upwards, so the rate
+  // can never go negative); frozen holds the settled turn's summary.
+  const RATE_WINDOW_MS = 3000;
+  let turnStart: number | null = null;
+  let elapsedMs = 0;
+  let samples: { t: number; tokens: number }[] = [];
+  let rate: number | null = null;
+  // per-message accounting: usage.output restarts at 0 for each assistant
+  // message in the turn, and some providers report non-cumulative or
+  // decreasing values mid-stream, so reconcile per message and clamp.
+  let curMsgKey: string | number | null = null;
+  let msgStart = 0; // turnTokens when this message started
+  let msgCounted = 0; // highest usage.output seen for this message
+  let msgEst = 0; // estimate-based tokens for this message
+  let msgStreamStart: number | null = null; // first token of this message
+  let lastTokT: number | null = null; // time of the most recent token
+  let streamMs = 0; // time spent actually receiving tokens (TTFT excluded)
+  let turnTokens = 0;
+  // starts with a placeholder so the meter is visible before the first turn
+  let frozen: { rate: number | null; ms: number } = { rate: null, ms: 0 };
+  let lastTokRender = 0;
+
+  // Close the current message's streaming span. Closes at the last token's
+  // timestamp — NOT "now" — because by the time the next message's first
+  // update arrives, tool execution and the provider round-trip have already
+  // happened, and counting them would deflate the streaming average.
+  const closeStreamingSpan = () => {
+    if (msgStreamStart != null && lastTokT != null && lastTokT > msgStreamStart) {
+      streamMs += lastTokT - msgStreamStart;
+    }
+    msgStreamStart = null;
+  };
+
   const syncTimer = (ctx?: any) => {
-    const wanted = waiting && ctx?.thinkingLevel === "max";
+    const wanted = waiting; // tick while working: rainbow + turn timer refresh
     if (wanted && !timer) {
       timer = setInterval(() => {
         tickCount++;
+        if (waiting && turnStart != null) {
+          elapsedMs = Date.now() - turnStart;
+          // let the rate expire when nothing has streamed for a while
+          const last = samples[samples.length - 1];
+          if (last && Date.now() - last.t > RATE_WINDOW_MS) rate = null;
+        }
         tuiRef?.requestRender();
       }, TICK_MS);
       // never keep a process alive just for the animation
@@ -169,6 +226,30 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                   parts.push(meter("📁 ctx", Math.round(usage.percent)));
                 }
 
+                // tok/s + turn timer between the ctx bar and the spend meter
+                if (waiting) {
+                  const bits: string[] = [];
+                  if (rate != null) {
+                    bits.push(
+                      `${tokColor(rate)}${BOLD}⚡ ${Math.round(rate)} tok/s${RESET}`,
+                    );
+                  } else {
+                    // pending until the first rate window fills
+                    bits.push(`${DIM}⚡ -- tok/s${RESET}`);
+                  }
+                  if (elapsedMs > 0) {
+                    bits.push(`${DIM}${fmtDuration(elapsedMs)}${RESET}`);
+                  }
+                  parts.push(bits.join(`${DIM} · ${RESET}`));
+                } else {
+                  const rateBit =
+                    frozen.rate != null
+                      ? `${tokColor(frozen.rate)}⚡ ${Math.round(frozen.rate)} tok/s${RESET}`
+                      : `${DIM}⚡ -- tok/s${RESET}`;
+                  const durBit = `${DIM}${fmtDuration(frozen.ms)}${RESET}`;
+                  parts.push(rateBit + `${DIM} · ${RESET}` + durBit);
+                }
+
                 parts.push(dimPart(`💵 $${sessionSpend(ctx).toFixed(2)}`));
 
                 if (!cachedRepo) cachedRepo = repoName(ctx.cwd);
@@ -205,12 +286,100 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   // (including retries and queued follow-ups).
   pi.on("agent_start", async (_event, ctx) => {
     waiting = true;
+    turnStart = Date.now();
+    elapsedMs = 0;
+    samples = [];
+    rate = null;
+    turnTokens = 0;
+    curMsgKey = null;
+    msgStart = 0;
+    msgCounted = 0;
+    msgEst = 0;
+    msgStreamStart = null;
+    lastTokT = null;
+    streamMs = 0;
+    frozen = { rate: null, ms: 0 };
     syncTimer(ctx);
   });
 
   pi.on("agent_settled", async (_event, ctx) => {
     waiting = false;
+    if (turnStart != null) elapsedMs = Date.now() - turnStart;
+    turnStart = null;
+    closeStreamingSpan();
+    // turn average over time actually spent streaming (first token of each
+    // message to its last), so TTFT/tool latency doesn't drag it down
+    const avg =
+      turnTokens > 0 && streamMs > 500 ? turnTokens / (streamMs / 1000) : null;
+    frozen = { rate: avg, ms: elapsedMs };
     syncTimer(ctx);
+  });
+
+  // Track streamed output tokens for the tok/s meter. The partial message
+  // on each update carries live usage.output; fall back to a ~4 chars/token
+  // estimate when the provider doesn't stream usage.
+  pi.on("message_update", async (event) => {
+    if (!waiting || turnStart == null) return;
+    const now = Date.now();
+    elapsedMs = now - turnStart;
+
+    const msg = event.message as any;
+    const raw = msg?.usage?.output ?? 0;
+    const ev = (event as any).assistantMessageEvent;
+
+    // per-message accounting: usage.output is per assistant message and
+    // can even decrease mid-stream with some providers, so track the
+    // current message separately and keep the turn total monotonic
+    const mid = msg?.responseId ?? msg?.timestamp ?? null;
+    if (mid !== curMsgKey) {
+      closeStreamingSpan();
+      curMsgKey = mid;
+      msgStart = turnTokens;
+      msgCounted = 0;
+      msgEst = 0;
+    }
+    if (raw > msgCounted) msgCounted = raw;
+    if (ev?.type === "text_delta" || ev?.type === "thinking_delta") {
+      // ~4 chars/token estimate for providers that don't stream usage
+      msgEst += Math.ceil(ev.delta.length / 4);
+    }
+    // real usage is authoritative when the provider reports it; the
+    // char-based estimate only fills in when usage isn't streaming
+    const cur = msgCounted > 0 ? msgCounted : msgEst;
+    const cand = msgStart + cur;
+    if (cand > turnTokens) {
+      if (msgStreamStart == null) msgStreamStart = now; // first token
+      lastTokT = now;
+      turnTokens = cand;
+      const last = samples[samples.length - 1];
+      if (!last || turnTokens > last.tokens) samples.push({ t: now, tokens: turnTokens });
+    }
+
+    // rolling rate over the last RATE_WINDOW_MS (keep one baseline sample
+    // just outside the window so short bursts still average). A baseline
+    // much older than the window means a streaming gap (tool call, retry) —
+    // drop it so the resumed rate isn't diluted across the dead time.
+    while (samples.length > 2 && now - samples[1].t > RATE_WINDOW_MS) {
+      samples.shift();
+    }
+    while (
+      samples.length > 1 &&
+      now - samples[0].t > RATE_WINDOW_MS + 2000
+    ) {
+      samples.shift();
+    }
+    if (samples.length >= 2) {
+      const first = samples[0];
+      const last = samples[samples.length - 1];
+      const dt = (last.t - first.t) / 1000;
+      if (dt >= 0.5) rate = (last.tokens - first.tokens) / dt;
+    }
+
+    // throttle redraws — message_update fires per delta
+    if (now - lastTokRender > 100) {
+      lastTokRender = now;
+      tuiRef?.requestRender();
+    }
   });
 
   // Redraw when the context window or spend changes after each response.
@@ -232,6 +401,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
 
   pi.on("session_shutdown", async (_event, ctx) => {
     waiting = false;
+    turnStart = null;
     syncTimer(ctx);
     tuiRef = null;
   });
