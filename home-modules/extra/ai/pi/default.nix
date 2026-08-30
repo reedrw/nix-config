@@ -75,6 +75,10 @@ in
     # already on PATH via home.packages in home-modules/core/comma/default.nix.
     packages = [ pkgs.pi-coding-agent ];
 
+    # pi-output-styles keeps its user default (/style … --save) and custom
+    # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
+    sessionVariables.PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
+
     file = extensionFiles // libFiles // dirPackageFiles // {
       # Palette consumed by lib/claude-style.ts (see base16Json above).
       ".pi/agent/extensions/lib/base16.json" = {
@@ -104,5 +108,7 @@ in
     };
   };
 
+  # .pi/agent/styles holds pi-output-styles user state (covered by the .pi
+  # persistence below).
   custom.persistence.directories = [ ".pi" ];
 }
