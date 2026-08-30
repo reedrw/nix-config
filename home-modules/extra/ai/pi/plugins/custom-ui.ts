@@ -1,18 +1,18 @@
-// claude-style-ui: Claude Code inspired rendering for pi's built-in tools,
+// custom-ui: custom tool rendering for pi's built-in tools,
 // owned here outright (pi gives tool-name ownership to the first extension
 // that registers; this extension loads before nix-comma, so it wins `bash`).
 //
 // One-line calls (`● edit src/foo.ts`), one-line result summaries
 // (`⎿  +12 −3`, `⎿  42 lines`), no boxes — full output on demand via
-// ctrl+o. Render slots live in lib/claude-style.ts.
+// ctrl+o. Render slots live in lib/custom-ui.ts.
 //
 // Also owns the `read` tool with inline kitty-placeholder image rendering
 // (merged from image-history.ts): user-message images, history fallback
 // cells, and tool-result images inside the read row.
 //
-// Other extensions opt in voluntarily via the __piClaudeStyle runtime API
+// Other extensions opt in voluntarily via the __piCustomUi runtime API
 // (no lib import, no load-order coupling):
-//   const api = (globalThis as any).__piClaudeStyle;
+//   const api = (globalThis as any).__piCustomUi;
 //   pi.registerTool(api?.maybeDecorate(myTool, { label: "My Tool", argOf: (a) => a.path }) ?? myTool);
 // Registration order: the API installs when this extension loads, which is
 // before user extensions (alphabetical in ~/.pi/agent/extensions), so the
@@ -42,7 +42,7 @@ import {
 	bash,
 	collapseToolGroup,
 	genericSlots,
-	claudeStyleEnabled,
+	customUiEnabled,
 	edit,
 	base16Bg,
 	find,
@@ -60,7 +60,7 @@ import {
 	tickFoldedBatch,
 	trackGroupToolCall,
 	write,
-} from "./lib/claude-style.ts";
+} from "./lib/custom-ui.ts";
 import {
 	calculateImageRows,
 	Container,
@@ -542,7 +542,7 @@ function imagePortion(
 
 function registerReadTool(pi: ExtensionAPI, cwd: string): void {
 	const readDefinition = createReadToolDefinition(cwd);
-	if (!claudeStyleEnabled()) {
+	if (!customUiEnabled()) {
 		// Default pi look: boxed row with the built-in fallback text preview
 		// (mirrors what tool-execution.ts renders when no renderResult is set).
 		pi.registerTool({
@@ -626,7 +626,7 @@ function registerReadTool(pi: ExtensionAPI, cwd: string): void {
 	});
 }
 
-// ── Image features (independent of claude-style) ─────────────
+// ── Image features (independent of custom-ui) ─────────────
 
 function registerImageFeatures(pi: ExtensionAPI): void {
 	// Inline rendering: replace blob markers in user messages with placeholder
@@ -664,7 +664,7 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 	// session history on session_start). Without this a read that returned an
 	// image never qualifies as the newest image read during the session, so
 	// its image stays hidden until the next restart. (Lost in the
-	// image-history → claude-style-ui merge.)
+	// image-history → custom-ui merge.)
 	pi.on("tool_call", async (event) => {
 		const e = event as { toolName?: string; toolCallId?: string };
 		if (e.toolName !== "read" || typeof e.toolCallId !== "string") return;
@@ -691,7 +691,7 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 // theming keep working, and the OSC-133 prompt-zone markers the original
 // render adds around the message are preserved.
 
-const USER_MESSAGE_PATCHED = Symbol.for("pi-claude-style/userMessageRender");
+const USER_MESSAGE_PATCHED = Symbol.for("pi-custom-ui/userMessageRender");
 const OSC_ZONE_START = "\x1b]133;A\x07";
 const OSC_ZONE_END = "\x1b]133;B\x07";
 const OSC_ZONE_FINAL = "\x1b]133;C\x07";
@@ -721,7 +721,7 @@ function installCompactUserMessages(getTheme: () => Theme | undefined): void {
 			const body = markdown.render(width - railWidth);
 			if (!Array.isArray(body) || body.length === 0) return fallback();
 			// Full-width base01 band behind the message (from the stylix
-			// palette; see base16Bg in ./lib/claude-style.ts).
+			// palette; see base16Bg in ./lib/custom-ui.ts).
 			const bg = base16Bg("base01", "131721");
 			const lines = body.map((line) => {
 				const content = truncateToWidth(`${rail}${trimMarkdownPadding(line)}`, width, "");
@@ -737,14 +737,14 @@ function installCompactUserMessages(getTheme: () => Theme | undefined): void {
 	};
 }
 
-export default function claudeStyleUi(pi: ExtensionAPI) {
+export default function customUi(pi: ExtensionAPI) {
 	// Image features (inline user-message images, history fallback cells)
-	// register regardless of the claude-style setting — they're a rendering
+	// register regardless of the custom-ui setting — they're a rendering
 	// fix, not a style choice. Only the tool rendering below is gated.
 	registerImageFeatures(pi);
 	// With the style disabled nothing further happens here: pi's built-ins
 	// stay as they are (read was registered below; bash stays with nix-comma).
-	if (!claudeStyleEnabled()) return;
+	if (!customUiEnabled()) return;
 
 	// User messages get the zentui compact look (rail + body, no box). The
 	// theme handle reads ctx.ui.theme lazily at render time — it's a live
@@ -758,7 +758,7 @@ export default function claudeStyleUi(pi: ExtensionAPI) {
 	// instead of rendering a raw chat row that interleaves with the glance
 	// lines. Warnings/errors and notifications outside a batch stay native.
 	// Patched once at the prototype (fork-style), guarded against stacking.
-	const NOTIFY_PATCHED = Symbol.for("pi-claude-style/showExtensionNotify");
+	const NOTIFY_PATCHED = Symbol.for("pi-custom-ui/showExtensionNotify");
 	const notifyProto = InteractiveMode.prototype as unknown as Record<PropertyKey, unknown>;
 	if (typeof notifyProto.showExtensionNotify === "function" && !notifyProto[NOTIFY_PATCHED]) {
 		notifyProto[NOTIFY_PATCHED] = true;
@@ -805,7 +805,7 @@ export default function claudeStyleUi(pi: ExtensionAPI) {
 	// elapsed time); a timer re-renders the batch so it counts up. The key of
 	// the streaming message is published for the lib and cleared whenever the
 	// reasoning phase ends.
-	const LIVE_THOUGHT_KEY = "__piClaudeStyleLiveThought";
+	const LIVE_THOUGHT_KEY = "__piCustomUiLiveThought";
 	let tickTimer: ReturnType<typeof setInterval> | undefined;
 	const stopThoughtTick = () => {
 		if (tickTimer) clearInterval(tickTimer);
@@ -937,7 +937,7 @@ export default function claudeStyleUi(pi: ExtensionAPI) {
 	// `bash` ownership: this extension loads before nix-comma, so its
 	// registration wins. The PATH spawn hook from nix-comma is consulted
 	// through its published handle (globalThis.__nixCommaSpawnHook); with
-	// nix-comma absent this is plain bash with claude-style rendering.
+	// nix-comma absent this is plain bash with custom-ui rendering.
 	pi.registerTool({
 		...createBashToolDefinition(process.cwd(), {
 			spawnHook: ({ command, cwd, env }) => {
@@ -956,11 +956,11 @@ export default function claudeStyleUi(pi: ExtensionAPI) {
 	});
 
 	// Opt-in API for third-party tools (see header comment). maybeDecorate
-	// returns a claude-style-rendered copy of the caller's tool definition —
+	// returns a custom-ui-rendered copy of the caller's tool definition —
 	// the caller registers the returned value. Without this extension loaded
 	// (or with the style off) callers register their plain tool unchanged:
 	// they either consult this API or don't, their choice.
-	const STYLE_API_KEY = "__piClaudeStyle";
+	const STYLE_API_KEY = "__piCustomUi";
 	const api = {
 		version: 1 as const,
 		maybeDecorate<T extends Record<string, unknown>>(

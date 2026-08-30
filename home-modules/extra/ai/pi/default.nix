@@ -70,7 +70,7 @@ let
       "${webSearchScript}/bin/web-search";
   };
 
-  # Base16 palette for the extensions' TUI colors (lib/claude-style.ts reads
+  # Base16 palette for the extensions' TUI colors (lib/custom-ui.ts reads
   # it at runtime), rendered from the same scheme stylix uses — so extension
   # greys/accents follow theme changes instead of being hardcoded.
   base16Json = jsonFormat.generate "pi-base16.json" (
@@ -94,7 +94,7 @@ in
     sessionVariables.PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
 
     file = extensionFiles // libFiles // dirPackageFiles // skillFiles // {
-      # Palette consumed by lib/claude-style.ts (see base16Json above).
+      # Palette consumed by lib/custom-ui.ts (see base16Json above).
       ".pi/agent/extensions/lib/base16.json" = {
         force = true;
         source = base16Json;
@@ -112,8 +112,8 @@ in
           # Claude Code style tool rendering (one-line calls, terse results).
           # Flip to false to fall back to pi's default boxed tool rendering;
           # takes effect on restart or /reload.
-          claudeStyle = true;
-          # claude-style-ui renders tool-result images inside the tool row via
+          customUi = true;
+          # custom-ui renders tool-result images inside the tool row via
           # kitty placeholders; disable pi's built-in Image path, which draws
           # outside the box (and is tmux-disabled anyway).
           terminal.showImages = false;

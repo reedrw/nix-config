@@ -1,4 +1,4 @@
-// claude-style: Claude Code inspired tool rendering for pi.
+// custom-ui: custom tool rendering for pi.
 //
 // One-line tool calls (`● Bash <cmd>`), one-line result summaries
 // (`⎿  42 lines`), no boxes. Full output on demand via ctrl+o (the expanded
@@ -8,7 +8,7 @@
 // auto-loads `extensions/*.ts` and `extensions/*/index.ts`, so files under
 // `lib/` are inert on their own. Tool-name ownership is split across
 // extensions (nix-comma.ts owns `bash`, image-history.ts owns `read`,
-// claude-style-ui.ts owns the rest), and each imports its slots from here.
+// custom-ui.ts owns the rest), and each imports its slots from here.
 //
 // Self-shell mode (`renderShell: "self"`) drops pi's padded tool Box so rows
 // stack tightly, Claude Code style.
@@ -28,18 +28,18 @@ const MAX_LINE = 120;
 // Cap for expanded diff output; bash etc. rely on pi's upstream truncation.
 const MAX_EXPANDED_DIFF_LINES = 400;
 
-// Global style toggle: `claudeStyle: false` in .pi/settings.json (project)
+// Global style toggle: `customUi: false` in .pi/settings.json (project)
 // or ~/.pi/agent/settings.json (global; project wins) keeps pi's default
 // rendering. Checked when extensions register their render slots, so a
 // toggle needs a restart or /reload to take effect.
-export function claudeStyleEnabled(): boolean {
+export function customUiEnabled(): boolean {
 	for (const path of [
 		join(process.cwd(), ".pi", "settings.json"),
 		join(homedir(), ".pi", "agent", "settings.json"),
 	]) {
 		try {
-			const settings = JSON.parse(readFileSync(path, "utf8")) as { claudeStyle?: unknown };
-			if (typeof settings.claudeStyle === "boolean") return settings.claudeStyle;
+			const settings = JSON.parse(readFileSync(path, "utf8")) as { customUi?: unknown };
+			if (typeof settings.customUi === "boolean") return settings.customUi;
 		} catch {
 			// Missing or unparsable — fall through to the next scope.
 		}
@@ -198,8 +198,8 @@ function withMore(text: string, cap: number, theme: Theme): string {
 // expansion always overrides the grouping.
 //
 // State lives on globalThis: this lib module is imported by several
-// independent extensions (nix-comma.ts, image-history.ts, claude-style-ui.ts)
-// which may each get their own module instance. claude-style-ui.ts registers
+// independent extensions (nix-comma.ts, image-history.ts, custom-ui.ts)
+// which may each get their own module instance. custom-ui.ts registers
 // the event handlers; the renderers in every extension read the shared state.
 
 interface ToolBatch {
@@ -228,7 +228,7 @@ interface GroupState {
 	invalidators: Map<string, () => void>;
 }
 
-const GROUP_STATE_KEY = "__piClaudeStyleToolGroups";
+const GROUP_STATE_KEY = "__piCustomUiToolGroups";
 
 function freshGroupState(): GroupState {
 	return {
@@ -438,9 +438,9 @@ export function groupMode(toolCallId: string | undefined | null): GroupMode {
 
 // Thinking durations are published by the pi-thinking-fold fork (live while
 // streaming and reconstructed from message timestamps on session restore).
-const THOUGHT_FOR_KEY = "__piClaudeStyleThoughtFor";
-const THOUGHT_LIVE_KEY = "__piClaudeStyleThoughtLive";
-const LIVE_THOUGHT_KEY = "__piClaudeStyleLiveThought";
+const THOUGHT_FOR_KEY = "__piCustomUiThoughtFor";
+const THOUGHT_LIVE_KEY = "__piCustomUiThoughtLive";
+const LIVE_THOUGHT_KEY = "__piCustomUiLiveThought";
 
 interface LiveTiming {
 	startedAt: number;
@@ -509,14 +509,14 @@ const BASE16_PATH = join(homedir(), ".pi/agent/extensions/lib/base16.json");
 const base16State = globalThis as Record<string, unknown>;
 
 function base16(name: string): string | undefined {
-	if (typeof base16State.__piClaudeStyleBase16 === "undefined") {
+	if (typeof base16State.__piCustomUiBase16 === "undefined") {
 		try {
-			base16State.__piClaudeStyleBase16 = JSON.parse(readFileSync(BASE16_PATH, "utf8"));
+			base16State.__piCustomUiBase16 = JSON.parse(readFileSync(BASE16_PATH, "utf8"));
 		} catch {
-			base16State.__piClaudeStyleBase16 = {};
+			base16State.__piCustomUiBase16 = {};
 		}
 	}
-	const palette = base16State.__piClaudeStyleBase16 as Record<string, string>;
+	const palette = base16State.__piCustomUiBase16 as Record<string, string>;
 	return palette[name];
 }
 
@@ -841,7 +841,7 @@ export const ls: RenderSlots = {
 };
 
 // ---------------------------------------------------------------------------
-// generic — full claude-style treatment (grouping, glance lines, status dots,
+// generic — full custom-ui treatment (grouping, glance lines, status dots,
 // streaming output, expansion) for tools without bespoke renderers. Any
 // extension that owns a tool can adopt the format in three lines:
 //   const slots = genericSlots("My Tool", (args) => args.path ?? "");

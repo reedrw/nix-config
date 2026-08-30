@@ -564,11 +564,11 @@ function getPatchRecord(): PatchRecord | undefined {
   ] as PatchRecord | undefined;
 }
 
-// Mirror completed thinking durations for the claude-style extensions
-// (extensions/lib/claude-style.ts): they fold the duration into their tool
+// Mirror completed thinking durations for the custom-ui extensions
+// (extensions/lib/custom-ui.ts): they fold the duration into their tool
 // batch header ("✻ Thought for 3.5s · Ran 2 tool calls") and need the same
 // timings this package reconstructs for restored sessions.
-const THOUGHT_FOR_KEY = "__piClaudeStyleThoughtFor";
+const THOUGHT_FOR_KEY = "__piCustomUiThoughtFor";
 
 function publishThoughtFor(timestamp: number, timing: ThinkingTiming): void {
   if (timing.completedAt === undefined) return;
@@ -577,9 +577,9 @@ function publishThoughtFor(timestamp: number, timing: ThinkingTiming): void {
   map.set(timestamp, Math.max(0, timing.completedAt - timing.startedAt));
 }
 
-// Raw timings (startedAt + optional completedAt) so the claude-style header
+// Raw timings (startedAt + optional completedAt) so the custom-ui header
 // can count an in-progress reasoning block up in real time.
-const THOUGHT_LIVE_KEY = "__piClaudeStyleThoughtLive";
+const THOUGHT_LIVE_KEY = "__piCustomUiThoughtLive";
 
 function publishThoughtLive(timestamp: number, timing: ThinkingTiming): void {
   const w = globalThis as Record<string, unknown>;
@@ -587,14 +587,14 @@ function publishThoughtLive(timestamp: number, timing: ThinkingTiming): void {
   map.set(timestamp, { startedAt: timing.startedAt, completedAt: timing.completedAt });
 }
 
-// True when the claude-style UI owns tool rendering: assistant messages that
+// True when the custom-ui UI owns tool rendering: assistant messages that
 // carry tool calls then get their thinking folded into the tool batch header
 // instead of spending a line repeating the duration here.
-function claudeStyleMergeEnabled(): boolean {
+function customUiMergeEnabled(): boolean {
   for (const path of [join(process.cwd(), ".pi", "settings.json"), join(homedir(), ".pi", "agent", "settings.json")]) {
     try {
-      const settings = JSON.parse(readFileSync(path, "utf8")) as { claudeStyle?: unknown };
-      if (typeof settings.claudeStyle === "boolean") return settings.claudeStyle;
+      const settings = JSON.parse(readFileSync(path, "utf8")) as { customUi?: unknown };
+      if (typeof settings.customUi === "boolean") return settings.customUi;
     } catch {
       // Missing or unparsable — fall through to the next scope.
     }
@@ -602,7 +602,7 @@ function claudeStyleMergeEnabled(): boolean {
   return true;
 }
 
-const TOOL_EXPAND_KEY = "__piClaudeStyleToolExpand";
+const TOOL_EXPAND_KEY = "__piCustomUiToolExpand";
 
 function isToolExpandAll(): boolean {
   return (globalThis as Record<string, unknown>)[TOOL_EXPAND_KEY] === true;
@@ -618,7 +618,7 @@ function setToolExpandAll(expanded: boolean): void {
 
 // Pi pushes the global ctrl+o toggle through ToolExecutionComponent#setExpanded
 // for every tool row. Observe it there so ctrl+o can also expand the thinking
-// folded into the claude-style batch headers.
+// folded into the custom-ui batch headers.
 const TOOL_EXPAND_PATCHED = Symbol.for("pi-thinking-fold/tool-expand-patch");
 
 function patchToolExpansion(): () => void {
@@ -671,7 +671,7 @@ function rebuild(
       completed &&
       !record.expanded &&
       !isToolExpandAll() &&
-      claudeStyleMergeEnabled() &&
+      customUiMergeEnabled() &&
       message.content.some((block) => block.type === "toolCall")
     ) {
       // Strip thinking blocks from the display copy: pi's updateContent adds a

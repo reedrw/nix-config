@@ -120,7 +120,7 @@ export default function coAuthorExtension(pi: ExtensionAPI) {
 					if (amend && amend.code === 0) {
 						// Note rides in the tool result rather than ctx.ui.notify —
 						// notifications render as raw chat rows that interleave with
-						// the claude-style batch glance lines.
+						// the custom-ui batch glance lines.
 						return {
 							content: [
 								...event.content,

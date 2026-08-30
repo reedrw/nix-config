@@ -7,7 +7,7 @@ tarball only ships the bundle). It replaces the npm-pinned version in
 
 ## Why
 
-The claude-style tool UI (`../lib/claude-style.ts`) renders one header per
+The custom-ui tool UI (`../lib/custom-ui.ts`) renders one header per
 tool batch (`✻ Ran N tool calls`). Upstream thinking-fold *also* renders a
 completed `Thought for Xs (ctrl+t to expand)` line for every assistant
 message, so a thinking→tools turn spends two lines repeating the same
@@ -25,17 +25,17 @@ instead of dropping the package).
 - `renderer.ts`:
   - `rebuild()`: assistant messages that contain tool calls render **no**
     thinking line (pi's hidden-thinking path with an empty label — zero
-    output lines) when `claudeStyle` is enabled in settings.json and the user
+    output lines) when `customUi` is enabled in settings.json and the user
     hasn't explicitly expanded with ctrl+t. The thinking duration instead
-    rides the claude-style batch header.
+    rides the custom-ui batch header.
   - `setMessageTiming()`/`completeMessage()` publish completed durations to
-    `globalThis.__piClaudeStyleThoughtFor` (`Map<messageTimestamp, ms>`) for
-    the claude-style extensions to look up — live and for restored sessions
+    `globalThis.__piCustomUiThoughtFor` (`Map<messageTimestamp, ms>`) for
+    the custom-ui extensions to look up — live and for restored sessions
     (upstream already reconstructs timings from message timestamps on
     `session_start`).
   - `beginMessage()`/`setMessageTiming()`/`completeMessage()` also mirror raw
     timings (`{startedAt, completedAt?}`) to
-    `globalThis.__piClaudeStyleThoughtLive`, letting the claude-style header
+    `globalThis.__piCustomUiThoughtLive`, letting the custom-ui header
     count an in-progress reasoning block up in real time.
 - `shared-settings/`: upstream's `@99percentpeople/pi-shared-settings`
   package vendored verbatim (their build bundles it; we load plain TS, so the
@@ -56,8 +56,8 @@ instead of dropping the package).
    curl -sL $base/packages/shared-settings/sectioned-settings-list.ts -o shared-settings/sectioned-settings-list.ts
    ```
 2. Re-apply the deviations above (this file is the checklist; the patches are
-   small and grep-anchored: `__piClaudeStyleThoughtFor`,
-   `claudeStyleMergeEnabled`, `hiddenThinkingLabel`, `pi-shared-settings`).
+   small and grep-anchored: `__piCustomUiThoughtFor`,
+   `customUiMergeEnabled`, `hiddenThinkingLabel`, `pi-shared-settings`).
 3. Transpile-check every file:
    `bun build --no-bundle --external "*" <file>` (exit 0 each).
 4. Bump `version` in `package.json` to the upstream version.

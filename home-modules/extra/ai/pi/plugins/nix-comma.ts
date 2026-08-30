@@ -194,7 +194,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	}
 
 	// PATH injection hook, published for whoever owns the `bash` tool
-	// registration (claude-style-ui loads first and consults it; without it
+	// registration (custom-ui loads first and consults it; without it
 	// pi's built-in bash runs un-provisioned). Publishing a hook instead of
 	// registering bash keeps this extension independent of any UI.
 	(globalThis as Record<string, unknown>).__nixCommaSpawnHook = ({ env }: { env: Record<string, string | undefined> }) =>
@@ -205,7 +205,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 
 	// Explicit provisioning: pick a variant among ambiguous candidates, override
 	// an earlier auto-provision, or make a known attr available on demand.
-	// Opts into claude-style rendering via its runtime API (if loaded); without
+	// Opts into custom-ui rendering via its runtime API (if loaded); without
 	// it the tool registers plain.
 	const provisionTool = {
 		name: "nix_provision",
@@ -242,7 +242,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 					? " These shadow earlier provisions of same-named binaries."
 					: "";
 			const note = `${MARKER} provisioned ${resolution.branch}#${params.attr}; added ${resolution.binDirs.join(", ")} to PATH for the rest of the session.${shadowNote} Re-run your command.`;
-			// UI note via ctx.ui.notify: folded into the claude-style batch when
+			// UI note via ctx.ui.notify: folded into the custom-ui batch when
 			// that UI is loaded; the model reads the content copy either way.
 			ctx.ui?.notify?.(note);
 			return {
@@ -251,7 +251,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 			};
 		},
 	};
-	const styleApi = (globalThis as Record<string, unknown>).__piClaudeStyle as
+	const styleApi = (globalThis as Record<string, unknown>).__piCustomUi as
 		| { maybeDecorate: (tool: any, opts?: { label?: string; argOf?: (args: any) => string }) => any }
 		| undefined;
 	pi.registerTool(

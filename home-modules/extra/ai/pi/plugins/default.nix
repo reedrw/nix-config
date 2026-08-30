@@ -61,7 +61,7 @@ let
     }
   ) (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".ts" file) dir);
 
-  # Shared library modules for the extensions (lib/claude-style.ts etc.). Not
+  # Shared library modules for the extensions (lib/custom-ui.ts etc.). Not
   # auto-discovered by pi, but the extensions' ./lib/… imports resolve against
   # ~/.pi/agent/extensions/lib/ at runtime, so the files must land there.
   libPlugins = lib.mapAttrs' (
