@@ -875,6 +875,26 @@ export default function customUi(pi: ExtensionAPI) {
 	// register regardless of the custom-ui setting — they're a rendering
 	// fix, not a style choice. Only the tool rendering below is gated.
 	registerImageFeatures(pi);
+
+	// ctrl+o (tool output expansion) prints a "Tool output: expanded/collapsed"
+	// status row straight into the chat scrollback; landing between grouped
+	// tool rows it visually splits the batch. Drop just that message — every
+	// other showStatus ("Forked to new session", …) stays. Rendering fix, not
+	// a style choice, so it applies regardless of the custom-ui setting.
+	const STATUS_PATCHED = Symbol.for("pi-custom-ui/showStatus");
+	const statusProto = InteractiveMode.prototype as unknown as Record<PropertyKey, unknown>;
+	if (typeof statusProto.showStatus === "function" && !statusProto[STATUS_PATCHED]) {
+		statusProto[STATUS_PATCHED] = true;
+		const originalShowStatus = statusProto.showStatus as (
+			this: InteractiveMode,
+			message: string,
+		) => void;
+		statusProto.showStatus = function (this: InteractiveMode, message: string) {
+			if (/^Tool output: (expanded|collapsed)$/.test(message)) return;
+			originalShowStatus.call(this, message);
+		};
+	}
+
 	// With the style disabled nothing further happens here: pi's built-ins
 	// stay as they are (read was registered below; bash stays with nix-comma).
 	if (!customUiEnabled()) return;
