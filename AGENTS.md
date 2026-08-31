@@ -1,9 +1,7 @@
 # AGENTS.md
-
 This file provides guidance for AI coding agents when working with code in this repository.
 
 ## Key Commands
-
 Run `ldp` to build and switch the current host (`ldp --help` for boot/build variants).
 
 **Enter the dev shell** (provides home-manager, nix-update, shellcheck, update-all, doppler; also activates pre-commit hooks):
@@ -17,11 +15,9 @@ nix develop
 The flake requires the `pipe-operator` experimental feature. Commands in `install.sh` pass `--experimental-features 'pipe-operator nix-command flakes'` automatically.
 
 ## Architecture
-
 This is a NixOS + home-manager configuration managed as a flake using **flake-parts**, **ez-configs**, and **haumea**.
 
 ### Flake structure
-
 - `flake.nix` — inputs and flake-parts entry point; delegates to `./repo`
 - `repo/default.nix` — configures ez-configs, maps hosts to users, exposes `util` helpers
 - `repo/extraEzModules.nix` — makes all modules available as `ezModules'` special arg via haumea
@@ -30,7 +26,6 @@ This is a NixOS + home-manager configuration managed as a flake using **flake-pa
 - `repo/compat.nix` — flake-compat shim for `shell.nix` and legacy tooling
 
 ### Module auto-loading
-
 Two different module-aggregation mechanisms work side-by-side, both passed as special args:
 
 - **`ezModules.<category>`** (from ez-configs) — each top-level subdirectory of `nixos-modules/` and `home-modules/` becomes an attr that pulls in *every* module in that directory at once. Each category directory has a tiny `default.nix` that `readDir`s itself and imports its siblings. Host configs typically just write `imports = [ ezModules.core ezModules.custom ezModules.extra ... ]`.
@@ -79,15 +74,6 @@ home-modules/           # Reusable home-manager modules — same category-defaul
                         # pi-coding-agent module is NOT used (it's gated
                         # behind HM's programs.pi-coding-agent option)
   extra/                # git, mullvad, gnupg, ai (claude-code + pi-agent), proc, base, ranger, gnome-keyring
-                        #   pi module: everything under extra/ai/pi/plugins/ is installed
-                        #   automatically — *.ts files become extensions; subdirs with a
-                        #   package.json are vendored; pins.json roots are npm tarballs
-                        #   pinned with SRI hashes (update pins via plugins/update.sh,
-                        #   also run by `update-all`)
-                        # skills/ — pi agent skills (dirs with SKILL.md), installed
-                        #   to ~/.pi/agent/skills/ by pi/default.nix; helper scripts
-                        #   there are writeShellApplication wrappers so they pin
-                        #   their own deps (e.g. web-search bundles ddgr)
   graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig, anki
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
@@ -106,7 +92,6 @@ pkgs/                   # Custom packages, overlays, and pkgs-extension helpers
 ```
 
 ### Useful helpers from `pkgs/functions.nix`
-
 These are added to the pkgs set, so `pkgs.<helper>` works anywhere:
 
 - `pkgs.mullvadExclude pkg` — wrap `pkg` so its main binary runs via `mullvad-exclude` (no-op when wrapper isn't present)
@@ -119,8 +104,7 @@ These are added to the pkgs set, so `pkgs.<helper>` works anywhere:
 - `pkgs.writeShellApplication` — drop-in override of the nixpkgs builder that also accepts a function `(self: { ... })` in place of `rec` (which is banned repo-wide)
 
 ### Theming
-
-Theming uses **Stylix** (`github:nix-community/stylix`). `config.stylix.polarity` is `"dark"` or `"light"` in any home-manager module (re-exported from `osConfig` by the core styling module). Use it to branch theme values:
+Theming uses **Stylix** (`github:nix-community/stylix`) to expose color values for a chosen theme across the Nix module system. If asked to theme an application, treat the Stylix module as your source of truth for theming.
 
 ```nix
 theme = if config.stylix.polarity == "light" then "light-value" else "dark-value";
@@ -128,24 +112,19 @@ darkTheme = config.stylix.polarity == "dark";
 color-scheme = "prefer-${config.stylix.polarity}";
 ```
 
-Use `force = true` on `home.file` entries for declaratively-managed config files that tools may otherwise overwrite.
-
 ### Impermanence / persistence
-
 `nixos-modules/custom/persist.nix` and `home-modules/core/persist.nix` wrap the **impermanence** flake. Both expose a `custom.persistence.{files,directories}` option that any module can append to; the NixOS module collects everything and splits per-user home paths into the home-manager impermanence module, with the rest going to `environment.persistence.<persistDir>`. The home module also strips `home.homeDirectory` prefixes automatically. Add persistent paths from any module with `custom.persistence.directories = [ ... ];`.
 
 ### Custom packages
-
 `pkgs/default.nix` returns `{ inherit myPkgs; } // myPkgs`, so the overlay both exposes `pkgs.myPkgs.*` (for `flake.packages`) and merges every package directly into `pkgs` — call them as `pkgs.<name>` in modules.
 
 Only add a package to `pkgs/` when it needs **global scope** — i.e. it must be reachable as `pkgs.<name>` across the whole repo.
 
 ### Package versions
-
-There is no `unstable` input and no `pkgs/pin` tree — both were replaced by **nixpkgs-multiverse** (`multiverse` flake input), exposed on the pkgs set as `pkgs.mv` by `pkgs/branches.nix`. The base `nixpkgs` input is the `nixos-26.05` channel tarball.
+To install or query specific versions of a package use the `multiverse` package set, exposed as `pkgs.mv`
 
 - `pkgs.mv.version "<attr>" "<version>"` — a specific historical version (e.g. `pkgs.mv.version "easyeffects" "7.2.5"`)
-- `pkgs.mv.tip.<attr>` — the attr as of the newest indexed nixpkgs revision (what `pkgs-unstable` used to provide)
+- `pkgs.mv.tip.<attr>` — the attr as of the newest indexed nixpkgs revision (the version provided by `nixpkgs-unstable`)
 - `pkgs.mv.latest.<attr>` — the newest version of that attr, whichever revision shipped it
 
 Every indexed attribute/version pair is browsable at <https://nixmultiverse.com/>.
@@ -153,15 +132,12 @@ Every indexed attribute/version pair is browsable at <https://nixmultiverse.com/
 ## Working Conventions
 
 ### Commits
-
 Always use the `/commit` skill when committing in this repo.
 
-### Agent policy
-
-Some commands are blocked by policy, not preference: don't run `home-manager switch` — use `ldp` to build and switch.
+### Build and switch with `ldp`
+`ldp` is the one and only canonical way to deploy a config in this repo. Do not use `nixos-rebuild switch` or `home-manager switch`.
 
 ### Querying machine config
-
 Prefer `nix eval` over reading source files to answer questions about configuration. Examples:
 
 ```sh
@@ -175,48 +151,25 @@ nix eval .#nixosConfigurations.nixos-desktop.config.services.openssh.enable
 nix eval .#nixosConfigurations.nixos-desktop.config.networking.hostName
 ```
 
-For user config, query the per-host override (e.g.
-`homeConfigurations."reed@nixos-desktop"`), not the bare
-`homeConfigurations.reed` — the latter is only a minimal standalone base
-(4 home.file entries), while the real per-machine config lives in the
-`<user>@<host>` variants.
-
-This gives the evaluated, final config rather than requiring you to trace through module imports manually.
-
-**Batch related lookups in one call.** Each `nix eval` invocation pays a ~0.5 s flake-setup + module-instantiation cost that the on-disk eval cache does not amortize. When you need several attrs from the same configuration, compose them into a single `--apply` instead of running N separate evals (~2× faster for 3 attrs, ~4× for 15):
+### Resolving a package's store path
 
 ```sh
-nix eval --json .#nixosConfigurations.nixos-desktop --apply '{ config, ... }: {
-  hostName = config.networking.hostName;
-  openssh  = config.services.openssh.enable;
-  pkgCount = builtins.length config.environment.systemPackages;
-}'
+nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw
 ```
 
-The same pattern works against `homeConfigurations.<user>` — destructure with `{ config, ... }:` and pull as many leaves as you need in one shot.
+### Nix language bans (enforced by pre-commit hooks)
 
-### Nix
+- **Never use `rec`** — the `no-rec` hook rejects it. Use a `let` binding (or
+  `lib.fix` with a `(self: { ... })` closure) instead.
+- **Never start a module with a bare `_:` argument** — the
+  `no-empty-module-arg` hook rejects it. Destructure explicitly.
 
-- Don't hoist `let` bindings for single-use derivations; pass inline and let Nix string-coerce the store path (`builtins.toString` is not needed).
-- Never use the `rec` keyword, and never start a module with a bare `_:` argument — pre-commit hooks reject both. Use a `let` binding (or `pkgs.writeShellApplication` with `(self: { ... })`) instead of `rec`.
-- Patches go in `pkgs/patches/<package-name>/`; reference as `../patches/<package-name>/...` from `default.nix`.
-- Non-trivial shell scripts in `writeShellApplication` (and similar) belong in a sibling `.sh` file: `text = builtins.readFile ./script.sh`.
-- Never search all of `/nix/store/` with `find`, `grep`, or similar — it's enormous. Resolve store paths with `nix eval` instead (e.g. `nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw`).
-
-### Running tools
-
-If a tool isn't installed, run it via Nix instead of reporting command-not-found or asking the user to install it: `nix run nixpkgs#<package> -- <args>` or `nix-shell -p <package> --run '<command>'`.
+### Layout conventions
+- **Patches** go in `pkgs/patches/<package-name>/`; reference them as
+  `../patches/<package-name>/...` from `pkgs/*/default.nix` overrides.
+- **Non-trivial shell scripts** in `writeShellApplication` (and similar)
+  belong in a sibling `.sh` file, not an inline string:
+  `text = builtins.readFile ./script.sh;`
 
 ## Memory
-
-This file serves as the persistent memory for this project. When you learn something worth remembering — a correction, a confirmed approach, a project convention — write it back here under the relevant section, exactly as you would write an auto-memory entry.
-
-## pi agent extensions (custom-ui tool UI)
-
-The pi extensions in `home-modules/extra/ai/pi/plugins/` implement a custom tool UI (batched tool calls, folded reasoning, inline images, compact user messages). This section is intentionally a stub — the full architecture notes (grouping/unification rules, render pitfalls, fork layout, headless debugging) live in the `/pi-ui` skill (`.agents/skills/pi-ui/SKILL.md`). Load it before editing anything in `plugins/`.
-
-Hard rules that bite even casual edits:
-
-- **Tool-name ownership is exclusive**: one extension per `registerTool` name (`bash` → `nix-comma.ts`, everything else → `custom-ui.ts`); cross-extension state lives on `globalThis` under `__piCustomUi*` keys (also the grep anchor for the pi-thinking-fold fork's deviations).
-- **Plugin changes must pass the gates before committing**: strict `tsc --noEmit` over the plugins dir (needs an untracked real `node_modules/` of symlinks into pi's store package — setup in the skill) and the headless `smoke.mjs` harness. Only *new* type errors count; TS2304s mean dropped imports.
-
+You may write niche knowledge into a skill `.agents/skills/`. If you believe that a change in this repo warrants updating AGENTS.md, show the user a draft and ask for approval.
