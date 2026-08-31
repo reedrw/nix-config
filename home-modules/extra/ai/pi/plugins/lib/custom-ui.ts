@@ -615,30 +615,38 @@ const SHIMMER_FALLBACK: Rgb[] = [
 	[95, 95, 255], [95, 175, 255], [0, 255, 255],
 ];
 
-// Gradient stops + base tone, memoized after the first read of base16.json
-// (which is itself cached on globalThis).
-let shimmerPalette: { grad: Rgb[]; base: Rgb } | undefined;
-function shimmerColors(): { grad: Rgb[]; base: Rgb } {
-	if (!shimmerPalette) {
-		const grad = ["base0D", "base0E", "base0C"]
+// Gradient stops + base tone, memoized per stops key after the first read
+// of base16.json (which is itself cached on globalThis).
+const shimmerPalettes = new Map<string, { grad: Rgb[]; base: Rgb }>();
+function shimmerColors(stops: readonly string[]): { grad: Rgb[]; base: Rgb } {
+	const key = stops.join(",");
+	let p = shimmerPalettes.get(key);
+	if (!p) {
+		const grad = stops
 			.map(base16)
 			.map((hex) => hexToRgbTuple(hex ?? ""))
 			.filter((c): c is Rgb => c !== undefined);
-		shimmerPalette = {
+		p = {
 			grad: grad.length >= 2 ? grad : SHIMMER_FALLBACK,
 			base: hexToRgbTuple(base16("base04") ?? "") ?? [200, 200, 200],
 		};
+		shimmerPalettes.set(key, p);
 	}
-	return shimmerPalette;
+	return p;
 }
 
 // One shimmer frame over `text`: a sine wave rides the string, and cells
 // above the threshold blend from the base tone toward a gradient stop (the
 // ramp position itself scrolls with the frame). Raw truecolor SGR — the
 // colors come from the stylix palette, but per-character coloring is beyond
-// theme.fg.
-function shimmerFrame(text: string, frame: number): string {
-	const { grad, base } = shimmerColors();
+// theme.fg. `stops` names the base16 gradient (default: the batch header's
+// base0D→base0E→base0C sweep).
+export function shimmerFrame(
+	text: string,
+	frame: number,
+	stops: readonly string[] = ["base0D", "base0E", "base0C"],
+): string {
+	const { grad, base } = shimmerColors(stops);
 	let line = "";
 	for (let i = 0; i < text.length; i++) {
 		const wave = Math.sin((i - frame * 0.3) * 0.8);

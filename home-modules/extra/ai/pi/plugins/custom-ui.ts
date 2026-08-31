@@ -10,6 +10,10 @@
 // (merged from image-history.ts): user-message images, history fallback
 // cells, and tool-result images inside the read row.
 //
+// User messages and `!` shell commands get the zentui-style compact look
+// (accent rail + base01 band, no box) via prototype patches of
+// UserMessageComponent / BashExecutionComponent (see below).
+//
 // Other extensions opt in voluntarily via the __piCustomUi runtime API
 // (no lib import, no load-order coupling):
 //   const api = (globalThis as any).__piCustomUi;
@@ -21,6 +25,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
+	BashExecutionComponent,
 	InteractiveMode,
 	type ExtensionAPI,
 	type Theme,
@@ -43,6 +48,7 @@ import {
 	collapseToolGroup,
 	genericSlots,
 	customUiEnabled,
+	DOTS_SPINNERS,
 	edit,
 	base16Bg,
 	base16Fg,
@@ -59,6 +65,7 @@ import {
 	scanToolGroupsFromHistory,
 	currentBatchSize,
 	settleStatus,
+	shimmerFrame,
 	tickOpenBatch,
 	animState,
 	trackGroupToolCall,
@@ -70,6 +77,7 @@ import {
 	getCapabilities,
 	getCellDimensions,
 	getImageDimensions,
+	Loader,
 	type Component,
 	type ImageProtocol,
 	Text,
@@ -740,6 +748,128 @@ function installCompactUserMessages(getTheme: () => Theme | undefined): void {
 	};
 }
 
+// ── Bash commands (`!`): zentui-style "compact" look ──────────
+
+// Restyles pi's BashExecutionComponent (used for both live `!` runs and
+// history rebuilds) to match the compact user-message look: an accent rail
+// (base0A yellow, standing out from the blue accent of user messages) on a
+// base01 background band — no box. Post-processes the component's own
+// render output instead of rebuilding it, so streaming output, the loader,
+// truncation status, and ctrl+o expansion all keep working unchanged. The
+// box's top/bottom DynamicBorder rows (full-width ─ runs) are dropped.
+// While the command runs, the loader row is retargeted too: a random
+// cli-spinners dots variant in the rail's yellow, and the "Running…" label
+// shimmering through a yellow→orange→red stylix gradient (the fire
+// counterpart of the batch header's cyan→purple sweep). Loader internals
+// (frames/color fns) are TS-private but plain fields at runtime.
+// Note: `!!` (exclude-from-context) commands were previously dim-bordered;
+// the exclusion is not observable from render output, so both now render
+// identically. Fork pattern, guarded by a Symbol.for against stacking; any
+// error falls back to the original render.
+const BASH_EXECUTION_PATCHED = Symbol.for("pi-custom-ui/bashExecutionRender");
+
+function installCompactBashCommands(getTheme: () => Theme | undefined): void {
+	const proto = BashExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
+	if (proto[BASH_EXECUTION_PATCHED] || typeof proto.render !== "function") return;
+	proto[BASH_EXECUTION_PATCHED] = true;
+
+	// Yellow→orange→red stylix gradient for the bash shimmer — the fire
+	// counterpart of the batch header's cyan→purple sweep (base0D→0E→0C).
+	const BASH_SHIMMER_STOPS = ["base0A", "base09", "base08"];
+
+	// Loader internals are TS-private but plain fields at runtime. A plain
+	// structural view (not an intersection — Loader declares these private,
+	// and intersecting private members collapses the type to never).
+	type LoaderInternals = {
+		frames: string[];
+		spinnerColorFn: (s: string) => string;
+		messageColorFn: (msg: string) => string;
+	};
+
+	// One random dots variant + shimmer cadence per command run (the loader
+	// instance is created once in the constructor and survives the
+	// contentContainer rebuilds; WeakMap keeps this one-shot).
+	const bashLoaderConfigured = new WeakMap<object, true>();
+	function configureBashLoader(comp: { contentContainer?: { children?: unknown[] }; status?: string }): void {
+		if (comp.status !== "running") return;
+		const loader = comp.contentContainer?.children?.find(
+			(c): c is LoaderInternals => c instanceof Loader,
+		);
+		if (!loader || bashLoaderConfigured.has(loader)) return;
+		bashLoaderConfigured.set(loader, true);
+		// Random dots variant per run — same catalog as the batch header, so
+		// the native ⠋⠙⠹ cadence is replaced with the family variety.
+		const variant = DOTS_SPINNERS[Math.floor(Math.random() * DOTS_SPINNERS.length)];
+		loader.frames = [...(variant ?? DOTS_SPINNERS[0])];
+		// Spinner glyph in the rail's yellow (live theme, follows /theme).
+		loader.spinnerColorFn = (s) => getTheme()?.fg("warning", s) ?? s;
+		// Shimmer the "Running…" label through the yellow/red gradient; the
+		// "(esc to cancel)" hint stays muted. The loader's own 80ms tick
+		// drives the frame counter — no timer of our own. The shimmer's
+		// trailing reset clears the band bg, so re-apply it before the
+		// muted hint.
+		let frame = 0;
+		loader.messageColorFn = (msg) => {
+			const cut = msg.indexOf(" (");
+			const head = cut === -1 ? msg : msg.slice(0, cut);
+			const tail = cut === -1 ? "" : msg.slice(cut);
+			const theme = getTheme();
+			return (
+				shimmerFrame(head, frame++, BASH_SHIMMER_STOPS) +
+				(tail ? base16Bg("base01", "131721") + (theme ? theme.fg("muted", tail) : tail) : "")
+			);
+		};
+	}
+
+	const originalRender = proto.render as unknown as (this: Container, width: number) => string[];
+	proto.render = function (this: Container, width: number) {
+		const fallback = () => originalRender.call(this, width);
+		try {
+			if (typeof width !== "number" || width <= 2) return fallback();
+			// Retarget the loader before the first render so the spinner and
+			// shimmer take over immediately (the first frame may still show
+			// the native one; the loader's next 80ms tick self-corrects).
+			configureBashLoader(this as unknown as { contentContainer?: { children?: unknown[] }; status?: string });
+			const rendered = fallback();
+			if (!Array.isArray(rendered) || rendered.length === 0) return rendered;
+			const theme = getTheme();
+			// Yellow rail: under the stylix-generated theme (pi/default.nix)
+			// `warning` maps to base0A, the scheme's yellow — kept distinct from
+			// the blue accent rail of user messages. Follows /theme switches.
+			const rail = `${theme ? theme.fg("warning", "▎") : "▎"} `;
+			const bg = base16Bg("base01", "131721");
+			const isBlank = (line: string) =>
+				line.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").trim() === "";
+			// Spacing normalization: command output ending in \n leaves a blank
+			// line in outputLines, which stacks with the loader's/status row's
+			// own leading blank into a double gap. Collapse blank runs to one,
+			// then ensure exactly one trailing blank — the spinner/status row
+			// ends up with one blank line before and after.
+			const rows: string[] = [];
+			for (const line of rendered) {
+				// DynamicBorder rows render as exactly `width` ─ glyphs
+				// (SGR-colored); command output lines never match both
+				// conditions, so this drops the box without touching output.
+				const plain = line.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+				if (plain.length === width && /^─+$/.test(plain)) continue;
+				if (isBlank(line) && rows.length > 0 && isBlank(rows[rows.length - 1])) continue;
+				rows.push(line);
+			}
+			if (rows.length > 0 && !isBlank(rows[rows.length - 1])) rows.push("");
+			return rows.map((line) => {
+				// Text children render with paddingX = 1; the rail provides
+				// the indent, so drop the leading pad space.
+				const body = line.replace(/^ /, "");
+				const content = truncateToWidth(`${rail}${body}`, width, "");
+				const pad = " ".repeat(Math.max(0, width - visibleWidth(content)));
+				return bg + content + pad + "\x1b[0m";
+			});
+		} catch {
+			return fallback();
+		}
+	};
+}
+
 export default function customUi(pi: ExtensionAPI) {
 	// Image features (inline user-message images, history fallback cells)
 	// register regardless of the custom-ui setting — they're a rendering
@@ -754,6 +884,9 @@ export default function customUi(pi: ExtensionAPI) {
 	// getter over the module-level theme, so /theme switches are tracked.
 	let userMessageUi: { theme?: Theme } | undefined;
 	installCompactUserMessages(() => userMessageUi?.theme);
+	// `!` shell commands get the same treatment (yellow rail instead of the
+	// blue user-message rail, same base01 band).
+	installCompactBashCommands(() => userMessageUi?.theme);
 
 
 	// Systemic notify routing: any extension's ctx.ui.notify (info level) is
