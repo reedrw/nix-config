@@ -29,6 +29,7 @@ import {
 	InteractiveMode,
 	type ExtensionAPI,
 	type Theme,
+	ToolExecutionComponent,
 	UserMessageComponent,
 } from "@earendil-works/pi-coding-agent";
 import {
@@ -69,6 +70,7 @@ import {
 	tickOpenBatch,
 	animState,
 	trackGroupToolCall,
+	webToolSlots,
 	write,
 } from "./lib/custom-ui.ts";
 import {
@@ -896,6 +898,99 @@ function installCompactBashCommands(getTheme: () => Theme | undefined): void {
 	};
 }
 
+// ── pi-web-access tools: Search / Fetch / Check ────────────
+
+// web_search, fetch_content, and source_check are registered by the
+// pi-web-access package. Tool names are owned exclusively by their registrar
+// and the package doesn't consult the maybeDecorate API, so the slots can't
+// be swapped at registration; instead ToolExecutionComponent's renderer
+// getters are prototype-patched (fork-style, guarded against stacking) to
+// route those tools to the lib's details-driven renderers. History rebuilds
+// go through the same component, so restored sessions match too.
+const WEB_TOOLS_PATCHED = Symbol.for("pi-custom-ui/webToolSlots");
+
+// 1024-based, one decimal — matches how the agent quotes fetch sizes.
+const fmtChars = (n: number): string =>
+	Number.isFinite(n) && n >= 1024 ? `${(n / 1024).toFixed(1)}k chars` : `${n} chars`;
+
+const webToolSpecs: Record<string, ReturnType<typeof webToolSlots>> = {
+	web_search: webToolSlots({
+		label: "Search",
+		argOf: (args) => {
+			const qs: string[] = Array.isArray(args?.queries)
+				? args.queries
+				: (typeof args?.query === "string" ? [args.query] : []);
+			return qs.length > 1 ? `${qs.length} queries: ${qs[0] ?? ""}` : (qs[0] ?? "");
+		},
+		summary: (d) => {
+			if (typeof d?.totalResults !== "number") return undefined;
+			const sources = `${d.totalResults} sources`;
+			return d.queryCount > 1
+				? `${sources} · ${d.successfulQueries ?? d.queryCount}/${d.queryCount} queries`
+				: sources;
+		},
+		live: (d) => {
+			if (d?.phase === "search") return d.currentQuery ? `Searching "${d.currentQuery}"` : "Searching…";
+			if (d?.phase === "generating-summary") return "Generating summary…";
+			return undefined;
+		},
+	}),
+	fetch_content: webToolSlots({
+		label: "Fetch",
+		argOf: (args) => {
+			const urls: string[] = Array.isArray(args?.url)
+				? args.url
+				: (typeof args?.url === "string" ? [args.url] : []);
+			const first = urls[0]?.replace(/^https?:\/\//, "") ?? "";
+			return urls.length > 1 ? `${first} +${urls.length - 1} more` : first;
+		},
+		summary: (d) => {
+			if (typeof d?.urlCount !== "number") return undefined;
+			const pages = d.urlCount > 1 ? `${d.successful ?? 0}/${d.urlCount} pages` : undefined;
+			const chars = typeof d.totalChars === "number" ? fmtChars(d.totalChars) : undefined;
+			return [pages, chars].filter(Boolean).join(" · ") || undefined;
+		},
+		live: (d) => (d?.phase === "fetch" ? "Fetching…" : undefined),
+	}),
+	source_check: webToolSlots({
+		label: "Check",
+		argOf: (args) => {
+			if (typeof args?.claim === "string") return args.claim;
+			return Array.isArray(args?.queries) ? args.queries.join(" ") : "";
+		},
+		summary: (d) =>
+			typeof d?.sourceCount === "number"
+				? `${d.sourceCount} sources · ${d.passageCount ?? 0} passages`
+				: undefined,
+	}),
+};
+
+function installWebToolSlots(): void {
+	const proto = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
+	if (proto[WEB_TOOLS_PATCHED] || typeof proto.getRenderShell !== "function") return;
+	proto[WEB_TOOLS_PATCHED] = true;
+	// toolName is TS-private on ToolExecutionComponent; intersecting collapses
+	// the type to never (same trap as the Loader patch above), so use a plain
+	// structural view for the patched receivers.
+	type ToolExecView = { toolName?: string };
+	const originalShell = proto.getRenderShell as (this: ToolExecView) => string;
+	proto.getRenderShell = function (this: ToolExecView) {
+		if (this.toolName && webToolSpecs[this.toolName]) return "self";
+		return originalShell.call(this);
+	};
+	for (const [getter, slotKey] of [
+		["getCallRenderer", "renderCall"],
+		["getResultRenderer", "renderResult"],
+	] as const) {
+		const original = proto[getter] as (this: ToolExecView) => unknown;
+		proto[getter] = function (this: ToolExecView) {
+			const spec = this.toolName ? webToolSpecs[this.toolName] : undefined;
+			if (spec) return spec[slotKey];
+			return original.call(this);
+		};
+	}
+}
+
 export default function customUi(pi: ExtensionAPI) {
 	// Image features (inline user-message images, history fallback cells)
 	// register regardless of the custom-ui setting — they're a rendering
@@ -939,6 +1034,9 @@ export default function customUi(pi: ExtensionAPI) {
 	// `!` shell commands get the same treatment (yellow rail instead of the
 	// blue user-message rail, same base01 band).
 	installCompactBashCommands(() => userMessageUi?.theme);
+	// pi-web-access's search/fetch/check tools get the custom-ui look via the
+	// ToolExecutionComponent prototype patch below.
+	installWebToolSlots();
 
 
 	// Systemic notify routing: any extension's ctx.ui.notify (info level) is

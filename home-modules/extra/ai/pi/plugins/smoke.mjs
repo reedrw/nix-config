@@ -1,6 +1,6 @@
 // Smoke test: drive the lib's grouping + live header through a simulated
 // batch, mimicking what the extensions' event handlers do.
-import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory } from "./lib/custom-ui.ts";
+import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, webToolSlots } from "./lib/custom-ui.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -120,3 +120,41 @@ collapseToolGroup();
 mN = groupMode("m2t");
 if (mN.thoughtKeys && mN.thoughtKeys.length) throw new Error("narrated message must NOT stamp thoughtKey");
 console.log("OK-NARRATION-EXEMPTION");
+
+// ── Web tools (webToolSlots): details-driven summaries ──────────
+// Mirrors the specs wired in custom-ui.ts's installWebToolSlots.
+const spec = webToolSlots({
+	label: "Search",
+	argOf: (args) => (Array.isArray(args?.queries) ? `${args.queries.length} queries: ${args.queries[0]}` : (args?.query ?? "")),
+	summary: (d) => (typeof d?.totalResults === "number" ? `${d.totalResults} sources` : undefined),
+	live: (d) => (d?.phase === "search" ? `Searching "${d.currentQuery}"` : undefined),
+});
+const lines = (c) => {
+	const r = typeof c?.render === "function" ? c.render(100) : c;
+	return (Array.isArray(r) ? r : [r]).join("\n").replace(/\n+$/, "");
+};
+const wctx = (id, args, extra = {}) => ({ toolCallId: id, state: {}, args, expanded: false, isError: false, invalidate: () => {}, ...extra });
+
+// glance summary from details (not "N lines")
+resetToolGroups();
+trackGroupToolCall("w1"); foldToolGroup(); collapseToolGroup();
+const wg = spec.renderResult(
+	{ content: [{ type: "text", text: "answer" }], details: { queryCount: 2, successfulQueries: 2, totalResults: 12 } },
+	{ expanded: false, isPartial: false }, theme, wctx("w1", { queries: ["a", "b"] }));
+if (!lines(wg).includes("12 sources")) throw new Error("webToolSlots glance must use details summary");
+
+// phase-only partial (empty text) falls back to the live phase line
+resetToolGroups();
+trackGroupToolCall("w2");
+const wl = spec.renderResult(
+	{ content: [{ type: "text", text: "" }], details: { phase: "search", currentQuery: "solo q" } },
+	{ expanded: false, isPartial: true }, theme, wctx("w2", { query: "solo q" }));
+if (!lines(wl).includes('Searching "solo q"')) throw new Error("webToolSlots phase fallback broken: " + lines(wl));
+
+// expanded leads with the details summary before the output body
+const wx = spec.renderResult(
+	{ content: [{ type: "text", text: "body line" }], details: { totalResults: 7 } },
+	{ expanded: true, isPartial: false }, theme, wctx("w3", { query: "q" }));
+if (!lines(wx).includes("7 sources") || !lines(wx).includes("body line")) throw new Error("webToolSlots expanded head/body wrong");
+
+console.log("OK-WEB-TOOLS");

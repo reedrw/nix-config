@@ -1267,3 +1267,90 @@ export function genericSlots(label: string, argOf: (args: any) => string): Rende
 		},
 	});
 }
+
+// ---------------------------------------------------------------------------
+// web tools — pi-web-access's web_search / fetch_content / source_check can't
+// adopt the style at registration time (tool-name ownership is exclusive and
+// the package doesn't consult the __piCustomUi maybeDecorate API), so
+// custom-ui.ts prototype-patches ToolExecutionComponent's renderer getters and
+// routes those tools here. Same skeleton as genericSlots, but the settled
+// summary and the live phase line are derived from the tool's `details`
+// (sources/pages/passages counts read better than "N lines"), and the
+// expanded view leads with that summary before the full output.
+// ---------------------------------------------------------------------------
+
+export type WebToolSpec = {
+	label: string;
+	argOf: (args: any) => string;
+	// Settled summary from result.details; undefined falls back to the first
+	// output line (genericSlots behavior).
+	summary: (details: any, args: any) => string | undefined;
+	// Streaming phase from details.onUpdate updates; undefined falls back to
+	// the last streamed output line.
+	live?: (details: any) => string | undefined;
+};
+
+export function webToolSlots(spec: WebToolSpec): RenderSlots {
+	return withToolNotes({
+		renderShell: "self",
+		renderCall(args, theme, context) {
+			trackRow(context);
+			const mode = groupMode(context?.toolCallId);
+			const grouped = groupedCall(mode, context?.expanded, theme);
+			if (grouped) return grouped;
+			return callLine(spec.label, spec.argOf(args ?? {}), theme, "", context);
+		},
+		renderResult(result, { expanded, isPartial }, theme, context) {
+			const args = context.args ?? {};
+			const details = result?.details ?? {};
+			const mode = groupMode(context?.toolCallId);
+			const expandedNow = expanded || mode.kind === "latest";
+			const text = resultText(result, "[nix-comma]");
+			if (isPartial && !context.isError) {
+				if (glance(context)) {
+					const live = (spec.live?.(details) ?? lastLine(text)) || "Running…";
+					return resultLine(theme, clip(live, 80));
+				}
+				// Streamed output wins when there is any; phase-only updates
+				// (empty text, details.phase from onUpdate) render the phase line.
+				if (text.split("\n").some((l) => l.trim())) return liveStream(text, theme);
+				const phase = spec.live?.(details);
+				return resultLine(theme, clip(phase || "Running…", 80));
+			}
+			settleStatus(context, context.isError);
+			const summary = context.isError ? undefined : spec.summary(details, args);
+			if (glance(context)) {
+				const line = context.isError
+					? theme.fg("error", clip(firstLine(text) || "failed", 56))
+					: theme.fg("dim", summary ?? "done");
+				return glanceLine(spec.label, spec.argOf(args), line, theme);
+			}
+			if (context.isError) {
+				const status = clip(firstLine(text) || "failed", 80);
+				if (expandedNow) {
+					const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
+					return new Text(
+						`  ${theme.fg("muted", "⎿")}  ${theme.fg("error", status)}\n` +
+							lines.map((l) => GLANCE_INDENT + theme.fg("error", l)).join("\n"),
+						0,
+						0,
+					);
+				}
+				return resultLine(theme, status, true);
+			}
+			if (expandedNow) {
+				// Details-driven summary rides the ⎿ connector; the full output
+				// block follows, capped like every other expanded row.
+				const head = summary ?? (firstLine(text) || "done");
+				const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
+				return new Text(
+					`  ${theme.fg("muted", "⎿")}  ${theme.fg("muted", head)}\n` +
+						lines.map((l) => GLANCE_INDENT + theme.fg("toolOutput", l)).join("\n"),
+					0,
+					0,
+				);
+			}
+			return resultLine(theme, summary ?? (firstLine(text) || "Done"));
+		},
+	});
+}
