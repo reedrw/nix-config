@@ -1,11 +1,13 @@
 # Unpacks a pinned npm tarball for direct loading by pi (jiti reads the TS/JS
-# in place, peer deps on @earendil-works/* are provided by pi itself) and
-# assembles a flat node_modules for declared runtime dependencies from the
-# other pinned packages in ./pins.json.
+# in place, peer deps on @earendil-works/* are provided by pi itself).
+#
+# No node_modules is assembled here: npm dependency graphs may contain cycles
+# (e.g. es-abstract <-> arraybuffer.prototype.slice), which store paths cannot
+# express. plugins/default.nix instead builds one flat shared node_modules
+# (npm's deduped layout) and root plugins symlink it in.
 {
   name,
   pin,
-  npmPkgs, # full pinned set, for dependency resolution (lazy, acyclic)
   lib,
   stdenvNoCC,
   fetchurl,
@@ -28,9 +30,5 @@ stdenvNoCC.mkDerivation {
   installPhase = ''
     mkdir "$out"
     cp -a ./. "$out/"
-    ${lib.concatMapStringsSep "\n" (dep: ''
-      mkdir -p "$out/node_modules/${dirOf dep}"
-      ln -s "${npmPkgs.${dep}}" "$out/node_modules/${dep}"
-    '') (pin.dependencies or [ ])}
   '';
 }

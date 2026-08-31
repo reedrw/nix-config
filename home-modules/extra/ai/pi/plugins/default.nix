@@ -14,8 +14,10 @@
 #   - vendored:   any subdirectory with a package.json (+ default.nix), e.g. a
 #                 fork like pi-image-view; symlinked to ~/.pi/agent/<name>
 #   - pinned npm: roots of pins.json, tarballs fetched at pinned versions with
-#                 transitive deps assembled into node_modules; symlinked to
-#                 ~/.pi/agent/<name> and listed in pi's settings.json packages
+#                 all pinned deps assembled into one shared flat node_modules
+#                 (npm dep graphs can be cyclic, so it cannot be per-package);
+#                 symlinked to ~/.pi/agent/<name> and listed in pi's
+#                 settings.json packages
 {
   lib,
   callPackage,
@@ -24,11 +26,24 @@
 let
   pins = builtins.fromJSON (builtins.readFile ./pins.json);
 
-  # One derivation per pinned npm package. The set self-references lazily to
-  # resolve node_modules dependencies; npm dep graphs are acyclic.
+  # One derivation per pinned npm tarball (plain unpack, no node_modules).
   npmPkgs = lib.mapAttrs (
-    name: pin: callPackage ./npm-package.nix { inherit name pin npmPkgs; }
+    name: pin: callPackage ./npm-package.nix { inherit name pin; }
   ) pins.packages;
+
+  # npm dependency graphs may contain cycles (es-abstract <->
+  # arraybuffer.prototype.slice etc.), which store paths cannot express, so
+  # instead of per-package node_modules we build one flat node_modules in
+  # npm's deduped layout and root plugins symlink it in. Packages are copied
+  # (not symlinked) so Node's realpath-based module resolution stays inside
+  # this store path and finds transitive deps as siblings.
+  nodeModules = runCommand "pi-npm-node-modules" { } ''
+    mkdir -p "$out/node_modules"
+    ${lib.concatMapStringsSep "\n" (p: ''
+      mkdir -p "$out/node_modules/${dirOf p.npmName}"
+      cp -a "${p}/." "$out/node_modules/${p.npmName}"
+    '') (lib.attrValues npmPkgs)}
+  '';
 
   dir = builtins.readDir ./.;
 
@@ -86,11 +101,18 @@ let
     name: _: asPackage (callPackage ./${name} { })
   ) (lib.filterAttrs (name: type: type == "directory" && builtins.pathExists ./${name}/package.json) dir);
 
-  # Pinned npm roots, keyed by the attr name pi loads them under.
+  # Pinned npm roots, keyed by the attr name pi loads them under. Each is the
+  # unpacked package plus a symlink to the shared flat node_modules.
   npmPlugins = lib.listToAttrs (
     map (name: {
       name = lib.last (lib.splitString "/" name);
-      value = asPackage npmPkgs.${name};
+      value = asPackage (runCommand "pi-npm-root-${lib.replaceStrings [
+        "@" "/"
+      ] [ "" "-" ] name}" { passthru.npmName = name; } ''
+        cp -a "${npmPkgs.${name}}/." "$out/"
+        chmod -R u+w "$out"
+        ln -s "${nodeModules}/node_modules" "$out/node_modules"
+      '');
     }) pins.roots
   );
 in
