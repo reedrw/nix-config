@@ -252,6 +252,18 @@ in
         force = true;
         source = jsonFormat.generate "pi-theme-stylix.json" piTheme;
       };
+      # pi-web-access config: skip the browser curator ("none") so
+      # web_search returns raw results. Lives under XDG_CONFIG_HOME (not
+      # ~/.pi) because pi-web-access resolves its config dir from
+      # XDG_CONFIG_HOME when set. Note: pi's /curator command and provider
+      # changes in the curator UI persist to this file — those writes will
+      # fail while it's a read-only nix store symlink.
+      ".config/pi/web-search.json" = {
+        force = true;
+        source = jsonFormat.generate "pi-web-search.json" {
+          workflow = "none";
+        };
+      };
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
