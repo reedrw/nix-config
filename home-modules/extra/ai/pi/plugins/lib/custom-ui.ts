@@ -615,11 +615,14 @@ const SHIMMER_FALLBACK: Rgb[] = [
 	[95, 95, 255], [95, 175, 255], [0, 255, 255],
 ];
 
-// Gradient stops + base tone, memoized per stops key after the first read
-// of base16.json (which is itself cached on globalThis).
+// Gradient stops + base tone, memoized per (palette epoch, stops key).
+// base16() bumps the epoch whenever it re-reads a changed base16.json, so a
+// toggle-theme mid-session recolors the shimmer on the next frame; stale
+// entries are bounded (epochs only bump on theme changes).
 const shimmerPalettes = new Map<string, { grad: Rgb[]; base: Rgb }>();
 function shimmerColors(stops: readonly string[]): { grad: Rgb[]; base: Rgb } {
-	const key = stops.join(",");
+	refreshBase16(); // may bump the epoch — must run before the cache key
+	const key = `${base16Epoch()}:${stops.join(",")}`;
 	let p = shimmerPalettes.get(key);
 	if (!p) {
 		const grad = stops
@@ -817,23 +820,65 @@ animState();
 //
 // home-modules/extra/ai/pi/default.nix renders the stylix base16 scheme to
 // ~/.pi/agent/extensions/lib/base16.json, so TUI colors here can follow the
-// terminal theme instead of being hardcoded. Read once per process and
-// cached on globalThis (this lib is loaded by several independent extension
-// module instances); a missing/unreadable file falls back to the Ayu Dark
-// defaults.
+// terminal theme instead of being hardcoded. Cached on globalThis (this lib
+// is loaded by several independent extension module instances), re-read when
+// possibly stale (throttled) and compared by CONTENT — store mtimes are
+// canonicalized (mtime=1) and dark/light files are byte-equal in size, so a
+// stat signature cannot detect a toggle-theme symlink swap. A missing/
+// unreadable file falls back to the Ayu Dark defaults.
+// The cache key is versioned: /reload keeps globalThis across extension
+// reloads, so a cache written by an older lib shape must be ignored (a
+// shape mismatch here silently poisoned lookups after /reload).
 const BASE16_PATH = join(homedir(), ".pi/agent/extensions/lib/base16.json");
+const BASE16_TTL_MS = 500;
+const BASE16_CACHE_KEY = "__piCustomUiBase16CacheV2";
+interface Base16Cache {
+	palette: Record<string, string>;
+	raw: string;
+	checkedAt: number;
+}
 const base16State = globalThis as Record<string, unknown>;
 
-function base16(name: string): string | undefined {
-	if (typeof base16State.__piCustomUiBase16 === "undefined") {
+function base16Epoch(): number {
+	return (base16State.__piCustomUiBase16Epoch as number | undefined) ?? 0;
+}
+
+// Throttled re-check of base16.json: re-reads (and bumps the epoch) when the
+// file's content changed. Callers that DERIVE cache keys from the epoch must
+// call this first — the epoch only moves during a refresh.
+function refreshBase16(): void {
+	const cached = base16State[BASE16_CACHE_KEY] as Base16Cache | undefined;
+	const valid = cached !== undefined && typeof cached.checkedAt === "number";
+	if (!valid || Date.now() - cached!.checkedAt >= BASE16_TTL_MS) {
 		try {
-			base16State.__piCustomUiBase16 = JSON.parse(readFileSync(BASE16_PATH, "utf8"));
+			const raw = readFileSync(BASE16_PATH, "utf8");
+			if (!valid || raw !== cached!.raw) {
+				base16State.__piCustomUiBase16Epoch = base16Epoch() + 1;
+				base16State[BASE16_CACHE_KEY] = {
+					palette: JSON.parse(raw),
+					raw,
+					checkedAt: Date.now(),
+				};
+			} else {
+				cached!.checkedAt = Date.now();
+			}
 		} catch {
-			base16State.__piCustomUiBase16 = {};
+			if (!valid) {
+				base16State[BASE16_CACHE_KEY] = {
+					palette: {},
+					raw: "",
+					checkedAt: Date.now(),
+				};
+			}
+			// Unreadable later on (e.g. transient swap state): keep the old palette.
 		}
 	}
-	const palette = base16State.__piCustomUiBase16 as Record<string, string>;
-	return palette[name];
+}
+
+function base16(name: string): string | undefined {
+	refreshBase16();
+	const entry = base16State[BASE16_CACHE_KEY] as Base16Cache;
+	return entry.palette[name];
 }
 
 // Truecolor SGR foreground for a base16 color (hex without '#'); falls back

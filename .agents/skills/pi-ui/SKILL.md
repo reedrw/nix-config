@@ -94,8 +94,15 @@ the hard way; violating them fails silently.
   over base04, raw truecolor SGR — beyond theme.fg) + zentui's verb catalog
   (deterministic per batchIndex). Settled batches render the static `✔` header;
   restored ones too, so animation state needs no persistence. The shimmer palette
-  is memoized — base16.json is read once per process, so /theme switches
-  mid-session don't recolor it. Thinking durations (live and restored, via the
+  is memoized per base16 epoch — `refreshBase16()` in the lib re-reads
+  base16.json when its CONTENT changes (throttled to 500 ms; mtime/size cannot
+  detect a toggle-theme swap because Nix store files share mtime=1 and the
+  dark/light JSONs are byte-equal in length), bumping the epoch, so a toggle
+  mid-session recolors the shimmer within ~a second. PITFALL: cache keys
+  derived from the epoch must call `refreshBase16()` FIRST — the epoch only
+  moves during a refresh, and a key computed before it matches the stale
+  entry forever (this shipped as a real bug: /theme switches recolored
+  base16Bg rows but not the shimmer). Thinking durations (live and restored, via the
   pi-thinking-fold fork's `__piCustomUi*` globalThis maps) surface in the batch
   header. Extension notifications (`ctx.ui.notify` info level) fold into the open
   batch via the patched `showExtensionNotify`. Restored sessions rebuild batches
