@@ -9,6 +9,8 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import {
   Markdown,
+  Spacer,
+  Text,
   type Component,
   type DefaultTextStyle,
   type MarkdownOptions,
@@ -207,7 +209,12 @@ export function formatThinkingSeconds(milliseconds: number): string {
 }
 
 export function formatStreamingThinkingSeconds(milliseconds: number): string {
-  return `${Math.floor(Math.max(0, milliseconds) / 1000)}s`;
+  // Same m/s shape as the batch header's formatThought ("1m 30s", not "90s")
+  // — whole-second precision, since this label only ticks per second of
+  // streaming; formatThought's 0.1s precision is for the animated header.
+  const s = Math.floor(Math.max(0, milliseconds) / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
 export function createThinkingCursorLabel(
@@ -219,6 +226,35 @@ export function createThinkingCursorLabel(
       ? extractLatestSummaryHeadline(message)
       : undefined;
   return headline ?? DEFAULT_THINKING_CURSOR_LABEL;
+}
+
+// ── custom-ui unification ─────────────────────────
+//
+// custom-ui (extensions/lib/custom-ui.ts) publishes an animation API on
+// globalThis. With it present, exactly ONE animated "Thinking" indicator
+// exists: the tool-batch header while a batch is open (this package's
+// streaming thinking row is suppressed then — its duration already counts
+// into the header), otherwise THIS row, animated through the shared API
+// (dots spinner + shimmer verb, colors from the terminal's base16 palette).
+// Without the API, behavior is unchanged (static label, own row always).
+interface CustomUiAnimApi {
+  frame: number;
+  batchOpen: boolean;
+  requestRender?(): void;
+  tick(): number;
+  completedLabel(seconds: string, canExpand: boolean, expandSuffix: string): string;
+  streamingLabel(
+    seconds: string,
+    canExpand: boolean,
+    expandSuffix: string,
+    seed: number,
+  ): string;
+}
+
+export function customUiAnim(): CustomUiAnimApi | undefined {
+  return (globalThis as Record<string, unknown>).__piCustomUiAnim as
+    | CustomUiAnimApi
+    | undefined;
 }
 
 function foldThinkingText(
@@ -313,7 +349,9 @@ class RenderedThinkingSection implements Component {
 
   constructor(
     private readonly content: Markdown,
-    private readonly label: Markdown | undefined,
+    // Markdown for the native label; Text when the custom-ui animation API
+    // supplies the label (raw SGR must not go through Markdown rendering).
+    private readonly label: Markdown | Text | undefined,
     private readonly context: RenderedThinkingContext,
   ) {
     context.add(this);
@@ -343,6 +381,12 @@ class RenderedThinkingSection implements Component {
     if (labelText !== this.labelText) {
       this.label.setText(labelText);
       this.labelText = labelText;
+    }
+    if (labelText === "") {
+      // Label suppressed (batch spinner owns the animation): keep one blank
+      // line between the batch block and the reasoning preview — healthy
+      // separation instead of the preview hugging the glance rows.
+      return ["", ...contentLines];
     }
     return [...this.label.render(width), ...contentLines];
   }
@@ -472,7 +516,16 @@ function replaceMarkedThinkingSections(
     if (!section) continue;
 
     const content = cloneNativeMarkdown(child, section.text);
-    const label = section.showLabel ? cloneNativeMarkdown(child, "") : undefined;
+    // The animated label carries raw SGR (spinner + shimmer) that Markdown
+    // rendering would mangle — when the custom-ui animation API is present,
+    // render the label through a plain Text instead (same setText/render
+    // interface RenderedThinkingSection needs). Without the API the native
+    // Markdown label is kept byte-for-byte.
+    const label = section.showLabel
+      ? customUiAnim()
+        ? new Text("")
+        : cloneNativeMarkdown(child, "")
+      : undefined;
     if (!content || (section.showLabel && !label)) return false;
     children[index] = new RenderedThinkingSection(content, label, context);
     pending.delete(section.marker);
@@ -665,15 +718,32 @@ function rebuild(
     const timing = record.timings.get(message.timestamp);
     const completed = timing?.completedAt !== undefined;
     // Claude-style merge: tool-call messages render no thinking line at all —
-    // the batch header carries the duration. pi's hidden-thinking path with an
-    // empty label renders zero lines. An explicit ctrl+t expand still wins.
-    if (
-      completed &&
+    // the batch header carries the duration. While a batch is open, a still-
+    // streaming message's thinking is suppressed too (the animated batch
+    // header counts its duration live via __piCustomUiThoughtLive; without
+    // this, three "Thinking" indicators show at once: batch header, this
+    // row, and pi's native loader). pi's hidden-thinking path with an empty
+    // label renders zero lines. An explicit ctrl+t expand still wins.
+    // Merge rule (completion only): pure thinking+toolCall messages fold
+    // into the batch header. Narrated messages (thinking → text → toolCall)
+    // keep their fold row — stripping a row that streamed visible text was
+    // the missing-fold regression, and their duration must not double-count
+    // in the header (custom-ui skips stamping narrated messages too).
+    // STREAMING rows always render: while a batch is open the label is static
+    // (the animated batch header owns the animation) but the content preview
+    // stays visible; removing the old batchOpen suppression restored the
+    // pre-unification behavior for post-tool thinking.
+    const hasNarration = message.content.some(
+      (block) => block.type === "text" && typeof block.text === "string" && block.text.trim().length > 0,
+    );
+    const mergeIntoHeader =
       !record.expanded &&
       !isToolExpandAll() &&
       customUiMergeEnabled() &&
-      message.content.some((block) => block.type === "toolCall")
-    ) {
+      completed &&
+      message.content.some((block) => block.type === "toolCall") &&
+      !hasNarration;
+    if (mergeIntoHeader) {
       // Strip thinking blocks from the display copy: pi's updateContent adds a
       // leading Spacer(1) for any message with visible content, and non-empty
       // thinking counts — leaving a blank line at every message boundary
@@ -700,10 +770,36 @@ function rebuild(
     const hasThinkingContent = message.content.some(
       (block) => block.type === "thinking" && block.thinking.trim(),
     );
-    const labelFor = (canExpand: boolean) =>
-      completed && timing
-        ? createCompletedThinkingLabel(record.options, timing, canExpand)
+    const labelFor = (canExpand: boolean) => {
+      const api = customUiAnim();
+      if (!completed && api) {
+        // Animated streaming label from the shared custom-ui API —
+        // dots spinner + shimmer verb, one clock with the batch header.
+        const seconds = timing
+          ? formatStreamingThinkingSeconds(record.now - timing.startedAt)
+          : "0s";
+        // While a batch is open the animated header owns the indicator —
+        // suppress this row's label entirely and stream just the reasoning
+        // preview beneath it. Fresh-thinking rows (no batch) get the full
+        // animated label.
+        if (api.batchOpen) return "";
+        return api.streamingLabel(
+          seconds,
+          canExpand,
+          `  (${record.options.toggleKey} to expand)`,
+          message.timestamp,
+        );
+      }
+      return completed && timing
+        ? (api
+          ? api.completedLabel(
+              formatThinkingSeconds(timing.completedAt! - timing.startedAt),
+              canExpand,
+              `  (${record.options.toggleKey} to expand)`,
+            )
+          : createCompletedThinkingLabel(record.options, timing, canExpand))
         : createStreamingThinkingLabel(record.options, timing, record.now, canExpand);
+    };
 
     state.renderedMessage = marked.message;
     record.originalUpdate.call(component, marked.message);
@@ -721,6 +817,7 @@ function rebuild(
       state.renderedMessage = message;
       record.originalUpdate.call(component, message);
     }
+    tightenThinkingSpacing(component);
   } finally {
     internals.hideThinkingBlock = nativeHidden;
   }
@@ -738,6 +835,20 @@ function forEachLiveComponent(
     }
     const state = record.states.get(component);
     if (state) callback(component, state);
+  }
+}
+
+function tightenThinkingSpacing(component: AssistantMessageComponent): void {
+  // Pi surrounds thinking sections with Spacer(1) children (above any visible
+  // content, below when text follows) — with the fold label present they read
+  // as stray blank lines on both sides of the "Thought for" row. Drop the
+  // spacers adjacent to replaced thinking sections.
+  const children = (component as unknown as AssistantMessageInternals).contentContainer?.children;
+  if (!children) return;
+  for (let i = children.length - 1; i >= 0; i--) {
+    if (!(children[i] instanceof RenderedThinkingSection)) continue;
+    if (i + 1 < children.length && children[i + 1] instanceof Spacer) children.splice(i + 1, 1);
+    if (i > 0 && children[i - 1] instanceof Spacer) children.splice(i - 1, 1);
   }
 }
 

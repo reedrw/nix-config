@@ -6,3 +6,4 @@ repo/stage/screenshots/
 .pre-commit-config.yaml
 result
 result-*
+node_modules/

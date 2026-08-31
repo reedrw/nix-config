@@ -45,6 +45,7 @@ import {
 	customUiEnabled,
 	edit,
 	base16Bg,
+	base16Fg,
 	find,
 	foldToolGroup,
 	glanceLine,
@@ -56,8 +57,10 @@ import {
 	readCallSlot,
 	readTextResult,
 	scanToolGroupsFromHistory,
+	currentBatchSize,
 	settleStatus,
-	tickFoldedBatch,
+	tickOpenBatch,
+	animState,
 	trackGroupToolCall,
 	write,
 } from "./lib/custom-ui.ts";
@@ -773,13 +776,66 @@ export default function customUi(pi: ExtensionAPI) {
 		};
 	}
 
+	// ── Turn summary (zentui-faithful, MIT) ───────────────
+	// One settled row per agent run, appended at agent_end and persisted via
+	// appendEntry + entry renderer (renders identically on restore):
+	//   Turn took 1m 51s · thought for 1m 39s · ↑12.4k ↓830
+	// Duration is agent-run wall clock; tokens are provider-reported usage
+	// summed per assistant message at message_end; thought time is summed
+	// from the fork's published per-message thinking timings at settle.
+	const TURN_SUMMARY_TYPE = "turn-summary";
+	let turnStartedAt = 0;
+	let turnSpinnerSeed = 0;
+	const turnTimestamps = new Set<number>();
+	const turnTokens = { input: 0, output: 0 };
+
+	const formatTurnDuration = (ms: number): string => {
+		const total = Math.max(0, Math.floor(ms / 1000));
+		const h = Math.floor(total / 3600);
+		const m = Math.floor((total % 3600) / 60);
+		const s = total % 60;
+		if (h > 0) return `${h}h ${m}m`;
+		if (m > 0) return `${m}m ${s}s`;
+		return `${s}s`;
+	};
+	const formatTokCount = (v: number): string => {
+		if (v < 1000) return String(v);
+		if (v < 10_000) return `${(v / 1000).toFixed(1)}k`;
+		if (v < 1_000_000) return `${Math.round(v / 1000)}k`;
+		if (v < 10_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
+		return `${Math.round(v / 1_000_000)}M`;
+	};
+	// Styling per user spec: the whole row bold base03 (an earlier per-piece
+	// variant — base02 dots, yellow/grey arrows — read poorly and was
+	// dropped). Raw base16 SGR; base16Fg falls back when the palette is absent.
+	const formatTurnSummaryText = (data: { durationMs: number; thoughtMs: number; input: number; output: number }): string => {
+		const base03 = base16Fg("base03", "6a737d");
+		const parts = [`Turn took ${formatTurnDuration(data.durationMs)}`];
+		if (data.thoughtMs >= 1000) parts.push(`thought for ${formatTurnDuration(data.thoughtMs)}`);
+		parts.push(`↑${formatTokCount(data.input)} ↓${formatTokCount(data.output)}`);
+		return ` ${base03}\x1b[1m${parts.join(" · ")}\x1b[22m\x1b[39m`;
+	};
+
+	pi.registerEntryRenderer(TURN_SUMMARY_TYPE, (entry, _options, _theme) => {
+		const data = entry.data as
+			| { durationMs?: number; thoughtMs?: number; input?: number; output?: number }
+			| undefined;
+		if (!data) return new Text("", 0, 0);
+		return new Text(formatTurnSummaryText({
+			durationMs: data.durationMs ?? 0,
+			thoughtMs: data.thoughtMs ?? 0,
+			input: data.input ?? 0,
+			output: data.output ?? 0,
+		}), 0, 0);
+	});
+
 	// Tool call grouping: consecutive tool calls form a batch while nothing
 	// visible separates them — visible assistant text, a user message, or the
 	// end of the agent's response splits the batch; thinking runs fold into
 	// it visually (their durations surface in the batch header) without
 	// closing it. Bare tool-carrier messages (e.g. a silent retry after a
 	// failed call) join the current batch instead of starting a new one.
-	// Each collapsed batch gets a `✻ Ran N tool calls` header. State lives in
+	// Each collapsed batch gets a settled header with an nf check glyph. State lives in
 	// the shared lib module.
 	// A tool call stamps its batch with the timestamp of the assistant message
 	// that contains it, so the header can look up that message's thinking
@@ -800,28 +856,123 @@ export default function customUi(pi: ExtensionAPI) {
 			);
 	}
 
-	// While reasoning streams over a folded batch, the lib computes the
-	// header duration live (completed blocks + the in-progress block's
-	// elapsed time); a timer re-renders the batch so it counts up. The key of
-	// the streaming message is published for the lib and cleared whenever the
-	// reasoning phase ends.
+	// While the batch header is visible (any thinking streams over it, or ≥2
+	// tool calls are in), the lib animates the header — dots spinner + shimmer
+	// verb + live durations. The tick bumps the animation clock and re-renders
+	// the batch; when there is nothing to animate it returns false and the
+	// timer stops until the next tool_call/thinking_delta restarts it. Kept
+	// alive through thinking_end so tools that follow still animate.
 	const LIVE_THOUGHT_KEY = "__piCustomUiLiveThought";
 	let tickTimer: ReturnType<typeof setInterval> | undefined;
 	const stopThoughtTick = () => {
 		if (tickTimer) clearInterval(tickTimer);
 		tickTimer = undefined;
 	};
+	const ensureTick = () => {
+		if (!tickTimer) {
+			// 80ms — the cli-spinners dots family's default interval.
+			tickTimer = setInterval(() => {
+				if (!tickOpenBatch()) stopThoughtTick();
+			}, 80);
+		}
+	};
 	const setLiveThought = (ts: number | undefined) => {
 		(globalThis as Record<string, unknown>)[LIVE_THOUGHT_KEY] = ts;
 	};
 
-	pi.on("tool_call", async (event) => {
+	// Unification rule: exactly one activity indicator at a time. With
+	// custom-ui owning tool rendering, the native loader row (braille spinner
+	// + generic "Working..."/"Thinking...") NEVER shows — it carries no
+	// information the transcript doesn't (live header, glance rows, tool
+	// dots), and the animated transcript row is the sole indicator. The flag
+	// is set false once at session_start and re-asserted at agent_start (pi
+	// respects workingVisible there: it clears instead of showing) and on
+	// thinking_delta. Retry/compaction indicators are separate kinds and
+	// unaffected. Nothing sets it back to true: showing it again at agent_end
+	// would flash "Working..." at the start of the next turn.
+	type LoaderCtx = { mode?: string; ui?: { setWorkingVisible?: (visible: boolean) => void } } | undefined;
+	const setLoaderVisible = (ctx: LoaderCtx, visible: boolean) => {
+		if (ctx?.mode !== "tui") return;
+		try {
+			ctx.ui?.setWorkingVisible?.(visible);
+		} catch {
+			// Older pi builds without the API — indicator stays as pi drew it.
+		}
+	};
+
+	// ── Dead-air loader ─────────────
+	// The native loader stays hidden while anything is visibly happening —
+	// streaming deltas, an open batch header, an in-flight tool dot all
+	// count as activity — but mid-turn latency with zero events and zero
+	// spinners makes the turn look dead. A low-frequency check re-shows the
+	// loader after 500ms of event silence (only when no batch/tool spinner
+	// is active) and hides it the moment activity resumes.
+	let lastAgentEventAt = 0;
+	let inFlightTools = 0;
+	let loaderTimer: ReturnType<typeof setInterval> | undefined;
+	const noteAgentActivity = () => {
+		lastAgentEventAt = Date.now();
+	};
+
+	pi.on("tool_call", async (event, ctx) => {
+		noteAgentActivity();
+		inFlightTools += 1;
 		const e = event as { toolCallId?: string };
 		if (typeof e.toolCallId === "string") {
 			trackGroupToolCall(e.toolCallId, toolCallThoughtKey.get(e.toolCallId));
+			ensureTick();
 		}
 	});
+	pi.on("tool_result", async () => {
+		noteAgentActivity();
+		inFlightTools = Math.max(0, inFlightTools - 1);
+	});
+	pi.on("agent_start", async (_event, ctx) => {
+		noteAgentActivity();
+		setLoaderVisible(ctx, false);
+		// The dead-air loader is OUR animated label (dots glyph + shimmer verb,
+		// written per-tick below) — pi's native indicator is hidden entirely so
+		// the row shows exactly one spinner.
+		turnSpinnerSeed = Date.now();
+		if (ctx.mode === "tui") {
+			try {
+				(ctx as { ui?: { setWorkingIndicator?: (o?: unknown) => void } }).ui?.setWorkingIndicator?.({
+					frames: [],
+				});
+			} catch {
+				// Older builds without the API — native indicator stays.
+			}
+		}
+		turnStartedAt = Date.now();
+		turnTimestamps.clear();
+		turnTokens.input = 0;
+		turnTokens.output = 0;
+		if (ctx.mode !== "tui") return;
+		loaderTimer?.unref?.();
+		clearInterval(loaderTimer);
+		const c = ctx;
+		loaderTimer = setInterval(() => {
+			// Dead-air loader for the two states with no other spinner:
+			// - no batch yet (turn-start provider latency, before the first
+			//   thinking fold row appears)
+			// - a SOLO batch (one tool call, no animated header) — dead air
+			//   after its tool would otherwise show nothing
+			// Bigger batches have the animated header; fresh thinking has the
+			// animated fold row; in-flight tools have the dotsCircle dot.
+			const jobs = currentBatchSize();
+			const idle =
+				Date.now() - lastAgentEventAt > 500 && inFlightTools === 0 && (jobs === undefined || jobs === 1);
+			setLoaderVisible(c, idle);
+			if (c.mode !== "tui") return;
+			try {
+				(c as { ui?: { setWorkingMessage?: (m?: string) => void } }).ui?.setWorkingMessage?.(
+					idle ? animState().loaderLabel(turnSpinnerSeed) : undefined,
+				);
+			} catch { /* debug-tolerant */ }
+		}, 80);
+	});
 	pi.on("message_start", async (event) => {
+		noteAgentActivity();
 		const message = (event as { message?: { role?: unknown } }).message;
 		if (message?.role === "user") {
 			stopThoughtTick();
@@ -829,7 +980,8 @@ export default function customUi(pi: ExtensionAPI) {
 			collapseToolGroup();
 		}
 	});
-	pi.on("message_update", async (event) => {
+	pi.on("message_update", async (event, ctx) => {
+		noteAgentActivity();
 		const e = event as { assistantMessageEvent?: { type?: unknown }; message?: any };
 		const type = e.assistantMessageEvent?.type;
 		// Collapse as soon as visible text streams (whitespace-only text blocks
@@ -838,17 +990,12 @@ export default function customUi(pi: ExtensionAPI) {
 		if (type === "thinking_delta") {
 			foldToolGroup();
 			setLiveThought(typeof e.message?.timestamp === "number" ? e.message.timestamp : undefined);
-			if (!tickTimer) {
-				// Once per second, matching thinking-fold's own item timer.
-				tickTimer = setInterval(() => {
-					if (!tickFoldedBatch()) stopThoughtTick();
-				}, 1000);
-			}
+			ensureTick();
+			setLoaderVisible(ctx, false);
 		}
 		if (type === "thinking_end") {
-			// Duration is complete — one final render, then stop counting.
-			tickFoldedBatch();
-			stopThoughtTick();
+			// Duration is complete; the timer keeps running so the header
+			// spinner/shimmer stays alive while tools of this batch stream.
 			setLiveThought(undefined);
 		}
 		if (type === "text_delta" && hasVisibleText(e.message)) {
@@ -862,10 +1009,15 @@ export default function customUi(pi: ExtensionAPI) {
 		// Runs on every update (not just thinking_delta): thinking streams
 		// before the toolCall blocks exist, so the ids only become mappable
 		// once both are present in the partial content.
+		// Narrated messages (thinking → text → toolCall) are exempt: their
+		// fold row stays visible (fork narration exemption) and shows the
+		// duration; stamping would make the next batch header count the same
+		// thinking twice.
 		if (
 			typeof e.message?.timestamp === "number" &&
 			Array.isArray(e.message?.content) &&
-			e.message.content.some((part: any) => part?.type === "thinking")
+			e.message.content.some((part: any) => part?.type === "thinking") &&
+			!hasVisibleText(e.message)
 		) {
 			for (const part of e.message.content) {
 				if (part?.type === "toolCall" && typeof part.id === "string") {
@@ -874,20 +1026,73 @@ export default function customUi(pi: ExtensionAPI) {
 			}
 		}
 	});
+	// Per-assistant-message bookkeeping for the turn summary: timestamps (to
+	// look up the fork's published thinking timings at settle) and
+	// provider-reported usage.
+	pi.on("message_end", async (event) => {
+		noteAgentActivity();
+		const message = (event as { message?: { role?: unknown; timestamp?: number; usage?: { input?: number; output?: number } } }).message;
+		if (message?.role !== "assistant") return;
+		if (typeof message.timestamp === "number") turnTimestamps.add(message.timestamp);
+		turnTokens.input += message.usage?.input ?? 0;
+		turnTokens.output += message.usage?.output ?? 0;
+	});
+
 	// NB: turn_end fires per assistant *message* (with its tool results), so
 	// collapsing there would split sequential tool calls into solo batches.
 	// agent_end fires once when the whole response settles.
-	pi.on("agent_end", async () => {
+	pi.on("agent_end", async (_event, ctx) => {
+		noteAgentActivity();
 		stopThoughtTick();
 		setLiveThought(undefined);
 		collapseToolGroup();
+		clearInterval(loaderTimer);
+		loaderTimer = undefined;
+		setLoaderVisible(ctx, false);
+		if (ctx?.mode !== "tui" || !turnStartedAt || turnTimestamps.size === 0) return;
+		// Thinking wall-clock: the fork publishes per-message timings
+		// (completed) plus in-progress entries; sum over this turn's messages.
+		const w = globalThis as Record<string, unknown>;
+		const done = w.__piCustomUiThoughtFor as Map<number, number> | undefined;
+		const live = w.__piCustomUiThoughtLive as
+			| Map<number, { startedAt: number; completedAt?: number }>
+			| undefined;
+		let thoughtMs = 0;
+		for (const ts of turnTimestamps) {
+			const d = done?.get(ts);
+			if (typeof d === "number") {
+				thoughtMs += d;
+				continue;
+			}
+			const lt = live?.get(ts);
+			if (lt) thoughtMs += Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
+		}
+		pi.appendEntry(TURN_SUMMARY_TYPE, {
+			v: 1,
+			durationMs: Date.now() - turnStartedAt,
+			thoughtMs,
+			input: turnTokens.input,
+			output: turnTokens.output,
+		});
+		turnStartedAt = 0;
 	});
 	pi.on("session_start", async (_event, ctx) => {
 		stopThoughtTick();
 		setLiveThought(undefined);
 		toolCallThoughtKey.clear();
+		clearInterval(loaderTimer);
+		loaderTimer = undefined;
 		userMessageUi = ctx.ui as { theme?: Theme };
+		setLoaderVisible(ctx, false);
 		if (ctx.mode === "print" || ctx.mode === "json") return;
+		// Capture the TUI so animation ticks can force repaints — the zero-line
+		// widget capture trick (same as thinking-fold-redraw.ts; the UI context
+		// exposes no requestRender). Published on the shared anim API so the
+		// pi-thinking-fold timer can drive its streaming label with it too.
+		ctx.ui.setWidget("custom-ui-anim", (t) => {
+			animState().requestRender = () => t.requestRender();
+			return { render: () => [], invalidate() {}, dispose() { animState().requestRender = undefined; } };
+		});
 		scanToolGroupsFromHistory(
 			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
 		);

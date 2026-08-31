@@ -74,17 +74,18 @@ function lastLine(text: string): string {
 	return firstLine(text.split("\n").reverse().join("\n"));
 }
 
-// `● label arg` — the call row. Status dot: grey while pending/running, then
-// red on error / green on success. The call slot doesn't re-render by itself
-// once the call settles, so the status is kept in context.state (shared
-// across the row's slots) and written by settleStatus() from renderResult,
-// which invalidates the row to repaint the dot. Claude Code style call:
-// bold label with the argument inside parentheses.
+// `● label arg` — the call row. Status dot: an accent-colored dotsCircle
+// spinner while the tool runs, then red on error / green on success. The
+// call slot doesn't re-render by itself once the call settles, so the status
+// is kept in context.state (shared across the row's slots) and written by
+// settleStatus() from renderResult, which invalidates the row to repaint the
+// dot. Claude Code style call: bold label with the argument inside
+// parentheses.
 function statusDot(theme: Theme, context: any): string {
 	const status = context?.state?.status;
 	if (status === "error") return theme.fg("error", "●");
 	if (status === "success") return theme.fg("success", "●");
-	return theme.fg("muted", "●");
+	return animState().inProgressDot();
 }
 
 // Record the final status of a tool row and request a repaint so the call
@@ -194,7 +195,7 @@ function withMore(text: string, cap: number, theme: Theme): string {
 // members render as one-line glance rows. Reasoning folds the batch visually
 // (header + glance rows appear immediately) without closing it; visible
 // assistant text, a user message, or the end of the response closes it under
-// the final `✻ Thought for Xs · Ran N tool calls` header. Per-row ctrl+o
+// the final ` Thought for Xs · Ran N tool calls` header. Per-row ctrl+o
 // expansion always overrides the grouping.
 //
 // State lives on globalThis: this lib module is imported by several
@@ -212,6 +213,10 @@ interface ToolBatch {
 	// durations are looked up per key (published by the pi-thinking-fold
 	// fork) and summed for the header.
 	thoughtKeys: number[];
+	// Index into DOTS_SPINNERS, drawn once per batch so the header spinner
+	// varies across turns (zentui-style). Not persisted; restored batches
+	// render the static header anyway.
+	spinner: number;
 }
 
 interface GroupState {
@@ -271,17 +276,23 @@ export function trackGroupToolCall(toolCallId: string, thoughtKey?: number): voi
 	const s = groupState();
 	s.order.set(toolCallId, ++s.counter);
 	if (s.current === undefined) {
-		s.batches.push({ ids: [], collapsed: false, thoughtKeys: thoughtKey === undefined ? [] : [thoughtKey] });
+		s.batches.push({
+			ids: [],
+			collapsed: false,
+			thoughtKeys: thoughtKey === undefined ? [] : [thoughtKey],
+			spinner: Math.floor(Math.random() * DOTS_SPINNERS.length),
+		});
 		s.current = s.batches.length - 1;
 	} else if (thoughtKey !== undefined && !s.batches[s.current].thoughtKeys.includes(thoughtKey)) {
 		s.batches[s.current].thoughtKeys.push(thoughtKey);
 	}
 	s.batches[s.current].ids.push(toolCallId);
 	s.memberBatch.set(toolCallId, s.current);
+	setBatchOpen(true);
 	const previousLatest = s.latest;
 	s.latest = toolCallId;
 	// The previously-latest row drops from expanded to glance rendering, and
-	// the batch's first row updates its live `✻ Ran N tool calls` count.
+	// the batch's first row updates its live `Ran N tool calls` count.
 	if (previousLatest && previousLatest !== toolCallId) {
 		const first = s.batches[s.current].ids[0];
 		invalidateRows(new Set([previousLatest, first]));
@@ -312,6 +323,7 @@ export function collapseToolGroup(): void {
 		s.current = undefined;
 	}
 	s.latest = undefined;
+	setBatchOpen(false);
 }
 
 // Fold an extension notification into the open batch as a note line under
@@ -354,6 +366,7 @@ export function withToolNotes<T extends RenderSlots>(slots: T): T {
 
 export function resetToolGroups(): void {
 	(globalThis as Record<string, unknown>)[GROUP_STATE_KEY] = freshGroupState();
+	setBatchOpen(false);
 }
 
 export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; message?: unknown }>): void {
@@ -383,9 +396,12 @@ export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; mess
 						part !== null && typeof part === "object" &&
 						(part as { type?: unknown }).type === "thinking",
 				);
-			const thoughtKey = hasThinking && typeof (message as { timestamp?: unknown }).timestamp === "number"
-				? (message as { timestamp: number }).timestamp
-				: undefined;
+			// Narrated messages keep their fold row (fork narration exemption),
+			// so their thinking belongs to the row, not the batch header.
+			const thoughtKey =
+				hasThinking && !hasVisible && typeof (message as { timestamp?: unknown }).timestamp === "number"
+					? (message as { timestamp: number }).timestamp
+					: undefined;
 			if (Array.isArray(message.content)) {
 				for (const part of message.content) {
 					if (
@@ -404,8 +420,24 @@ export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; mess
 export type GroupMode =
 	| { kind: "normal" }
 	| { kind: "latest"; first: boolean }
-	| { kind: "earlier"; header: boolean; count: number; thoughtKeys?: number[] }
-	| { kind: "collapsed"; header: boolean; count: number; thoughtKeys?: number[] };
+	| {
+			kind: "earlier";
+			header: boolean;
+			count: number;
+			thoughtKeys?: number[];
+			running: boolean;
+			spinner: number;
+			batchIndex: number;
+	  }
+	| {
+			kind: "collapsed";
+			header: boolean;
+			count: number;
+			thoughtKeys?: number[];
+			running: boolean;
+			spinner: number;
+			batchIndex: number;
+	  };
 
 function batchHeader(batch: ToolBatch, toolCallId: string): boolean {
 	return batch.ids[0] === toolCallId;
@@ -417,12 +449,15 @@ export function groupMode(toolCallId: string | undefined | null): GroupMode {
 	const idx = s.memberBatch.get(toolCallId);
 	if (idx === undefined) return { kind: "normal" };
 	const batch = s.batches[idx];
-	if (batch.collapsed || batch.folded) {
+if (batch.collapsed || batch.folded) {
 		return {
 			kind: "collapsed",
 			header: batchHeader(batch, toolCallId),
 			count: batch.ids.length,
 			thoughtKeys: batch.thoughtKeys,
+			running: !batch.collapsed,
+			spinner: batch.spinner,
+			batchIndex: idx,
 		};
 	}
 	if (s.latest === toolCallId) {
@@ -433,6 +468,9 @@ export function groupMode(toolCallId: string | undefined | null): GroupMode {
 		header: batchHeader(batch, toolCallId),
 		count: batch.ids.length,
 		thoughtKeys: batch.thoughtKeys,
+		running: true,
+		spinner: batch.spinner,
+		batchIndex: idx,
 	};
 }
 
@@ -472,15 +510,28 @@ function thoughtForMs(keys: number[] | undefined): number | undefined {
 	return total >= 500 ? total : undefined;
 }
 
-// Called on a timer while reasoning streams: re-renders the folded batch so
-// its header duration counts up. Returns false when there is nothing to tick
-// (no open folded batch), letting the caller stop its timer.
-export function tickFoldedBatch(): boolean {
+// Called on a timer while a batch is open: bumps the animation clock and
+// re-renders the batch — the animated header AND the in-progress dotsCircle
+// dots on running tool rows (solo batches included, so a single running tool
+// still animates). Returns false when no batch is open, letting the caller
+// stop its timer until the next tool_call/thinking_delta restarts it; text,
+// user messages, and agent_end collapse the batch and stop it that way.
+// Tool calls in the currently open batch, or undefined when no batch is
+// open. The dead-air loader in custom-ui.ts shows only for exactly-1-job
+// batches: bigger batches have an animated header (their spinner), and
+// batch-less stretches are covered by the fresh-thinking fold row.
+export function currentBatchSize(): number | undefined {
+	const s = groupState();
+	if (s.current === undefined) return undefined;
+	return s.batches[s.current].ids.length;
+}
+
+export function tickOpenBatch(): boolean {
 	const s = groupState();
 	if (s.current === undefined) return false;
-	const batch = s.batches[s.current];
-	if (!batch.folded || batch.collapsed) return false;
-	invalidateRows(batch.ids);
+	animState().tick();
+	invalidateRows(s.batches[s.current].ids);
+	animState().requestRender?.();
 	return true;
 }
 
@@ -494,8 +545,265 @@ export function groupHeaderLine(theme: Theme, count: number, thoughtMs?: number)
 	// Full ANSI yellow (33 — same as the statusline git segment), italic label.
 	const label = `Ran ${count} tool call${count === 1 ? " " : "s"}`;
 	const thought = thoughtMs === undefined ? "" : `Thought for ${formatThought(thoughtMs)} · `;
-	return `\x1b[33m✻ ${theme.italic(`${thought}${label} (${keyText("app.tools.expand")} to expand)`)}\x1b[0m`;
+	return `\x1b[33m✔ ${theme.italic(`${thought}${label} (${keyText("app.tools.expand")} to expand)`)}\x1b[0m`;
 }
+
+// ── Live batch header: spinner + shimmer verb ─────────────────
+//
+// While a batch is running (open, header visible) the static settled header is
+// replaced by an animated one, adapted from two sources:
+//
+// - spinner: the cli-spinners `dots` family (sindresorhus/cli-spinners,
+//   MIT), one variant drawn at random per batch so turns vary. Frames only;
+//   cadence is the tick timer in custom-ui.ts (80ms, the family's default
+//   interval).
+// - text: the shimmer effect from arpagon/pi-animations (MIT), ported but
+//   recolored — the original sweeps a hardcoded magenta→cyan rainbow over a
+//   grey base, ours sweeps a gradient built from the stylix palette
+//   (base0D→base0E→base0C over a base04 base tone) so it follows the
+//   terminal theme. Falls back to the original rainbow when base16.json is
+//   unavailable.
+//
+// The verb catalog is lmilojevicc/pi-zentui's working-line message list
+// (MIT), selected deterministically per batch so restored sessions and
+// re-renders agree.
+
+export const DOTS_SPINNERS: readonly (readonly string[])[] = [
+	["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+	["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"],
+	["⠋", "⠙", "⠚", "⠞", "⠖", "⠦", "⠴", "⠲", "⠳", "⠓"],
+	["⠄", "⠆", "⠇", "⠋", "⠙", "⠸", "⠰", "⠠", "⠰", "⠸", "⠙", "⠋", "⠇", "⠆"],
+	["⠋", "⠙", "⠚", "⠒", "⠂", "⠂", "⠒", "⠲", "⠴", "⠦", "⠖", "⠒", "⠐", "⠐", "⠒", "⠓", "⠋"],
+	["⠁", "⠉", "⠙", "⠚", "⠒", "⠂", "⠂", "⠒", "⠲", "⠴", "⠤", "⠄", "⠄", "⠤", "⠴", "⠲", "⠒", "⠂", "⠂", "⠒", "⠚", "⠙", "⠉", "⠁"],
+	["⠈", "⠉", "⠋", "⠓", "⠒", "⠐", "⠐", "⠒", "⠖", "⠦", "⠤", "⠠", "⠠", "⠤", "⠦", "⠖", "⠒", "⠐", "⠐", "⠒", "⠓", "⠋", "⠉", "⠈"],
+	["⠁", "⠁", "⠉", "⠙", "⠚", "⠒", "⠂", "⠂", "⠒", "⠲", "⠴", "⠤", "⠄", "⠄", "⠤", "⠠", "⠠", "⠤", "⠦", "⠖", "⠒", "⠐", "⠐", "⠒", "⠓", "⠋", "⠉", "⠈", "⠈"],
+	["⢹", "⢺", "⢼", "⣸", "⣇", "⡧", "⡗", "⡏"],
+	["⢄", "⢂", "⢁", "⡁", "⡈", "⡐", "⡠"],
+	["⠁", "⠂", "⠄", "⡀", "⢀", "⠠", "⠐", "⠈"],
+	["⢀⠀", "⡀⠀", "⠄⠀", "⢂⠀", "⡂⠀", "⠅⠀", "⢃⠀", "⡃⠀", "⠍⠀", "⢋⠀", "⡋⠀", "⠍⠁", "⢋⠁", "⡋⠁", "⠍⠉", "⠋⠉", "⠋⠉", "⠉⠙", "⠉⠙", "⠉⠩", "⠈⢙", "⠈⡙", "⢈⠩", "⡀⢙", "⠄⡙", "⢂⠩", "⡂⢘", "⠅⡘", "⢃⠨", "⡃⢐", "⠍⡐", "⢋⠠", "⡋⢀", "⠍⡁", "⢋⠁", "⡋⠁", "⠍⠉", "⠋⠉", "⠋⠉", "⠉⠙", "⠉⠙", "⠉⠩", "⠈⢙", "⠈⡙", "⠈⠩", "⠀⢙", "⠀⡙", "⠀⠩", "⠀⢘", "⠀⡘", "⠀⠨", "⠀⢐", "⠀⡐", "⠀⠠", "⠀⢀", "⠀⡀"],
+	["⣼", "⣹", "⢻", "⠿", "⡟", "⣏", "⣧", "⣶"],
+	["⠉⠉", "⠈⠙", "⠀⠹", "⠀⢸", "⠀⣰", "⢀⣠", "⣀⣀", "⣄⡀", "⣆⠀", "⡇⠀", "⠏⠀", "⠋⠁"],
+	["⢎ ", "⠎⠁", "⠊⠑", "⠈⠱", " ⡱", "⢀⡰", "⢄⡠", "⢆⡀"],
+];
+
+// zentui's working-line verb catalog, in display order.
+const VERBS = [
+	"Sautéing", "Cooking", "Ionizing", "Zigzagging", "Razzle-dazzling",
+	"Photosynthesizing", "Nucleating", "Brewing", "Combobulating", "Boogieing",
+	"Befuddling", "Alchemizing", "Conjuring", "Baking", "Simmering", "Blanching",
+];
+
+// cli-spinners' dotsCircle — every frame is exactly 2 cells (the spaces are
+// load-bearing padding), so the in-progress dot never wiggles horizontally.
+const DOTS_CIRCLE = ["⢎ ", "⠎⠁", "⠊⠑", "⠈⠱", " ⡱", "⢀⡰", "⢄⡠", "⢆⡀"];
+
+type Rgb = [number, number, number];
+
+function hexToRgbTuple(hex: string): Rgb | undefined {
+	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) return undefined;
+	return [
+		parseInt(hex.slice(0, 2), 16),
+		parseInt(hex.slice(2, 4), 16),
+		parseInt(hex.slice(4, 6), 16),
+	];
+}
+
+// pi-animations' PI_GRAD — the fallback gradient when no base16 palette is
+// available (magenta → purple → cyan).
+const SHIMMER_FALLBACK: Rgb[] = [
+	[255, 0, 135], [175, 95, 175], [135, 95, 215],
+	[95, 95, 255], [95, 175, 255], [0, 255, 255],
+];
+
+// Gradient stops + base tone, memoized after the first read of base16.json
+// (which is itself cached on globalThis).
+let shimmerPalette: { grad: Rgb[]; base: Rgb } | undefined;
+function shimmerColors(): { grad: Rgb[]; base: Rgb } {
+	if (!shimmerPalette) {
+		const grad = ["base0D", "base0E", "base0C"]
+			.map(base16)
+			.map((hex) => hexToRgbTuple(hex ?? ""))
+			.filter((c): c is Rgb => c !== undefined);
+		shimmerPalette = {
+			grad: grad.length >= 2 ? grad : SHIMMER_FALLBACK,
+			base: hexToRgbTuple(base16("base04") ?? "") ?? [200, 200, 200],
+		};
+	}
+	return shimmerPalette;
+}
+
+// One shimmer frame over `text`: a sine wave rides the string, and cells
+// above the threshold blend from the base tone toward a gradient stop (the
+// ramp position itself scrolls with the frame). Raw truecolor SGR — the
+// colors come from the stylix palette, but per-character coloring is beyond
+// theme.fg.
+function shimmerFrame(text: string, frame: number): string {
+	const { grad, base } = shimmerColors();
+	let line = "";
+	for (let i = 0; i < text.length; i++) {
+		const wave = Math.sin((i - frame * 0.3) * 0.8);
+		if (wave > 0.3) {
+			const intensity = (wave - 0.3) / 0.7;
+			const gi = Math.floor((i + frame * 0.5) % (grad.length * 2));
+			const gIdx = gi < grad.length ? gi : grad.length * 2 - 1 - gi;
+			const gc = grad[Math.min(gIdx, grad.length - 1)];
+			const r = Math.round(base[0] + (gc[0] - base[0]) * intensity);
+			const g = Math.round(base[1] + (gc[1] - base[1]) * intensity);
+			const b = Math.round(base[2] + (gc[2] - base[2]) * intensity);
+			line += `\x1b[1m\x1b[38;2;${r};${g};${b}m${text[i]}\x1b[22m`;
+		} else {
+			line += `\x1b[38;2;${base[0]};${base[1]};${base[2]}m${text[i]}`;
+		}
+	}
+	return line + "\x1b[0m";
+}
+
+// Animated header for a running batch:
+// `▸ Combobulating… · Thought for 2.3s · Ran 4 tool calls (ctrl+o to expand)`
+// with the dots spinner in the accent color and the verb shimmering through
+// the stylix gradient. The trailing info keeps the static header's styling.
+export function liveGroupHeaderLine(
+	theme: Theme,
+	count: number,
+	thoughtMs: number | undefined,
+	frame: number,
+	spinner: number,
+	batchIndex: number,
+): string {
+	const frames = DOTS_SPINNERS[spinner % DOTS_SPINNERS.length] ?? DOTS_SPINNERS[0];
+	const glyph = theme.fg("accent", frames[frame % frames.length] ?? "·");
+	const verb = shimmerFrame(`${VERBS[batchIndex % VERBS.length]}…`, frame);
+	// Present tense while the batch runs: verb + bare timer ("Sautéing…
+	// 1m 39s · 2 tool calls") — the shimmer verb already carries the
+	// participle, so no "Thinking" prefix. Whole-second precision: at 0.1s
+	// precision the readout aliases against repaint rate (spins fast during
+	// dense text deltas, stutters when only the tick repaints) — 1Hz changes
+	// resolve cleanly at any cadence. Settled keeps the past tense
+	// ("Thought for · Ran") with 0.1s decimals (static, no aliasing).
+	const thought = thoughtMs === undefined ? "" : `${Math.floor(thoughtMs / 1000)}s · `;
+	const info = `${thought}${count} tool call${count === 1 ? "" : "s"} (${keyText("app.tools.expand")} to expand)`;
+	return `${glyph} ${verb} ${theme.fg("muted", theme.italic(info))}`;
+}
+
+// ── Shared animation API (consumed by pi-thinking-fold) ────────
+//
+// Unification rule: exactly ONE animated "Thinking" indicator is visible at
+// a time — the batch header while a batch is open (the fork then suppresses
+// its own streaming thinking row; its duration already counts into the
+// header), otherwise the fork's streaming label, which renders through this
+// API so both rows share the spinner/shimmer design language. The fork falls
+// back to its plain static label when this API is absent (custom-ui off).
+// pi's native loader row is hidden during reasoning by custom-ui.ts.
+//
+// Colors here are raw base16 SGR (accent = base0D, muted = base04) rather
+// than theme.fg: the fork has no Theme handle (its internals.theme is a
+// MarkdownTheme), and under the stylix theme base0D/base04 ARE accent/muted.
+// The fork's streaming label must also bypass Markdown (raw SGR would be
+// mangled) — it renders the label through a pi-tui Text instead.
+
+interface AnimApi {
+	// Shared animation clock — WALL-CLOCK derived (ms/FRAME_MS since first
+	// use), so animation speed is independent of tick/repaint cadence. Heavy
+	// streaming delays repaints, but every repaint shows the frame the wall
+	// clock says: perceived speed stays constant.
+	readonly frame: number;
+	// Clock origin (set once at first use).
+	t0: number;
+	// True while a tool batch is open (track→collapse). Read by the fork's
+	// rebuild() to decide whether its streaming thinking row should exist.
+	batchOpen: boolean;
+	// Injected by custom-ui.ts on session_start (zero-line widget capture,
+	// same trick as thinking-fold-redraw.ts): forces a TUI repaint. Animation
+	// timers MUST call this per tick — rebuilding children alone doesn't
+	// repaint, and with the native loader hidden there's no spinner loop
+	// pumping frames between streaming deltas (the frozen-label bug).
+	requestRender?(): void;
+	// Accent-colored dots spinner frame, varied by seed.
+	spinnerFrame(seed: number): string;
+	// Accent-colored dotsCircle frame for in-progress tool-call dots.
+	inProgressDot(): string;
+	// Animated streaming-thinking label (always animated — the batch header
+	// yields while thinking streams, so this row is always the one spinner):
+	// `▸ Combobulating… 2s  (ctrl+t to expand)`
+	streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number): string;
+	// Settled completed-thinking label (the fold row after the thinking
+	// ends): base03 bold per user spec.
+	completedLabel(seconds: string, canExpand: boolean, expandSuffix: string): string;
+	// Full accent-tinted frame set for a dots variant — for consumers that
+	// own their animation interval (e.g. pi's setWorkingIndicator).
+	accentSpinnerFrames(seed: number): string[];
+	// Animated dead-air loader text: `{dots} {shimmer verb…}`. Driven per-tick
+	// by the consumer through setWorkingMessage — pi's own indicator animation
+	// proved unreliable mid-turn, so the message carries the motion.
+	loaderLabel(seed: number): string;
+	tick(): number;
+}
+
+const ANIM_KEY = "__piCustomUiAnim";
+
+// Animation frame duration (ms) — the cli-spinners dots family's default
+// cadence.
+const FRAME_MS = 80;
+
+function accentSgr(): string {
+	return base16Fg("base0D", "5dafd4");
+}
+
+export function animState(): AnimApi {
+	const w = globalThis as Record<string, unknown>;
+	if (!w[ANIM_KEY]) {
+		w[ANIM_KEY] = {
+			t0: Date.now(),
+			batchOpen: false,
+			get frame() {
+				return Math.floor((Date.now() - this.t0) / FRAME_MS);
+			},
+			spinnerFrame(seed: number) {
+				const frames = DOTS_SPINNERS[Math.abs(seed) % DOTS_SPINNERS.length] ?? DOTS_SPINNERS[0];
+				const glyph = frames[this.frame % frames.length] ?? "·";
+				// base0D — the theme accent under stylix (see base16Fg fallbacks).
+				return `${accentSgr()}${glyph}\x1b[39m`;
+			},
+			completedLabel(seconds: string, canExpand: boolean, expandSuffix: string) {
+				const base03 = base16Fg("base03", "6a737d");
+				const tail = canExpand ? expandSuffix : "";
+				return `\x1b[1m${base03}Thought for ${seconds}${tail}\x1b[22m\x1b[39m`;
+			},
+			accentSpinnerFrames(seed: number) {
+				const frames = DOTS_SPINNERS[Math.abs(seed) % DOTS_SPINNERS.length] ?? DOTS_SPINNERS[0];
+				const accent = accentSgr();
+				return frames.map((f) => `${accent}${f}\x1b[39m`);
+			},
+			loaderLabel(seed: number) {
+				return `${this.spinnerFrame(seed)} ${shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame)}`;
+			},
+			inProgressDot() {
+				const glyph = DOTS_CIRCLE[this.frame % DOTS_CIRCLE.length] ?? "●";
+				return `${accentSgr()}${glyph}\x1b[39m`;
+			},
+			streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number) {
+				const verb = shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame);
+				const muted = base16Fg("base04", "8a9199");
+				const tail = canExpand ? expandSuffix : "";
+				return `${this.spinnerFrame(seed)} ${verb} ${muted}${seconds}${tail}\x1b[0m`;
+			},
+			tick(this: AnimApi) {
+				// The clock advances by itself (wall clock); a tick is only
+				// meaningful as "a repaint request follows". Kept for API shape.
+				return this.frame;
+			},
+		} satisfies AnimApi;
+	}
+	return w[ANIM_KEY] as AnimApi;
+}
+
+function setBatchOpen(open: boolean): void {
+	animState().batchOpen = open;
+}
+
+// Initialize eagerly so the fork sees the API (and batchOpen = false) even
+// before the first tool call.
+animState();
 
 // ── Terminal theme (base16) colors ────────────────────────────
 //
@@ -522,7 +830,7 @@ function base16(name: string): string | undefined {
 
 // Truecolor SGR foreground for a base16 color (hex without '#'); falls back
 // to `fallbackHex` when the palette is unavailable.
-function base16Fg(name: string, fallbackHex: string): string {
+export function base16Fg(name: string, fallbackHex: string): string {
 	let hex = base16(name);
 	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) hex = fallbackHex;
 	const n = parseInt(hex, 16);
@@ -563,8 +871,15 @@ function groupedCall(mode: GroupMode, expanded: boolean | undefined, theme: Them
 	if ((mode.kind === "collapsed" || mode.kind === "earlier") && !expanded) {
 		if (mode.header) {
 			// Leading blank line so groups stand apart from preceding content.
+			// The header stays animated for the whole batch run; any streaming
+			// fold row below renders label-less (fork suppresses its label while
+			// batchOpen), so the header is always the one spinner. Dead air in a
+			// SOLO batch (no header) is covered by the dead-air loader instead.
 			const thoughtMs = thoughtForMs(mode.thoughtKeys);
-			return new Text(`\n${groupHeaderLine(theme, mode.count, thoughtMs)}`, 0, 0);
+			const line = mode.running
+				? liveGroupHeaderLine(theme, mode.count, thoughtMs, animState().frame, mode.spinner, mode.batchIndex)
+				: groupHeaderLine(theme, mode.count, thoughtMs);
+			return new Text(`\n${line}`, 0, 0);
 		}
 		// No visible content — an empty Container renders zero lines, whereas an
 		// empty Text would leave a blank line between glance rows.

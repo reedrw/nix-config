@@ -16,12 +16,17 @@ import {
 } from "./config.ts";
 import {
   createThinkingCursorLabel,
+  customUiAnim,
   DEFAULT_THINKING_CURSOR_LABEL,
   installThinkingFoldPatch,
   type ThinkingFoldPatchHandle,
 } from "./renderer.ts";
 
-const ITEM_TIMER_INTERVAL_MS = 1000;
+// 80ms so the animated streaming label (dots spinner + shimmer, from the
+// custom-ui animation API) moves at the same cadence as the batch header.
+// The tick only rebuilds live (uncompleted) message components, so completed
+// thinking rows don't re-render at animation framerate.
+const ITEM_TIMER_INTERVAL_MS = 80;
 const MIN_SUMMARY_CURSOR_MS = 1000;
 
 export function endsThinkingPhase(type: AssistantMessageEvent["type"]): boolean {
@@ -70,7 +75,6 @@ export default function (pi: ExtensionAPI) {
   let itemTimer: ReturnType<typeof setInterval> | undefined;
   let summaryHoldTimer: ReturnType<typeof setTimeout> | undefined;
   let thinkingStartedAt: number | undefined;
-  let lastItemTimerSecond = -1;
   let lastWorkingMessage: string | undefined;
   let summaryFirstVisibleAt: number | undefined;
   let holdingSummaryCursor = false;
@@ -108,10 +112,15 @@ export default function (pi: ExtensionAPI) {
 
   const refreshItemTimer = (now = Date.now()) => {
     if (!patch || thinkingStartedAt === undefined || thinkingCompleted) return;
-    const elapsedSecond = Math.floor(Math.max(0, now - thinkingStartedAt) / 1000);
-    if (elapsedSecond === lastItemTimerSecond) return;
-    lastItemTimerSecond = elapsedSecond;
+    // Advance the shared animation clock FIRST — without this the label
+    // string never changes (custom-ui's own timer is stopped while no batch
+    // is open, so this timer is the sole clock in the fresh-thinking phase).
+    customUiAnim()?.tick();
+    // No per-second skip: the animated streaming label changes every tick.
     patch.tick(now);
+    // Rebuilding children doesn't repaint — force a TUI frame so the label
+    // advances between streaming deltas (custom-ui publishes the handle).
+    customUiAnim()?.requestRender?.();
   };
 
   const startItemTimer = (ctx: ExtensionContext) => {
@@ -225,7 +234,6 @@ export default function (pi: ExtensionAPI) {
     clearSummaryHold();
     summaryFirstVisibleAt = undefined;
     thinkingStartedAt = Date.now();
-    lastItemTimerSecond = -1;
     lastWorkingMessage = undefined;
     patch.beginMessage(event.message, thinkingStartedAt);
     renderThinkingCursor(ctx, thinkingStartedAt);
