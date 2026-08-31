@@ -43,7 +43,7 @@ A change is notable if a future reader of AGENTS.md would benefit from knowing i
 - **Fix:** Anything AGENTS.md already mentions by name that was since removed, renamed, or moved (a dropped package, a renamed module, a restructured `repo/` file). Stale facts are worse than missing ones — grep AGENTS.md for names touched by the diff.
 - **Skip:** Routine config tweaks (enabling a service, changing a setting value), package version bumps, one-host-only quirks with no reuse implications, things already documented, renames of things AGENTS.md doesn't mention.
 
-Also skim the other instruction files (`.agents/skills/*/SKILL.md` and its symlinks in `.claude/commands/`, `.claude/skills/`, `.pi/prompts/`) for facts invalidated by the same diff — e.g. host/target lists, commit scopes, referenced script paths. Remember AGENTS.md is read by both pi and Claude Code, so keep agent-specific framing out of it.
+Also skim the other instruction files (`.agents/skills/*/SKILL.md` and its symlink in `.claude/skills/`) for facts invalidated by the same diff — e.g. host/target lists, commit scopes, referenced script paths. Remember AGENTS.md is read by both pi and Claude Code, so keep agent-specific framing out of it.
 
 If there are no notable changes, stop here and tell the user "No notable changes since AGENTS.md was last updated."
 

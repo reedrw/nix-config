@@ -1,1 +1,0 @@
-../../.agents/skills/refresh/SKILL.md
