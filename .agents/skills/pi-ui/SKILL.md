@@ -18,6 +18,20 @@ the hard way; violating them fails silently.
 - Rendering slots are shared via `plugins/lib/custom-ui.ts` (a `lib/` plugin kind —
   not auto-loaded by pi, but installed to `~/.pi/agent/extensions/lib/` for
   `./lib/…` relative imports).
+- **Register tools at LOAD time, never in `session_start`**: pi's session-switch
+  flows (in-app `/resume`, `/new`, `/fork`, tree navigation) render the restored
+  transcript BEFORE re-binding extensions (`rebindCurrentSession({
+  renderBeforeBind: true })` → `renderCurrentSessionState()` first). A tool
+  first registered in `session_start` renders that first pass with pi's
+  built-in renderer; the row also predates the post-bind grouping rescan, never
+  registers a row invalidator (`trackRow` runs only in custom render slots),
+  and if it's the batch's first member it permanently swallows the batch
+  header. Symptom was "skill loads break tool grouping on resume": the agent
+  reads SKILL.md (pi renders that read compactly as `[skill] name`), so the
+  headerless glance rows dangled under the native `[skill]` row. `read` was the
+  offender; `execute` must still resolve paths per session cwd, so the
+  definition is registered once at load (`process.cwd()`) and rebuilt per
+  `ctx.cwd` inside `execute` (same pattern as edit/write/grep/find/ls).
 - **Shared state must live on `globalThis`**: each extension may get its own module
   instance of the lib, so cross-extension state (e.g. tool batch tracking) uses a
   `globalThis` singleton (`__piCustomUi*` keys), not module scope.

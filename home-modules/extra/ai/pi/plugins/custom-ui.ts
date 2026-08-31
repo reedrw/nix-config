@@ -551,13 +551,36 @@ function imagePortion(
 
 // ── Read tool registration (owns `read`; merged from image-history) ──
 
-function registerReadTool(pi: ExtensionAPI, cwd: string): void {
-	const readDefinition = createReadToolDefinition(cwd);
+// Read definitions are rebuilt per cwd at execute time (path resolution must
+// follow the session cwd); the registration itself only carries metadata and
+// renderers, neither of which depends on cwd.
+const readDefinitions = new Map<string, ReturnType<typeof createReadToolDefinition>>();
+function readToolFor(cwd: string): ReturnType<typeof createReadToolDefinition> {
+	let definition = readDefinitions.get(cwd);
+	if (!definition) {
+		definition = createReadToolDefinition(cwd);
+		readDefinitions.set(cwd, definition);
+	}
+	return definition;
+}
+
+// NB: must be called at extension LOAD time, never from session_start. pi's
+// session-switch flows (in-app /resume, /new, /fork, tree navigation) render
+// the restored transcript BEFORE re-binding extensions, so a tool first
+// registered in session_start renders its only pass with pi's built-in
+// renderer — for SKILL.md reads that's the native `[skill] name` compact row.
+// That row also predates the post-bind grouping rescan, never registers a row
+// invalidator, and as a batch's first member would permanently swallow the
+// batch header ("skill loads break tool grouping on resume").
+function registerReadTool(pi: ExtensionAPI): void {
 	if (!customUiEnabled()) {
 		// Default pi look: boxed row with the built-in fallback text preview
 		// (mirrors what tool-execution.ts renders when no renderResult is set).
 		pi.registerTool({
-			...readDefinition,
+			...readToolFor(process.cwd()),
+			async execute(toolCallId, params, signal, onUpdate, ctx) {
+				return readToolFor(ctx.cwd).execute(toolCallId, params, signal, onUpdate, ctx);
+			},
 			renderResult(result, options, theme, context) {
 				if (!options.isPartial) settleStatus(context, context.isError === true);
 				const content = Array.isArray(result?.content) ? result.content : [];
@@ -587,9 +610,12 @@ function registerReadTool(pi: ExtensionAPI, cwd: string): void {
 	}
 
 	pi.registerTool({
-		...readDefinition,
+		...readToolFor(process.cwd()),
 		renderShell: "self",
 		renderCall: readCallSlot,
+		async execute(toolCallId, params, signal, onUpdate, ctx) {
+			return readToolFor(ctx.cwd).execute(toolCallId, params, signal, onUpdate, ctx);
+		},
 		renderResult(result, options, theme, context) {
 			if (!options.isPartial) settleStatus(context, context.isError === true);
 			const mode = groupMode(context.toolCallId);
@@ -875,6 +901,12 @@ export default function customUi(pi: ExtensionAPI) {
 	// register regardless of the custom-ui setting — they're a rendering
 	// fix, not a style choice. Only the tool rendering below is gated.
 	registerImageFeatures(pi);
+
+	// Owns `read` (merged from image-history). Load-time registration is
+	// load-bearing: see the NB on registerReadTool. Must run before the
+	// customUiEnabled gate — the disabled branch still registers read (with
+	// the built-in look plus tool-result image rendering).
+	registerReadTool(pi);
 
 	// ctrl+o (tool output expansion) prints a "Tool output: expanded/collapsed"
 	// status row straight into the chat scrollback; landing between grouped
@@ -1249,13 +1281,13 @@ export default function customUi(pi: ExtensionAPI) {
 		scanToolGroupsFromHistory(
 			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
 		);
-		// Rebuild the newest-image-read pointer and (re)register `read` for the
-		// session cwd — re-registration updates the definition's cwd on switch.
+		// Rebuild the newest-image-read pointer. (`read` itself is registered
+		// at load time with per-cwd execute — see registerReadTool — so no
+		// re-registration is needed on session switches.)
 		scanHistoryForReadTracking(
 			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
 		);
 		readInvalidators.clear();
-		registerReadTool(pi, ctx.cwd);
 	});
 
 	// Original tools are recreated per cwd at execute time (cached); the
