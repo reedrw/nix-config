@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ inputs, pkgs, config, ... }:
+{ inputs, pkgs, lib, config, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -58,6 +58,12 @@
       allowedUsers = [ "reed" ];
     };
   };
+
+  services.autossh.sessions = lib.optionals config.services.tailscale.enable [{
+    extraArguments = "-NL 8181:localhost:8181 nixos-desktop";
+    name = "qbittorent";
+    user = "reed";
+  }];
 
   services = {
     btrfs.autoScrub.enable = true;
