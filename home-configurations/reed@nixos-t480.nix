@@ -2,8 +2,7 @@
 
 {
   imports = [
-    ../reed.nix
-    ./kitty.nix
+    ./reed.nix
     ezModules.core
     ezModules.extra
     ezModules.graphical

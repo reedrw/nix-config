@@ -13,6 +13,8 @@
 
   time.timeZone = "America/New_York";
 
+  custom.display.verticalResolution = 1280;
+
   users = {
     mutableUsers = false;
     users.reed.hashedPasswordFile = "${config.custom.persistDir}/secrets/reed-passwordFile";
