@@ -7,8 +7,18 @@
 // ctrl+o. Render slots live in lib/custom-ui.ts.
 //
 // Also owns the `read` tool with inline kitty-placeholder image rendering
-// (merged from image-history.ts): user-message images, history fallback
-// cells, and tool-result images inside the read row.
+// (merged from image-history.ts): user-message images, assistant-message
+// images, history fallback cells, and tool-result images inside the read row.
+//
+// Images can be embedded in messages as markdown:
+//   `[[Image #N]](file:///…/image-view/blobs/<sha256>.png)`  (pi-image-view)
+//   `![alt](/abs/path.png)` / `![alt](file:///abs/path.png)` (any message)
+//   `![alt](https://…)` — any image URL, extension not required
+// All render as kitty placeholder rows under a clickable caption link
+// (OSC 8) that opens the original at full resolution. Local PNG goes up
+// as-is; local other formats and all remote URLs are resized+converted to
+// PNG (same pipeline as history cells) into an on-disk cache that the sync
+// transformer serves; remote failures are negative-cached for a day.
 //
 // User messages and `!` shell commands get the zentui-style compact look
 // (accent rail + base01 band, no box) via prototype patches of
@@ -22,8 +32,10 @@
 // before user extensions (alphabetical in ~/.pi/agent/extensions), so the
 // simple `api?.maybeDecorate(...) ?? myTool` form is always safe here.
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
 	BashExecutionComponent,
 	InteractiveMode,
@@ -111,6 +123,21 @@ const BLOB_MARKER_SOURCE =
 	"\\[{1,2}Image #\\d+\\]{1,2}\\((file:\\/\\/\\/[^)\\n]*\\/image-view\\/blobs\\/[a-f0-9]{64}\\.png)\\)";
 const BLOB_MARKER_RE = new RegExp(BLOB_MARKER_SOURCE, "g");
 const BLOB_MARKER_TEST_RE = new RegExp(BLOB_MARKER_SOURCE);
+// Standard markdown image referencing an absolute local image path, a file://
+// URL, or any http(s) URL. Local PNG is transmitted as-is; local other
+// formats and ALL remote URLs are converted to PNG first (see CONVERT_DIR
+// below). Remote URLs need no file extension (cataas.com/cat et al.) — the
+// magic-byte sniff decides if it's an image, and failures are negative-
+// cached so re-renders don't refetch. No title support (keep the target
+// charset URL-ish); must not collide with blob markers (those use `[[`, not
+// `![`).
+const IMAGE_EXT_SOURCE = "(?:png|jpe?g|jfif|webp|gif|bmp|avif|tiff?)";
+const LOCAL_IMAGE_SOURCE =
+	`!\\[[^\\]\\n]*\\]\\((?:file:\\/\\/)?(\\/[^)\\s\\n]+\\.${IMAGE_EXT_SOURCE})\\)`;
+const REMOTE_IMAGE_SOURCE =
+	"!\\[[^\\]\\n]*\\]\\((https?:\\/\\/[^)\\s\\n]+)\\)";
+const LOCAL_IMAGE_RE = new RegExp(LOCAL_IMAGE_SOURCE, "gi");
+const REMOTE_IMAGE_RE = new RegExp(REMOTE_IMAGE_SOURCE, "gi");
 
 function messageHasBlobMarker(message: { content?: unknown }): boolean {
 	const content = message.content;
@@ -266,33 +293,260 @@ function clampColumns(availableWidth: number): number {
 // Blob files are immutable; cache their base64 so re-renders don't re-read.
 const blobCache = new Map<string, string>();
 
-function loadBlob(fileUrl: string): string | undefined {
-	const cached = blobCache.get(fileUrl);
+function loadImageData(target: string): string | undefined {
+	const cached = blobCache.get(target);
 	if (cached) return cached;
 	try {
-		const data = readFileSync(fileURLToPath(fileUrl)).toString("base64");
-		blobCache.set(fileUrl, data);
+		const path = target.startsWith("file://") ? fileURLToPath(target) : target;
+		const data = readFileSync(path).toString("base64");
+		blobCache.set(target, data);
 		return data;
 	} catch {
 		return undefined;
 	}
 }
 
-function transformUserMarkdown(markdown: string, availableWidth: number): string {
-	return markdown.replace(BLOB_MARKER_RE, (match, fileUrl: string, offset: number, full: string) => {
-		const data = loadBlob(fileUrl);
+// ── Non-PNG conversion cache (kitty f=100 requires PNG) ─────
+
+const CONVERT_DIR = join(
+	process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"),
+	"pi-embedded-images",
+);
+const IMAGE_MIME_BY_EXT: Record<string, string> = {
+	jpg: "image/jpeg",
+	jpeg: "image/jpeg",
+	jfif: "image/jpeg",
+	webp: "image/webp",
+	gif: "image/gif",
+	bmp: "image/bmp",
+	avif: "image/avif",
+	tif: "image/tiff",
+	tiff: "image/tiff",
+};
+// In-flight conversions keyed by source path (dedupes fire-and-forget
+// triggers from repeated renders).
+const converting = new Set<string>();
+
+// Remote fetch budgets. message_end waits up to REMOTE_WAIT_MS per image so
+// the finalized paint can inline it; slower fetches land in the cache and
+// appear on the next natural re-render (restore / width change / restart).
+const REMOTE_WAIT_MS = 6_000;
+const REMOTE_FETCH_TIMEOUT_MS = 10_000;
+const REMOTE_MAX_BYTES = 25 * 1024 * 1024;
+// Failed URLs are negative-cached for a day so re-renders don't refetch.
+const REMOTE_FAIL_RETRY_MS = 24 * 60 * 60 * 1000;
+const downloading = new Set<string>();
+
+function fileImageTargetPath(target: string): string {
+	return target.startsWith("file://") ? fileURLToPath(target) : target;
+}
+
+function convertedPngPath(path: string): string | undefined {
+	try {
+		const st = statSync(path);
+		// Key on path+mtime+size so a changed file re-converts and a moved file
+		// doesn't collide.
+		const key = createHash("sha256").update(`${path}:${st.mtimeMs}:${st.size}`).digest("hex");
+		const cachePath = join(CONVERT_DIR, `${key}.png`);
+		return existsSync(cachePath) ? cachePath : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+async function ensureConvertedPng(path: string): Promise<void> {
+	const mimeType = IMAGE_MIME_BY_EXT[path.slice(path.lastIndexOf(".") + 1).toLowerCase()];
+	if (!mimeType || converting.has(path)) return;
+	converting.add(path);
+	try {
+		const st = statSync(path);
+		const key = createHash("sha256").update(`${path}:${st.mtimeMs}:${st.size}`).digest("hex");
+		const cachePath = join(CONVERT_DIR, `${key}.png`);
+		if (existsSync(cachePath)) return;
+		const data = readFileSync(path).toString("base64");
+		// Same resize+convert pipeline as history cells (worker-thread Photon, so
+		// the TUI keeps ticking). 800px is plenty for the 44×15-cell display cap.
+		const out = await toHistoryImage({ data, mimeType });
+		if (out.mimeType !== "image/png") return; // conversion failed
+		mkdirSync(CONVERT_DIR, { recursive: true });
+		writeFileSync(cachePath, Buffer.from(out.data, "base64"));
+	} catch {
+		// Best-effort: the marker just stays a plain link.
+	} finally {
+		converting.delete(path);
+	}
+}
+
+function remotePngPath(url: string): string {
+	// "remote:" prefix keeps URL keys disjoint from local path keys. No
+	// freshness check: a URL's content changing is rare, and re-fetching on
+	// every render is not worth it.
+	const key = createHash("sha256").update(`remote:${url}`).digest("hex");
+	return join(CONVERT_DIR, `${key}.png`);
+}
+
+/** Sniff the image format from magic bytes; undefined for non-images. */
+function sniffImageMime(base64: string): string | undefined {
+	const head = Buffer.from(base64.slice(0, 32), "base64");
+	if (head.length < 12) return undefined;
+	if (head.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]))) return "image/png";
+	if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+	const ascii = (from: number, to: number) => head.subarray(from, to).toString("ascii");
+	if (ascii(0, 3) === "GIF") return "image/gif";
+	if (ascii(0, 2) === "BM") return "image/bmp";
+	if (ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return "image/webp";
+	if (ascii(0, 4) === "II*\u0000" || ascii(0, 4) === "MM\u0000*") return "image/tiff";
+	if (ascii(4, 8) === "ftyp" && ascii(8, 12).startsWith("avi")) return "image/avif";
+	return undefined;
+}
+
+type RemoteFetchResult = { kind: "image"; data: string } | { kind: "reject" } | { kind: "error" };
+
+async function fetchRemoteImage(url: string): Promise<RemoteFetchResult> {
+	const ctrl = new AbortController();
+	const timer = setTimeout(() => ctrl.abort(), REMOTE_FETCH_TIMEOUT_MS);
+	try {
+		const res = await fetch(url, { signal: ctrl.signal, redirect: "follow" });
+		if (!res.ok) return { kind: "reject" }; // 404/403/429 — stable enough to negative-cache
+		// Gate on content-type BEFORE reading the body: a text/html page must not
+		// burn the byte budget. octet-stream passes — the sniff decides.
+		const ct = (res.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
+		if (ct && !ct.startsWith("image/") && ct !== "application/octet-stream") return { kind: "reject" };
+		const declared = Number(res.headers.get("content-length") ?? 0);
+		if (declared > REMOTE_MAX_BYTES) return { kind: "reject" };
+		const buf = Buffer.from(await res.arrayBuffer());
+		if (buf.length === 0 || buf.length > REMOTE_MAX_BYTES) return { kind: "reject" };
+		return { kind: "image", data: buf.toString("base64") };
+	} catch {
+		// Network hiccup / timeout — retryable, so no negative cache.
+		return { kind: "error" };
+	} finally {
+		clearTimeout(timer);
+	}
+}
+
+async function ensureRemotePng(url: string): Promise<void> {
+	if (downloading.has(url)) return;
+	downloading.add(url);
+	try {
+		const cachePath = remotePngPath(url);
+		if (existsSync(cachePath)) return;
+		const failPath = `${cachePath}.fail`;
+		try {
+			if (Date.now() - Number(readFileSync(failPath, "utf8")) < REMOTE_FAIL_RETRY_MS) return;
+		} catch { /* no marker — proceed */ }
+		const result = await fetchRemoteImage(url);
+		mkdirSync(CONVERT_DIR, { recursive: true });
+		if (result.kind !== "image") {
+			if (result.kind === "reject") writeFileSync(failPath, String(Date.now()));
+			return;
+		}
+		// Magic-byte sniff: never trust the URL (an arbitrary path can serve
+		// anything, and HTML error pages must not enter the cache).
+		const mimeType = sniffImageMime(result.data);
+		if (!mimeType) {
+			writeFileSync(failPath, String(Date.now()));
+			return;
+		}
+		const out = await toHistoryImage({ data: result.data, mimeType });
+		if (out.mimeType !== "image/png") {
+			writeFileSync(failPath, String(Date.now())); // conversion failed
+			return;
+		}
+		writeFileSync(cachePath, Buffer.from(out.data, "base64"));
+	} catch {
+		// Best-effort: the marker just stays a plain link.
+	} finally {
+		downloading.delete(url);
+	}
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | undefined> {
+	return Promise.race([promise, new Promise<undefined>((resolve) => setTimeout(resolve, ms))]);
+}
+
+function markdownImageTargets(message: { content?: unknown }): string[] {
+	const out: string[] = [];
+	const push = (text: string) => {
+		for (const m of text.matchAll(LOCAL_IMAGE_RE)) {
+			const target = m[1];
+			// Local PNGs need no conversion — skip. Everything else pre-converts.
+			if (target && !/\.png$/i.test(target)) out.push(fileImageTargetPath(target));
+		}
+		for (const m of text.matchAll(REMOTE_IMAGE_RE)) {
+			// Remote images always need a fetch, even when the URL says .png.
+			if (m[1]) out.push(m[1]);
+		}
+	};
+	const content = message.content;
+	if (typeof content === "string") {
+		push(content);
+	} else if (Array.isArray(content)) {
+		for (const part of content) {
+			if (
+				part !== null && typeof part === "object" &&
+				typeof (part as { text?: unknown }).text === "string"
+			) push((part as { text: string }).text);
+		}
+	}
+	return out;
+}
+
+function transformMessageMarkdown(markdown: string, availableWidth: number): string {
+	const render = (match: string, target: string, offset: number, full: string) => {
+		let data: string | undefined;
+		if (/^https?:\/\//i.test(target)) {
+			// Remote: serve from the fetch cache when present; otherwise kick off
+			// the download (picked up on a later render) and fall through to the
+			// plain link for now. message_end pre-fetches, so the finalized render
+			// normally finds the cache already populated.
+			const cachePath = remotePngPath(target);
+			if (existsSync(cachePath)) {
+				data = loadImageData(cachePath);
+			} else {
+				void ensureRemotePng(target);
+			}
+		} else {
+			const path = fileImageTargetPath(target);
+			if (/\.png$/i.test(path)) {
+				data = loadImageData(target);
+			} else {
+				// Local non-PNG: serve from the conversion cache when present;
+				// otherwise kick off conversion (picked up on a later render) and
+				// fall through to the plain link for now. message_end pre-converts,
+				// so the finalized render normally finds the cache already populated.
+				const cachePath = convertedPngPath(path);
+				if (cachePath) {
+					data = loadImageData(cachePath);
+				} else {
+					void ensureConvertedPng(path);
+				}
+			}
+		}
 		if (!data) return match;
 		// The rows must each occupy a full line of their own: sharing a line with
 		// text pushes the run past the wrap width, and splitting a placeholder run
 		// mid-row breaks the placement (orphan cells render as dark blocks).
 		const rows = imageLines(data, clampColumns(availableWidth)).join("\n");
 		const dims = getImageDimensions(data, "image/png");
-		const caption = dims ? `${dims.widthPx}×${dims.heightPx}` : "";
+		// The caption is a markdown link: pi-tui renders those as OSC 8
+		// hyperlinks, so clicking it opens the original at full resolution
+		// (remote images open in the browser; local files in the image viewer).
+		// Percent-escape parens so the markdown destination can't break early.
+		const href = (/^https?:\/\//i.test(target)
+			? target
+			: pathToFileURL(fileImageTargetPath(target)).href
+		).replaceAll("(", "%28").replaceAll(")", "%29");
+		const label = dims ? `${dims.widthPx}×${dims.heightPx} ↗` : "open ↗";
 		const needsBreakBefore = offset > 0 && full[offset - 1] !== "\n";
 		const after = offset + match.length;
 		const needsBreakAfter = after < full.length && full[after] !== "\n";
-		return `${needsBreakBefore ? "\n" : ""}${caption ? `${caption}\n` : ""}${rows}${needsBreakAfter ? "\n" : ""}`;
-	});
+		return `${needsBreakBefore ? "\n" : ""}[${label}](${href})\n${rows}${needsBreakAfter ? "\n" : ""}`;
+	};
+	return markdown
+		.replace(BLOB_MARKER_RE, render)
+		.replace(LOCAL_IMAGE_RE, render)
+		.replace(REMOTE_IMAGE_RE, render);
 }
 
 // ── Entry fallback (images without blob markers) ───────────
@@ -668,12 +922,33 @@ function registerReadTool(pi: ExtensionAPI): void {
 // ── Image features (independent of custom-ui) ─────────────
 
 function registerImageFeatures(pi: ExtensionAPI): void {
-	// Inline rendering: replace blob markers in user messages with placeholder
-	// rows so the image appears inside the message box. Runs for restored
-	// sessions and width changes too, so images survive restarts and resizes.
+	// Inline rendering: replace blob markers / markdown image references in
+	// user and assistant messages with placeholder rows so the image appears
+	// inside the message box. Runs for restored sessions and width changes
+	// too, so images survive restarts and resizes. Skipped while streaming —
+	// the finalized re-render after agent_end does the swap.
 	pi.registerMarkdownTransformer((markdown, { messageType, isStreaming, availableWidth }) => {
-		if (messageType !== "user" || isStreaming) return markdown;
-		return transformUserMarkdown(markdown, availableWidth ?? 80);
+		if ((messageType !== "user" && messageType !== "assistant") || isStreaming) return markdown;
+		return transformMessageMarkdown(markdown, availableWidth ?? 80);
+	});
+
+	// Agent-facing documentation: without this the feature is invisible to the
+	// model (nothing in its context mentions it). Appended to every turn's
+	// system prompt; only when an image protocol is available — otherwise the
+	// transformer leaves markers untouched and the tokens would be wasted.
+	const IMAGE_PROMPT_DOC =
+		"\n\n# Inline images\n" +
+		"Embed an image in any reply with standard markdown image syntax: " +
+		"`![alt](/absolute/path.png)`, `![alt](file:///absolute/path.png)`, or any " +
+		"`![alt](https://…)` image URL (extension not required). It renders as an " +
+		"inline image in the TUI with a clickable size caption that opens the " +
+		"full-resolution original. Absolute local paths only; PNG displays " +
+		"as-is, other formats and remote URLs are fetched/converted automatically " +
+		"and cached. Relative paths, missing files, or non-image URLs render as " +
+		"plain markdown links.";
+	pi.on("before_agent_start", (event) => {
+		if (detectImageProtocol() === null) return;
+		return { systemPrompt: event.systemPrompt + IMAGE_PROMPT_DOC };
 	});
 
 	pi.registerEntryRenderer("image-history", (entry, _ctx, theme) => {
@@ -692,6 +967,16 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 		if (!message) return;
 		// TUI-only decoration; don't bloat sessions from `pi -p` / JSON mode.
 		if (ctx.mode === "print" || ctx.mode === "json") return;
+		// Pre-fetch/convert markdown image refs: message_end handlers resolve
+		// before the finalized message re-renders, so the sync transformer finds
+		// the cached PNG and inlines it on the first finalized pass. Remote
+		// fetches are bounded by REMOTE_WAIT_MS — stragglers appear on the next
+		// natural re-render instead of blocking the turn.
+		await Promise.all(markdownImageTargets(message).map((target) =>
+			/^https?:\/\//i.test(target)
+				? withTimeout(ensureRemotePng(target), REMOTE_WAIT_MS)
+				: ensureConvertedPng(target)
+		));
 		const found = imagesInMessage(message);
 		if (found.length === 0) return;
 		if (messageHasBlobMarker(message)) return; // inline transformer handles it
