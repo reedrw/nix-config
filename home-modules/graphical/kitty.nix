@@ -46,7 +46,7 @@ in
       ''}";
     };
     keybindings = {
-      "shift+return" = "send_text all \\x1b\\r";
+      "shift+return" = "send_text all \\e[13;2u";
     };
     extraConfig = ''
       modify_font underline_position 2
