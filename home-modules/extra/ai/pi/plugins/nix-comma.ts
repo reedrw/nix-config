@@ -65,6 +65,27 @@ type AttrResolution =
 	| { kind: "missing" }
 	| { kind: "failed"; detail: string };
 
+// /nix/store fence: broad searches over the store are blocked once per
+// session with a pointer to evaluation-based lookup (the store is enormous —
+// such scans grind for minutes and find nothing useful). A second attempt is
+// allowed through for the rare case where evaluation genuinely can't answer
+// the query. Targeted access to a specific store path is never blocked.
+const SEARCH_TOOL_WORD = /\b(?:find|grep|egrep|fgrep|rg|ripgrep|fd|fdfind|tree|ls)\b/;
+const STORE_ROOT_TOKEN = /\/nix\/store\/?(?=\s|$|["')\]])/;
+const STORE_GLOB_TOKEN = /\/nix\/store\/\*/;
+
+function isStoreRootSearch(command: string): boolean {
+	for (const segment of command.split(/[;&|]+/)) {
+		// Strip quoted substrings so patterns that merely mention /nix/store
+		// (`rg '/nix/store' .agents/`) aren't mistaken for store searches.
+		const bare = segment.replace(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g, " ");
+		if (SEARCH_TOOL_WORD.test(bare) && (STORE_ROOT_TOKEN.test(bare) || STORE_GLOB_TOKEN.test(bare))) {
+			return true;
+		}
+	}
+	return false;
+}
+
 export default function nixCommaExtension(pi: ExtensionAPI) {
 	// bin directories provisioned this session, most recent first; prepended to
 	// PATH on every bash spawn. PATH search is first-match, so the most recent
@@ -87,6 +108,9 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	const stillFailingNotified = new Set<string>();
 	// Names already answered with a probe-availability note (once per session).
 	const checkNotified = new Set<string>();
+	// True once the /nix/store search fence has blocked a command this session;
+	// later store searches pass through.
+	let storeSearchWarned = false;
 	const inFlight = new Map<string, Promise<Outcome>>();
 
 	// nix-locate isn't on the global PATH here; cache how to invoke it.
@@ -265,7 +289,20 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event) => {
 		if (event.systemPrompt.includes(MARKER)) return;
 		return {
-			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. You can also use any nixpkgs package without provisioning it: \`nix run nixpkgs#<attr> -- <args>\`.`,
+			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. You can also use any nixpkgs package without provisioning it: \`nix run nixpkgs#<attr> -- <args>\`. Broad searches over /nix/store (find, grep, rg, ls on the store root) are blocked once per session with a warning and allowed on retry — resolve store paths with \`nix eval\` instead.`,
+		};
+	});
+
+	// /nix/store fence: refuse the first broad store search of the session,
+	// point at evaluation-based lookup, then allow retries through.
+	pi.on("tool_call", async (event) => {
+		if (event.toolName !== "bash" || storeSearchWarned) return undefined;
+		const command = String((event.input as { command?: unknown }).command ?? "");
+		if (!isStoreRootSearch(command)) return undefined;
+		storeSearchWarned = true;
+		return {
+			block: true,
+			reason: `${MARKER} a direct search over /nix/store/ is almost always the wrong tool: the store is enormous, so broad scans grind for minutes and find nothing useful. Resolve store paths by evaluation instead, e.g. \`nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw\` (see the nix-conventions skill). If evaluation genuinely cannot answer this, re-run the same command and it will be allowed through.`,
 		};
 	});
 
