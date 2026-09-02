@@ -289,7 +289,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event) => {
 		if (event.systemPrompt.includes(MARKER)) return;
 		return {
-			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. You can also use any nixpkgs package without provisioning it: \`nix run nixpkgs#<attr> -- <args>\`. Broad searches over /nix/store (find, grep, rg, ls on the store root) are blocked once per session with a warning and allowed on retry — resolve store paths with \`nix eval\` instead.`,
+			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. Broad searches over /nix/store (find, grep, rg, ls on the store root) are blocked once per session with a warning and allowed on retry — resolve store paths with \`nix eval\` instead.`,
 		};
 	});
 
@@ -538,7 +538,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		if (candidates.length === 0) {
 			return `${MARKER} \`${cmd}\` isn't installed and isn't in the nix-index database — no nixpkgs package ships it.`;
 		}
-		const how = `Call nix_provision to put it on PATH for the session, or run it once via \`nix run nixpkgs#<attr> -- <args>\`. Nothing has been provisioned.`;
+		const how = `Call nix_provision to put it on PATH for the session. Nothing has been provisioned.`;
 		if (candidates.length === 1) {
 			return `${MARKER} \`${cmd}\` isn't installed, but is available as nixpkgs#${candidates[0]}. ${how}`;
 		}
