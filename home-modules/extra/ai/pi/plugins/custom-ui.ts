@@ -1354,9 +1354,13 @@ export default function customUi(pi: ExtensionAPI) {
 	// ── Turn summary (zentui-faithful, MIT) ───────────────
 	// One settled row per agent run, appended at agent_end and persisted via
 	// appendEntry + entry renderer (renders identically on restore):
-	//   Turn took 1m 51s · thought for 1m 39s · ↑830 ↓12.4k
+	//   Turn took 1m 51s · thought for 1m 39s · ↑830 ↓12.4k · 178k cached
 	// ↑ is always output tokens (matches the spinners' live ↑N readout); ↓
-	// is input.
+	// is input. ↓ counts only provider-uncached input (pi subtracts
+	// cached_tokens per OpenAI/OpenRouter semantics); the cached segment
+	// makes the cache-hit share visible so a tiny ↓ reads as a cache win,
+	// not broken accounting. Hidden when zero (providers that report no
+	// cached_tokens).
 	// Duration is agent-run wall clock; tokens are provider-reported usage
 	// summed per assistant message at message_end; thought time is summed
 	// from the fork's published per-message thinking timings at settle.
@@ -1364,7 +1368,7 @@ export default function customUi(pi: ExtensionAPI) {
 	let turnStartedAt = 0;
 	let turnSpinnerSeed = 0;
 	const turnTimestamps = new Set<number>();
-	const turnTokens = { input: 0, output: 0 };
+	const turnTokens = { input: 0, output: 0, cacheRead: 0 };
 
 	const formatTurnDuration = (ms: number): string => {
 		const total = Math.max(0, Math.floor(ms / 1000));
@@ -1378,17 +1382,18 @@ export default function customUi(pi: ExtensionAPI) {
 	// Styling per user spec: the whole row bold base03 (an earlier per-piece
 	// variant — base02 dots, yellow/grey arrows — read poorly and was
 	// dropped). Raw base16 SGR; base16Fg falls back when the palette is absent.
-	const formatTurnSummaryText = (data: { durationMs: number; thoughtMs: number; input: number; output: number }): string => {
+	const formatTurnSummaryText = (data: { durationMs: number; thoughtMs: number; input: number; output: number; cached: number }): string => {
 		const base03 = base16Fg("base03", "6a737d");
 		const parts = [`Turn took ${formatTurnDuration(data.durationMs)}`];
 		if (data.thoughtMs >= 1000) parts.push(`thought for ${formatTurnDuration(data.thoughtMs)}`);
 		parts.push(`↑${formatTokens(data.output)} ↓${formatTokens(data.input)}`);
+		if (data.cached > 0) parts.push(`${formatTokens(data.cached)} cached`);
 		return ` ${base03}\x1b[1m${parts.join(" · ")}\x1b[22m\x1b[39m`;
 	};
 
 	pi.registerEntryRenderer(TURN_SUMMARY_TYPE, (entry, _options, _theme) => {
 		const data = entry.data as
-			| { durationMs?: number; thoughtMs?: number; input?: number; output?: number }
+			| { durationMs?: number; thoughtMs?: number; input?: number; output?: number; cached?: number }
 			| undefined;
 		if (!data) return new Text("", 0, 0);
 		return new Text(formatTurnSummaryText({
@@ -1396,6 +1401,7 @@ export default function customUi(pi: ExtensionAPI) {
 			thoughtMs: data.thoughtMs ?? 0,
 			input: data.input ?? 0,
 			output: data.output ?? 0,
+			cached: data.cached ?? 0,
 		}), 0, 0);
 	});
 
@@ -1517,6 +1523,7 @@ export default function customUi(pi: ExtensionAPI) {
 		turnTimestamps.clear();
 		turnTokens.input = 0;
 		turnTokens.output = 0;
+		turnTokens.cacheRead = 0;
 		// Live ↑N readout on the animated spinners (lib tracker): a new turn
 		// counts from zero. See lib/custom-ui.ts for the tracker shape.
 		resetTurnTokens();
@@ -1613,11 +1620,14 @@ export default function customUi(pi: ExtensionAPI) {
 	// provider-reported usage.
 	pi.on("message_end", async (event) => {
 		noteAgentActivity();
-		const message = (event as { message?: { role?: unknown; timestamp?: number; usage?: { input?: number; output?: number } } }).message;
+		const message = (event as { message?: { role?: unknown; timestamp?: number; usage?: { input?: number; output?: number; cacheRead?: number } } }).message;
 		if (message?.role !== "assistant") return;
 		if (typeof message.timestamp === "number") turnTimestamps.add(message.timestamp);
 		turnTokens.input += message.usage?.input ?? 0;
 		turnTokens.output += message.usage?.output ?? 0;
+		// Cache-hit input (pi already subtracts it from usage.input) — shown
+		// in the summary so a tiny ↓ reads as a cache win.
+		turnTokens.cacheRead += message.usage?.cacheRead ?? 0;
 		// The finished message's provider-reported output joins the live ↑N
 		// tracker's settled total (estimate replaced by the accurate count).
 		settleTurnMessage(message.usage?.output);
@@ -1659,6 +1669,7 @@ export default function customUi(pi: ExtensionAPI) {
 			thoughtMs,
 			input: turnTokens.input,
 			output: turnTokens.output,
+			cached: turnTokens.cacheRead,
 		});
 		turnStartedAt = 0;
 	});
