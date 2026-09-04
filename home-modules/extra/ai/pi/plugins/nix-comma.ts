@@ -22,9 +22,16 @@
 //
 // Runs entirely against the pinned `nixpkgs` registry entry, falling back to
 // nixpkgs-unstable only when the attribute is missing there.
+//
+// Persistence: every provision (auto or explicit) is recorded as a custom
+// entry in the session file. When a session is resumed, the records are
+// replayed — bin dirs that still exist in the store are re-applied silently;
+// garbage-collected ones trigger a menu offering to re-provision (new store
+// paths are recorded, so stale entries never re-prompt).
 
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
+import { spawn } from "node:child_process";
 import { join } from "node:path";
 import { Type } from "typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -36,7 +43,12 @@ const FALLBACK_BRANCH = "github:NixOS/nixpkgs/nixpkgs-unstable";
 const MAX_ATTR_CANDIDATES = 5;
 const LOCATE_TIMEOUT_MS = 60_000;
 const BUILD_TIMEOUT_MS = 600_000;
+const PROGRESS_WIDGET = "nix-comma";
+const PROGRESS_THROTTLE_MS = 250;
+const PROGRESS_MAX_CHARS = 120;
 const MARKER = "[nix-comma]";
+// customType of the session entries recording provisions for later restore.
+const PROVISION_ENTRY = "nix-comma-provision";
 
 interface Provisioned {
 	cmd: string;
@@ -44,6 +56,16 @@ interface Provisioned {
 	branch: string;
 	binDirs: string[];
 	candidates: string[];
+}
+
+// What gets persisted in a "nix-comma-provision" custom entry.
+interface ProvisionRecord {
+	// Command that triggered an auto-provision; null for explicit nix_provision
+	// calls without a cmd ("all bin dirs" provisions).
+	cmd: string | null;
+	attr: string;
+	branch: string;
+	binDirs: string[];
 }
 
 type Outcome =
@@ -56,7 +78,26 @@ type Outcome =
 interface CommaContext {
 	signal?: AbortSignal;
 	hasUI: boolean;
-	ui: { notify: (message: string, level?: "info" | "warning" | "error") => void };
+	ui: {
+		notify: (message: string, level?: "info" | "warning" | "error") => void;
+		setWidget?: (key: string, content: string[] | undefined) => void;
+	};
+}
+
+// Structural subset of the session_start context used by restoreProvisions.
+interface RestoreContext {
+	sessionManager: { getEntries: () => readonly unknown[] };
+	hasUI: boolean;
+	ui: {
+		notify: (message: string, level?: "info" | "warning" | "error") => void;
+		select: (title: string, options: string[]) => Promise<string | undefined>;
+		setWidget?: (key: string, content: string[] | undefined) => void;
+	};
+}
+
+// What resolveAttr needs to show build/fetch progress.
+interface ProgressContext {
+	ui?: { setWidget?: (key: string, content: string[] | undefined) => void };
 }
 
 // Result of trying to make one attr available on one branch set.
@@ -86,6 +127,244 @@ function isStoreRootSearch(command: string): boolean {
 	return false;
 }
 
+// pi.exec is buffer-only, so builds that show progress spawn the process
+// directly and tail its output into the widget above the editor (the custom
+// statusline footer doesn't render setStatus entries, so a widget is the one
+// surface guaranteed to be visible in this setup). Throttled; cleared when the
+// process exits. Concurrent provisions share the one widget — last writer wins.
+//
+// nix's nice aggregate status ("[0/1 built, 6/47/136 copied (… MiB), … MiB DL]
+// fetching …") only renders on a TTY, so the build runs under `script` and the
+// cursor/ANSI escapes are stripped back out. Falls back to plain pipes (plain
+// stderr lines, no aggregate) when `script` is unavailable.
+interface ExecOutcome {
+	stdout: string;
+	stderr: string;
+	code: number;
+}
+
+function truncateProgress(line: string): string {
+	if (line.length <= PROGRESS_MAX_CHARS) return line;
+	// Escape-aware cut: count printable chars only, keep color sequences
+	// intact, and reset at the end so an unclosed color can't bleed.
+	let out = "";
+	let count = 0;
+	let i = 0;
+	while (i < line.length && count < PROGRESS_MAX_CHARS - 1) {
+		if (line[i] === "\x1B") {
+			const seq = /^(\x1B\[[0-?]*[ -/]*[@-~]|\x1B[@-Z\\-_])/.exec(line.slice(i));
+			if (seq) {
+				out += seq[0];
+				i += seq[0].length;
+				continue;
+			}
+		}
+		out += line[i++];
+		count++;
+	}
+	return `${out}\x1B[0m…`;
+}
+
+// Strip ANSI/CSI sequences (cursor movement from nix's TTY status redraws,
+// erase, colors) so a raw pty stream can be parsed as plain lines.
+function stripAnsi(text: string): string {
+	return text.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
+}
+
+// Same, but keep SGR color codes (\e[…m): nix's aggregate line colors its
+// counters, and the widget renderer passes raw SGR through, so we keep the
+// nix-look. Everything else (erase, cursor moves, synchronized-output flags)
+// must still go or the widget renders garbage.
+function stripControlsKeepColors(text: string): string {
+	return text.replace(/\x1B(?:\[[0-?]*[ -/]*[@-~]|[@-Z\\-_])/g, (seq) => (seq.endsWith("m") ? seq : ""));
+}
+
+// The widget rows for the current state of a pty build stream: nix's aggregate
+// status line ("[… built/copied … MiB DL]") plus, when present, the activity
+// line below it ("fetching X from https://…", "building …"), with colors kept.
+// The colored and plain splits share line boundaries, so plain lines are used
+// for matching and colored lines for display.
+function progressLines(stream: string): string[] {
+	const colored = stripControlsKeepColors(stream).split(/\r?\n|\r/).map((l) => l.trim());
+	const plain = stripAnsi(stream).split(/\r?\n|\r/).map((l) => l.trim());
+	const lastNonEmptyFrom = (from: number): number => {
+		for (let j = colored.length - 1; j >= from; j--) if (plain[j]) return j;
+		return -1;
+	};
+	for (let i = plain.length - 1; i >= 0; i--) {
+		if (!plain[i] || !/^\[\d+\/\d+.*\]/.test(plain[i])) continue;
+		const rows = [truncateProgress(colored[i])];
+		const activity = lastNonEmptyFrom(i + 1);
+		if (activity > i) rows.push(truncateProgress(colored[activity]));
+		return rows;
+	}
+	const last = lastNonEmptyFrom(0);
+	return last >= 0 ? [truncateProgress(colored[last])] : [];
+}
+
+// The exact store-path lines nix prints for --print-out-paths (progress lines
+// merely mention paths, so an exact-line match separates them cleanly).
+function outPathLines(stream: string): string[] {
+	return stripAnsi(stream)
+		.split(/\r?\n|\r/)
+		.map((l) => l.trim())
+		.filter((line) => /^\/nix\/store\/[a-z0-9.+_-]+-\S+$/.test(line));
+}
+
+function spawnWithProgress(
+	cmd: string,
+	args: string[],
+	ctx: ProgressContext | undefined,
+	signal: AbortSignal | undefined,
+	timeoutMs: number,
+): Promise<ExecOutcome> {
+	const scriptBin = (process.env.PATH ?? "")
+		.split(":")
+		.filter(Boolean)
+		.map((dir) => join(dir, "script"))
+		.find((candidate) => existsSync(candidate));
+	return scriptBin
+		? spawnInPty(scriptBin, cmd, args, ctx, signal, timeoutMs)
+		: spawnPlain(cmd, args, ctx, signal, timeoutMs);
+}
+
+function spawnPlain(
+	cmd: string,
+	args: string[],
+	ctx: ProgressContext | undefined,
+	signal: AbortSignal | undefined,
+	timeoutMs: number,
+): Promise<ExecOutcome> {
+	return new Promise((resolve, reject) => {
+		const child = spawn(cmd, args, { stdio: ["ignore", "pipe", "pipe"] });
+		let stdout = "";
+		let stderr = "";
+		let lastUpdate = 0;
+		let pending: NodeJS.Timeout | undefined;
+		const setWidget = ctx?.ui?.setWidget?.bind(ctx.ui);
+		const clear = () => {
+			if (pending) clearTimeout(pending);
+			setWidget?.(PROGRESS_WIDGET, undefined);
+		};
+		const show = () => {
+			if (pending || !setWidget) return;
+			const since = Date.now() - lastUpdate;
+			const flush = () => {
+				pending = undefined;
+				lastUpdate = Date.now();
+				const line = stderr.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).at(-1);
+				if (line) {
+					const subject = /^build$/.test(args[0] ?? "") && args[1] ? args[1] : cmd;
+					setWidget(PROGRESS_WIDGET, [`${MARKER} ${subject}: ${truncateProgress(line)}`]);
+				}
+			};
+			if (since < PROGRESS_THROTTLE_MS) {
+				pending = setTimeout(flush, PROGRESS_THROTTLE_MS - since);
+				pending.unref?.();
+			} else {
+				flush();
+			}
+		};
+		child.stdout.on("data", (chunk: Buffer) => (stdout += chunk));
+		child.stderr.on("data", (chunk: Buffer) => {
+			stderr += chunk;
+			show();
+		});
+		const kill = () => child.kill("SIGTERM");
+		signal?.addEventListener("abort", kill, { once: true });
+		const timeout = setTimeout(kill, timeoutMs);
+		timeout.unref?.();
+		const finish = (fn: () => void) => {
+			clearTimeout(timeout);
+			signal?.removeEventListener("abort", kill);
+			clear();
+			fn();
+		};
+		child.on("error", (err) => finish(() => reject(err)));
+		child.on("exit", (code) => finish(() => resolve({ stdout, stderr, code: code ?? -1 })));
+	});
+}
+
+// `script` allocates a pty so nix renders its live aggregate status; stdout
+// and stderr merge into the pty stream, so out paths are re-extracted by exact
+// line match and the returned stderr is escape-stripped for error matching.
+function spawnInPty(
+	scriptBin: string,
+	cmd: string,
+	args: string[],
+	ctx: ProgressContext | undefined,
+	signal: AbortSignal | undefined,
+	timeoutMs: number,
+): Promise<ExecOutcome> {
+	// Attrs arrive from tool params; single-quote-escape every token.
+	const inner = [cmd, ...args]
+		.map((arg) => `'${arg.replaceAll("'", `'\\''`)}'`)
+		.join(" ");
+	return new Promise((resolve, reject) => {
+		// New process group so a kill takes nix down with `script`.
+		const child = spawn(scriptBin, ["-qec", inner, "/dev/null"], {
+			stdio: ["ignore", "pipe", "pipe"],
+			detached: true,
+		});
+		let merged = "";
+		let lastUpdate = 0;
+		let pending: NodeJS.Timeout | undefined;
+		const setWidget = ctx?.ui?.setWidget?.bind(ctx.ui);
+		const clear = () => {
+			if (pending) clearTimeout(pending);
+			setWidget?.(PROGRESS_WIDGET, undefined);
+		};
+		const show = () => {
+			if (pending || !setWidget) return;
+			const since = Date.now() - lastUpdate;
+			const flush = () => {
+				pending = undefined;
+				lastUpdate = Date.now();
+				const lines = progressLines(merged);
+				if (lines.length > 0) {
+					setWidget(PROGRESS_WIDGET, [`${MARKER} ${args[1] ?? cmd}`, ...lines]);
+				}
+			};
+			if (since < PROGRESS_THROTTLE_MS) {
+				pending = setTimeout(flush, PROGRESS_THROTTLE_MS - since);
+				pending.unref?.();
+			} else {
+				flush();
+			}
+		};
+		const onData = (chunk: Buffer) => {
+			merged += chunk;
+			show();
+		};
+		child.stdout.on("data", onData);
+		child.stderr.on("data", onData);
+		const kill = () => {
+			try {
+				process.kill(-child.pid!, "SIGTERM");
+			} catch {}
+		};
+		signal?.addEventListener("abort", kill, { once: true });
+		const timeout = setTimeout(kill, timeoutMs);
+		timeout.unref?.();
+		const finish = (fn: () => void) => {
+			clearTimeout(timeout);
+			signal?.removeEventListener("abort", kill);
+			clear();
+			fn();
+		};
+		child.on("error", (err) => finish(() => reject(err)));
+		child.on("exit", (code) =>
+			finish(() =>
+				resolve({
+					stdout: outPathLines(merged).join("\n"),
+					stderr: stripAnsi(merged),
+					code: code ?? -1,
+				}),
+			),
+		);
+	});
+}
+
 export default function nixCommaExtension(pi: ExtensionAPI) {
 	// bin directories provisioned this session, most recent first; prepended to
 	// PATH on every bash spawn. PATH search is first-match, so the most recent
@@ -104,6 +383,97 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	}
 	// cmd -> outcome, so repeats are instant and failures aren't retried.
 	const resolved = new Map<string, Outcome>();
+
+	// Apply a restored provision record: PATH front + seed the resolved memo so
+	// a still-failing re-run of its command gets the helpful note.
+	function applyProvision(record: ProvisionRecord) {
+		prependSessionPaths(record.binDirs);
+		if (record.cmd && !resolved.has(record.cmd)) {
+			resolved.set(record.cmd, {
+				kind: "provisioned",
+				provision: {
+					cmd: record.cmd,
+					attr: record.attr,
+					branch: record.branch,
+					binDirs: record.binDirs,
+					candidates: [],
+				},
+			});
+		}
+	}
+
+	// Persistent provisioning: replay the session's provision records on
+	// session_start. Existing store paths re-apply silently; garbage-collected
+	// ones are offered back via a menu. Successful re-provisions append a fresh
+	// record (latest record per attr wins on the next resume), so stale paths
+	// never re-prompt.
+	async function restoreProvisions(ctx: RestoreContext): Promise<void> {
+		const records = collectProvisionRecords(ctx.sessionManager.getEntries());
+		if (records.length === 0) return;
+		const missing: ProvisionRecord[] = [];
+		// Oldest -> newest: prepending each puts the most recent provision at the
+		// front of PATH, matching in-session shadowing semantics.
+		for (const record of records) {
+			if (record.binDirs.every((dir) => existsSync(dir))) {
+				applyProvision(record);
+			} else {
+				missing.push(record);
+			}
+		}
+		if (missing.length === 0) return;
+
+		const label = (r: ProvisionRecord) => `${r.branch}#${r.attr}${r.cmd ? ` (for ${r.cmd})` : ""}`;
+		const missingList = missing.map(label).join(", ");
+		if (!ctx.hasUI) {
+			ctx.ui.notify(
+				`${MARKER} previously provisioned package(s) are gone from the nix store: ${missingList}. Call nix_provision to restore them if needed.`,
+				"warning",
+			);
+			return;
+		}
+
+		const remaining = [...missing];
+		while (remaining.length > 0) {
+			const options =
+				remaining.length === 1
+					? [`Re-provision ${label(remaining[0])}`, "Skip"]
+					: [
+							`Re-provision all (${remaining.length})`,
+							...remaining.map((r) => `Re-provision ${label(r)}`),
+							"Skip rest",
+						];
+			const choice = await ctx.ui.select(
+				`[nix-comma] provisioned package(s) missing from the nix store: ${missingList}. Re-provision?`,
+				options,
+			);
+			if (!choice || choice === "Skip" || choice === "Skip rest") return;
+			const targets =
+				remaining.length > 1 && choice.startsWith("Re-provision all")
+					? [...remaining]
+					: remaining.filter((r) => choice === `Re-provision ${label(r)}`);
+			for (const record of targets) {
+				remaining.splice(remaining.indexOf(record), 1);
+				const resolution = await resolveAttr(record.attr, record.cmd, undefined, ctx);
+				if (resolution.kind === "ok") {
+					applyProvision({ ...record, branch: resolution.branch, binDirs: resolution.binDirs });
+					pi.appendEntry(PROVISION_ENTRY, {
+						cmd: record.cmd ?? undefined,
+						attr: record.attr,
+						branch: resolution.branch,
+						binDirs: resolution.binDirs,
+					});
+					ctx.ui.notify(`${MARKER} re-provisioned ${resolution.branch}#${record.attr}.`);
+				} else {
+					ctx.ui.notify(`${MARKER} re-provisioning ${record.branch}#${record.attr} failed.`, "warning");
+				}
+			}
+		}
+	}
+
+	pi.on("session_start", async (_event, ctx) => {
+		await restoreProvisions(ctx);
+	});
+
 	// Commands already told "provisioned but still not found" (once per session).
 	const stillFailingNotified = new Set<string>();
 	// Names already answered with a probe-availability note (once per session).
@@ -234,7 +604,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	const provisionTool = {
 		name: "nix_provision",
 		label: "Nix Provision",
-		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
+		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Provisions are recorded in the session, so resuming it restores them (offering to rebuild any that were garbage collected). Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
 		promptSnippet: "Provision a nixpkgs attr onto this session's PATH",
 		promptGuidelines: [
 			`Use nix_provision when a ${MARKER} tool result lists multiple candidate attrs and you need a specific variant, or to swap a previously provisioned binary for a different variant.`,
@@ -249,7 +619,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 			),
 		}),
 		async execute(_toolCallId, params, signal, _onUpdate, ctx) {
-			const resolution = await resolveAttr(params.attr, params.cmd ?? null, signal);
+			const resolution = await resolveAttr(params.attr, params.cmd ?? null, signal, ctx);
 			if (resolution.kind === "missing") {
 				throw new Error(
 					`${MARKER} attribute '${params.attr}' was not found in ${PRIMARY_BRANCH} or the fallback branch.`,
@@ -261,6 +631,13 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 				);
 			}
 			prependSessionPaths(resolution.binDirs);
+			// Record for restore on a later resume of this session.
+			pi.appendEntry(PROVISION_ENTRY, {
+				cmd: params.cmd ?? undefined,
+				attr: params.attr,
+				branch: resolution.branch,
+				binDirs: resolution.binDirs,
+			});
 			const shadowNote =
 				sessionPaths.length > resolution.binDirs.length
 					? " These shadow earlier provisions of same-named binaries."
@@ -343,6 +720,15 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 				if (outcome.kind !== "aborted" && outcome.kind !== "ambiguous") {
 					resolved.set(name, outcome);
 				}
+				if (outcome.kind === "provisioned") {
+					// Record for restore on a later resume of this session.
+					pi.appendEntry(PROVISION_ENTRY, {
+						cmd: outcome.provision.cmd,
+						attr: outcome.provision.attr,
+						branch: outcome.provision.branch,
+						binDirs: outcome.provision.binDirs,
+					});
+				}
 				const note = noteFor(name, outcome);
 				if (note) notes.push(note);
 			}
@@ -418,15 +804,18 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		attr: string,
 		cmd: string | null,
 		signal?: AbortSignal,
+		ctx?: ProgressContext,
 	): Promise<AttrResolution> {
 		for (const branch of [PRIMARY_BRANCH, FALLBACK_BRANCH]) {
 			if (signal?.aborted) return { kind: "failed", detail: "aborted" };
-			let build;
+			let build: ExecOutcome;
 			try {
-				build = await pi.exec(
+				build = await spawnWithProgress(
 					"nix",
 					["build", `${branch}#${attr}`, "--no-link", "--print-out-paths"],
-					{ signal, timeout: BUILD_TIMEOUT_MS },
+					ctx,
+					signal,
+					BUILD_TIMEOUT_MS,
 				);
 			} catch {
 				return { kind: "failed", detail: "aborted" };
@@ -452,6 +841,36 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 			return { kind: "ok", branch, binDirs };
 		}
 		return { kind: "missing" };
+	}
+
+	// Parse persisted provision entries; latest record per branch#attr wins
+	// (re-provisioning and forks duplicate attrs), kept in chronological order.
+	function collectProvisionRecords(entries: readonly unknown[]): ProvisionRecord[] {
+		const byAttr = new Map<string, ProvisionRecord>();
+		for (const entry of entries) {
+			const e = entry as { type?: unknown; customType?: unknown; data?: unknown };
+			if (e?.type !== "custom" || e.customType !== PROVISION_ENTRY) continue;
+			const record = provisionRecordFrom(e.data);
+			if (!record) continue;
+			const key = `${record.branch}#${record.attr}`;
+			byAttr.delete(key); // delete+set reorders, a plain set wouldn't
+			byAttr.set(key, record);
+		}
+		return [...byAttr.values()];
+	}
+
+	function provisionRecordFrom(data: unknown): ProvisionRecord | undefined {
+		if (!data || typeof data !== "object") return undefined;
+		const d = data as Record<string, unknown>;
+		if (typeof d.attr !== "string" || typeof d.branch !== "string" || !Array.isArray(d.binDirs)) return undefined;
+		const binDirs = d.binDirs.filter((dir): dir is string => typeof dir === "string");
+		if (binDirs.length === 0) return undefined;
+		return {
+			cmd: typeof d.cmd === "string" && d.cmd.length > 0 ? d.cmd : null,
+			attr: d.attr,
+			branch: d.branch,
+			binDirs,
+		};
 	}
 
 	function lastLines(text: string, n = 3): string {
@@ -510,7 +929,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 
 		for (const attr of candidates.slice(0, MAX_ATTR_CANDIDATES)) {
 			if (signal?.aborted) return { kind: "aborted" };
-			const resolution = await resolveAttr(attr, cmd, signal);
+			const resolution = await resolveAttr(attr, cmd, signal, ctx);
 			if (resolution.kind === "ok") {
 				prependSessionPaths(resolution.binDirs);
 				return {
