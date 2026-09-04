@@ -58,6 +58,7 @@ import {
 import {
 	attachNotes,
 	bash,
+	beginTurnMessage,
 	collapseToolGroup,
 	genericSlots,
 	customUiEnabled,
@@ -65,19 +66,25 @@ import {
 	edit,
 	base16Bg,
 	base16Fg,
+	endTurnTokens,
 	find,
 	foldToolGroup,
+	formatTokens,
 	glanceLine,
 	groupMode,
 	grep,
 	latestCap,
 	ls,
+	noteTurnDelta,
+	noteTurnProviderOutput,
 	pushToolNote,
 	readCallSlot,
 	readTextResult,
+	resetTurnTokens,
 	scanToolGroupsFromHistory,
 	currentBatchSize,
 	settleStatus,
+	settleTurnMessage,
 	shimmerFrame,
 	tickOpenBatch,
 	animState,
@@ -1347,7 +1354,9 @@ export default function customUi(pi: ExtensionAPI) {
 	// ── Turn summary (zentui-faithful, MIT) ───────────────
 	// One settled row per agent run, appended at agent_end and persisted via
 	// appendEntry + entry renderer (renders identically on restore):
-	//   Turn took 1m 51s · thought for 1m 39s · ↑12.4k ↓830
+	//   Turn took 1m 51s · thought for 1m 39s · ↑830 ↓12.4k
+	// ↑ is always output tokens (matches the spinners' live ↑N readout); ↓
+	// is input.
 	// Duration is agent-run wall clock; tokens are provider-reported usage
 	// summed per assistant message at message_end; thought time is summed
 	// from the fork's published per-message thinking timings at settle.
@@ -1366,13 +1375,6 @@ export default function customUi(pi: ExtensionAPI) {
 		if (m > 0) return `${m}m ${s}s`;
 		return `${s}s`;
 	};
-	const formatTokCount = (v: number): string => {
-		if (v < 1000) return String(v);
-		if (v < 10_000) return `${(v / 1000).toFixed(1)}k`;
-		if (v < 1_000_000) return `${Math.round(v / 1000)}k`;
-		if (v < 10_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
-		return `${Math.round(v / 1_000_000)}M`;
-	};
 	// Styling per user spec: the whole row bold base03 (an earlier per-piece
 	// variant — base02 dots, yellow/grey arrows — read poorly and was
 	// dropped). Raw base16 SGR; base16Fg falls back when the palette is absent.
@@ -1380,7 +1382,7 @@ export default function customUi(pi: ExtensionAPI) {
 		const base03 = base16Fg("base03", "6a737d");
 		const parts = [`Turn took ${formatTurnDuration(data.durationMs)}`];
 		if (data.thoughtMs >= 1000) parts.push(`thought for ${formatTurnDuration(data.thoughtMs)}`);
-		parts.push(`↑${formatTokCount(data.input)} ↓${formatTokCount(data.output)}`);
+		parts.push(`↑${formatTokens(data.output)} ↓${formatTokens(data.input)}`);
 		return ` ${base03}\x1b[1m${parts.join(" · ")}\x1b[22m\x1b[39m`;
 	};
 
@@ -1515,6 +1517,9 @@ export default function customUi(pi: ExtensionAPI) {
 		turnTimestamps.clear();
 		turnTokens.input = 0;
 		turnTokens.output = 0;
+		// Live ↑N readout on the animated spinners (lib tracker): a new turn
+		// counts from zero. See lib/custom-ui.ts for the tracker shape.
+		resetTurnTokens();
 		if (ctx.mode !== "tui") return;
 		loaderTimer?.unref?.();
 		clearInterval(loaderTimer);
@@ -1547,11 +1552,20 @@ export default function customUi(pi: ExtensionAPI) {
 			setLiveThought(undefined);
 			collapseToolGroup();
 		}
+		// Per-message token accumulation for the live ↑N readout resets here —
+		// a message that errors without message_end would otherwise bleed its
+		// estimate into the next one.
+		if (message?.role === "assistant") beginTurnMessage();
 	});
 	pi.on("message_update", async (event, ctx) => {
 		noteAgentActivity();
-		const e = event as { assistantMessageEvent?: { type?: unknown }; message?: any };
+		const e = event as { assistantMessageEvent?: { type?: unknown; delta?: unknown }; message?: any };
 		const type = e.assistantMessageEvent?.type;
+		// Live turn output tokens: streamed delta characters (chars/4 estimate)
+		// plus the partial's cumulative provider usage when the provider
+		// reports it mid-stream (Anthropic/Google do; OpenAI only at the end).
+		if (typeof e.assistantMessageEvent?.delta === "string") noteTurnDelta(e.assistantMessageEvent.delta.length);
+		if (e.message?.role === "assistant") noteTurnProviderOutput(e.message?.usage?.output);
 		// Collapse as soon as visible text streams (whitespace-only text blocks
 		// must not split batches). Idempotent: once the current batch is
 		// collapsed, later deltas are no-ops.
@@ -1604,6 +1618,9 @@ export default function customUi(pi: ExtensionAPI) {
 		if (typeof message.timestamp === "number") turnTimestamps.add(message.timestamp);
 		turnTokens.input += message.usage?.input ?? 0;
 		turnTokens.output += message.usage?.output ?? 0;
+		// The finished message's provider-reported output joins the live ↑N
+		// tracker's settled total (estimate replaced by the accurate count).
+		settleTurnMessage(message.usage?.output);
 	});
 
 	// NB: turn_end fires per assistant *message* (with its tool results), so
@@ -1613,6 +1630,7 @@ export default function customUi(pi: ExtensionAPI) {
 		noteAgentActivity();
 		stopThoughtTick();
 		setLiveThought(undefined);
+		endTurnTokens();
 		collapseToolGroup();
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;
@@ -1647,6 +1665,7 @@ export default function customUi(pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		stopThoughtTick();
 		setLiveThought(undefined);
+		endTurnTokens();
 		toolCallThoughtKey.clear();
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;

@@ -1,6 +1,6 @@
 // Smoke test: drive the lib's grouping + live header through a simulated
 // batch, mimicking what the extensions' event handlers do.
-import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, webToolSlots } from "./lib/custom-ui.ts";
+import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, webToolSlots, resetTurnTokens, beginTurnMessage, noteTurnDelta, noteTurnProviderOutput, settleTurnMessage, endTurnTokens, turnOutputTokens, formatTokens } from "./lib/custom-ui.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -102,6 +102,49 @@ for (const dot of [dot0, dot1]) {
 if (dot0 === dot1) throw new Error("in-progress dot must animate with frame");
 console.log("ANIM API OK; label:", JSON.stringify(label));
 console.log("OK-UNIFICATION");
+
+// ── Live turn token readout ──────────────────────────────────────
+// Tracker state machine: settled total + in-flight estimate (max of the
+// partial's cumulative provider usage and chars/4 of streamed deltas).
+endTurnTokens();
+if (turnOutputTokens() !== undefined) throw new Error("tokens must be hidden without an active turn");
+resetTurnTokens();
+if (turnOutputTokens() !== 0) throw new Error("fresh turn must start at 0");
+noteTurnDelta(4000); // est 1000
+if (turnOutputTokens() !== 1000) throw new Error(`estimate broken: ${turnOutputTokens()}`);
+noteTurnProviderOutput(1200); // provider cumulative beats the estimate
+if (turnOutputTokens() !== 1200) throw new Error(`provider mark broken: ${turnOutputTokens()}`);
+noteTurnProviderOutput(1100); // stale/lower provider updates never regress
+if (turnOutputTokens() !== 1200) throw new Error("provider high-water mark regressed");
+noteTurnDelta(2000); // est 1500 now beats the stale provider mark
+if (turnOutputTokens() !== 1500) throw new Error(`estimate must take over: ${turnOutputTokens()}`);
+beginTurnMessage(); // next message resets per-message accumulation, keeps settled
+noteTurnDelta(1600); // est 400
+if (turnOutputTokens() !== 400) throw new Error(`beginTurnMessage must reset per-message state: ${turnOutputTokens()}`);
+settleTurnMessage(1512); // message_end: provider-reported count lands
+if (turnOutputTokens() !== 1512) throw new Error(`settle must land the accurate count: ${turnOutputTokens()}`);
+settleTurnMessage(undefined); // aborted message: estimate joins the settled total
+if (turnOutputTokens() !== 1512) throw new Error(`empty settle must add 0: ${turnOutputTokens()}`);
+if (formatTokens(1512) !== "1.5k" || formatTokens(999) !== "999" || formatTokens(12_345) !== "12k") {
+	throw new Error("formatTokens shape broken");
+}
+
+// surfaces: live header, streaming label, loader show ↑N while a turn runs
+const tokLive = liveGroupHeaderLine(theme, 2, 1234, 0, 0, 0);
+if (!tokLive.includes("↑1.5k")) throw new Error("live header missing token readout: " + JSON.stringify(tokLive));
+const tokLabel = anim.streamingLabel("2s", true, "  (ctrl+t to expand)", 7);
+if (!tokLabel.includes("↑1.5k") || !tokLabel.includes("2s")) throw new Error("streaming label missing token readout");
+const tokLoader = anim.loaderLabel(3);
+if (!tokLoader.includes("↑1.5k")) throw new Error("loader missing token readout: " + JSON.stringify(tokLoader));
+
+// turn over → readout hidden everywhere (settled header never carried one)
+endTurnTokens();
+const tokOff = liveGroupHeaderLine(theme, 2, 1234, 0, 0, 0);
+if (tokOff.includes("↑")) throw new Error("inactive header must hide the token readout");
+if (!anim.streamingLabel("2s", true, "  (ctrl+t to expand)", 7).includes("2s")) {
+	throw new Error("streaming label must survive inactive tracker");
+}
+console.log("OK-TURN-TOKENS");
 
 // Narration exemption (missing-fold fix)
 resetToolGroups();

@@ -670,7 +670,7 @@ export function shimmerFrame(
 }
 
 // Animated header for a running batch:
-// `▸ Combobulating… · Thought for 2.3s · Ran 4 tool calls (ctrl+o to expand)`
+// `▸ Combobulating… 2s · ↑12.4k · 4 tool calls (ctrl+o to expand)`
 // with the dots spinner in the accent color and the verb shimmering through
 // the stylix gradient. The trailing info keeps the static header's styling.
 export function liveGroupHeaderLine(
@@ -685,15 +685,112 @@ export function liveGroupHeaderLine(
 	const glyph = theme.fg("accent", frames[frame % frames.length] ?? "·");
 	const verb = shimmerFrame(`${VERBS[batchIndex % VERBS.length]}…`, frame);
 	// Present tense while the batch runs: verb + bare timer ("Sautéing…
-	// 1m 39s · 2 tool calls") — the shimmer verb already carries the
+	// 1m 39s · ↑12.4k · 2 tool calls") — the shimmer verb already carries the
 	// participle, so no "Thinking" prefix. Whole-second precision: at 0.1s
 	// precision the readout aliases against repaint rate (spins fast during
 	// dense text deltas, stutters when only the tick repaints) — 1Hz changes
-	// resolve cleanly at any cadence. Settled keeps the past tense
-	// ("Thought for · Ran") with 0.1s decimals (static, no aliasing).
+	// resolve cleanly at any cadence. The ↑N token readout is turn-wide and
+	// re-read every frame (settled total + in-flight estimate), so it climbs
+	// in real time across every batch of the turn. Settled keeps the past
+	// tense ("Thought for · Ran") with 0.1s decimals (static, no aliasing)
+	// and no tokens — a settled header is frozen history while the turn's
+	// count keeps moving; the turn summary row carries the final totals.
 	const thought = thoughtMs === undefined ? "" : `${Math.floor(thoughtMs / 1000)}s · `;
-	const info = `${thought}${count} tool call${count === 1 ? "" : "s"} (${keyText("app.tools.expand")} to expand)`;
+	const tokens = turnOutputTokens();
+	const tok = tokens === undefined ? "" : `↑${formatTokens(tokens)} · `;
+	const info = `${thought}${tok}${count} tool call${count === 1 ? "" : "s"} (${keyText("app.tools.expand")} to expand)`;
 	return `${glyph} ${verb} ${theme.fg("muted", theme.italic(info))}`;
+}
+
+// ── Live turn output tokens ───────────────────────────────────
+//
+// The animated spinners (batch header, streaming thinking label, dead-air
+// loader) carry a live `↑N` readout of how many tokens the model has output
+// this turn. Provider usage is only authoritative per completed message, so
+// the tracker sums provider-reported output over finished assistant messages
+// (settled) and, for the message currently streaming, takes the larger of
+// the partial's cumulative usage.output (Anthropic/Google report it per
+// chunk) and a chars/4 estimate from the streamed deltas (OpenAI reports
+// usage only on the final chunk — the estimate keeps the readout moving).
+// State lives on globalThis (written by custom-ui.ts's event handlers, read
+// at render time) because lib instances may be per-extension.
+
+interface TurnTokenState {
+	active: boolean;
+	settled: number;
+	provider: number;
+	chars: number;
+}
+
+const TURN_TOKENS_KEY = "__piCustomUiTurnTokens";
+
+function turnTokenState(): TurnTokenState {
+	const w = globalThis as Record<string, unknown>;
+	if (!w[TURN_TOKENS_KEY]) {
+		w[TURN_TOKENS_KEY] = { active: false, settled: 0, provider: 0, chars: 0 };
+	}
+	return w[TURN_TOKENS_KEY] as TurnTokenState;
+}
+
+// agent_start: a new turn counts from zero.
+export function resetTurnTokens(): void {
+	const t = turnTokenState();
+	t.active = true;
+	t.settled = 0;
+	t.provider = 0;
+	t.chars = 0;
+}
+
+// assistant message_start: per-message accumulation starts over.
+export function beginTurnMessage(): void {
+	const t = turnTokenState();
+	t.provider = 0;
+	t.chars = 0;
+}
+
+// message_update: count streamed delta characters (any delta kind —
+// thinking, text, toolcall arguments).
+export function noteTurnDelta(chars: number): void {
+	if (chars > 0) turnTokenState().chars += chars;
+}
+
+// message_update: the partial's provider usage is cumulative for the
+// streaming message; keep the high-water mark.
+export function noteTurnProviderOutput(output: number | undefined): void {
+	if (typeof output !== "number" || output <= 0) return;
+	const t = turnTokenState();
+	if (output > t.provider) t.provider = output;
+}
+
+// message_end: the message's output joins the settled total —
+// provider-reported when available, estimated otherwise (aborted streams).
+export function settleTurnMessage(output: number | undefined): void {
+	const t = turnTokenState();
+	t.settled += output ?? Math.ceil(t.chars / 4);
+	t.provider = 0;
+	t.chars = 0;
+}
+
+// agent_end / session_start: no turn is running — spinners hide the readout.
+export function endTurnTokens(): void {
+	turnTokenState().active = false;
+}
+
+// Output tokens so far this turn, or undefined when no turn is running.
+export function turnOutputTokens(): number | undefined {
+	const t = turnTokenState();
+	if (!t.active) return undefined;
+	return t.settled + Math.max(t.provider, Math.ceil(t.chars / 4));
+}
+
+// Compact token count — same shape as the turn summary row (999 / 1.2k /
+// 12k / 1.2M).
+export function formatTokens(n: number): string {
+	if (n < 1000) return String(n);
+	if (n < 10_000) return `${(n / 1000).toFixed(1)}k`;
+	if (n < 1_000_000) return `${Math.round(n / 1000)}k`;
+	if (n < 10_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+	return `${Math.round(n / 1_000_000)}M`;
 }
 
 // ── Shared animation API (consumed by pi-thinking-fold) ────────
@@ -735,7 +832,7 @@ interface AnimApi {
 	inProgressDot(): string;
 	// Animated streaming-thinking label (always animated — the batch header
 	// yields while thinking streams, so this row is always the one spinner):
-	// `▸ Combobulating… 2s  (ctrl+t to expand)`
+	// `▸ Combobulating… 2s · ↑1.2k  (ctrl+t to expand)`
 	streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number): string;
 	// Settled completed-thinking label (the fold row after the thinking
 	// ends): base03 bold per user spec.
@@ -743,7 +840,8 @@ interface AnimApi {
 	// Full accent-tinted frame set for a dots variant — for consumers that
 	// own their animation interval (e.g. pi's setWorkingIndicator).
 	accentSpinnerFrames(seed: number): string[];
-	// Animated dead-air loader text: `{dots} {shimmer verb…}`. Driven per-tick
+	// Animated dead-air loader text: `{dots} {shimmer verb…} ↑N` (N = live
+	// turn output tokens). Driven per-tick
 	// by the consumer through setWorkingMessage — pi's own indicator animation
 	// proved unreliable mid-turn, so the message carries the motion.
 	loaderLabel(seed: number): string;
@@ -786,7 +884,9 @@ export function animState(): AnimApi {
 				return frames.map((f) => `${accent}${f}\x1b[39m`);
 			},
 			loaderLabel(seed: number) {
-				return `${this.spinnerFrame(seed)} ${shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame)}`;
+				const tokens = turnOutputTokens();
+				const tok = tokens === undefined ? "" : ` ${base16Fg("base04", "8a9199")}↑${formatTokens(tokens)}\x1b[39m`;
+				return `${this.spinnerFrame(seed)} ${shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame)}${tok}`;
 			},
 			inProgressDot() {
 				const glyph = DOTS_CIRCLE[this.frame % DOTS_CIRCLE.length] ?? "●";
@@ -795,8 +895,10 @@ export function animState(): AnimApi {
 			streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number) {
 				const verb = shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame);
 				const muted = base16Fg("base04", "8a9199");
+				const tokens = turnOutputTokens();
+				const tok = tokens === undefined ? "" : ` · ↑${formatTokens(tokens)}`;
 				const tail = canExpand ? expandSuffix : "";
-				return `${this.spinnerFrame(seed)} ${verb} ${muted}${seconds}${tail}\x1b[0m`;
+				return `${this.spinnerFrame(seed)} ${verb} ${muted}${seconds}${tok}${tail}\x1b[0m`;
 			},
 			tick(this: AnimApi) {
 				// The clock advances by itself (wall clock); a tick is only

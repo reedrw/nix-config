@@ -79,13 +79,24 @@ the hard way; violating them fails silently.
   labelFor returns "" while `__piCustomUiAnim.batchOpen` — just reasoning preview
   beneath the header); fresh-thinking rows (no batch) get the full animated label
   ({ frame, batchOpen, spinnerFrame, inProgressDot, streamingLabel, tick } —
-  shared clock; base16 SGR colors, no Theme needed). pi's loader is hidden on
+  shared clock; base16 SGR, no Theme needed). pi's loader is hidden on
   thinking_delta (`setWorkingVisible(false)`), restored on tool_call/text_delta/
   user message/agent_end — NOT on thinking_end (flicker between consecutive
   thinking blocks). The fork's streaming label must render through a pi-tui
   **Text**, not Markdown (raw SGR gets mangled); its timer runs at 80ms. The
   in-progress tool dot is dotsCircle (2-cell frames, spaces are anti-wiggle
   padding — do not trim) and solo batches tick so it animates.
+- **Live turn token readout**: every animated spinner (live batch header,
+  fork streaming label, dead-air loader) carries a turn-wide `↑N` output-token
+  count that climbs in real time. The tracker (lib, `__piCustomUiTurnTokens` on
+  globalThis; fed from custom-ui.ts's message_update/message_end handlers) sums
+  provider-reported `usage.output` over finished assistant messages (settled)
+  and for the streaming message takes max(partial's cumulative usage.output —
+  Anthropic/Google report per chunk — and a chars/4 estimate of the streamed
+  deltas; OpenAI reports usage only on the final chunk). Counters reset per
+  turn (agent_start) and per message (assistant message_start); the readout
+  hides outside an active turn, and settled headers carry no tokens (the turn
+  summary row has the final totals).
 - While a batch's header is visible (folded, or ≥2 tools so the first row became
   "earlier"), `tickOpenBatch` animates it on an 80 ms timer (`ensureTick` in
   custom-ui.ts, restarted by tool_call/thinking_delta, self-stopping): dots
