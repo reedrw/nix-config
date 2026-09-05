@@ -36,8 +36,10 @@
     acpilight.enable = true;
   };
 
+  programs.persist-path-manager.enable = false;
+
   custom = {
-    persistJSON = ./persist.json;
+    copyPersistPaths = true;
     persistDir = "/var/persist";
     prevDir = "/var/prev";
     steam = {
