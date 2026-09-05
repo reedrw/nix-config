@@ -5,6 +5,7 @@
     ezModules.custom
     ezModules.graphical
     ezModules.networking
+    ezModules'.extra.android.default
     ezModules'.extra.sshd
     ezModules'.users.reed
     ezModules'.users.root
