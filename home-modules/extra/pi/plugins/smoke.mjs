@@ -1,6 +1,6 @@
 // Smoke test: drive the lib's grouping + live header through a simulated
 // batch, mimicking what the extensions' event handlers do.
-import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, webToolSlots, resetTurnTokens, beginTurnMessage, noteTurnDelta, noteTurnProviderOutput, settleTurnMessage, endTurnTokens, turnOutputTokens, formatTokens } from "./lib/custom-ui.ts";
+import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, settleThoughtKey, thoughtInHeader, webToolSlots, resetTurnTokens, beginTurnMessage, noteTurnDelta, noteTurnProviderOutput, settleTurnMessage, endTurnTokens, turnOutputTokens, formatTokens } from "./lib/custom-ui.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -46,6 +46,62 @@ const settled = groupHeaderLine(theme, m.count, 2345);
 if (/38;2;/.test(settled)) throw new Error("settled header must be static");
 if (!settled.includes("✔")) throw new Error("settled header lost its check glyph");
 console.log("SETTLED:", JSON.stringify(settled));
+
+// ── Closing thought merge (thinking→text after a batch) ─────────
+// a thinking→text message streaming under a folded batch commits its
+// duration to that batch's header at message_end, even though its own
+// text collapsed the batch first
+resetToolGroups();
+trackGroupToolCall("c1");
+if (thoughtInHeader(5000)) throw new Error("nothing absorbed before fold");
+foldToolGroup(5000);
+collapseToolGroup();
+settleThoughtKey(5000);
+m = groupMode("c1");
+if (!m.thoughtKeys?.includes(5000)) throw new Error(`closing thought must join batch header, got ${JSON.stringify(m)}`);
+if (!thoughtInHeader(5000)) throw new Error("absorbed query must see committed key");
+
+// narrated messages (thinking→text→toolCall) whose thinking folded under the
+// preceding batch also commit there — the text split the batch, but the
+// reasoning streamed under its header (their tools open the NEXT batch, which
+// doesn't restamp)
+resetToolGroups();
+trackGroupToolCall("n1");
+foldToolGroup(6000);
+collapseToolGroup();
+settleThoughtKey(6000);
+if (!thoughtInHeader(6000)) throw new Error("narrated thought must join preceding batch header");
+
+// fresh thinking with no open batch never absorbs
+resetToolGroups();
+foldToolGroup(7000);
+settleThoughtKey(7000);
+if (thoughtInHeader(7000)) throw new Error("fresh thought must keep its row");
+
+// restore path: a thinking→text history message stamps the open batch
+// BEFORE its text collapses it; narrated messages stamp too
+resetToolGroups();
+scanToolGroupsFromHistory([
+	{ type: "message", message: { role: "assistant", timestamp: 1, content: [{ type: "toolCall", id: "r1" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 8000, content: [{ type: "thinking", thinking: "hmm" }, { type: "text", text: "done" }] } },
+]);
+if (!thoughtInHeader(8000)) throw new Error("restored closing thought must merge into batch header");
+m = groupMode("r1");
+if (m.kind !== "collapsed" || !m.thoughtKeys?.includes(8000)) throw new Error(`restored batch header lost thought, got ${JSON.stringify(m)}`);
+
+// restore: narrated thinking stamps the preceding batch, and its own tools
+// open the next batch WITHOUT restamping the same thinking
+resetToolGroups();
+scanToolGroupsFromHistory([
+	{ type: "message", message: { role: "assistant", timestamp: 2, content: [{ type: "toolCall", id: "q1" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 9000, content: [{ type: "thinking", thinking: "hmm" }, { type: "text", text: "narration" }, { type: "toolCall", id: "q2" }] } },
+]);
+if (!thoughtInHeader(9000)) throw new Error("restored narrated thought must join preceding batch header");
+m = groupMode("q1");
+if (!m.thoughtKeys?.includes(9000)) throw new Error(`preceding batch lost narrated thought, got ${JSON.stringify(m)}`);
+m = groupMode("q2");
+if (m.thoughtKeys?.includes(9000)) throw new Error("next batch must not double-count narrated thought");
+
 
 // solo batch: tick keeps running so the in-progress dot animates
 resetToolGroups();

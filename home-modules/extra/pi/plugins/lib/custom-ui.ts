@@ -227,6 +227,11 @@ interface GroupState {
 	batches: ToolBatch[];
 	current: number | undefined;
 	latest: string | undefined;
+	// Thought streaming under an open batch (set by foldToolGroup), waiting
+	// for message_end to commit it to the batch — the message usually closes
+	// the batch itself first (thinking → text), but its duration still
+	// belongs to the header the fold streamed beneath.
+	pendingThought?: { key: number; batch: number };
 	// Per-row invalidate callbacks, registered by renderers, so state changes
 	// (batch collapse, newer latest) can force the affected rows to re-render —
 	// tool rows render cached children otherwise.
@@ -311,15 +316,50 @@ export function trackGroupToolCall(toolCallId: string, thoughtKey?: number): voi
 // Visual fold when reasoning starts while a batch is open: the header (with
 // the accumulated thought duration) appears above the glance rows right away,
 // but unlike collapseToolGroup the batch stays current — later tool calls
-// still merge into it.
-export function foldToolGroup(): void {
+// still merge into it. `thoughtKey` remembers the streaming message so
+// settleThoughtKey can commit the duration at message_end.
+export function foldToolGroup(thoughtKey?: number): void {
 	const s = groupState();
 	if (s.current === undefined) return;
+	if (thoughtKey !== undefined) s.pendingThought = { key: thoughtKey, batch: s.current };
 	const batch = s.batches[s.current];
 	if (batch.folded || batch.collapsed) return;
 	batch.folded = true;
 	invalidateRows(batch.ids);
 }
+
+// Commit a folded streaming thought to the batch it streamed beneath. Called
+// from custom-ui's message_end: by then the message's text has usually
+// collapsed the batch already, but the duration belongs to that batch's
+// header (the fork strips the fold row accordingly). Narrated messages
+// (thinking → text → toolCall) whose thinking folded under the preceding
+// batch commit there too — the text split the batch, but the reasoning
+// happened under its header. Only fresh thinking (no open batch when it
+// started) is left alone: nothing absorbed it, so the fork keeps its row.
+// Returns true when a header absorbed the key (the caller then nudges the
+// fork to re-render the message's fold row, which has no invalidator).
+export function settleThoughtKey(key: number | undefined): boolean {
+	const s = groupState();
+	if (key === undefined || !s.pendingThought || s.pendingThought.key !== key) return false;
+	const { batch } = s.pendingThought;
+	s.pendingThought = undefined;
+	const b = s.batches[batch];
+	if (b && !b.thoughtKeys.includes(key)) {
+		b.thoughtKeys.push(key);
+		invalidateRows(b.ids);
+		return true;
+	}
+	return false;
+}
+
+// Whether a thinking message's duration lives in a batch header; the fork
+// strips those fold rows. Published on globalThis — the fork cannot import
+// this lib (separate package), same as the other __piCustomUi* channels.
+export function thoughtInHeader(key: number | undefined): boolean {
+	if (key === undefined) return false;
+	return groupState().batches.some((b) => b.thoughtKeys.includes(key));
+}
+(globalThis as Record<string, unknown>).__piCustomUiThoughtInHeader = thoughtInHeader;
 
 export function collapseToolGroup(): void {
 	const s = groupState();
@@ -380,6 +420,7 @@ export function resetToolGroups(): void {
 
 export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; message?: unknown }>): void {
 	resetToolGroups();
+	const s = groupState();
 	for (const entry of entries) {
 		if (entry.type !== "message") continue;
 		const message = entry.message as { role?: unknown; content?: unknown } | undefined;
@@ -398,19 +439,30 @@ export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; mess
 						typeof (part as { text?: unknown }).text === "string" &&
 						((part as { text: string }).text).trim().length > 0,
 				);
-			if (hasVisible) collapseToolGroup();
 			const hasThinking = Array.isArray(message.content) &&
 				message.content.some(
 					(part) =>
 						part !== null && typeof part === "object" &&
 						(part as { type?: unknown }).type === "thinking",
 				);
-			// Narrated messages keep their fold row (fork narration exemption),
-			// so their thinking belongs to the row, not the batch header.
-			const thoughtKey =
-				hasThinking && !hasVisible && typeof (message as { timestamp?: unknown }).timestamp === "number"
-					? (message as { timestamp: number }).timestamp
-					: undefined;
+			const ts = typeof (message as { timestamp?: unknown }).timestamp === "number"
+				? (message as { timestamp: number }).timestamp
+				: undefined;
+			// A thinking message folds its thinking into the open batch — it
+			// streamed beneath that header (closing thinking→text messages AND
+			// narrated thinking→text→toolCall messages; the batch's own tools
+			// stamp the same key via trackGroupToolCall, deduped by includes).
+			// Must happen BEFORE the text collapses the batch. Fresh thinking
+			// (no open batch) keeps its standalone fold row.
+			if (hasThinking && ts !== undefined && s.current !== undefined) {
+				const batch = s.batches[s.current];
+				if (!batch.thoughtKeys.includes(ts)) batch.thoughtKeys.push(ts);
+			}
+			if (hasVisible) collapseToolGroup();
+			// Narrated messages' thinking commits to the PRECEDING batch header
+			// (scan stamp above / settleThoughtKey); their tools open the next
+			// batch, which must not count the same thinking again.
+			const thoughtKey = hasThinking && !hasVisible && ts !== undefined ? ts : undefined;
 			if (Array.isArray(message.content)) {
 				for (const part of message.content) {
 					if (

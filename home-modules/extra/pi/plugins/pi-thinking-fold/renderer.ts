@@ -724,25 +724,25 @@ function rebuild(
     // this, three "Thinking" indicators show at once: batch header, this
     // row, and pi's native loader). pi's hidden-thinking path with an empty
     // label renders zero lines. An explicit ctrl+t expand still wins.
-    // Merge rule (completion only): pure thinking+toolCall messages fold
-    // into the batch header. Narrated messages (thinking → text → toolCall)
-    // keep their fold row — stripping a row that streamed visible text was
-    // the missing-fold regression, and their duration must not double-count
-    // in the header (custom-ui skips stamping narrated messages too).
-    // STREAMING rows always render: while a batch is open the label is static
-    // (the animated batch header owns the animation) but the content preview
+    // Merge rule (completion only): a message whose thinking was absorbed
+    // into a tool batch header (the lib tracked it — pure thinking+toolCall
+    // messages, and thinking→text messages — narrated or closing — whose
+    // reasoning folded under an open batch). Fresh thinking (no open batch
+    // when it started) is never absorbed and keeps its fold row. STREAMING
+    // rows always render: while a batch is open the label is static (the
+    // animated batch header owns the animation) but the content preview
     // stays visible; removing the old batchOpen suppression restored the
     // pre-unification behavior for post-tool thinking.
-    const hasNarration = message.content.some(
-      (block) => block.type === "text" && typeof block.text === "string" && block.text.trim().length > 0,
-    );
+    const thoughtInHeader = (globalThis as Record<string, unknown>).__piCustomUiThoughtInHeader as
+      | ((key: number | undefined) => boolean)
+      | undefined;
     const mergeIntoHeader =
       !record.expanded &&
       !isToolExpandAll() &&
       customUiMergeEnabled() &&
       completed &&
-      message.content.some((block) => block.type === "toolCall") &&
-      !hasNarration;
+      typeof thoughtInHeader === "function" &&
+      thoughtInHeader(message.timestamp);
     if (mergeIntoHeader) {
       // Strip thinking blocks from the display copy: pi's updateContent adds a
       // leading Spacer(1) for any message with visible content, and non-empty
@@ -918,6 +918,15 @@ function createPatchRecord(options: Partial<ThinkingFoldOptions>): PatchRecord {
     },
   };
 
+  // Let the custom-ui extensions force a re-render of a message's fold row:
+  // a thought committed to a batch header at message_end (lib settleThoughtKey)
+  // must strip the row even though pi's final component update already ran —
+  // fold rows have no invalidator of their own.
+  const publishedRerender = (timestamp: number): void => {
+    record.rerenderTimestamp(timestamp);
+  };
+  (globalThis as Record<string, unknown>).__piCustomUiRerenderThought = publishedRerender;
+
   prototype.updateContent = function (message: AssistantMessage): void {
     const state = record.states.get(this) ?? {};
 
@@ -988,6 +997,8 @@ export function installThinkingFoldPatch(
       restoreToolExpansion();
       prototype.updateContent = record.originalUpdate;
       setPatchRecord(undefined);
+      const w = globalThis as Record<string, unknown>;
+      if (w.__piCustomUiRerenderThought === publishedRerender) delete w.__piCustomUiRerenderThought;
     },
   };
 }

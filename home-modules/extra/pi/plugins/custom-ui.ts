@@ -82,6 +82,7 @@ import {
 	readTextResult,
 	resetTurnTokens,
 	scanToolGroupsFromHistory,
+	settleThoughtKey,
 	currentBatchSize,
 	settleStatus,
 	settleTurnMessage,
@@ -1564,6 +1565,19 @@ export default function customUi(pi: ExtensionAPI) {
 		// estimate into the next one.
 		if (message?.role === "assistant") beginTurnMessage();
 	});
+	// Commit a finished thought to the batch header it folded under, and nudge
+	// the fork to strip the fold row. Called at thinking_end (reasoning is
+	// complete — don't make the row wait for the whole message to end) and at
+	// message_end (safety net for messages that end without thinking_end).
+	const commitThought = (message: { timestamp?: number } | undefined) => {
+		const ts = typeof message?.timestamp === "number" ? message.timestamp : undefined;
+		if (settleThoughtKey(ts)) {
+			const rerender = (globalThis as Record<string, unknown>).__piCustomUiRerenderThought as
+				| ((timestamp: number) => void)
+				| undefined;
+			if (typeof rerender === "function" && ts !== undefined) rerender(ts);
+		}
+	};
 	pi.on("message_update", async (event, ctx) => {
 		noteAgentActivity();
 		const e = event as { assistantMessageEvent?: { type?: unknown; delta?: unknown }; message?: any };
@@ -1577,14 +1591,28 @@ export default function customUi(pi: ExtensionAPI) {
 		// must not split batches). Idempotent: once the current batch is
 		// collapsed, later deltas are no-ops.
 		if (type === "thinking_delta") {
-			foldToolGroup();
+			// Remember the streaming message so its duration can be committed to
+			// the batch at message_end (a closing thinking→text message collapses
+			// the batch before it ends — the duration still belongs to the header).
+			foldToolGroup(typeof e.message?.timestamp === "number" ? e.message.timestamp : undefined);
 			setLiveThought(typeof e.message?.timestamp === "number" ? e.message.timestamp : undefined);
 			ensureTick();
 			setLoaderVisible(ctx, false);
 		}
 		if (type === "thinking_end") {
-			// Duration is complete; the timer keeps running so the header
+			// Duration is complete: commit the thought to its batch header now —
+			// the fold row combines as soon as reasoning finishes, not when the
+			// whole message ends. The timer keeps running so the header
 			// spinner/shimmer stays alive while tools of this batch stream.
+			commitThought(e.message);
+			setLiveThought(undefined);
+		}
+		// OpenAI-compatible providers (OpenRouter, DeepSeek) defer thinking_end
+		// until the whole stream ends — but the reasoning phase is already over
+		// once text or a tool call begins. Commit then, mirroring the fork's own
+		// endsThinkingPhase fallback.
+		if (type === "text_start" || type === "toolcall_start") {
+			commitThought(e.message);
 			setLiveThought(undefined);
 		}
 		if (type === "text_delta" && hasVisibleText(e.message)) {
@@ -1598,10 +1626,9 @@ export default function customUi(pi: ExtensionAPI) {
 		// Runs on every update (not just thinking_delta): thinking streams
 		// before the toolCall blocks exist, so the ids only become mappable
 		// once both are present in the partial content.
-		// Narrated messages (thinking → text → toolCall) are exempt: their
-		// fold row stays visible (fork narration exemption) and shows the
-		// duration; stamping would make the next batch header count the same
-		// thinking twice.
+		// Narrated messages (thinking → text → toolCall) skip forward-stamping:
+		// their thinking commits to the PRECEDING batch header (settleThoughtKey);
+		// stamping it into the next batch too would count it twice.
 		if (
 			typeof e.message?.timestamp === "number" &&
 			Array.isArray(e.message?.content) &&
@@ -1620,8 +1647,11 @@ export default function customUi(pi: ExtensionAPI) {
 	// provider-reported usage.
 	pi.on("message_end", async (event) => {
 		noteAgentActivity();
-		const message = (event as { message?: { role?: unknown; timestamp?: number; usage?: { input?: number; output?: number; cacheRead?: number } } }).message;
+		const message = (event as { message?: { role?: unknown; timestamp?: number; content?: unknown; usage?: { input?: number; output?: number; cacheRead?: number } } }).message;
 		if (message?.role !== "assistant") return;
+		// Safety net: commit any thought whose message ended without hitting the
+		// thinking_end path (aborted streams, provider quirks).
+		commitThought(message);
 		if (typeof message.timestamp === "number") turnTimestamps.add(message.timestamp);
 		turnTokens.input += message.usage?.input ?? 0;
 		turnTokens.output += message.usage?.output ?? 0;

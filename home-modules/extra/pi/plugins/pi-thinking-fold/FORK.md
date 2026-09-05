@@ -23,11 +23,18 @@ instead of dropping the package).
 ## Deviations from upstream
 
 - `renderer.ts`:
-  - `rebuild()`: assistant messages that contain tool calls render **no**
-    thinking line (pi's hidden-thinking path with an empty label — zero
-    output lines) when `customUi` is enabled in settings.json and the user
-    hasn't explicitly expanded with ctrl+t. The thinking duration instead
-    rides the custom-ui batch header.
+  - `rebuild()`: assistant messages whose thinking was absorbed into a batch
+    header render **no** thinking line (pi's hidden-thinking path with an
+    empty label — zero output lines) when `customUi` is enabled in
+    settings.json and the user hasn't explicitly expanded with ctrl+t. The
+    custom-ui lib tracks absorption (`__piCustomUiThoughtInHeader`): pure
+    thinking+toolCall messages, and any thinking that streamed under an open
+    batch (closing thinking→text or narrated thinking→text→toolCall
+    messages), fold into that batch's header; fresh thinking with no open
+    batch keeps its standalone line. The custom-ui side can also force a
+    re-render via `__piCustomUiRerenderThought` (fold rows have no
+    invalidator of their own). The thinking duration instead rides the
+    custom-ui batch header.
   - `setMessageTiming()`/`completeMessage()` publish completed durations to
     `globalThis.__piCustomUiThoughtFor` (`Map<messageTimestamp, ms>`) for
     the custom-ui extensions to look up — live and for restored sessions
