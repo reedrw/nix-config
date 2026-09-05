@@ -54,7 +54,7 @@ home-configurations/    # Per-user (and per-user@host) home-manager entry points
   reed.nix
   nixos.nix
   reed@nixos-desktop/
-  reed@nixos-t480/
+  reed@nixos-t480.nix   # Host-specific configs may be a file or a directory
   ...
 
 nixos-modules/          # Reusable NixOS modules — each category has a default.nix that imports its siblings
@@ -73,7 +73,7 @@ home-modules/           # Reusable home-manager modules — same category-defaul
                         # settings.json theme = "stylix"; upstream stylix's
                         # pi-coding-agent module is NOT used (it's gated
                         # behind HM's programs.pi-coding-agent option)
-  extra/                # git, mullvad, gnupg, ai (claude-code + pi-agent), proc, base, ranger, gnome-keyring
+  extra/                # git, mullvad, gnupg, pi (pi coding-agent config + plugins/), proc, base, ranger, gnome-keyring
   graphical/            # sway, kitty, firefox, flameshot, obs, bitwarden, fontconfig, anki
   games/
   media/                # mpd, mpv, zathura, pipewire, librepods
@@ -114,6 +114,8 @@ color-scheme = "prefer-${config.stylix.polarity}";
 
 ### Impermanence / persistence
 `nixos-modules/custom/persist.nix` and `home-modules/core/persist.nix` wrap the **impermanence** flake. Both expose a `custom.persistence.{files,directories}` option that any module can append to; the NixOS module collects everything and splits per-user home paths into the home-manager impermanence module, with the rest going to `environment.persistence.<persistDir>`. The home module also strips `home.homeDirectory` prefixes automatically. Add persistent paths from any module with `custom.persistence.directories = [ ... ];`.
+
+Copying of persistent paths between subvolumes is managed by `programs.persist-path-manager` (from `pkgs/persist-path-manager/`): the boot wipe module turns it on by default (`mkDefault`), and hosts either take it (set `custom.copyPersistPaths = true`) or disable it and provide a static manifest via `custom.persistJSON` instead.
 
 ### Custom packages
 `pkgs/default.nix` returns `{ inherit myPkgs; } // myPkgs`, so the overlay both exposes `pkgs.myPkgs.*` (for `flake.packages`) and merges every package directly into `pkgs` — call them as `pkgs.<name>` in modules.

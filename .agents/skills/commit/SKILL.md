@@ -6,13 +6,13 @@ Commit the current changes following this repo's commit conventions.
 
 **Format:** `scope(path): description`
 
-- **scope** — top-level directory: `home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `repo`, `.claude`, `actions` (for `.github/workflows`), `treewide`
+- **scope** — top-level directory: `home-modules`, `nixos-modules`, `pkgs`, `home-configurations`, `nixos-configurations`, `repo`, `actions` (for `.github/workflows`), `treewide`
 - **path** — subdir in parens using `/` separators; omit for `treewide`
 - **description** — lowercase imperative, no period
 
 Examples:
 ```
-home-modules(extra/claude-code): apply config at runtime
+home-modules(extra/pi): apply config at runtime
 pkgs(alias/lix): use from nixpkgs instead of flake input
 treewide: update to 26.05
 ```

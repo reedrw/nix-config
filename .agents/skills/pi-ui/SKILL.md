@@ -1,9 +1,9 @@
 ---
 name: pi-ui
-description: Architecture and hard-won constraints of the custom-ui pi extension suite (home-modules/extra/ai/pi/plugins/) — read before editing anything in plugins/
+description: Architecture and hard-won constraints of the custom-ui pi extension suite (home-modules/extra/pi/plugins/) — read before editing anything in plugins/
 ---
 
-Load this skill before editing any file under `home-modules/extra/ai/pi/plugins/`.
+Load this skill before editing any file under `home-modules/extra/pi/plugins/`.
 The extensions implement a custom tool UI (batched tool calls, folded reasoning,
 inline images, compact user messages). Most of the constraints below were learned
 the hard way; violating them fails silently.
@@ -66,7 +66,13 @@ the hard way; violating them fails silently.
 
 - **Grouping rule**: consecutive tool calls form a batch; reasoning folds it
   visually (header + glance rows appear immediately) without closing it; visible
-  assistant text, a user message, or `agent_end` closes it. **Narration
+  assistant text, a user message, or `agent_end` closes it. A tool call joining
+  a folded batch RE-OPENS it (`trackGroupToolCall` clears `folded` and
+  invalidates the member rows) — otherwise `groupMode`'s `collapsed || folded`
+  check swallows the new call and the newest execution renders as a collapsed
+  glance instead of the expanded `latest` row. Shipping this rule missing was a
+  real bug: any thinking interleaved mid-batch (interleaved reasoning makes it
+  common) collapsed every later tool call. **Narration
   exemption**: a message shaped thinking→text→toolCall keeps its fold row (visible
   text split the batch); its thinking is NOT stamped into the next batch header
   (custom-ui stamping + lib scan both skip narrated messages), and the fork's
