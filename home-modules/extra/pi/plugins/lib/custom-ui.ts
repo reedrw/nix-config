@@ -286,7 +286,16 @@ export function trackGroupToolCall(toolCallId: string, thoughtKey?: number): voi
 	} else if (thoughtKey !== undefined && !s.batches[s.current].thoughtKeys.includes(thoughtKey)) {
 		s.batches[s.current].thoughtKeys.push(thoughtKey);
 	}
-	s.batches[s.current].ids.push(toolCallId);
+	// A new tool call is fresh activity: a reasoning fold (thinking_delta
+	// stamped `folded`) must not swallow it — the newest call re-opens as the
+	// expanded `latest` row instead of rendering as a collapsed glance. The
+	// header stays (ids ≥ 2) and keeps its accumulated thought durations.
+	const joining = s.batches[s.current];
+	if (joining.folded) {
+		joining.folded = false;
+		invalidateRows(joining.ids);
+	}
+	joining.ids.push(toolCallId);
 	s.memberBatch.set(toolCallId, s.current);
 	setBatchOpen(true);
 	const previousLatest = s.latest;

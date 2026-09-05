@@ -29,6 +29,15 @@ m = groupMode("t1");
 if (m.kind !== "collapsed" || !m.running) throw new Error("folded batch should be collapsed-kind but running");
 console.log("LIVE+THOUGHT:", JSON.stringify(liveGroupHeaderLine(theme, m.count, 2345, 7, m.spinner, m.batchIndex)));
 
+// a tool call joining a folded batch re-opens it: newest is expanded `latest`,
+// not a collapsed glance (interleaved thinking between calls)
+trackGroupToolCall("t3", 1000);
+m = groupMode("t3");
+if (m.kind !== "latest") throw new Error(`newest call in folded batch must be latest, got ${JSON.stringify(m)}`);
+m = groupMode("t1");
+if (m.kind !== "earlier" || !m.header) throw new Error(`older call must stay glance with header, got ${JSON.stringify(m)}`);
+if (groupMode("t2").kind !== "earlier") throw new Error("previous latest must drop to earlier");
+
 // settle: static header, no truecolor, no spinner
 collapseToolGroup();
 m = groupMode("t1");
