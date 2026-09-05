@@ -265,4 +265,14 @@ const wx = spec.renderResult(
 	{ expanded: true, isPartial: false }, theme, wctx("w3", { query: "q" }));
 if (!lines(wx).includes("7 sources") || !lines(wx).includes("body line")) throw new Error("webToolSlots expanded head/body wrong");
 
+// ctrl+o expansion shows the FULL argument: callLine clips only when collapsed
+resetToolGroups();
+trackGroupToolCall("w4");
+const longQuery = "x".repeat(200);
+const plain = (c) => lines(c).replace(/\x1b\[[0-9;]*m/g, "").replace(/\n+/g, "");
+const wClipped = plain(spec.renderCall({ query: longQuery }, theme, wctx("w4", { query: longQuery })));
+if (!wClipped.includes("…") || wClipped.includes(longQuery)) throw new Error("collapsed call line must clip long args");
+const wFull = plain(spec.renderCall({ query: longQuery }, theme, wctx("w4", { query: longQuery }, { expanded: true })));
+if (!wFull.includes(longQuery)) throw new Error("expanded call line must show the full arg: " + JSON.stringify(wFull));
+
 console.log("OK-WEB-TOOLS");

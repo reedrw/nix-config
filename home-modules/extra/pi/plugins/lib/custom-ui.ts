@@ -107,8 +107,10 @@ function callLine(label: string, arg: string, theme: Theme, suffix = "", context
 	// A row that opens its batch (solo or expanded-latest) has no group header
 	// to carry the leading blank line, so it brings its own.
 	const lead = mode?.kind === "latest" && mode.first ? "\n" : "";
+	// ctrl+o expansion shows the full argument — clip() would re-truncate the
+	// very thing expansion is for (Text hard-wraps to the terminal width).
 	const body = arg
-		? `${theme.fg("toolTitle", "(")}${theme.fg("accent", clip(arg))}${theme.fg("toolTitle", ")")}`
+		? `${theme.fg("toolTitle", "(")}${theme.fg("accent", context?.expanded ? arg : clip(arg))}${theme.fg("toolTitle", ")")}`
 		: "";
 	return new Text(`${lead}${statusDot(theme, context)} ${theme.fg("toolTitle", theme.bold(label))}${body}${suffix}`, 0, 0);
 }
