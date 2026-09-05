@@ -1,4 +1,4 @@
-{ inputs, config, lib, ... }:
+{ inputs, config, ... }:
 
 {
   imports = [
@@ -45,7 +45,7 @@
     };
   };
 
-  programs.persist-path-manager.enable = lib.mkForce false;
+  programs.persist-path-manager.enable = false;
 
   services = {
     lvm.boot.thin.enable = true;

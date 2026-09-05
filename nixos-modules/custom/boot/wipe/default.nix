@@ -42,7 +42,7 @@ in
     };
 
     programs.persist-path-manager = {
-      enable = true;
+      enable = lib.mkDefault true;
       config = {
         inherit (config.custom) persistDir prevDir;
         activateCommand = "ldp";
