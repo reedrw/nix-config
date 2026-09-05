@@ -56,8 +56,13 @@
     };
   };
 
-  home.pointerCursor.dotIcons.enable = false;
-  home.sessionVariables.XCURSOR_THEME = config.gtk.cursorTheme.name;
+  home = {
+    pointerCursor = {
+      dotIcons.enable = false;
+      x11.enable = lib.mkForce false;
+    };
+    sessionVariables.XCURSOR_THEME = config.gtk.cursorTheme.name;
+  };
 
   dconf.settings = {
     "org/gnome/desktop/interface".color-scheme = "prefer-${config.stylix.polarity}";
