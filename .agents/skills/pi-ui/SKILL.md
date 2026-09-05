@@ -72,12 +72,22 @@ the hard way; violating them fails silently.
   check swallows the new call and the newest execution renders as a collapsed
   glance instead of the expanded `latest` row. Shipping this rule missing was a
   real bug: any thinking interleaved mid-batch (interleaved reasoning makes it
-  common) collapsed every later tool call. **Narration
-  exemption**: a message shaped thinking→text→toolCall keeps its fold row (visible
-  text split the batch); its thinking is NOT stamped into the next batch header
-  (custom-ui stamping + lib scan both skip narrated messages), and the fork's
-  merge never strips a narrated message's fold — stripping a visible row was the
-  missing-fold regression.
+  common) collapsed every later tool call. **Thought absorption**: thinking
+  belongs to the batch header it streamed beneath. `foldToolGroup(timestamp)`
+  remembers the streaming message (`pendingThought`); `settleThoughtKey` at
+  message_end commits it to that batch — usually AFTER the message's own text
+  collapsed the batch (closing thinking→text AND narrated
+  thinking→text→toolCall messages alike; their tools open the NEXT batch,
+  which must not restamp — forward-stamping skips messages with visible text).
+  The fork's merge rule is absorption-based (`__piCustomUiThoughtInHeader`),
+  not shape-based: absorbed fold rows are stripped, the header carries the
+  duration. Only fresh thinking (no open batch when it started) keeps its
+  standalone row. History: the original shape-based narrated exemption
+  ("stripping a visible row was the missing-fold regression") was really a
+  duration-accounting bug — stripped rows whose duration was stamped nowhere;
+  absorption fixes the general case. Fold rows have NO invalidator: after a
+  commit, custom-ui nudges the fork via `__piCustomUiRerenderThought` (its
+  `rerenderTimestamp`) or the row stays stale next to the merged header.
 - **One Thinking indicator (unification rule)**: three surfaces used to show
   "Thinking" at once — pi's native loader row, the thinking-fold streaming row,
   the custom-ui batch header. Rule (v3): the batch header ALWAYS animates for the
