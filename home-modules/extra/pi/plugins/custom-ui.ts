@@ -59,22 +59,24 @@ import {
 	attachNotes,
 	bash,
 	beginTurnMessage,
-	collapseToolGroup,
+	closeBatch,
 	genericSlots,
 	customUiEnabled,
+	disableLinkActions,
 	DOTS_SPINNERS,
 	edit,
+	enableLinkActions,
 	base16Bg,
 	base16Fg,
 	endTurnTokens,
 	find,
-	foldToolGroup,
 	formatTokens,
 	glanceLine,
 	groupMode,
 	grep,
+	installToolExpandWalk,
+	outputCap,
 	batchHeaderAnimated,
-	latestCap,
 	ls,
 	noteTurnDelta,
 	noteTurnProviderOutput,
@@ -83,12 +85,11 @@ import {
 	readTextResult,
 	resetTurnTokens,
 	scanToolGroupsFromHistory,
-	settleThoughtKey,
-	currentBatchSize,
 	settleStatus,
 	settleTurnMessage,
 	shimmerFrame,
 	tickOpenBatch,
+	trackThoughtStart,
 	animState,
 	trackGroupToolCall,
 	webToolSlots,
@@ -884,15 +885,16 @@ function registerReadTool(pi: ExtensionAPI): void {
 		renderResult(result, options, theme, context) {
 			if (!options.isPartial) settleStatus(context, context.isError === true);
 			const mode = groupMode(context.toolCallId);
-			const expandedNow = Boolean(options.expanded) || mode.kind === "latest";
+			if (mode.kind === "child" && !mode.headerOpen) return new Container();
+			const expandedNow = options.expanded === true || mode.kind !== "child" || mode.outputOpen;
 			const content = Array.isArray(result?.content) ? result.content : [];
 			const images = content.filter(
 				(part): part is { type: "image"; data: string; mimeType: string } =>
 					part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
 				);
 
-			// Grouped rows collapse to a single glance line.
-			if ((mode.kind === "collapsed" || mode.kind === "earlier") && !options.expanded) {
+			// Collapsed child: single glance line (the click-to-expand target).
+			if (!expandedNow) {
 				const text = content
 					.filter((part): part is { type: "text"; text: string } =>
 						part?.type === "text" && typeof part.text === "string")
@@ -908,20 +910,24 @@ function registerReadTool(pi: ExtensionAPI): void {
 						? theme.fg("error", bits.join(" · ") || "failed")
 						: theme.fg("dim", bits.join(" · ") || "done"),
 					theme,
+					mode,
+					context.toolCallId,
 				);
 			}
 
-			// Claude-style one-line call + "N lines" summary, images appended.
+			// Open child: one-line call + "N lines" summary, images appended.
 			const stack = new Container();
 			stack.addChild(
 				readTextResult(
 					result,
-					{ expanded: expandedNow, isPartial: options.isPartial },
+					{ expanded: true, isPartial: options.isPartial },
 					theme,
-					latestCap(mode, options.expanded),
+					outputCap(mode),
+					mode,
+					context?.toolCallId ? `pi-action://node/tool/${encodeURIComponent(context.toolCallId)}` : undefined,
 				),
 			);
-			const imagePortionComponent = imagePortion(result, { expanded: expandedNow }, theme, context);
+			const imagePortionComponent = imagePortion(result, { expanded: true }, theme, context);
 			if (imagePortionComponent) stack.addChild(imagePortionComponent);
 			return attachNotes(stack, context, theme);
 		},
@@ -1332,6 +1338,10 @@ export default function customUi(pi: ExtensionAPI) {
 	// ToolExecutionComponent prototype patch below.
 	installWebToolSlots();
 
+	// ctrl+o walks the whole tree via the lib (expand/collapse every node),
+	// replacing the fork's global-flag observer.
+	installToolExpandWalk();
+
 
 	// Systemic notify routing: any extension's ctx.ui.notify (info level) is
 	// folded into the open batch as a note line under its latest tool row
@@ -1370,6 +1380,11 @@ export default function customUi(pi: ExtensionAPI) {
 	let turnStartedAt = 0;
 	let turnSpinnerSeed = 0;
 	const turnTimestamps = new Set<number>();
+	// Message timestamps that actually contain thinking, mapped to the
+	// message's own wall-clock span (message_end fire time − timestamp).
+	// Thinking time cannot exceed this span, so it bounds any stale/leaked
+	// timing published for that message.
+	const turnThoughtBounds = new Map<number, number>();
 	const turnTokens = { input: 0, output: 0, cacheRead: 0 };
 
 	const formatTurnDuration = (ms: number): string => {
@@ -1409,20 +1424,10 @@ export default function customUi(pi: ExtensionAPI) {
 
 	// Tool call grouping: consecutive tool calls form a batch while nothing
 	// visible separates them — visible assistant text, a user message, or the
-	// end of the agent's response splits the batch; thinking runs fold into
-	// it visually (their durations surface in the batch header) without
-	// closing it. Bare tool-carrier messages (e.g. a silent retry after a
-	// failed call) join the current batch instead of starting a new one.
-	// Each collapsed batch gets a settled header with an nf check glyph. State lives in
-	// the shared lib module.
-	// A tool call stamps its batch with the timestamp of the assistant message
-	// that contains it, so the header can look up that message's thinking
-	// duration (published by the pi-thinking-fold fork). The mapping is built
-	// from streaming partials — the tool_call event fires after message_end,
-	// so per-message flags would be unreliable. Thinking runs fold into the
-	// batch; only visible assistant text, a user message, or the end of the
-	// response splits it.
-	const toolCallThoughtKey = new Map<string, number>();
+	// end of the agent's response settles the batch. Thinking joins the open
+	// batch as a chronological thought branch, or — when no batch is open —
+	// pends as a standalone leading think that anchors the NEXT batch. State
+	// lives in the shared lib module.
 
 	function hasVisibleText(message: any): boolean {
 		return Array.isArray(message?.content) &&
@@ -1497,7 +1502,7 @@ export default function customUi(pi: ExtensionAPI) {
 		inFlightTools += 1;
 		const e = event as { toolCallId?: string };
 		if (typeof e.toolCallId === "string") {
-			trackGroupToolCall(e.toolCallId, toolCallThoughtKey.get(e.toolCallId));
+			trackGroupToolCall(e.toolCallId);
 			ensureTick();
 		}
 	});
@@ -1523,6 +1528,7 @@ export default function customUi(pi: ExtensionAPI) {
 		}
 		turnStartedAt = Date.now();
 		turnTimestamps.clear();
+		turnThoughtBounds.clear();
 		turnTokens.input = 0;
 		turnTokens.output = 0;
 		turnTokens.cacheRead = 0;
@@ -1534,26 +1540,20 @@ export default function customUi(pi: ExtensionAPI) {
 		clearInterval(loaderTimer);
 		const c = ctx;
 		loaderTimer = setInterval(() => {
-			// Dead-air loader for the two states with no other spinner:
-			// - no batch yet (turn-start provider latency, before the first
-			//   thinking fold row appears)
-			// - a SOLO batch (one tool call, no animated header) — dead air
-			//   after its tool would otherwise show nothing
-			// Bigger batches have the animated header; fresh thinking has the
-			// animated fold row; in-flight tools have the dotsCircle dot.
+			// Dead-air loader for the states with no other spinner: no batch yet
+			// (turn-start provider latency, before the first think row appears)
+			// and batch-less stretches between turns of activity. A running
+			// batch's animated header, fresh thinking's animated fold row, and
+			// in-flight tools' dotsCircle dots each keep another spinner lit.
 			// Latency guard: while thinking is open its deltas pause during
 			// provider latency, so recency alone can't tell "dead" from
-			// "stalled mid-think" — a folded SOLO batch (animated header) and
-			// fresh thinking (animated fold row) each keep another spinner lit,
-			// and the loader must stay hidden then.
-			const jobs = currentBatchSize();
+			// "stalled mid-think" — the live thought flag covers that.
 			const liveThought = (globalThis as Record<string, unknown>)[LIVE_THOUGHT_KEY];
 			const idle =
 				Date.now() - lastAgentEventAt > 500 &&
 				inFlightTools === 0 &&
 				typeof liveThought !== "number" &&
-				!batchHeaderAnimated() &&
-				(jobs === undefined || jobs === 1);
+				!batchHeaderAnimated();
 			setLoaderVisible(c, idle);
 			if (c.mode !== "tui") return;
 			try {
@@ -1569,26 +1569,13 @@ export default function customUi(pi: ExtensionAPI) {
 		if (message?.role === "user") {
 			stopThoughtTick();
 			setLiveThought(undefined);
-			collapseToolGroup();
+			closeBatch();
 		}
 		// Per-message token accumulation for the live ↑N readout resets here —
 		// a message that errors without message_end would otherwise bleed its
 		// estimate into the next one.
 		if (message?.role === "assistant") beginTurnMessage();
 	});
-	// Commit a finished thought to the batch header it folded under, and nudge
-	// the fork to strip the fold row. Called at thinking_end (reasoning is
-	// complete — don't make the row wait for the whole message to end) and at
-	// message_end (safety net for messages that end without thinking_end).
-	const commitThought = (message: { timestamp?: number } | undefined) => {
-		const ts = typeof message?.timestamp === "number" ? message.timestamp : undefined;
-		if (settleThoughtKey(ts)) {
-			const rerender = (globalThis as Record<string, unknown>).__piCustomUiRerenderThought as
-				| ((timestamp: number) => void)
-				| undefined;
-			if (typeof rerender === "function" && ts !== undefined) rerender(ts);
-		}
-	};
 	pi.on("message_update", async (event, ctx) => {
 		noteAgentActivity();
 		const e = event as { assistantMessageEvent?: { type?: unknown; delta?: unknown }; message?: any };
@@ -1600,57 +1587,32 @@ export default function customUi(pi: ExtensionAPI) {
 		if (e.message?.role === "assistant") noteTurnProviderOutput(e.message?.usage?.output);
 		// Collapse as soon as visible text streams (whitespace-only text blocks
 		// must not split batches). Idempotent: once the current batch is
-		// collapsed, later deltas are no-ops.
+		// settled, later deltas are no-ops.
 		if (type === "thinking_delta") {
-			// Remember the streaming message so its duration can be committed to
-			// the batch at message_end (a closing thinking→text message collapses
-			// the batch before it ends — the duration still belongs to the header).
-			foldToolGroup(typeof e.message?.timestamp === "number" ? e.message.timestamp : undefined);
-			setLiveThought(typeof e.message?.timestamp === "number" ? e.message.timestamp : undefined);
+			// The thinking message joins the open batch as a chronological
+			// branch — or, with no batch open, pends as a standalone leading
+			// think that anchors the next batch (lib-side decision).
+			if (typeof e.message?.timestamp === "number") {
+				trackThoughtStart(e.message.timestamp);
+				setLiveThought(e.message.timestamp);
+			}
 			ensureTick();
 			setLoaderVisible(ctx, false);
 		}
-		if (type === "thinking_end") {
-			// Duration is complete: commit the thought to its batch header now —
-			// the fold row combines as soon as reasoning finishes, not when the
-			// whole message ends. The timer keeps running so the header
-			// spinner/shimmer stays alive while tools of this batch stream.
-			commitThought(e.message);
-			setLiveThought(undefined);
-		}
-		// OpenAI-compatible providers (OpenRouter, DeepSeek) defer thinking_end
-		// until the whole stream ends — but the reasoning phase is already over
-		// once text or a tool call begins. Commit then, mirroring the fork's own
-		// endsThinkingPhase fallback.
-		if (type === "text_start" || type === "toolcall_start") {
-			commitThought(e.message);
+		if (type === "thinking_end" || type === "text_start" || type === "toolcall_start") {
+			// The reasoning phase is over (OpenAI-compatible providers defer
+			// thinking_end until the whole stream ends — text or a tool call
+			// marks the real end). The duration is already counted: thoughts
+			// stamped into the batch at thinking_delta tick via the fork's live
+			// timing map.
 			setLiveThought(undefined);
 		}
 		if (type === "text_delta" && hasVisibleText(e.message)) {
-			// Visible text splits the batch — narration separates tool
-			// groups; reasoning-only fold (see thinking_delta above).
-			collapseToolGroup();
+			// Visible text settles the batch — narration separates tool
+			// groups, and the pending leading-think run dissolves with it.
+			closeBatch();
 			stopThoughtTick();
 			setLiveThought(undefined);
-		}
-		// Stamp every tool call of a thinking message with its timestamp.
-		// Runs on every update (not just thinking_delta): thinking streams
-		// before the toolCall blocks exist, so the ids only become mappable
-		// once both are present in the partial content.
-		// Narrated messages (thinking → text → toolCall) skip forward-stamping:
-		// their thinking commits to the PRECEDING batch header (settleThoughtKey);
-		// stamping it into the next batch too would count it twice.
-		if (
-			typeof e.message?.timestamp === "number" &&
-			Array.isArray(e.message?.content) &&
-			e.message.content.some((part: any) => part?.type === "thinking") &&
-			!hasVisibleText(e.message)
-		) {
-			for (const part of e.message.content) {
-				if (part?.type === "toolCall" && typeof part.id === "string") {
-					toolCallThoughtKey.set(part.id, e.message.timestamp);
-				}
-			}
 		}
 	});
 	// Per-assistant-message bookkeeping for the turn summary: timestamps (to
@@ -1660,10 +1622,20 @@ export default function customUi(pi: ExtensionAPI) {
 		noteAgentActivity();
 		const message = (event as { message?: { role?: unknown; timestamp?: number; content?: unknown; usage?: { input?: number; output?: number; cacheRead?: number } } }).message;
 		if (message?.role !== "assistant") return;
-		// Safety net: commit any thought whose message ended without hitting the
-		// thinking_end path (aborted streams, provider quirks).
-		commitThought(message);
-		if (typeof message.timestamp === "number") turnTimestamps.add(message.timestamp);
+		if (typeof message.timestamp === "number") {
+			turnTimestamps.add(message.timestamp);
+			const hasThinking = Array.isArray(message.content)
+				&& message.content.some(
+					(part) =>
+						part !== null && typeof part === "object" &&
+						(part as { type?: unknown }).type === "thinking" &&
+						typeof (part as { thinking?: unknown }).thinking === "string" &&
+						((part as { thinking: string }).thinking.trim().length > 0),
+				);
+			if (hasThinking) {
+				turnThoughtBounds.set(message.timestamp, Math.max(0, Date.now() - message.timestamp));
+			}
+		}
 		turnTokens.input += message.usage?.input ?? 0;
 		turnTokens.output += message.usage?.output ?? 0;
 		// Cache-hit input (pi already subtracts it from usage.input) — shown
@@ -1682,28 +1654,42 @@ export default function customUi(pi: ExtensionAPI) {
 		stopThoughtTick();
 		setLiveThought(undefined);
 		endTurnTokens();
-		collapseToolGroup();
+		closeBatch();
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;
 		setLoaderVisible(ctx, false);
 		if (ctx?.mode !== "tui" || !turnStartedAt || turnTimestamps.size === 0) return;
 		// Thinking wall-clock: the fork publishes per-message timings
-		// (completed) plus in-progress entries; sum over this turn's messages.
+		// (completed) plus in-progress entries; sum over this turn's thinking
+		// messages. Every value is clamped to its message's own wall span —
+		// stale leaked timings (aborted streams never complete their live
+		// entry; restore publishes full-message durations) otherwise inflate
+		// the sum into absurdities like "thought for 1h 27m" in an 8m turn.
 		const w = globalThis as Record<string, unknown>;
 		const done = w.__piCustomUiThoughtFor as Map<number, number> | undefined;
 		const live = w.__piCustomUiThoughtLive as
 			| Map<number, { startedAt: number; completedAt?: number }>
 			| undefined;
+		const turnWall = Math.max(0, Date.now() - turnStartedAt);
 		let thoughtMs = 0;
 		for (const ts of turnTimestamps) {
+			const span = turnThoughtBounds.get(ts);
+			// Messages without thinking content contribute nothing — their
+			// live entries (if any) never complete and would leak their full
+			// duration into the sum.
+			if (span === undefined) continue;
 			const d = done?.get(ts);
-			if (typeof d === "number") {
-				thoughtMs += d;
-				continue;
+			let value: number;
+			if (typeof d === "number" && d >= 0) {
+				value = d;
+			} else {
+				const lt = live?.get(ts);
+				if (!lt) continue;
+				value = Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
 			}
-			const lt = live?.get(ts);
-			if (lt) thoughtMs += Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
+			thoughtMs += Math.min(value, span, turnWall);
 		}
+		thoughtMs = Math.min(thoughtMs, turnWall);
 		pi.appendEntry(TURN_SUMMARY_TYPE, {
 			v: 1,
 			durationMs: Date.now() - turnStartedAt,
@@ -1718,7 +1704,6 @@ export default function customUi(pi: ExtensionAPI) {
 		stopThoughtTick();
 		setLiveThought(undefined);
 		endTurnTokens();
-		toolCallThoughtKey.clear();
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;
 		userMessageUi = ctx.ui as { theme?: Theme };
@@ -1730,11 +1715,23 @@ export default function customUi(pi: ExtensionAPI) {
 		// pi-thinking-fold timer can drive its streaming label with it too.
 		ctx.ui.setWidget("custom-ui-anim", (t) => {
 			animState().requestRender = () => t.requestRender();
-			return { render: () => [], invalidate() {}, dispose() { animState().requestRender = undefined; } };
+			// Click-to-expand: patch the TUI's openUrl to intercept pi-action://
+			// links (fullscreen only — in regular mode the terminal handles
+			// hyperlink clicks natively and pi never sees them). Same zero-line
+			// widget capture trick; the UI context proxy's set trap delivers the
+			// write to the live renderer instance.
+			enableLinkActions(t as unknown as Parameters<typeof enableLinkActions>[0]);
+			return {
+				render: () => [],
+				invalidate() {},
+				dispose() {
+					animState().requestRender = undefined;
+					disableLinkActions();
+				},
+			};
 		});
-		scanToolGroupsFromHistory(
-			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
-		);
+		const scanEntries = ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>;
+		scanToolGroupsFromHistory(scanEntries);
 		// Rebuild the newest-image-read pointer. (`read` itself is registered
 		// at load time with per-cwd execute — see registerReadTool — so no
 		// re-registration is needed on session switches.)

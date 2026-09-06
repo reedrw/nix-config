@@ -1,24 +1,26 @@
 // custom-ui: custom tool rendering for pi.
 //
-// One-line tool calls (`● Bash <cmd>`), one-line result summaries
-// (`⎿  42 lines`), no boxes. Full output on demand via ctrl+o (the expanded
-// flag pi already manages).
+// Transcript as an interactive tree: every tool batch is a disclosure node
+// (`▸/▾ Thought for Xs · Ran N tool calls`), its glance rows and thinking
+// branches are children (`├─`/`╰─`, visible iff the header is open), and
+// each child's output/reasoning is depth 3 (visible iff the child is open).
+// Clicking toggles via OSC 8 pi-action:// links (fullscreen); ctrl+o walks
+// the whole tree. Nothing is hidden by magic: thinking renders at its true
+// chronological position whenever its ancestors are open.
 //
 // This is a *library* module, not an auto-discovered extension: pi only
 // auto-loads `extensions/*.ts` and `extensions/*/index.ts`, so files under
 // `lib/` are inert on their own. Tool-name ownership is split across
-// extensions (nix-comma.ts owns `bash`, image-history.ts owns `read`,
-// custom-ui.ts owns the rest), and each imports its slots from here.
-//
-// Self-shell mode (`renderShell: "self"`) drops pi's padded tool Box so rows
-// stack tightly, Claude Code style.
+// extensions (nix-comma.ts owns `bash`'s spawn hook, custom-ui.ts owns
+// everything else, including `read` with inline kitty-placeholder image
+// rendering), and each imports its slots from here.
 
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { Container, Text } from "@earendil-works/pi-tui";
+import { Container, getCapabilities, Text, visibleWidth } from "@earendil-works/pi-tui";
 import type { Component } from "@earendil-works/pi-tui";
-import { keyText } from "@earendil-works/pi-coding-agent";
+import { keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
 import type { Theme } from "@earendil-works/pi-coding-agent";
 
 // Max width of a one-line call/summary before ellipsis. Terminal-width-aware
@@ -102,24 +104,239 @@ export function settleStatus(context: any, error: boolean): void {
 	}
 }
 
-function callLine(label: string, arg: string, theme: Theme, suffix = "", context?: any): Text {
-	const mode = context ? groupMode(context?.toolCallId) : undefined;
-	// A row that opens its batch (solo or expanded-latest) has no group header
-	// to carry the leading blank line, so it brings its own.
-	const lead = mode?.kind === "latest" && mode.first ? "\n" : "";
-	// ctrl+o expansion shows the full argument — clip() would re-truncate the
-	// very thing expansion is for (Text hard-wraps to the terminal width).
+// ── Tree glyphs ───────────────────────────────────────────────
+//
+// Classic ASCII-tree drawing (the tree(1) idiom): siblings use `├─`, the
+// last child `╰─`. No full-height rail: `│` appears ONLY as the
+// through-connector on the content lines of an expanded mid-list child
+// (linking its corner past its content to the next sibling). The glyphs sit
+// in base03/dim — the same muted register as the old `⎿` connector.
+const TREE_BASE03 = "3e4b59";
+
+// ` ├─ ` / ` ╰─ ` — the label prefix of a depth-2 child row: one column
+// in, so the glyphs sit directly under the header's `▾` triangle (the
+// header itself carries the leading pad).
+function childLabelGlyph(last: boolean): string {
+	return ` ${base16Fg("base03", TREE_BASE03)}${last ? "╰─" : "├─"}\x1b[39m `;
+}
+
+// Content prefix for an open child's tool output: the through-connector
+// column plus the normal 5-cell result indent. The last child has no
+// connector — the corner already turned.
+function childOutputPrefix(mode: GroupMode, theme: Theme): string {
+	if (mode.kind !== "child") return `  ${theme.fg("muted", "⎿")}  `;
+	return (mode.last ? " " : ` ${base16Fg("base03", TREE_BASE03)}│\x1b[39m`) + GLANCE_INDENT;
+}
+
+// Content connector for an open child's LABEL row (call lines wrap too —
+// the full argument is shown when the child is open): the bare 3-cell
+// through-connector, aligned with the glyph column.
+function childLabelContinuation(mode: GroupMode): string {
+	if (mode.kind !== "child") return GLANCE_INDENT;
+	return mode.last ? "    " : ` ${base16Fg("base03", TREE_BASE03)}│\x1b[39m  `;
+}
+
+// ── Tree-aware wrapping ──────────────────────────────────────
+//
+// PrefixedText wraps call lines and output blocks at the content width.
+// pi-tui's wrapTextWithAnsi is plain greedy word-wrap: a long token (a
+// store path inside Bash(...)) that misses the remaining space by one cell
+// strands a stubby head — the status dot alone under the glyph. The tree
+// wrapper splits tokens AFTER `- _ / . ,` and spaces (so paths, flags and
+// dotted versions break at natural points), hard-breaks runs that contain
+// no split character at all, and re-opens the active OSC 8 link + SGR
+// state on every continuation line so clicks and colors survive the break.
+
+const TREE_WRAP_SPLIT = new Set([" ", "-", "_", "/", ".", ","]);
+const TREE_ANSI_SPLIT_RE = /(\x1b\[[0-?]*[ -/]*[@-~]|\x1b\]8;;[^\x1b]*\x1b\\)/;
+const TREE_OSC8_CLOSE = "\x1b]8;;\x1b\\";
+
+interface TreeWrapUnit {
+	codes: string; // zero-width ANSI codes queued before this unit
+	text: string;
+	hard?: true; // a forced break (hard newline in the source)
+}
+
+function tokenizeTree(text: string): TreeWrapUnit[] {
+	const units: TreeWrapUnit[] = [];
+	const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+	let carry = ""; // codes queued before the current run
+	let run = ""; // the current run of non-split graphemes
+	const flush = (): void => {
+		if (run === "") return;
+		units.push({ codes: carry, text: run });
+		carry = "";
+		run = "";
+	};
+	for (const part of text.split(TREE_ANSI_SPLIT_RE)) {
+		if (!part) continue;
+		if (part.startsWith("\x1b")) {
+			flush();
+			carry += part;
+			continue;
+		}
+		for (const g of segmenter.segment(part)) {
+			if (g.segment === "\n") {
+				flush();
+				units.push({ codes: carry, text: "", hard: true });
+				carry = "";
+				continue;
+			}
+			run += g.segment;
+			if (TREE_WRAP_SPLIT.has(g.segment)) flush();
+		}
+	}
+	flush();
+	return units;
+}
+
+export function wrapTreeText(text: string, width: number): string[] {
+	const w = Math.max(1, width);
+	const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+	const lines: string[] = [];
+	let line = "";
+	let lineW = 0;
+	let sgr = ""; // active SGR after placed units ("" = plain)
+	let osc8 = ""; // active OSC 8 opener after placed units ("" = none)
+
+	const applyCode = (code: string): void => {
+		if (code.startsWith("\x1b]8;;")) {
+			const url = code.slice(4, code.indexOf("\x1b", 4));
+			osc8 = url === "" ? "" : code;
+		} else if (code.endsWith("m")) {
+			const params = code.slice(2, -1);
+			sgr = params === "" || /^0(;0)*$/.test(params) ? "" : sgr + code;
+		}
+	};
+	const place = (u: TreeWrapUnit): void => {
+		line += u.codes + u.text;
+		lineW += visibleWidth(u.text);
+		for (const part of u.codes.split(TREE_ANSI_SPLIT_RE)) {
+			if (part) applyCode(part);
+		}
+	};
+	const closeLine = (): void => {
+		let out = line;
+		if (osc8) out += TREE_OSC8_CLOSE;
+		if (sgr) out += "\x1b[0m";
+		lines.push(out);
+		line = (osc8 ?? "") + (sgr ?? "");
+		lineW = 0;
+	};
+
+	const work = tokenizeTree(text);
+	for (let ui = 0; ui < work.length; ui++) {
+		const u = work[ui];
+		if (u.hard) {
+			// forced break: close what is on the line, carry queued codes over
+			if (lineW > 0) closeLine();
+			line += u.codes;
+			continue;
+		}
+		const uw = visibleWidth(u.text);
+		if (lineW + uw <= w) {
+			place(u);
+			continue;
+		}
+		if (uw > w) {
+			// a run with no split character, longer than the line:
+			// hard-break it grapheme-wise, filling the remaining space first.
+			const segs = [...segmenter.segment(u.text)].map((s) => s.segment);
+			const avail = Math.max(0, w - lineW);
+			let idx = 0;
+			let fill = "";
+			let fillW = 0;
+			while (idx < segs.length && fillW + visibleWidth(segs[idx]) <= avail) {
+				fill += segs[idx];
+				fillW += visibleWidth(segs[idx]);
+				idx++;
+			}
+			if (fill !== "") {
+				place({ codes: u.codes, text: fill });
+			}
+			closeLine();
+			// the remainder re-tokenizes (its split chars and codes survive);
+			// a fresh line always fits the first grapheme, so this recurses
+			// at most one level.
+			const rest = segs.slice(fill === "" ? 0 : idx).join("");
+			const payload = fill === "" ? u.codes + rest : rest;
+			work.splice(ui + 1, 0, ...tokenizeTree(payload));
+			continue;
+		}
+		closeLine();
+		place(u);
+	}
+	if (lineW > 0 || lines.length === 0) {
+		let out = line;
+		if (osc8) out += TREE_OSC8_CLOSE;
+		if (sgr) out += "\x1b[0m";
+		lines.push(out);
+	}
+	return lines;
+}
+
+// A text block whose content wraps at (width − prefix) with EVERY segment
+// after the first carrying the tree continuation prefix — terminal-width
+// wrapping must never break the left rail (§5): a long output line or full
+// call argument that soft-wraps would otherwise continue at column 0,
+// orphaned from its branch. The prefix (the `├─`/`╰─` glyph on call rows,
+// the connector column on output blocks) lands on the FIRST segment only;
+// hard newlines in the content (multi-line bash commands!) and soft wraps
+// alike continue with contPrefix — one node, one glyph.
+// Wrapping happens here (ANSI/OSC-aware, same helper pi-tui's Text uses)
+// instead of inside Text, which wraps at the full width.
+class PrefixedText implements Component {
+	private text: string;
+	private prefix: string;
+	private contPrefix: string;
+	private cache?: { width: number; lines: string[] };
+	constructor(text: string, prefix: string, contPrefix = prefix) {
+		this.text = text;
+		this.prefix = prefix;
+		this.contPrefix = contPrefix;
+	}
+	invalidate(): void {
+		this.cache = undefined;
+	}
+	render(width: number): string[] {
+		const w = Math.max(20, width);
+		if (this.cache?.width === w) return this.cache.lines;
+		const inner = Math.max(10, w - visibleWidth(this.prefix));
+		const segs = wrapTreeText(this.text, inner);
+		const lines = segs.map((seg, i) => (i === 0 ? this.prefix : this.contPrefix) + seg);
+		this.cache = { width: w, lines };
+		return lines;
+	}
+}
+
+function callLine(label: string, arg: string, theme: Theme, suffix = "", mode?: GroupMode, context?: any): Component {
+	// Open children show the full argument — clip() would re-truncate the very
+	// thing expansion is for. The collapsed view is the glance row, which
+	// clips. The full argument can exceed the terminal width: wrap it here at
+	// (width − glyph) with the connector on every continuation, so the rail
+	// never breaks (PrefixedText).
 	const body = arg
-		? `${theme.fg("toolTitle", "(")}${theme.fg("accent", context?.expanded ? arg : clip(arg))}${theme.fg("toolTitle", ")")}`
+		? `${theme.fg("toolTitle", "(")}${theme.fg("accent", arg)}${theme.fg("toolTitle", ")")}`
 		: "";
-	return new Text(`${lead}${statusDot(theme, context)} ${theme.fg("toolTitle", theme.bold(label))}${body}${suffix}`, 0, 0);
+	// The call row is a click target: clicking collapses the child again.
+	const url = context?.toolCallId ? `pi-action://node/tool/${encodeURIComponent(context.toolCallId)}` : undefined;
+	const core = `${statusDot(theme, context)} ${theme.fg("toolTitle", theme.bold(label))}${body}${suffix}`;
+	const wrapped = url ? linkWrap(core, url) : core;
+	if (mode?.kind === "child") {
+		// PrefixedText supplies the glyph on the first segment — the core must
+		// not carry it too (it would double).
+		return new PrefixedText(wrapped, childLabelGlyph(mode.last), childLabelContinuation(mode));
+	}
+	return new Text(wrapped, 0, 0);
 }
 
 // `⎿  summary` — the result row, indented under the call. Muted connector,
 // muted summary on success (dim is too dark against most themes), red on error.
-function resultLine(theme: Theme, summary: string, error = false): Text {
+function resultLine(theme: Theme, summary: string, error = false, mode?: GroupMode): Component {
 	const body = error ? theme.fg("error", summary) : theme.fg("muted", summary);
-	return new Text(`  ${theme.fg("muted", "⎿")}  ${body}`, 0, 0);
+	const m = mode ?? { kind: "normal" as const };
+	if (m.kind === "child") return new PrefixedText(body, childOutputPrefix(m, theme));
+	return new PrefixedText(body, childOutputPrefix(m, theme), GLANCE_INDENT);
 }
 
 // Expanded output block: the first line rides the ⎿ connector and the rest
@@ -130,25 +347,51 @@ const LIVE_OUTPUT_LINES = 20;
 
 // Live output while a command streams: tail-capped, aligned like the expanded
 // view, with a muted marker when older lines are trimmed.
-function liveStream(text: string, theme: Theme): Text {
+function liveStream(text: string, theme: Theme, mode?: GroupMode, url?: string): Component {
 	const lines = text.split("\n").filter((l) => l.trim());
 	const tail = lines.slice(-LIVE_OUTPUT_LINES);
-	let out = `  ${theme.fg("muted", "⎿")}  ${theme.fg("toolOutput", tail[0] ?? "")}`;
-	if (tail.length > 1) {
-		out += "\n" + tail.slice(1).map((l) => GLANCE_INDENT + theme.fg("toolOutput", l)).join("\n");
-	}
-	if (lines.length > LIVE_OUTPUT_LINES) {
-		out = `  ${theme.fg("muted", "⎿  …")}\n` + out;
-	}
-	return new Text(out, 0, 0);
+	const parts: string[] = [];
+	if (lines.length > LIVE_OUTPUT_LINES) parts.push(theme.fg("muted", "…"));
+	parts.push(...tail.map((l) => theme.fg("toolOutput", l)));
+	const prefix = childOutputPrefix(mode ?? { kind: "normal" }, theme);
+	const block = new PrefixedText(parts.join("\n"), prefix, mode?.kind === "child" ? prefix : GLANCE_INDENT);
+	return url ? new ClickToggle(block, url) : block;
 }
-// Head-only preview for the auto-expanded "latest" row: long outputs are
-// pinned to a fixed height so the screen doesn't jump while the agent works.
-// Deliberate ctrl+o expansion lifts the cap entirely.
+// Head-only preview for the auto-expanded newest child of a running batch:
+// long outputs are pinned to a fixed height so the screen doesn't jump while
+// the agent works. Deliberate expansion lifts the cap entirely.
 const LATEST_EXPANDED_LINES = 16;
 
-export function latestCap(mode: GroupMode, expanded: boolean | undefined): number | undefined {
-	return mode.kind === "latest" && !expanded ? LATEST_EXPANDED_LINES : undefined;
+// Toggle URL for a tool row's own node (glance/call row and, since the body
+// is clickable too, its expanded output).
+function toolToggleUrl(context: any): string | undefined {
+	return context?.toolCallId ? `pi-action://node/tool/${encodeURIComponent(context.toolCallId)}` : undefined;
+}
+
+// Click-to-collapse on expanded content: an expanded node's BODY (thinking
+// text, tool output) carries the same toggle URL as its label, so clicking
+// anywhere in the content shrinks the node back down. Per-line wrapping
+// keeps OSC 8 state well-defined regardless of the inner component's
+// structure; blank lines stay unwrapped.
+class ClickToggle implements Component {
+	private inner: Component;
+	private url: string;
+	constructor(inner: Component, url: string) {
+		this.inner = inner;
+		this.url = url;
+	}
+	invalidate(): void {
+		this.inner.invalidate();
+	}
+	render(width: number): string[] {
+		return this.inner.render(width).map((line) => (line.trim() ? linkWrap(line, this.url) : line));
+	}
+}
+
+// Live-cap for a row's output: only the auto-opened newest child of a
+// running batch is capped (today's "latest row" behavior, re-expressed).
+export function outputCap(mode: GroupMode): number | undefined {
+	return mode.kind === "child" ? mode.cap : undefined;
 }
 
 function capLines(lines: string[], cap: number | undefined, theme: Theme): string[] {
@@ -157,14 +400,13 @@ function capLines(lines: string[], cap: number | undefined, theme: Theme): strin
 	return [...lines.slice(0, cap), theme.fg("muted", `… +${rest} more lines (${keyText("app.tools.expand")} to expand)`)];
 }
 
-function expandedBlock(text: string, theme: Theme, error = false, cap?: number): Text {
+function expandedBlock(text: string, theme: Theme, error = false, cap?: number, mode?: GroupMode, url?: string): Component {
 	const color = error ? "error" : "toolOutput";
 	const lines = capLines(text.split("\n"), cap, theme);
-	let out = `  ${theme.fg("muted", "⎿")}  ${theme.fg(color, lines[0] ?? "")}`;
-	if (lines.length > 1) {
-		out += "\n" + lines.slice(1).map((l) => GLANCE_INDENT + theme.fg(color, l)).join("\n");
-	}
-	return new Text(out, 0, 0);
+	const body = lines.map((l) => theme.fg(color, l)).join("\n");
+	const prefix = childOutputPrefix(mode ?? { kind: "normal" }, theme);
+	const block = new PrefixedText(body, prefix, mode?.kind === "child" ? prefix : GLANCE_INDENT);
+	return url ? new ClickToggle(block, url) : block;
 }
 
 function resultText(result: any, excludeMarker?: string): string {
@@ -190,54 +432,101 @@ function withMore(text: string, cap: number, theme: Theme): string {
 }
 
 // ---------------------------------------------------------------------------
-// ── Tool call grouping ─────────────────────────
+// ── Transcript tree state ─────────────────────────────
 //
-// Claude Code style batching: consecutive tool calls form a batch. While the
-// batch is the latest activity, its newest call renders expanded and earlier
-// members render as one-line glance rows. Reasoning folds the batch visually
-// (header + glance rows appear immediately) without closing it; visible
-// assistant text, a user message, or the end of the response closes it under
-// the final ` Thought for Xs · Ran N tool calls` header. Per-row ctrl+o
-// expansion always overrides the grouping.
+// Every rendered element is a node in a tree with an `open` flag:
+//
+//   depth 1   batch header            (the tree node; collapsed by default)
+//   depth 2   glance rows, thought branches   (visible iff header open)
+//   depth 3   tool output, expanded thinking   (visible iff that child open)
+//
+// A batch's children merge tool calls and thinking messages into one
+// chronological list (`children`); renderers walk it to place `├─`/`╰─`
+// (last child gets the corner). Batch open/closed is USER state with live
+// defaults — no derived `collapsed`/`folded`/`latest` flags:
+//
+// - a RUNNING batch (the current one) auto-opens, and its newest child
+//   auto-opens with the 16-line live cap;
+// - a user collapse of a running batch is STICKY (wins over auto-open until
+//   the user re-opens or a new batch starts);
+// - settled batches default closed; user-opened children persist.
+//
+// Leading thoughts (§2.3): a contiguous run of pure-thinking messages
+// directly before a batch's first tool call joins the batch — the FIRST
+// becomes the anchor and hosts the header in the pi-thinking-fold fork; the
+// rest are ordinary thought branches. Visible text or a user message in
+// between breaks the run and keeps them standalone.
 //
 // State lives on globalThis: this lib module is imported by several
-// independent extensions (nix-comma.ts, image-history.ts, custom-ui.ts)
-// which may each get their own module instance. custom-ui.ts registers
-// the event handlers; the renderers in every extension read the shared state.
+// independent extensions which may each get their own module instance.
+// custom-ui.ts registers the event handlers; the renderers in every
+// extension read the shared state.
 
-interface ToolBatch {
+type TreeChild = { kind: "tool"; id: string } | { kind: "thought"; ts: number };
+
+interface TreeBatch {
 	ids: string[];
-	collapsed: boolean;
-	// Visual fold while reasoning streams after this batch's tools: render
-	// header + glance rows, but keep the batch open for more tool calls.
-	folded?: boolean;
-	// timestamps of the assistant messages whose thinking fed this batch;
-	// durations are looked up per key (published by the pi-thinking-fold
-	// fork) and summed for the header.
-	thoughtKeys: number[];
+	// message timestamps of the batch's thought branches, in order; the first
+	// leading thought (when any) is the anchor hosting the header.
+	thoughts: number[];
+	// ids and thoughts merged into one ordered child list (scan/stream order).
+	children: TreeChild[];
+	// Leading thought hosting the header (fork-side); undefined for bare
+	// batches (the first tool row carries the header, as before).
+	anchor?: number;
+	// User toggle; undefined = live default (running → open, settled → closed).
+	open?: boolean;
+	// User collapsed while running: wins over the auto-open until re-opened.
+	stickyClosed?: boolean;
+	// Batch-wide edit-output override driven by the header diffstat click:
+	// true = every Edit call's output open, false = all closed, undefined =
+	// per-row defaults (auto-open newest / openTools). Dissolved by per-row
+	// toggles and ctrl+o walks.
+	editsOpen?: boolean;
+	// Set while the diffstat click is what opened the header, so the second
+	// diff click can collapse the whole tree back (a header the user opened
+	// themselves is left alone on diff-close).
+	editsOpenedHeader?: boolean;
+	// Live batch (more tool calls may join). Settled batches keep their state
+	// but default closed.
+	running: boolean;
 	// Index into DOTS_SPINNERS, drawn once per batch so the header spinner
-	// varies across turns (zentui-style). Not persisted; restored batches
-	// render the static header anyway.
+	// varies across turns (zentui-style).
 	spinner: number;
 }
 
 interface GroupState {
 	counter: number;
-	notes: Map<string, string[]>;
 	order: Map<string, number>;
 	memberBatch: Map<string, number>;
-	batches: ToolBatch[];
+	thoughtBatch: Map<number, number>;
+	batches: TreeBatch[];
 	current: number | undefined;
-	latest: string | undefined;
-	// Thought streaming under an open batch (set by foldToolGroup), waiting
-	// for message_end to commit it to the batch — the message usually closes
-	// the batch itself first (thinking → text), but its duration still
-	// belongs to the header the fold streamed beneath.
-	pendingThought?: { key: number; batch: number };
+	// Pure-thinking messages since the last visible separator (text, user
+	// message, batch close). When a tool call opens the next batch, this run
+	// joins it — first entry becomes the anchor. Nothing else survives into
+	// the run: visible text dissolves it (hosting would reorder the think
+	// past the narration).
+	leadingRun: number[];
+	// Depth-3 flags: tool output and thinking reasoning. openTools holds
+	// user-opened children; closedTools remembers an explicit user close of
+	// the auto-opened newest child (beats the auto-open while it lasts).
+	openTools: Set<string>;
+	closedTools: Set<string>;
+	openThoughts: Set<number>;
 	// Per-row invalidate callbacks, registered by renderers, so state changes
-	// (batch collapse, newer latest) can force the affected rows to re-render —
-	// tool rows render cached children otherwise.
+	// can force the affected rows to re-render — rows render cached children
+	// otherwise. Tool rows register via trackRow; thought rows register from
+	// the pi-thinking-fold fork (registerThoughtRow).
 	invalidators: Map<string, () => void>;
+	thoughtRows: Map<number, () => void>;
+	notes: Map<string, string[]>;
+	// toolCallIds that render through the edit slots (registered on first
+	// render) — the header diffstat override and totals only reach edit rows.
+	editIds: Set<string>;
+	// Settled diffstat per edit toolCallId (+added/−removed lines), summed
+	// into the batch header's diff section.
+	editStats: Map<string, { adds: number; dels: number }>;
 }
 
 const GROUP_STATE_KEY = "__piCustomUiToolGroups";
@@ -247,11 +536,18 @@ function freshGroupState(): GroupState {
 		counter: 0,
 		order: new Map(),
 		memberBatch: new Map(),
+		thoughtBatch: new Map(),
 		batches: [],
 		current: undefined,
-		latest: undefined,
+		leadingRun: [],
+		openTools: new Set(),
+		closedTools: new Set(),
+		openThoughts: new Set(),
 		invalidators: new Map(),
+		thoughtRows: new Map(),
 		notes: new Map(),
+		editIds: new Set(),
+		editStats: new Map(),
 	};
 }
 
@@ -273,144 +569,169 @@ function invalidateRows(ids: Iterable<string>): void {
 	}
 }
 
+// Thought rows live in the fork's components; the fork registers an
+// invalidator per timestamp on first render (registerThoughtRow), so tree
+// state changes can re-render them too — the old "fold rows have no
+// invalidator" gap, closed.
+function invalidateThoughtRows(timestamps: Iterable<number>): void {
+	const s = groupState();
+	for (const ts of timestamps) {
+		const invalidate = s.thoughtRows.get(ts);
+		if (invalidate) setTimeout(invalidate, 0);
+	}
+}
+
+function invalidateChild(child: TreeChild | undefined): void {
+	if (!child) return;
+	if (child.kind === "tool") invalidateRows([child.id]);
+	else invalidateThoughtRows([child.ts]);
+}
+
 function groupState(): GroupState {
 	const w = globalThis as Record<string, unknown>;
 	if (!w[GROUP_STATE_KEY]) w[GROUP_STATE_KEY] = freshGroupState();
 	return w[GROUP_STATE_KEY] as GroupState;
 }
 
-export function trackGroupToolCall(toolCallId: string, thoughtKey?: number): void {
+// A tool call joins the current running batch, or opens a new one. A new
+// batch consumes the pending leading-thought run: the first think becomes
+// the anchor (it hosts the header in the fork), the rest are branches —
+// think → tools → think → tools maps to children in exactly that order.
+export function trackGroupToolCall(toolCallId: string): void {
 	const s = groupState();
 	s.order.set(toolCallId, ++s.counter);
 	if (s.current === undefined) {
+		const anchorRun = s.leadingRun;
+		s.leadingRun = [];
 		s.batches.push({
 			ids: [],
-			collapsed: false,
-			thoughtKeys: thoughtKey === undefined ? [] : [thoughtKey],
+			thoughts: [...anchorRun],
+			children: anchorRun.map((ts) => ({ kind: "thought" as const, ts })),
+			anchor: anchorRun[0],
+			running: true,
 			spinner: Math.floor(Math.random() * DOTS_SPINNERS.length),
 		});
 		s.current = s.batches.length - 1;
-	} else if (thoughtKey !== undefined && !s.batches[s.current].thoughtKeys.includes(thoughtKey)) {
-		s.batches[s.current].thoughtKeys.push(thoughtKey);
+		for (const ts of anchorRun) s.thoughtBatch.set(ts, s.current);
+		// The leading think(s) re-render: the standalone row tucks under its
+		// own block header (anchor hosting, §2.3).
+		invalidateThoughtRows(anchorRun);
 	}
-	// A new tool call is fresh activity: a reasoning fold (thinking_delta
-	// stamped `folded`) must not swallow it — the newest call re-opens as the
-	// expanded `latest` row instead of rendering as a collapsed glance. The
-	// header stays (ids ≥ 2) and keeps its accumulated thought durations.
-	const joining = s.batches[s.current];
-	if (joining.folded) {
-		joining.folded = false;
-		invalidateRows(joining.ids);
+	const batch = s.batches[s.current];
+	// Rows affected by this join: the previously-last child re-renders from
+	// `╰─` to `├─`, the previously-newest TOOL drops its auto-opened output to
+	// a glance row, and the header carrier updates its live count. (Only
+	// these — invalidating every earlier child would be O(n²) on long
+	// batches.)
+	const prevChildren = batch.children;
+	const prevLast = prevChildren[prevChildren.length - 1];
+	let prevLastTool: string | undefined;
+	for (let i = prevChildren.length - 1; i >= 0; i--) {
+		const child = prevChildren[i];
+		if (child.kind === "tool") {
+			prevLastTool = child.id;
+			break;
+		}
 	}
-	joining.ids.push(toolCallId);
+	batch.ids.push(toolCallId);
+	batch.children.push({ kind: "tool", id: toolCallId });
 	s.memberBatch.set(toolCallId, s.current);
 	setBatchOpen(true);
-	const previousLatest = s.latest;
-	s.latest = toolCallId;
-	// The previously-latest row drops from expanded to glance rendering, and
-	// the batch's first row updates its live `Ran N tool calls` count.
-	if (previousLatest && previousLatest !== toolCallId) {
-		const first = s.batches[s.current].ids[0];
-		invalidateRows(new Set([previousLatest, first]));
+	if (prevLast) invalidateChild(prevLast);
+	if (prevLastTool && prevLastTool !== (prevLast?.kind === "tool" ? prevLast.id : undefined)) {
+		invalidateRows([prevLastTool]);
 	}
+	invalidateRows([batch.ids[0]]);
+	// The row itself: pi renders the call row while args are still streaming,
+	// BEFORE the tool_call event fires — that first render is untracked
+	// (normal mode). Without this invalidation a tool whose args complete in
+	// one pass would keep its full-width untracked rendering forever.
+	invalidateRows([toolCallId]);
 }
 
-// Visual fold when reasoning starts while a batch is open: the header (with
-// the accumulated thought duration) appears above the glance rows right away,
-// but unlike collapseToolGroup the batch stays current — later tool calls
-// still merge into it. `thoughtKey` remembers the streaming message so
-// settleThoughtKey can commit the duration at message_end.
-export function foldToolGroup(thoughtKey?: number): void {
-	const s = groupState();
-	if (s.current === undefined) return;
-	if (thoughtKey !== undefined) s.pendingThought = { key: thoughtKey, batch: s.current };
-	const batch = s.batches[s.current];
-	if (batch.folded || batch.collapsed) return;
-	batch.folded = true;
-	invalidateRows(batch.ids);
-}
-
-// Commit a folded streaming thought to the batch it streamed beneath. Called
-// from custom-ui's message_end: by then the message's text has usually
-// collapsed the batch already, but the duration belongs to that batch's
-// header (the fork strips the fold row accordingly). Narrated messages
-// (thinking → text → toolCall) whose thinking folded under the preceding
-// batch commit there too — the text split the batch, but the reasoning
-// happened under its header. Only fresh thinking (no open batch when it
-// started) is left alone: nothing absorbed it, so the fork keeps its row.
-// Returns true when a header absorbed the key (the caller then nudges the
-// fork to re-render the message's fold row, which has no invalidator).
-export function settleThoughtKey(key: number | undefined): boolean {
-	const s = groupState();
-	if (key === undefined || !s.pendingThought || s.pendingThought.key !== key) return false;
-	const { batch } = s.pendingThought;
-	s.pendingThought = undefined;
-	const b = s.batches[batch];
-	if (b && !b.thoughtKeys.includes(key)) {
-		b.thoughtKeys.push(key);
-		invalidateRows(b.ids);
-		return true;
-	}
-	return false;
-}
-
-// Whether a thinking message's duration lives in a batch header; the fork
-// strips those fold rows. Published on globalThis — the fork cannot import
-// this lib (separate package), same as the other __piCustomUi* channels.
-export function thoughtInHeader(key: number | undefined): boolean {
-	if (key === undefined) return false;
-	return groupState().batches.some((b) => b.thoughtKeys.includes(key));
-}
-(globalThis as Record<string, unknown>).__piCustomUiThoughtInHeader = thoughtInHeader;
-
-export function collapseToolGroup(): void {
+// A thinking message started streaming (thinking_delta). Under an open batch
+// it joins as a thought branch at its true chronological position; otherwise
+// it is a standalone top-level row pending anchor assignment.
+export function trackThoughtStart(ts: number): void {
 	const s = groupState();
 	if (s.current !== undefined) {
 		const batch = s.batches[s.current];
-		batch.collapsed = true;
-		// Every member re-renders: the first row gains the batch header, the
-		// rest fold to glance lines, and the latest drops its expanded output.
+		if (batch.thoughts.includes(ts)) return;
+		batch.thoughts.push(ts);
+		batch.children.push({ kind: "thought", ts });
+		s.thoughtBatch.set(ts, s.current);
+		// The previously-last child re-renders from `╰─` to `├─`.
+		invalidateChild(batch.children[batch.children.length - 2]);
+	} else {
+		if (!s.leadingRun.includes(ts)) s.leadingRun.push(ts);
+	}
+}
+
+// Close the running batch: visible assistant text, a user message, or
+// agent_end settles it (its header goes static, children default hidden) and
+// dissolves the pending leading-thought run — a think followed by narration
+// stays standalone, never anchoring the NEXT batch.
+export function closeBatch(): void {
+	const s = groupState();
+	if (s.current !== undefined) {
+		const batch = s.batches[s.current];
+		batch.running = false;
 		invalidateRows(batch.ids);
+		invalidateThoughtRows(batch.thoughts);
 		s.current = undefined;
 	}
-	s.latest = undefined;
+	s.leadingRun = [];
 	setBatchOpen(false);
 }
 
-// Fold an extension notification into the open batch as a note line under
-// its latest tool row. Returns false when there is no open batch — the caller
-// (the patched showExtensionNotify) then falls back to pi's native rendering.
+// Effective open state of a batch header: user toggle first, then the live
+// defaults (running → open unless sticky-closed, settled → closed).
+function batchOpen(batch: TreeBatch): boolean {
+	return batch.open ?? (batch.running ? !batch.stickyClosed : false);
+}
 export function pushToolNote(text: string): boolean {
 	const s = groupState();
-	if (s.current === undefined || !s.latest) return false;
-	const list = s.notes.get(s.latest) ?? [];
+	if (s.current === undefined) return false;
+	const batch = s.batches[s.current];
+	const latest = batch.ids[batch.ids.length - 1];
+	if (!latest) return false;
+	const list = s.notes.get(latest) ?? [];
 	list.push(text);
-	s.notes.set(s.latest, list);
-	invalidateRows([s.latest]);
+	s.notes.set(latest, list);
+	invalidateRows([latest]);
 	return true;
 }
 
-// Append a row's accumulated notes (dim, glance-indented) under its result.
+// Append a row's accumulated notes (dim, tree-indented) under its result.
+// Notes attach to a child; if its parent header is closed the child renders
+// nothing at all, so the notes vanish with it.
 export function attachNotes(component: Component, context: any, theme: Theme): Component {
 	const id = context?.toolCallId;
 	const notes = id ? groupState().notes.get(id) : undefined;
 	if (!notes || notes.length === 0) return component;
+	const mode = groupMode(id);
+	const prefix = childOutputPrefix(mode, theme);
 	const stack = new Container();
 	stack.addChild(component);
 	for (const note of notes) {
-		stack.addChild(new Text(`  ${theme.fg("muted", "⎿")}  ${theme.italic(theme.fg("dim", clip(note, 90)))}`, 0, 0));
+		stack.addChild(new Text(`${prefix}${theme.italic(theme.fg("dim", clip(note, 90)))}`, 0, 0));
 	}
 	return stack;
 }
 
-// Wrap a slot set so notes pushed while its result renders appear under it.
+// Wrap a slot set so notes pushed while its result renders appear under it —
+// but only while the row is visible (a closed parent header hides the child,
+// and notes with it).
 export function withToolNotes<T extends RenderSlots>(slots: T): T {
 	const { renderResult, ...rest } = slots;
 	if (!renderResult) return slots;
 	return {
 		...rest,
 		renderResult(result: any, options: any, theme: Theme, context: any): Component {
-			return attachNotes(renderResult.call(this, result, options, theme, context), context, theme);
+			const component = renderResult.call(this, result, options, theme, context);
+			const mode = groupMode(context?.toolCallId);
+			if (mode.kind === "child" && !mode.headerOpen) return component;
+			return attachNotes(component, context, theme);
 		},
 	} as T;
 }
@@ -420,7 +741,24 @@ export function resetToolGroups(): void {
 	setBatchOpen(false);
 }
 
+// Rebuild the tree from session history — the scan mirror of the live rules:
+// visible assistant text or a user message closes the batch (and dissolves
+// the pending leading-thought run); a thinking message joins the open batch
+// as a branch, or pends as a standalone leading think when no batch is open;
+// tool calls join the open batch or open the next one (consuming the
+// leading run). Narrated messages (thinking → text → toolCall) process in
+// stream order, so their thinking joins the PRECEDING batch their reasoning
+// streamed under.
 export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; message?: unknown }>): void {
+	// Session-switch flows (launch resume, /resume, /new, /fork) render the
+	// restored transcript BEFORE this rescan runs — those rows rendered
+	// untracked (normal mode: full-width call lines, no tree grammar), and
+	// their row invalidators are registered against the state this scan is
+	// about to replace. Snapshot them and re-fire after the scan so every
+	// restored row repaints through its own renderCall with the rebuilt
+	// grouping. Only ids the scan actually tracks are re-fired: a stale id
+	// would invalidate a component from a discarded session.
+	const stale = new Map(groupState().invalidators);
 	resetToolGroups();
 	const s = groupState();
 	for (const entry of entries) {
@@ -428,83 +766,81 @@ export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; mess
 		const message = entry.message as { role?: unknown; content?: unknown } | undefined;
 		if (!message) continue;
 		if (message.role === "user") {
-			collapseToolGroup();
-		} else if (message.role === "assistant") {
-			// Mirror the live rule: visible assistant text splits the batch;
-			// thinking folds into it, and bare tool-carrier messages (silent
-			// retries) join the current batch.
-			const hasVisible = Array.isArray(message.content) &&
-				message.content.some(
-					(part) =>
-						part !== null && typeof part === "object" &&
-						(part as { type?: unknown }).type === "text" &&
-						typeof (part as { text?: unknown }).text === "string" &&
-						((part as { text: string }).text).trim().length > 0,
-				);
-			const hasThinking = Array.isArray(message.content) &&
-				message.content.some(
-					(part) =>
-						part !== null && typeof part === "object" &&
-						(part as { type?: unknown }).type === "thinking",
-				);
-			const ts = typeof (message as { timestamp?: unknown }).timestamp === "number"
-				? (message as { timestamp: number }).timestamp
-				: undefined;
-			// A thinking message folds its thinking into the open batch — it
-			// streamed beneath that header (closing thinking→text messages AND
-			// narrated thinking→text→toolCall messages; the batch's own tools
-			// stamp the same key via trackGroupToolCall, deduped by includes).
-			// Must happen BEFORE the text collapses the batch. Fresh thinking
-			// (no open batch) keeps its standalone fold row.
-			if (hasThinking && ts !== undefined && s.current !== undefined) {
-				const batch = s.batches[s.current];
-				if (!batch.thoughtKeys.includes(ts)) batch.thoughtKeys.push(ts);
+			closeBatch();
+			continue;
+		}
+		if (message.role !== "assistant") continue;
+		const hasVisible = Array.isArray(message.content) &&
+			message.content.some(
+				(part) =>
+					part !== null && typeof part === "object" &&
+					(part as { type?: unknown }).type === "text" &&
+					typeof (part as { text?: unknown }).text === "string" &&
+					((part as { text: string }).text).trim().length > 0,
+			);
+		const hasThinking = Array.isArray(message.content) &&
+			message.content.some(
+				(part) =>
+					part !== null && typeof part === "object" &&
+					(part as { type?: unknown }).type === "thinking",
+			);
+		const ts = typeof (message as { timestamp?: unknown }).timestamp === "number"
+			? (message as { timestamp: number }).timestamp
+			: undefined;
+		if (hasThinking && ts !== undefined) {
+			if (s.current !== undefined) {
+				trackThoughtStart(ts);
+			} else if (!hasVisible) {
+				// Pure thinking with no open batch: standalone for now; joins
+				// the next batch's leading run unless text intervenes.
+				if (!s.leadingRun.includes(ts)) s.leadingRun.push(ts);
 			}
-			if (hasVisible) collapseToolGroup();
-			// Narrated messages' thinking commits to the PRECEDING batch header
-			// (scan stamp above / settleThoughtKey); their tools open the next
-			// batch, which must not count the same thinking again.
-			const thoughtKey = hasThinking && !hasVisible && ts !== undefined ? ts : undefined;
-			if (Array.isArray(message.content)) {
-				for (const part of message.content) {
-					if (
-						part !== null && typeof part === "object" &&
-						(part as { type?: unknown }).type === "toolCall" &&
-						typeof (part as { id?: unknown }).id === "string"
-					) {
-						trackGroupToolCall((part as { id: string }).id, thoughtKey);
-					}
+		}
+		if (hasVisible) closeBatch();
+		if (Array.isArray(message.content)) {
+			for (const part of message.content) {
+				if (
+					part !== null && typeof part === "object" &&
+					(part as { type?: unknown }).type === "toolCall" &&
+					typeof (part as { id?: unknown }).id === "string"
+				) {
+					trackGroupToolCall((part as { id: string }).id);
 				}
 			}
 		}
+	}
+	// Repaint the pre-scan rows (see the snapshot above), deferred like every
+	// row invalidation: invalidate() from inside a render pass re-enters the
+	// row's updateDisplay() mid-rebuild.
+	for (const [id, invalidate] of stale) {
+		if (s.memberBatch.has(id)) setTimeout(invalidate, 0);
 	}
 }
 
 export type GroupMode =
 	| { kind: "normal" }
-	| { kind: "latest"; first: boolean }
 	| {
-			kind: "earlier";
-			header: boolean;
-			count: number;
-			thoughtKeys?: number[];
-			running: boolean;
-			spinner: number;
+			kind: "child";
 			batchIndex: number;
-	  }
-	| {
-			kind: "collapsed";
-			header: boolean;
-			count: number;
-			thoughtKeys?: number[];
+			// First child: carries the header for bare batches (no anchor).
+			first: boolean;
+			// The header is hosted by the anchor think (fork-side) — the first
+			// tool row must not render it too.
+			anchorHosted: boolean;
+			headerOpen: boolean;
 			running: boolean;
+			// Tool-call count (header text).
+			count: number;
+			// Last child of the batch: gets the `╰─` corner, no connector.
+			last: boolean;
+			// Depth-3 flag: this child's output is open (auto newest / user
+			// toggle). pi's ctrl+o flag is OR-ed in by the renderers.
+			outputOpen: boolean;
+			// 16-line live cap when auto-opened (newest child of a running
+			// batch); deliberate expansion lifts it.
+			cap: number | undefined;
 			spinner: number;
-			batchIndex: number;
 	  };
-
-function batchHeader(batch: ToolBatch, toolCallId: string): boolean {
-	return batch.ids[0] === toolCallId;
-}
 
 export function groupMode(toolCallId: string | undefined | null): GroupMode {
 	if (!toolCallId) return { kind: "normal" };
@@ -512,28 +848,39 @@ export function groupMode(toolCallId: string | undefined | null): GroupMode {
 	const idx = s.memberBatch.get(toolCallId);
 	if (idx === undefined) return { kind: "normal" };
 	const batch = s.batches[idx];
-if (batch.collapsed || batch.folded) {
-		return {
-			kind: "collapsed",
-			header: batchHeader(batch, toolCallId),
-			count: batch.ids.length,
-			thoughtKeys: batch.thoughtKeys,
-			running: !batch.collapsed,
-			spinner: batch.spinner,
-			batchIndex: idx,
-		};
-	}
-	if (s.latest === toolCallId) {
-		return { kind: "latest", first: batch.ids[0] === toolCallId };
+	if (!batch) return { kind: "normal" };
+	const lastChild = batch.children[batch.children.length - 1];
+	const last = lastChild?.kind === "tool" && lastChild.id === toolCallId;
+	const newest = batch.ids[batch.ids.length - 1] === toolCallId;
+	const headerOpen = batchOpen(batch);
+	const userOpen = s.openTools.has(toolCallId);
+	// Auto-open applies only while the header is open — a closed header hides
+	// its children entirely (sticky user collapse wins over auto-open). Solo
+	// trees carrying a reasoning block are excluded: 1 tool + thoughts keeps
+	// its output glanced; only a bare 1-tool tree auto-expands its output.
+	const soloWithThoughts = batch.ids.length === 1 && batch.thoughts.length > 0;
+	const autoOpen = batch.running && headerOpen && newest && !soloWithThoughts && !s.closedTools.has(toolCallId);
+	let outputOpen = userOpen || autoOpen;
+	let cap = autoOpen && !userOpen ? LATEST_EXPANDED_LINES : undefined;
+	// The header diffstat's batch-wide edit override (set by clicking the
+	// +N −M section) beats per-row defaults for Edit rows; a deliberate
+	// override is uncapped.
+	if (s.editIds.has(toolCallId) && batch.editsOpen !== undefined) {
+		outputOpen = batch.editsOpen;
+		cap = undefined;
 	}
 	return {
-		kind: "earlier",
-		header: batchHeader(batch, toolCallId),
-		count: batch.ids.length,
-		thoughtKeys: batch.thoughtKeys,
-		running: true,
-		spinner: batch.spinner,
+		kind: "child",
 		batchIndex: idx,
+		first: batch.ids[0] === toolCallId,
+		anchorHosted: batch.anchor !== undefined,
+		headerOpen,
+		running: batch.running,
+		count: batch.ids.length,
+		last,
+		outputOpen,
+		cap,
+		spinner: batch.spinner,
 	};
 }
 
@@ -541,17 +888,16 @@ if (batch.collapsed || batch.folded) {
 // streaming and reconstructed from message timestamps on session restore).
 const THOUGHT_FOR_KEY = "__piCustomUiThoughtFor";
 const THOUGHT_LIVE_KEY = "__piCustomUiThoughtLive";
-const LIVE_THOUGHT_KEY = "__piCustomUiLiveThought";
 
 interface LiveTiming {
 	startedAt: number;
 	completedAt?: number;
 }
 
-// Batch duration: completed thinking of every member message (live map
-// preferred — it also carries in-progress entries), plus the elapsed time of
-// a reasoning block currently streaming for a message that hasn't joined the
-// batch yet. Sub-half-second totals are noise, not a phase worth naming.
+// Batch duration: every thought branch's thinking (live map preferred — it
+// also carries in-progress entries). Thoughts are stamped into the batch at
+// thinking_delta, so a branch streaming right now counts up in real time.
+// Sub-half-second totals are noise, not a phase worth naming.
 function thoughtForMs(keys: number[] | undefined): number | undefined {
 	const w = globalThis as Record<string, unknown>;
 	const liveMap = w[THOUGHT_LIVE_KEY] as Map<number, LiveTiming> | undefined;
@@ -565,48 +911,32 @@ function thoughtForMs(keys: number[] | undefined): number | undefined {
 			if (typeof ms === "number") total += ms;
 		}
 	}
-	const liveKey = w[LIVE_THOUGHT_KEY];
-	if (typeof liveKey === "number" && !keys?.includes(liveKey)) {
-		const lt = liveMap?.get(liveKey);
-		if (lt) total += Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
-	}
 	return total >= 500 ? total : undefined;
 }
 
-// Called on a timer while a batch is open: bumps the animation clock and
+// True while the animated batch header is on screen: every running batch
+// renders a live header (`⠋ Sautéing… 4s · ↑12.4k · 2 tool calls`) — its
+// spinner owns the one-spinner rule, so the dead-air loader must stay dark
+// even when no tool is in flight and thinking deltas have paused (provider
+// latency). User-collapsed running batches keep the animated header too.
+export function batchHeaderAnimated(): boolean {
+	return groupState().current !== undefined;
+}
+
+// Called on a timer while a batch runs: bumps the animation clock and
 // re-renders the batch — the animated header AND the in-progress dotsCircle
 // dots on running tool rows (solo batches included, so a single running tool
-// still animates). Returns false when no batch is open, letting the caller
-// stop its timer until the next tool_call/thinking_delta restarts it; text,
-// user messages, and agent_end collapse the batch and stop it that way.
-// Tool calls in the currently open batch, or undefined when no batch is
-// open. The dead-air loader in custom-ui.ts shows only for exactly-1-job
-// batches: bigger batches have an animated header (their spinner), and
-// batch-less stretches are covered by the fresh-thinking fold row.
-export function currentBatchSize(): number | undefined {
-	const s = groupState();
-	if (s.current === undefined) return undefined;
-	return s.batches[s.current].ids.length;
-}
-
-// True while the animated batch header is on screen: an open batch that is
-// folded (thinking streamed over it) or has ≥2 calls (the first row became
-// "earlier"). Read by the dead-air loader timer — in those states the header
-// is the one spinner even when no tool is in flight and thinking deltas have
-// paused (provider latency), so the loader must stay dark or two spinners
-// show at once.
-export function batchHeaderAnimated(): boolean {
-	const s = groupState();
-	if (s.current === undefined) return false;
-	const batch = s.batches[s.current];
-	return batch.folded || batch.ids.length >= 2;
-}
-
+// still animates). The anchor think re-renders too: it hosts the animated
+// header line (fork-side, via its registered invalidator). Returns false
+// when no batch is running, letting the caller stop its timer until the
+// next tool_call/thinking_delta restarts it.
 export function tickOpenBatch(): boolean {
 	const s = groupState();
 	if (s.current === undefined) return false;
 	animState().tick();
-	invalidateRows(s.batches[s.current].ids);
+	const batch = s.batches[s.current];
+	invalidateRows(batch.ids);
+	if (batch.anchor !== undefined) invalidateThoughtRows([batch.anchor]);
 	animState().requestRender?.();
 	return true;
 }
@@ -617,11 +947,39 @@ function formatThought(ms: number): string {
 	return `${Math.floor(s / 60)}m ${Math.round(s % 60)}s`;
 }
 
-export function groupHeaderLine(theme: Theme, count: number, thoughtMs?: number): string {
-	// Full ANSI yellow (33 — same as the statusline git segment), italic label.
-	const label = `Ran ${count} tool call${count === 1 ? " " : "s"}`;
+export function groupHeaderLine(
+	theme: Theme,
+	count: number,
+	thoughtMs?: number,
+	open = false,
+	url?: string,
+	diff?: { adds: number; dels: number },
+	diffUrl?: string,
+): string {
+	// Bold grey (base03 — same tone as the standalone thinking labels),
+	// italic label. Standard disclosure triangles: ▸ collapsed, ▾ expanded —
+	// differing by exactly one glyph, so mixed states scan cleanly. The
+	// leading space indents the header one cell, aligning it under the
+	// standalone thinking rows above it. The whole header row is one click
+	// target; the triangle itself signals expandability, so no hint suffix
+	// (ctrl+o stays in pi's footer docs).
+	const glyph = open ? "▾" : "▸";
 	const thought = thoughtMs === undefined ? "" : `Thought for ${formatThought(thoughtMs)} · `;
-	return `\x1b[33m✔ ${theme.italic(`${thought}${label} (${keyText("app.tools.expand")} to expand)`)}\x1b[0m`;
+	const label = `Ran ${count} tool call${count === 1 ? " " : "s"}`;
+	const grey = base16Fg("base03", "6a737d");
+	const head = ` \x1b[1m${grey}${glyph} ${theme.italic(`${thought}${label}`)}\x1b[22m\x1b[39m`;
+	// The diffstat is its own click target (toggles the batch's Edit calls'
+	// output) — a SEPARATE OSC 8 span appended after the header link, never
+	// nested inside it (an inner OSC 8 opener would silently close the outer
+	// span mid-line). Rendered only once an Edit has settled with changes.
+	let stat = "";
+	if (diff && diffUrl && (diff.adds > 0 || diff.dels > 0)) {
+		// Local const: tsc loses the diffUrl narrowing inside the nested
+		// template literal, and linkWrap's url param demands a string.
+		const body = `${theme.fg("success", `+${diff.adds}`)} ${theme.fg("error", `−${diff.dels}`)}`;
+		stat = `  ${linkWrap(body, diffUrl)}`;
+	}
+	return `${url ? linkWrap(head, url) : head}${stat}`;
 }
 
 // ── Live batch header: spinner + shimmer verb ─────────────────
@@ -756,6 +1114,9 @@ export function liveGroupHeaderLine(
 	frame: number,
 	spinner: number,
 	batchIndex: number,
+	url?: string,
+	diff?: { adds: number; dels: number },
+	diffUrl?: string,
 ): string {
 	const frames = DOTS_SPINNERS[spinner % DOTS_SPINNERS.length] ?? DOTS_SPINNERS[0];
 	const glyph = theme.fg("accent", frames[frame % frames.length] ?? "·");
@@ -767,15 +1128,22 @@ export function liveGroupHeaderLine(
 	// dense text deltas, stutters when only the tick repaints) — 1Hz changes
 	// resolve cleanly at any cadence. The ↑N token readout is turn-wide and
 	// re-read every frame (settled total + in-flight estimate), so it climbs
-	// in real time across every batch of the turn. Settled keeps the past
-	// tense ("Thought for · Ran") with 0.1s decimals (static, no aliasing)
-	// and no tokens — a settled header is frozen history while the turn's
-	// count keeps moving; the turn summary row carries the final totals.
-	const thought = thoughtMs === undefined ? "" : `${Math.floor(thoughtMs / 1000)}s · `;
+	// in real time across every batch of the turn. The dots spinner + shimmer
+	// verb own the glyph slot while the batch executes — the triangle yields.
+	// The whole row is one click target (toggles the batch's children).
+	const thoughtSeg = thoughtMs === undefined ? "" : `${Math.floor(thoughtMs / 1000)}s · `;
 	const tokens = turnOutputTokens();
 	const tok = tokens === undefined ? "" : `↑${formatTokens(tokens)} · `;
-	const info = `${thought}${tok}${count} tool call${count === 1 ? "" : "s"} (${keyText("app.tools.expand")} to expand)`;
-	return `${glyph} ${verb} ${theme.fg("muted", theme.italic(info))}`;
+	const info = `${thoughtSeg}${tok}${count} tool call${count === 1 ? "" : "s"}`;
+	const line = ` ${glyph} ${verb} ${theme.fg("muted", theme.italic(info))}`;
+	// Same diffstat as the settled header — totals accumulate as Edits settle
+	// mid-run, and the section keeps its position across the settle transition.
+	let stat = "";
+	if (diff && diffUrl && (diff.adds > 0 || diff.dels > 0)) {
+		const body = `${theme.fg("success", `+${diff.adds}`)} ${theme.fg("error", `−${diff.dels}`)}`;
+		stat = `  ${linkWrap(body, diffUrl)}`;
+	}
+	return `${url ? linkWrap(line, url) : line}${stat}`;
 }
 
 // ── Live turn output tokens ───────────────────────────────────
@@ -869,6 +1237,81 @@ export function formatTokens(n: number): string {
 	return `${Math.round(n / 1_000_000)}M`;
 }
 
+// ── Click-to-expand: OSC 8 action links ───────────────────────
+//
+// Fullscreen pi captures the mouse; clicking an OSC 8 hyperlink resolves the
+// link under the clicked cell from the rendered screen and calls the TUI's
+// openUrl (wired to openBrowser). The extension UI context is a proxy with a
+// set trap over the live renderer, so the zero-line widget capture (see
+// custom-ui.ts session_start) can re-patch openUrl to intercept
+// pi-action:// URLs and translate them into expansion toggles. In regular
+// (non-fullscreen) mode the terminal handles hyperlinks natively and pi
+// never sees the click, so links are only emitted while the patch is live.
+
+const LINKS_KEY = "__piCustomUiLinksEnabled";
+
+function setLinksEnabled(value: boolean): void {
+	(globalThis as Record<string, unknown>)[LINKS_KEY] = value;
+}
+
+function linksEnabled(): boolean {
+	return (globalThis as Record<string, unknown>)[LINKS_KEY] === true && getCapabilities().hyperlinks;
+}
+
+// Wrap a rendered string fragment in an OSC 8 hyperlink pointing at a
+// pi-action:// toggle. No-op when action links are unavailable (regular
+// mode, unsupported terminal, before session_start).
+export function linkWrap(text: string, url: string): string {
+	return linksEnabled() ? `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\` : text;
+}
+
+export interface TuiLinkHandle {
+	mode?: string;
+	openUrl?: (url: string) => void;
+	requestRender(): void;
+}
+
+let restoreOpenUrl: (() => void) | undefined;
+
+// Patch the TUI handle's openUrl to intercept action links. Called from the
+// zero-line widget factory on session_start (the factory receives the UI
+// context proxy; property writes land on the live renderer instance).
+export function enableLinkActions(tui: TuiLinkHandle): void {
+	disableLinkActions();
+	if (tui.mode !== "fullscreen") return;
+	const original = tui.openUrl;
+	tui.openUrl = (url: string) => {
+		if (!handleActionUrl(url)) original?.(url);
+	};
+	restoreOpenUrl = () => {
+		tui.openUrl = original;
+	};
+	setLinksEnabled(true);
+}
+
+export function disableLinkActions(): void {
+	restoreOpenUrl?.();
+	restoreOpenUrl = undefined;
+	setLinksEnabled(false);
+}
+
+// Dispatch a clicked action URL; false when the URL is not ours (the caller
+// falls back to opening it in the default browser handler). URLs are tree
+// paths: each flips exactly ONE node's flag.
+export function handleActionUrl(url: string): boolean {
+	const match = /^pi-action:\/\/node\/(batch|tool|thought|edits)\/(\S+)$/.exec(url);
+	if (!match) return false;
+	const [, kind, id] = match;
+	if (kind === "batch") toggleBatch(Number.parseInt(id, 10));
+	else if (kind === "tool") toggleTool(decodeURIComponent(id));
+	else if (kind === "edits") toggleEdits(Number.parseInt(id, 10));
+	else toggleThought(Number.parseInt(id, 10));
+	// Row invalidations are deferred (setTimeout 0) — make sure a repaint
+	// follows in every case.
+	setTimeout(() => animState().requestRender?.(), 0);
+	return true;
+}
+
 // ── Shared animation API (consumed by pi-thinking-fold) ────────
 //
 // Unification rule: exactly ONE animated "Thinking" indicator is visible at
@@ -908,11 +1351,12 @@ interface AnimApi {
 	inProgressDot(): string;
 	// Animated streaming-thinking label (always animated — the batch header
 	// yields while thinking streams, so this row is always the one spinner):
-	// `▸ Combobulating… 2s · ↑1.2k  (ctrl+t to expand)`
-	streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number): string;
+	// `▸ Combobulating… 2s · ↑1.2k  (ctrl+t to expand)`. `url` wraps the whole
+	// label in a pi-action://node/thought OSC 8 link (click-to-expand).
+	streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number, url?: string): string;
 	// Settled completed-thinking label (the fold row after the thinking
 	// ends): base03 bold per user spec.
-	completedLabel(seconds: string, canExpand: boolean, expandSuffix: string): string;
+	completedLabel(seconds: string, canExpand: boolean, expandSuffix: string, url?: string): string;
 	// Full accent-tinted frame set for a dots variant — for consumers that
 	// own their animation interval (e.g. pi's setWorkingIndicator).
 	accentSpinnerFrames(seed: number): string[];
@@ -949,10 +1393,11 @@ export function animState(): AnimApi {
 				// base0D — the theme accent under stylix (see base16Fg fallbacks).
 				return `${accentSgr()}${glyph}\x1b[39m`;
 			},
-			completedLabel(seconds: string, canExpand: boolean, expandSuffix: string) {
+			completedLabel(seconds: string, canExpand: boolean, expandSuffix: string, url?: string) {
 				const base03 = base16Fg("base03", "6a737d");
 				const tail = canExpand ? expandSuffix : "";
-				return `\x1b[1m${base03}Thought for ${seconds}${tail}\x1b[22m\x1b[39m`;
+				const core = `\x1b[1m${base03}Thought for ${seconds}${tail}\x1b[22m\x1b[39m`;
+				return url ? linkWrap(core, url) : core;
 			},
 			accentSpinnerFrames(seed: number) {
 				const frames = DOTS_SPINNERS[Math.abs(seed) % DOTS_SPINNERS.length] ?? DOTS_SPINNERS[0];
@@ -968,13 +1413,14 @@ export function animState(): AnimApi {
 				const glyph = DOTS_CIRCLE[this.frame % DOTS_CIRCLE.length] ?? "●";
 				return `${accentSgr()}${glyph}\x1b[39m`;
 			},
-			streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number) {
+			streamingLabel(seconds: string, canExpand: boolean, expandSuffix: string, seed: number, url?: string) {
 				const verb = shimmerFrame(`${VERBS[Math.abs(seed) % VERBS.length]}…`, this.frame);
 				const muted = base16Fg("base04", "8a9199");
 				const tokens = turnOutputTokens();
 				const tok = tokens === undefined ? "" : ` · ↑${formatTokens(tokens)}`;
 				const tail = canExpand ? expandSuffix : "";
-				return `${this.spinnerFrame(seed)} ${verb} ${muted}${seconds}${tok}${tail}\x1b[0m`;
+				const core = `${this.spinnerFrame(seed)} ${verb} ${muted}${seconds}${tok}${tail}\x1b[0m`;
+				return url ? linkWrap(core, url) : core;
 			},
 			tick(this: AnimApi) {
 				// The clock advances by itself (wall clock); a tick is only
@@ -1077,46 +1523,354 @@ export function base16Bg(name: string, fallbackHex: string): string {
 	return `\x1b[48;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
 }
 
-// One-line collapsed representation: `⎿ Bash(cmd) · 51 lines`. The call
-// head recedes to base03 (comments grey, from the base16 palette) so color
-// is reserved for signal — exit codes, diffs, and pre-colored summaries.
-// Expanded/most-recent call lines keep their normal theme colors via
-// callLine.
-export function glanceLine(label: string, arg: string, summary: string, theme: Theme): Text {
-	const base03 = base16Fg("base03", "3e4b59");
+// One-line collapsed child: `├─ Bash(cmd) · 51 lines`. The call head recedes
+// to base03 (comments grey, from the base16 palette) so color is reserved
+// for signal — exit codes, diffs, and pre-colored summaries. The row is the
+// primary click-to-expand target.
+export function glanceLine(label: string, arg: string, summary: string, theme: Theme, mode?: GroupMode, toolCallId?: string): Text {
+	const base03 = base16Fg("base03", TREE_BASE03);
+	const glyph = mode?.kind === "child" ? childLabelGlyph(mode.last) : "";
 	const head = `${base03}${label}(${clip(arg, 56)})\x1b[39m`;
-	return new Text(`  ${theme.fg("muted", "⎿")}  ${head} · ${summary}`, 0, 0);
+	const core = `${glyph}${head} · ${summary}`;
+	const url = toolCallId ? `pi-action://node/tool/${encodeURIComponent(toolCallId)}` : undefined;
+	return new Text(url ? linkWrap(core, url) : core, 0, 0);
 }
 
-// True when the row should render as a single glance line: a non-latest
-// member of a tool batch whose grouping isn't overridden by ctrl+o.
-function glance(context: any): boolean {
-	const mode = groupMode(context?.toolCallId);
-	return (mode.kind === "collapsed" || mode.kind === "earlier") && !context?.expanded;
-}
+// ── Tree interaction: toggles, ctrl+o walk, fork channel ──────
+//
+// Action URLs are tree paths, each flipping exactly ONE node's flag:
+// - pi-action://node/batch/<i> — the header row (toggle depth 2)
+// - pi-action://node/tool/<id> — a glance/call row (toggle depth 3 output)
+// - pi-action://node/thought/<ts> — a thought branch/row (toggle depth 3)
+// The URLs are emitted as OSC 8 hyperlinks and resolved by pi's fullscreen
+// mouse handling (see enableLinkActions below).
 
-// Call slot for a grouped row: glance rows are empty (or carry the batch
-// header on the first member, live while the batch runs and after collapse);
-// otherwise undefined (= render normally).
-function groupedCall(mode: GroupMode, expanded: boolean | undefined, theme: Theme): Component | undefined {
-	if ((mode.kind === "collapsed" || mode.kind === "earlier") && !expanded) {
-		if (mode.header) {
-			// Leading blank line so groups stand apart from preceding content.
-			// The header stays animated for the whole batch run; any streaming
-			// fold row below renders label-less (fork suppresses its label while
-			// batchOpen), so the header is always the one spinner. Dead air in a
-			// SOLO batch (no header) is covered by the dead-air loader instead.
-			const thoughtMs = thoughtForMs(mode.thoughtKeys);
-			const line = mode.running
-				? liveGroupHeaderLine(theme, mode.count, thoughtMs, animState().frame, mode.spinner, mode.batchIndex)
-				: groupHeaderLine(theme, mode.count, thoughtMs);
-			return new Text(`\n${line}`, 0, 0);
+// Toggle a batch header: open/close all its children. Collapsing a RUNNING
+// batch is sticky — it wins over the auto-open until the user re-opens (or a
+// new batch starts and this one settles). A SOLO batch (exactly one tool
+// call) toggles that call's output in the same gesture — one click expands
+// the whole block. Edits are the exception: the diffstat owns their expansion.
+export function toggleBatch(batchIndex: number): void {
+	const s = groupState();
+	const batch = s.batches[batchIndex];
+	if (!batch) return;
+	if (batchOpen(batch)) {
+		batch.open = false;
+		batch.stickyClosed = true;
+	} else {
+		batch.open = true;
+		batch.stickyClosed = false;
+	}
+	// A SOLO batch of exactly ONE node (one tool call, no reasoning block)
+	// toggles that call's output in the same gesture — one click expands the
+	// whole block. Anything bigger (a thought branch, multiple tools) grows
+	// node by node via its own click targets. Edits are excluded regardless:
+	// their output starts expanded ONLY via the header diffstat click, the
+	// dedicated affordance for "show me what changed".
+	batch.editsOpenedHeader = undefined;
+	if (batch.ids.length === 1 && batch.thoughts.length === 0 && !s.editIds.has(batch.ids[0])) {
+		const id = batch.ids[0];
+		if (batchOpen(batch)) {
+			s.openTools.add(id);
+			s.closedTools.delete(id);
+		} else {
+			s.openTools.delete(id);
+			s.closedTools.add(id);
 		}
-		// No visible content — an empty Container renders zero lines, whereas an
-		// empty Text would leave a blank line between glance rows.
+	}
+	invalidateRows(batch.ids);
+	invalidateThoughtRows(batch.thoughts);
+}
+
+// Toggle the batch's Edit calls' output as one — the header diffstat's click
+// action. If any edit row is currently expanded, close them all; otherwise
+// open them all (uncapped — a deliberate expansion). Per-row defaults apply
+// again after a ctrl+o walk or an individual row toggle dissolves the flag.
+export function toggleEdits(batchIndex: number): void {
+	const s = groupState();
+	const batch = s.batches[batchIndex];
+	if (!batch) return;
+	const editIds = batch.ids.filter((id) => s.editIds.has(id));
+	if (editIds.length === 0) return;
+	const anyOpen = editIds.some((id) => {
+		const mode = groupMode(id);
+		return mode.kind === "child" && mode.outputOpen;
+	});
+	batch.editsOpen = !anyOpen;
+	// The diffstat is a FULL toggle: expanding from it opens the header too
+	// (see the changes without a second click), and the second click
+	// collapses the tree back the way it was. A header the user opened
+	// themselves survives diff-close.
+	if (batch.editsOpen) {
+		if (!batchOpen(batch)) {
+			batch.open = true;
+			batch.stickyClosed = false;
+			batch.editsOpenedHeader = true;
+		}
+	} else if (batch.editsOpenedHeader) {
+		batch.open = false;
+		batch.stickyClosed = true;
+		batch.editsOpenedHeader = undefined;
+	}
+	invalidateRows(batch.ids);
+	invalidateThoughtRows(batch.thoughts);
+}
+
+// Toggle one child's depth-3 output. Closing the auto-opened newest child
+// must stick, so the explicit close lands in closedTools (beats the
+// positional auto-open).
+export function toggleTool(toolCallId: string): void {
+	const s = groupState();
+	const mode = groupMode(toolCallId);
+	if (mode.kind !== "child") return;
+	// An individual row click dissolves the batch-wide edit override — per-row
+	// intent takes over from here on.
+	const idx = s.memberBatch.get(toolCallId);
+	const batch = idx !== undefined ? s.batches[idx] : undefined;
+	if (batch && s.editIds.has(toolCallId)) batch.editsOpen = undefined;
+	if (mode.outputOpen) {
+		s.openTools.delete(toolCallId);
+		s.closedTools.add(toolCallId);
+	} else {
+		s.openTools.add(toolCallId);
+		s.closedTools.delete(toolCallId);
+	}
+	invalidateRows([toolCallId]);
+}
+
+// Toggle one thought branch's depth-3 reasoning.
+export function toggleThought(timestamp: number): void {
+	const s = groupState();
+	if (s.openThoughts.has(timestamp)) s.openThoughts.delete(timestamp);
+	else s.openThoughts.add(timestamp);
+	invalidateThoughtRows([timestamp]);
+}
+
+// ctrl+o = full expand/collapse: walk every node, set all flags. Exact tree
+// semantics replace the old global-flag observer: expand-all opens every
+// header and every child; collapse-all clears them (running batches become
+// sticky-closed so the auto-open doesn't win back).
+export function walkTree(expand: boolean): void {
+	const s = groupState();
+	for (const batch of s.batches) {
+		batch.open = expand;
+		batch.stickyClosed = !expand && batch.running;
+		batch.editsOpen = undefined;
+		batch.editsOpenedHeader = undefined;
+	}
+	s.openTools.clear();
+	s.closedTools.clear();
+	s.openThoughts.clear();
+	if (expand) {
+		for (const batch of s.batches) {
+			for (const id of batch.ids) s.openTools.add(id);
+			for (const ts of batch.thoughts) s.openThoughts.add(ts);
+		}
+	}
+	for (const batch of s.batches) {
+		invalidateRows(batch.ids);
+		invalidateThoughtRows(batch.thoughts);
+	}
+}
+
+// pi drives ctrl+o through ToolExecutionComponent#setExpanded for every tool
+// row in one pass; walk once per gesture, not per row. (Moved here from the
+// fork — the fork's global-flag observer died with the absorption model.)
+// pi's global ctrl+o flag (ToolExecutionComponent#setExpanded) is synced to
+// EVERY tool row with its CURRENT value — including `false` (the default) on
+// each new component mid-stream. Only a CHANGE of the flag is a user
+// gesture; walking on the per-row syncs would sticky-close the running
+// batch the moment its second tool's component was created (children
+// vanished under a live header).
+let lastExpandedFlag = false;
+function walkFromCtrlO(expand: boolean): void {
+	if (expand === lastExpandedFlag) return;
+	lastExpandedFlag = expand;
+	walkTree(expand);
+}
+
+const TOOL_EXPAND_PATCHED = Symbol.for("pi-custom-ui/tool-expand-walk");
+
+export function installToolExpandWalk(): void {
+	const prototype = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
+	if (typeof prototype.setExpanded !== "function" || prototype[TOOL_EXPAND_PATCHED]) return;
+	prototype[TOOL_EXPAND_PATCHED] = true;
+	const originalSetExpanded = prototype.setExpanded as (this: unknown, expanded: boolean) => void;
+	prototype.setExpanded = function (expanded: boolean) {
+		walkFromCtrlO(expanded === true);
+		originalSetExpanded.call(this, expanded);
+	};
+}
+
+// ── Lib ↔ fork channel (separate packages, globalThis like the others) ──
+//
+// The fork always renders thinking as rows; it consults two signals per
+// timestamp — branchScope(ts) (depth-1 branch vs standalone) and the scope's
+// headerOpen flag (parent header open) — and builds branch labels, content
+// connectors, and the anchor's header line through the helpers here.
+
+export type BranchScope =
+	| { kind: "standalone"; contentOpen: boolean }
+	| {
+			kind: "branch";
+			batchIndex: number;
+			last: boolean;
+			headerOpen: boolean;
+			contentOpen: boolean;
+	  }
+	| {
+			kind: "anchor";
+			batchIndex: number;
+			last: boolean;
+			headerOpen: boolean;
+			contentOpen: boolean;
+			running: boolean;
+			count: number;
+	  };
+
+function branchScope(ts: number | undefined): BranchScope {
+	const s = groupState();
+	const contentOpen = ts !== undefined && s.openThoughts.has(ts);
+	if (ts === undefined) return { kind: "standalone", contentOpen };
+	const idx = s.thoughtBatch.get(ts);
+	if (idx === undefined) return { kind: "standalone", contentOpen };
+	const batch = s.batches[idx];
+	if (!batch) return { kind: "standalone", contentOpen };
+	const lastChild = batch.children[batch.children.length - 1];
+	const last = lastChild?.kind === "thought" && lastChild.ts === ts;
+	const common = { batchIndex: idx, last, headerOpen: batchOpen(batch), contentOpen };
+	if (batch.anchor === ts) {
+		return { kind: "anchor", ...common, running: batch.running, count: batch.ids.length };
+	}
+	return { kind: "branch", ...common };
+}
+
+// Themeless header line for the fork's anchor row (the fork has no Theme
+// handle; the line builders fall back to the base16 palette).
+const SYNTHETIC_THEME = {
+	italic: (t: string) => `\x1b[3m${t}\x1b[23m`,
+	bold: (t: string) => `\x1b[1m${t}\x1b[22m`,
+	fg: (color: string, t: string) => {
+		const map: Record<string, [string, string]> = {
+			accent: ["base0D", "5dafd4"],
+			muted: ["base04", "8a9199"],
+			success: ["base0B", "26a269"],
+			error: ["base08", "c01c28"],
+		};
+		const hit = map[color];
+		return hit ? `${base16Fg(hit[0], hit[1])}${t}\x1b[39m` : t;
+	},
+} as unknown as Theme;
+
+// Batch diffstat: summed +added/−removed lines over every settled Edit call
+// in the batch (editStats fills in as edit results land — history restore
+// included, since the slots run there too). Undefined while nothing has
+// settled; the header omits the section until there is something to show.
+function batchDiffTotals(batch: TreeBatch): { adds: number; dels: number } | undefined {
+	const s = groupState();
+	let adds = 0;
+	let dels = 0;
+	let seen = false;
+	for (const id of batch.ids) {
+		const stat = s.editStats.get(id);
+		if (stat) {
+			adds += stat.adds;
+			dels += stat.dels;
+			seen = true;
+		}
+	}
+	return seen ? { adds, dels } : undefined;
+}
+
+// The batch header line (`▸/▾ …` settled, live spinner+shimmer while
+// running), link-wrapped with the batch toggle URL. Rendered by the anchor
+// think's row for thinking-anchored batches.
+function forkBatchHeaderLine(batchIndex: number): string | undefined {
+	const batch = groupState().batches[batchIndex];
+	if (!batch) return undefined;
+	const thoughtMs = thoughtForMs(batch.thoughts);
+	const url = `pi-action://node/batch/${batchIndex}`;
+	const diff = batchDiffTotals(batch);
+	const diffUrl = `pi-action://node/edits/${batchIndex}`;
+	return batch.running
+		? liveGroupHeaderLine(SYNTHETIC_THEME, batch.ids.length, thoughtMs, animState().frame, batch.spinner, batchIndex, url, diff, diffUrl)
+		: groupHeaderLine(SYNTHETIC_THEME, batch.ids.length, thoughtMs, batchOpen(batch), url, diff, diffUrl);
+}
+
+function forkThoughtGlyph(last: boolean): string {
+	return childLabelGlyph(last);
+}
+
+// Content connector for a thought branch: `│  ` when siblings follow (the
+// through-connector links its corner past its content to the next sibling),
+// 3 spaces for the last child (the corner already turned) — and for
+// standalone thoughts, whose content indents 3 cells with no connector.
+function forkThoughtConnector(last: boolean): string {
+	return last ? "    " : ` ${base16Fg("base03", TREE_BASE03)}│\x1b[39m  `;
+}
+
+function forkStaticLabel(text: string): string {
+	const base03 = base16Fg("base03", "6a737d");
+	return `\x1b[1m${base03}${text}\x1b[22m\x1b[39m`;
+}
+
+interface ForkTreeApi {
+	branchScope(ts: number | undefined): BranchScope;
+	batchHeaderLine(batchIndex: number): string | undefined;
+	linkWrap(text: string, url: string): string;
+	thoughtGlyph(last: boolean): string;
+	thoughtConnector(last: boolean): string;
+	staticLabel(text: string): string;
+	registerThoughtRow(timestamp: number, invalidate: () => void): void;
+}
+
+const TREE_CHANNEL_KEY = "__piCustomUiTree";
+
+function publishTreeChannel(): void {
+	const api: ForkTreeApi = {
+		branchScope,
+		batchHeaderLine: forkBatchHeaderLine,
+		linkWrap,
+		thoughtGlyph: forkThoughtGlyph,
+		thoughtConnector: forkThoughtConnector,
+		staticLabel: forkStaticLabel,
+		registerThoughtRow: (timestamp, invalidate) => {
+			groupState().thoughtRows.set(timestamp, invalidate);
+		},
+	};
+	(globalThis as Record<string, unknown>)[TREE_CHANNEL_KEY] = api;
+}
+
+// ── Tree-aware slot helpers ─────────────────────────────────
+//
+// renderCall: hidden rows render nothing; the first child of a bare batch
+// carries the header (a collapsed header IS the row); an open child renders
+// its call line (the collapse click target) — the header stacked above it
+// when it is also the carrier.
+export function treeCall(mode: GroupMode, theme: Theme, context: any, call: () => Component): Component {
+	trackRow(context);
+	if (mode.kind !== "child") return call();
+	const carriesHeader = mode.first && !mode.anchorHosted;
+	if (!mode.headerOpen) {
+		if (carriesHeader) {
+			const line = forkBatchHeaderLine(mode.batchIndex);
+			if (line) return new Text(`\n${line}`, 0, 0);
+		}
+		// No visible content — an empty Container renders zero lines, whereas
+		// an empty Text would leave stray blank lines between hidden rows.
 		return new Container();
 	}
-	return undefined;
+	const stack = new Container();
+	if (carriesHeader) {
+		const line = forkBatchHeaderLine(mode.batchIndex);
+		if (line) stack.addChild(new Text(`\n${line}`, 0, 0));
+	}
+	// The call row renders when the output is open OR while the tool is
+	// still streaming — a running tool must stay visible (its glance row
+	// only exists once results arrive); showing the one-line call is not
+	// an expansion. The 16-line output block is what auto-open controls.
+	if (mode.outputOpen || context?.isPartial === true) stack.addChild(call());
+	return stack;
 }
 
 // ---------------------------------------------------------------------------
@@ -1128,57 +1882,44 @@ function groupedCall(mode: GroupMode, expanded: boolean | undefined, theme: Them
 export const bash: RenderSlots = withToolNotes({
 	renderShell: "self",
 	renderCall(args, theme, context) {
-		trackRow(context);
 		const mode = groupMode(context?.toolCallId);
-		const grouped = groupedCall(mode, context?.expanded, theme);
-		if (grouped) return grouped;
-		const timeout = args.timeout ? theme.fg("muted", ` (timeout ${args.timeout}s)`) : "";
-		return callLine("Bash", args.command ?? "", theme, timeout, context);
+		return treeCall(mode, theme, context, () => {
+			const timeout = args.timeout ? theme.fg("muted", ` (timeout ${args.timeout}s)`) : "";
+			return callLine("Bash", args.command ?? "", theme, timeout, mode, context);
+		});
 	},
 	renderResult(result, { expanded, isPartial }, theme, context) {
 		const args = context.args ?? {};
 		const mode = groupMode(context?.toolCallId);
-		const expandedNow = expanded || mode.kind === "latest";
+		if (mode.kind === "child" && !mode.headerOpen) {
+			// Hidden child (parent header closed): still settle the status so a
+			// later re-open shows the right dot.
+			if (!isPartial) settleStatus(context, context.isError);
+			return new Container();
+		}
+		const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
 		const text = resultText(result);
 		if (isPartial && !context.isError) {
-			if (glance(context)) {
+			if (mode.kind === "child" && !expandedNow) return new Container();
+			if (!expandedNow) {
 				const live = lastLine(text);
-				return resultLine(theme, live ? `Running… ${clip(live, 80)}` : "Running…");
+				return glanceLine("Bash", args.command ?? "", live ? `Running… ${clip(live, 80)}` : "Running…", theme, mode, context?.toolCallId);
 			}
-			return liveStream(text, theme);
+			return liveStream(text, theme, mode, toolToggleUrl(context));
 		}
 		settleStatus(context, context.isError);
-		if (glance(context)) {
+		if (!expandedNow) {
 			const lineCount = text.split("\n").filter((l) => l.trim()).length;
 			const exit = text.match(/Command exited with code (\d+)/);
 			const summary = context.isError
 				? theme.fg("error", exit ? `exit ${exit[1]}` : "failed")
 				: theme.fg("dim", lineCount > 0 ? `${lineCount} lines` : "done");
-			return glanceLine("Bash", args.command ?? "", summary, theme);
+			return glanceLine("Bash", args.command ?? "", summary, theme, mode, context?.toolCallId);
 		}
 		if (context.isError) {
-			const exit = text.match(/Command exited with code (\d+)/);
-			const output = text.replace(/\n*Command exited with code \d+\n?$/, "").trimEnd();
-			const status = exit ? `exit ${exit[1]}` : "failed";
-			if (expandedNow) {
-				const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
-				return new Text(
-					`  ${theme.fg("muted", "⎿")}  ${theme.fg("error", status)}\n` +
-						lines.map((l) => GLANCE_INDENT + theme.fg("error", l)).join("\n"),
-					0,
-					0,
-				);
-			}
-			const tail = lastLine(output);
-			return resultLine(theme, tail ? `${status}: ${clip(tail, 80)}${truncationNote(result.details, theme)}` : status, true);
+			return expandedBlock(text, theme, true, outputCap(mode), mode, toolToggleUrl(context));
 		}
-		if (expandedNow) {
-			return expandedBlock(text, theme, false, latestCap(mode, expanded));
-		}
-		const lineCount = text.split("\n").filter((l) => l.trim()).length;
-		const head = firstLine(text);
-		const count = lineCount > 1 ? theme.fg("muted", ` · ${lineCount} lines`) : "";
-		return resultLine(theme, `${clip(head, 90) || "Done"}${count}${truncationNote(result.details, theme)}`);
+		return expandedBlock(text, theme, false, outputCap(mode), mode, toolToggleUrl(context));
 	},
 });
 
@@ -1189,26 +1930,32 @@ export const bash: RenderSlots = withToolNotes({
 // ---------------------------------------------------------------------------
 
 export function readCallSlot(args: any, theme: Theme, context?: any): Component {
-	trackRow(context);
 	const mode = groupMode(context?.toolCallId);
-	const grouped = groupedCall(mode, context?.expanded, theme);
-	if (grouped) return grouped;
-	let arg = shortenPath(args.path ?? "");
-	if (args.offset !== undefined || args.limit !== undefined) {
-		const start = args.offset ?? 1;
-		arg += theme.fg("muted", `:${start}${args.limit !== undefined ? `-${start + args.limit - 1}` : ""}`);
-	}
-	return callLine("Read", arg, theme, "", context);
+	return treeCall(mode, theme, context, () => {
+		let arg = shortenPath(args.path ?? "");
+		if (args.offset !== undefined || args.limit !== undefined) {
+			const start = args.offset ?? 1;
+			arg += theme.fg("muted", `:${start}${args.limit !== undefined ? `-${start + args.limit - 1}` : ""}`);
+		}
+		return callLine("Read", arg, theme, "", mode, context);
+	});
 }
 
-export function readTextResult(result: any, { expanded, isPartial }: any, theme: Theme, cap?: number): Component {
-	if (isPartial) return resultLine(theme, "Reading…");
+export function readTextResult(
+	result: any,
+	{ expanded, isPartial }: any,
+	theme: Theme,
+	cap?: number,
+	mode?: GroupMode,
+	url?: string,
+): Component {
+	if (isPartial) return mode?.kind === "child" ? new Container() : resultLine(theme, "Reading…", false, mode);
 	const text = resultText(result);
 	if (!text) return new Text("", 0, 0);
 	if (expanded) {
-		return expandedBlock(text, theme, false, cap);
+		return expandedBlock(text, theme, false, cap, mode, url);
 	}
-	return resultLine(theme, `${text.split("\n").length} lines${truncationNote(result.details, theme)}`);
+	return resultLine(theme, `${text.split("\n").length} lines${truncationNote(result.details, theme)}`, false, mode);
 }
 
 // ---------------------------------------------------------------------------
@@ -1225,24 +1972,61 @@ function diffStats(diff: string): { adds: number; dels: number } {
 	return { adds, dels };
 }
 
+// Record a settled edit's diffstat for the batch header's +N −M section, and
+// make sure the header repaints with it: the header renders above the edit
+// rows and has usually already drawn by the time the first Edit settles.
+// History restores flow through here too (the slots run on restore).
+function registerEditStats(context: any, result: any): void {
+	const id = context?.toolCallId;
+	if (!id) return;
+	const s = groupState();
+	s.editIds.add(id);
+	const diff: string | undefined = result?.details?.diff;
+	if (context.isError || !diff) return;
+	const { adds, dels } = diffStats(diff);
+	const prev = s.editStats.get(id);
+	if (prev && prev.adds === adds && prev.dels === dels) return;
+	s.editStats.set(id, { adds, dels });
+	const idx = s.memberBatch.get(id);
+	if (idx !== undefined) {
+		invalidateRows(s.batches[idx].ids);
+		invalidateThoughtRows(s.batches[idx].thoughts);
+	}
+}
+
 export const edit: RenderSlots = withToolNotes({
 	renderShell: "self",
 	renderCall(args, theme, context) {
-		trackRow(context);
+		// Register before groupMode so the batch-wide editsOpen override
+		// applies from the row's very first render.
+		if (context?.toolCallId) groupState().editIds.add(context.toolCallId);
 		const mode = groupMode(context?.toolCallId);
-		const grouped = groupedCall(mode, context?.expanded, theme);
-		if (grouped) return grouped;
-		const count = Array.isArray(args.edits) ? args.edits.length : 0;
-		const suffix = count > 1 ? theme.fg("muted", ` (${count} edits)`) : "";
-		return callLine("Edit", shortenPath(args.path ?? ""), theme, suffix, context);
+		return treeCall(mode, theme, context, () => {
+			const count = Array.isArray(args.edits) ? args.edits.length : 0;
+			const suffix = count > 1 ? theme.fg("muted", ` (${count} edits)`) : "";
+			return callLine("Edit", shortenPath(args.path ?? ""), theme, suffix, mode, context);
+		});
 	},
 	renderResult(result, { expanded, isPartial }, theme, context) {
 		const args = context.args ?? {};
 		const mode = groupMode(context?.toolCallId);
-		const expandedNow = expanded || mode.kind === "latest";
-		if (isPartial && !glance(context)) return resultLine(theme, "Editing…");
+		// Register the diffstat BEFORE the hidden-child short circuit — a
+		// settled (header-closed) batch's collapsed header is exactly where
+		// the +N −M section must appear.
+		if (!isPartial) registerEditStats(context, result);
+		if (mode.kind === "child" && !mode.headerOpen) {
+			// Hidden child: still settle the status for a later re-open.
+			if (!isPartial) settleStatus(context, context.isError);
+			return new Container();
+		}
+		const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
+		if (isPartial && !expandedNow) {
+			// Child mode: the call row is already visible while streaming.
+			if (mode.kind === "child") return new Container();
+			return glanceLine("Edit", shortenPath(args.path ?? ""), theme.fg("dim", "editing…"), theme, mode, context?.toolCallId);
+		}
 		settleStatus(context, context.isError);
-		if (glance(context)) {
+		if (!expandedNow) {
 			const diff: string | undefined = result.details?.diff;
 			let summary = theme.fg("dim", "applied");
 			if (context.isError) summary = theme.fg("error", clip(firstLine(resultText(result)) || "failed", 40));
@@ -1250,40 +2034,27 @@ export const edit: RenderSlots = withToolNotes({
 				const { adds, dels } = diffStats(diff);
 				summary = `${theme.fg("success", `+${adds}`)} ${theme.fg("error", `−${dels}`)}`;
 			}
-			return glanceLine("Edit", shortenPath(args.path ?? ""), summary, theme);
+			return glanceLine("Edit", shortenPath(args.path ?? ""), summary, theme, mode, context?.toolCallId);
 		}
 		const text = resultText(result);
 		if (context.isError) {
-			// Expanded views show the full error (Text word-wraps); collapsed
-			// rows keep the single clipped line.
-			if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
-			return resultLine(theme, clip(firstLine(text) || "error", 90), true);
+			// Expanded views show the full error (Text word-wraps).
+			return expandedBlock(text || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 		}
 		const diff: string | undefined = result.details?.diff;
-		if (!diff) return resultLine(theme, "Applied");
-		if (expandedNow) {
-			const colored = withMore(diff, latestCap(mode, expanded) ?? MAX_EXPANDED_DIFF_LINES, theme)
-				.split("\n")
-				.map((line) => {
-					if (line.startsWith("+") && !line.startsWith("+++")) return theme.fg("success", line);
-					if (line.startsWith("-") && !line.startsWith("---")) return theme.fg("error", line);
-					return theme.fg("muted", line);
-				})
-				.join("\n");
-			const diffLines = colored.split("\n");
-			return new Text(
-				`  ${theme.fg("muted", "⎿")}  ${diffLines[0] ?? ""}\n` +
-					diffLines.slice(1).map((l) => GLANCE_INDENT + l).join("\n"),
-				0,
-				0,
-			);
-		}
-		const { adds, dels } = diffStats(diff);
-		return new Text(
-			`  ${theme.fg("muted", "⎿")}  ${theme.fg("success", `+${adds}`)} ${theme.fg("error", `−${dels}`)}`,
-			0,
-			0,
-		);
+		if (!diff) return resultLine(theme, "Applied", false, mode);
+		const colored = withMore(diff, outputCap(mode) ?? MAX_EXPANDED_DIFF_LINES, theme)
+			.split("\n")
+			.map((line) => {
+				if (line.startsWith("+") && !line.startsWith("+++")) return theme.fg("success", line);
+				if (line.startsWith("-") && !line.startsWith("---")) return theme.fg("error", line);
+				return theme.fg("muted", line);
+			})
+			.join("\n");
+		const prefix = childOutputPrefix(mode, theme);
+		const diffBlock = new PrefixedText(colored, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+		const editUrl = toolToggleUrl(context);
+		return editUrl ? new ClickToggle(diffBlock, editUrl) : diffBlock;
 	},
 });
 
@@ -1294,32 +2065,37 @@ export const edit: RenderSlots = withToolNotes({
 export const write: RenderSlots = {
 	renderShell: "self",
 	renderCall(args, theme, context) {
-		trackRow(context);
 		const mode = groupMode(context?.toolCallId);
-		const grouped = groupedCall(mode, context?.expanded, theme);
-		if (grouped) return grouped;
-		const lines = typeof args.content === "string" ? args.content.split("\n").length : 0;
-		const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
-		return callLine("Write", shortenPath(args.path ?? ""), theme, suffix, context);
+		return treeCall(mode, theme, context, () => {
+			const lines = typeof args.content === "string" ? args.content.split("\n").length : 0;
+			const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
+			return callLine("Write", shortenPath(args.path ?? ""), theme, suffix, mode, context);
+		});
 	},
 	renderResult(result, { expanded, isPartial }, theme, context) {
 		const args = context.args ?? {};
 		const mode = groupMode(context?.toolCallId);
-		const expandedNow = expanded || mode.kind === "latest";
-		if (isPartial && !glance(context)) return resultLine(theme, "Writing…");
+		if (mode.kind === "child" && !mode.headerOpen) {
+			// Hidden child: still settle the status for a later re-open.
+			if (!isPartial) settleStatus(context, context.isError);
+			return new Container();
+		}
+		const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
+		if (isPartial && !expandedNow) {
+			if (mode.kind === "child") return new Container();
+			return glanceLine("Write", shortenPath(args.path ?? ""), theme.fg("dim", "writing…"), theme, mode, context?.toolCallId);
+		}
 		settleStatus(context, context.isError);
-		if (glance(context)) {
+		if (!expandedNow) {
 			const summary = context.isError
 				? theme.fg("error", clip(firstLine(resultText(result)) || "failed", 40))
 				: theme.fg("dim", "written");
-			return glanceLine("Write", shortenPath(args.path ?? ""), summary, theme);
+			return glanceLine("Write", shortenPath(args.path ?? ""), summary, theme, mode, context?.toolCallId);
 		}
 		if (context.isError) {
-			const text = resultText(result);
-			if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
-			return resultLine(theme, clip(firstLine(text) || "error", 90), true);
+			return expandedBlock(resultText(result) || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 		}
-		return resultLine(theme, "Written");
+		return resultLine(theme, "Written", false, mode);
 	},
 };
 
@@ -1332,38 +2108,42 @@ function countResult(unitSingular: string, unitPlural: string, label: string, ar
 	return withToolNotes({
 		renderShell: "self" as const,
 		renderCall(args: any, theme: Theme, context: any): Component {
-			trackRow(context);
 			const mode = groupMode(context?.toolCallId);
-			const grouped = groupedCall(mode, context?.expanded, theme);
-			if (grouped) return grouped;
-			return callLine(label, argOf(args), theme, "", context);
+			return treeCall(mode, theme, context, () => callLine(label, argOf(args), theme, "", mode, context));
 		},
 		renderResult(result: any, { expanded, isPartial }: any, theme: Theme, context: any): Component {
 			const args = context.args ?? {};
 			const mode = groupMode(context?.toolCallId);
-			const expandedNow = expanded || mode.kind === "latest";
-			if (isPartial && !glance(context)) return resultLine(theme, "Searching…");
+			if (mode.kind === "child" && !mode.headerOpen) {
+				// Hidden child: still settle the status for a later re-open.
+				if (!isPartial) settleStatus(context, context.isError);
+				return new Container();
+			}
+			const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
+			if (isPartial && !expandedNow) {
+				if (mode.kind === "child") return new Container();
+				return glanceLine(label, argOf(args), theme.fg("dim", "searching…"), theme, mode, context?.toolCallId);
+			}
 			settleStatus(context, context.isError);
 			const text = resultText(result);
 			const count = text.split("\n").filter((l: string) => l.trim()).length;
 			const unit = count === 1 ? unitSingular : unitPlural;
-			if (glance(context)) {
+			if (!expandedNow) {
 				const summary = context.isError
 					? theme.fg("error", "failed")
 					: theme.fg("dim", count > 0 ? `${count} ${unit}` : `no ${unitPlural}`);
-				return glanceLine(label, argOf(args), summary, theme);
+				return glanceLine(label, argOf(args), summary, theme, mode, context?.toolCallId);
 			}
 			if (context.isError) {
-				if (expandedNow) return expandedBlock(text || "error", theme, true, latestCap(mode, expanded));
-				return resultLine(theme, clip(firstLine(text) || "error", 90), true);
-			}
-			if (expandedNow) {
-				return expandedBlock(text, theme, false, latestCap(mode, expanded));
+				return expandedBlock(text || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 			}
 			const limit = result.details?.matchLimitReached ??
 				result.details?.resultLimitReached ?? result.details?.entryLimitReached;
+			if (expandedNow) {
+				return expandedBlock(text, theme, false, outputCap(mode), mode, toolToggleUrl(context));
+			}
 			const note = limit ? theme.fg("warning", " (limit)") : "";
-			return resultLine(theme, count > 0 ? `${count} ${unit}${note}` : `no ${unitPlural}${note}`);
+			return resultLine(theme, count > 0 ? `${count} ${unit}${note}` : `no ${unitPlural}${note}`, false, mode);
 		},
 	});
 }
@@ -1399,49 +2179,40 @@ export function genericSlots(label: string, argOf: (args: any) => string): Rende
 	return withToolNotes({
 		renderShell: "self",
 		renderCall(args, theme, context) {
-			trackRow(context);
 			const mode = groupMode(context?.toolCallId);
-			const grouped = groupedCall(mode, context?.expanded, theme);
-			if (grouped) return grouped;
-			return callLine(label, argOf(args ?? {}), theme, "", context);
+			return treeCall(mode, theme, context, () => callLine(label, argOf(args ?? {}), theme, "", mode, context));
 		},
 		renderResult(result, { expanded, isPartial }, theme, context) {
 			const args = context.args ?? {};
 			const mode = groupMode(context?.toolCallId);
-			const expandedNow = expanded || mode.kind === "latest";
+			if (mode.kind === "child" && !mode.headerOpen) {
+				// Hidden child: still settle the status for a later re-open.
+				if (!isPartial) settleStatus(context, context.isError);
+				return new Container();
+			}
+			const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
 			// Exclude nix-comma's note blocks: they are delivered visually as
 			// batch note lines (via the notify routing) and would render twice.
 			const text = resultText(result, "[nix-comma]");
 			if (isPartial && !context.isError) {
-				if (glance(context)) {
+				if (!expandedNow) {
 					const live = lastLine(text);
-					return resultLine(theme, live ? `Running… ${clip(live, 80)}` : "Running…");
+					return glanceLine(label, argOf(args), live ? `Running… ${clip(live, 80)}` : "Running…", theme, mode, context?.toolCallId);
 				}
-				return liveStream(text, theme);
+				return liveStream(text, theme, mode, toolToggleUrl(context));
 			}
 			settleStatus(context, context.isError);
-			if (glance(context)) {
+			if (!expandedNow) {
 				const lineCount = text.split("\n").filter((l) => l.trim()).length;
 				const summary = context.isError
 					? theme.fg("error", "failed")
 					: theme.fg("dim", lineCount > 0 ? `${lineCount} lines` : "done");
-				return glanceLine(label, argOf(args), summary, theme);
+				return glanceLine(label, argOf(args), summary, theme, mode, context?.toolCallId);
 			}
 			if (context.isError) {
-				const status = clip(firstLine(text) || "failed", 80);
-				if (expandedNow) {
-					const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
-					return new Text(
-						`  ${theme.fg("muted", "⎿")}  ${theme.fg("error", status)}\n` +
-							lines.map((l) => GLANCE_INDENT + theme.fg("error", l)).join("\n"),
-						0,
-						0,
-					);
-				}
-				return resultLine(theme, status, true);
+				return expandedBlock(text || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 			}
-			if (expandedNow) return expandedBlock(text, theme, false, latestCap(mode, expanded));
-			return resultLine(theme, firstLine(text) || "Done");
+			return expandedBlock(text, theme, false, outputCap(mode), mode, toolToggleUrl(context));
 		},
 	});
 }
@@ -1472,63 +2243,53 @@ export function webToolSlots(spec: WebToolSpec): RenderSlots {
 	return withToolNotes({
 		renderShell: "self",
 		renderCall(args, theme, context) {
-			trackRow(context);
 			const mode = groupMode(context?.toolCallId);
-			const grouped = groupedCall(mode, context?.expanded, theme);
-			if (grouped) return grouped;
-			return callLine(spec.label, spec.argOf(args ?? {}), theme, "", context);
+			return treeCall(mode, theme, context, () => callLine(spec.label, spec.argOf(args ?? {}), theme, "", mode, context));
 		},
 		renderResult(result, { expanded, isPartial }, theme, context) {
 			const args = context.args ?? {};
 			const details = result?.details ?? {};
 			const mode = groupMode(context?.toolCallId);
-			const expandedNow = expanded || mode.kind === "latest";
+			if (mode.kind === "child" && !mode.headerOpen) {
+				// Hidden child: still settle the status for a later re-open.
+				if (!isPartial) settleStatus(context, context.isError);
+				return new Container();
+			}
+			const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
 			const text = resultText(result, "[nix-comma]");
 			if (isPartial && !context.isError) {
-				if (glance(context)) {
+				if (!expandedNow) {
 					const live = (spec.live?.(details) ?? lastLine(text)) || "Running…";
-					return resultLine(theme, clip(live, 80));
+					return glanceLine(spec.label, spec.argOf(args), clip(live, 80), theme, mode, context?.toolCallId);
 				}
 				// Streamed output wins when there is any; phase-only updates
 				// (empty text, details.phase from onUpdate) render the phase line.
-				if (text.split("\n").some((l) => l.trim())) return liveStream(text, theme);
+				if (text.split("\n").some((l) => l.trim())) return liveStream(text, theme, mode, toolToggleUrl(context));
 				const phase = spec.live?.(details);
-				return resultLine(theme, clip(phase || "Running…", 80));
+				return resultLine(theme, clip(phase || "Running…", 80), false, mode);
 			}
 			settleStatus(context, context.isError);
 			const summary = context.isError ? undefined : spec.summary(details, args);
-			if (glance(context)) {
+			if (!expandedNow) {
 				const line = context.isError
 					? theme.fg("error", clip(firstLine(text) || "failed", 56))
 					: theme.fg("dim", summary ?? "done");
-				return glanceLine(spec.label, spec.argOf(args), line, theme);
+				return glanceLine(spec.label, spec.argOf(args), line, theme, mode, context?.toolCallId);
 			}
 			if (context.isError) {
-				const status = clip(firstLine(text) || "failed", 80);
-				if (expandedNow) {
-					const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
-					return new Text(
-						`  ${theme.fg("muted", "⎿")}  ${theme.fg("error", status)}\n` +
-							lines.map((l) => GLANCE_INDENT + theme.fg("error", l)).join("\n"),
-						0,
-						0,
-					);
-				}
-				return resultLine(theme, status, true);
+				return expandedBlock(text || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 			}
-			if (expandedNow) {
-				// Details-driven summary rides the ⎿ connector; the full output
-				// block follows, capped like every other expanded row.
-				const head = summary ?? (firstLine(text) || "done");
-				const lines = capLines(text.split("\n"), latestCap(mode, expanded), theme);
-				return new Text(
-					`  ${theme.fg("muted", "⎿")}  ${theme.fg("muted", head)}\n` +
-						lines.map((l) => GLANCE_INDENT + theme.fg("toolOutput", l)).join("\n"),
-					0,
-					0,
-				);
-			}
-			return resultLine(theme, summary ?? (firstLine(text) || "Done"));
+			// Details-driven summary rides the first output line; the full output
+			// block follows, capped like every other expanded row.
+			const head = summary ?? (firstLine(text) || "done");
+			const lines = capLines(text.split("\n"), outputCap(mode), theme);
+			const body = [theme.fg("muted", head), ...lines.map((l) => theme.fg("toolOutput", l))].join("\n");
+			const prefix = childOutputPrefix(mode, theme);
+			return new PrefixedText(body, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
 		},
 	});
 }
+
+// Publish the fork channel eagerly — the fork renders thinking rows from the
+// first restored message on.
+publishTreeChannel();

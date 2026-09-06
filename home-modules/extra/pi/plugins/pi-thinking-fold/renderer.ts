@@ -1,10 +1,6 @@
-import { readFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import type { AssistantMessage } from "@earendil-works/pi-ai";
 import {
   AssistantMessageComponent,
-  ToolExecutionComponent,
   truncateToVisualLines,
 } from "@earendil-works/pi-coding-agent";
 import {
@@ -15,6 +11,7 @@ import {
   type DefaultTextStyle,
   type MarkdownOptions,
   type MarkdownTheme,
+  visibleWidth,
 } from "@earendil-works/pi-tui";
 import { resolveConfiguredThinkingBehavior } from "./model-behaviors.ts";
 
@@ -242,18 +239,67 @@ interface CustomUiAnimApi {
   batchOpen: boolean;
   requestRender?(): void;
   tick(): number;
-  completedLabel(seconds: string, canExpand: boolean, expandSuffix: string): string;
+  completedLabel(
+    seconds: string,
+    canExpand: boolean,
+    expandSuffix: string,
+    url?: string,
+  ): string;
   streamingLabel(
     seconds: string,
     canExpand: boolean,
     expandSuffix: string,
     seed: number,
+    url?: string,
   ): string;
 }
 
 export function customUiAnim(): CustomUiAnimApi | undefined {
   return (globalThis as Record<string, unknown>).__piCustomUiAnim as
     | CustomUiAnimApi
+    | undefined;
+}
+
+// ── custom-ui tree channel ──────────────────────────────
+//
+// The custom-ui lib (extensions/lib/custom-ui.ts) owns the transcript tree:
+// thinking rows are either depth-1 children of a batch (branch/anchor — the
+// anchor hosts the batch header) or standalone top-level rows. The fork
+// always renders thinking as rows; it consults branchScope(ts) for placement
+// and visibility (headerOpen) per timestamp, and builds glyphs/labels
+// through the shared helpers (no lib import — separate package).
+type TreeBranchScope =
+  | { kind: "standalone"; contentOpen: boolean }
+  | {
+      kind: "branch";
+      batchIndex: number;
+      last: boolean;
+      headerOpen: boolean;
+      contentOpen: boolean;
+    }
+  | {
+      kind: "anchor";
+      batchIndex: number;
+      last: boolean;
+      headerOpen: boolean;
+      contentOpen: boolean;
+      running: boolean;
+      count: number;
+    };
+
+interface CustomUiTreeApi {
+  branchScope(ts: number | undefined): TreeBranchScope;
+  batchHeaderLine(batchIndex: number): string | undefined;
+  linkWrap(text: string, url: string): string;
+  thoughtGlyph(last: boolean): string;
+  thoughtConnector(last: boolean): string;
+  staticLabel(text: string): string;
+  registerThoughtRow(timestamp: number, invalidate: () => void): void;
+}
+
+function customUiTree(): CustomUiTreeApi | undefined {
+  return (globalThis as Record<string, unknown>).__piCustomUiTree as
+    | CustomUiTreeApi
     | undefined;
 }
 
@@ -318,6 +364,18 @@ class RenderedThinkingContext {
     readonly previewLines: number,
     readonly collapseCanExpand: boolean,
     readonly labelFor: (canExpand: boolean) => string,
+    // Content prefix for tree children: the through-connector `│  ` when
+    // siblings follow, 3 spaces for the last child / standalone rows. Empty
+    // when the tree channel is absent (native upstream look).
+    readonly contentPrefix = "",
+    readonly prefixWidth = 0,
+    // The thought's toggle URL: expanded reasoning content carries the same
+    // link as its label, so clicking the text itself collapses the node.
+    readonly toggleUrl = "",
+    // Last child of the batch: the branch row closes the tree, so it owns
+    // the blank line that separates the tree from whatever follows (the
+    // tool children get theirs from the next block's own spacing).
+    readonly trailingBlank = false,
   ) {}
 
   add(section: RenderedThinkingSection): void {
@@ -335,7 +393,6 @@ class RenderedThinkingContext {
           : false;
     this.preparedWidth = width;
   }
-
   invalidate(): void {
     this.preparedWidth = undefined;
   }
@@ -363,7 +420,9 @@ class RenderedThinkingSection implements Component {
 
   prepare(width: number): void {
     if (this.preparedWidth === width) return;
-    this.fullLines = this.content.render(width);
+    // Content renders narrower than the row when a tree prefix will be
+    // prepended — otherwise Markdown wraps long and the prefix overflows.
+    this.fullLines = this.content.render(width - this.context.prefixWidth);
     this.preparedWidth = width;
   }
 
@@ -375,20 +434,38 @@ class RenderedThinkingSection implements Component {
         : this.context.behavior === "preview"
           ? this.fullLines.slice(-this.context.previewLines)
           : this.fullLines;
-    if (!this.label) return contentLines;
+    const prefixed = this.context.contentPrefix
+      ? contentLines.map((line) => this.context.contentPrefix + line)
+      : contentLines;
+    // Click-to-collapse on the body: per-line linkWrap keeps OSC 8 state
+    // well-defined regardless of Markdown internals; blank lines stay bare.
+    const tree = this.context.toggleUrl ? customUiTree() : undefined;
+    const clickable = tree
+      ? prefixed.map((line) => (line.trim() ? tree.linkWrap(line, this.context.toggleUrl) : line))
+      : prefixed;
+    if (!this.label) return this.context.trailingBlank ? [...clickable, ""] : clickable;
 
-    const labelText = this.context.labelFor(this.context.canExpand);
+    // labelFor consults live lib state (tree channel, anim clock) — a throw
+    // here would propagate through AssistantMessageComponent.render and kill
+    // pi (message rendering is NOT a guarded tool render slot). Fall back to
+    // a bare label instead.
+    let labelText = "";
+    try {
+      labelText = this.context.labelFor(this.context.canExpand);
+    } catch {
+      labelText = "Thought";
+    }
     if (labelText !== this.labelText) {
       this.label.setText(labelText);
       this.labelText = labelText;
     }
-    if (labelText === "") {
-      // Label suppressed (batch spinner owns the animation): keep one blank
-      // line between the batch block and the reasoning preview — healthy
-      // separation instead of the preview hugging the glance rows.
-      return ["", ...contentLines];
-    }
-    return [...this.label.render(width), ...contentLines];
+    const rows =
+      labelText === ""
+        ? // Label suppressed: keep one blank line between the block above
+          // and the reasoning — healthy separation instead of hugging it.
+          ["", ...clickable]
+        : [...this.label.render(width), ...clickable];
+    return this.context.trailingBlank ? [...rows, ""] : rows;
   }
 
   invalidate(): void {
@@ -496,6 +573,10 @@ function replaceMarkedThinkingSections(
   previewLines: number,
   collapseCanExpand: boolean,
   labelFor: (canExpand: boolean) => string,
+  contentPrefix = "",
+  prefixWidth = 0,
+  toggleUrl = "",
+  trailingBlank = false,
 ): boolean {
   const internals = component as unknown as AssistantMessageInternals;
   const children = internals.contentContainer?.children;
@@ -507,6 +588,10 @@ function replaceMarkedThinkingSections(
     previewLines,
     collapseCanExpand,
     labelFor,
+    contentPrefix,
+    prefixWidth,
+    toggleUrl,
+    trailingBlank,
   );
   for (let index = 0; index < children.length; index++) {
     const child = children[index];
@@ -523,7 +608,11 @@ function replaceMarkedThinkingSections(
     // Markdown label is kept byte-for-byte.
     const label = section.showLabel
       ? customUiAnim()
-        ? new Text("")
+        // paddingX/Y = 0: the tree grammar needs the glyph flush at the
+        // header's column and NO blank lines around the label (Text's
+        // defaults are 1/1 — the old flat look tolerated them, the tree
+        // doesn't).
+        ? new Text("", 0, 0)
         : cloneNativeMarkdown(child, "")
       : undefined;
     if (!content || (section.showLabel && !label)) return false;
@@ -640,56 +729,11 @@ function publishThoughtLive(timestamp: number, timing: ThinkingTiming): void {
   map.set(timestamp, { startedAt: timing.startedAt, completedAt: timing.completedAt });
 }
 
-// True when the custom-ui UI owns tool rendering: assistant messages that
-// carry tool calls then get their thinking folded into the tool batch header
-// instead of spending a line repeating the duration here.
-function customUiMergeEnabled(): boolean {
-  for (const path of [join(process.cwd(), ".pi", "settings.json"), join(homedir(), ".pi", "agent", "settings.json")]) {
-    try {
-      const settings = JSON.parse(readFileSync(path, "utf8")) as { customUi?: unknown };
-      if (typeof settings.customUi === "boolean") return settings.customUi;
-    } catch {
-      // Missing or unparsable — fall through to the next scope.
-    }
-  }
-  return true;
-}
+// ── Tree-aware rebuild ──────────────────────────────
 
-const TOOL_EXPAND_KEY = "__piCustomUiToolExpand";
-
-function isToolExpandAll(): boolean {
-  return (globalThis as Record<string, unknown>)[TOOL_EXPAND_KEY] === true;
-}
-
-function setToolExpandAll(expanded: boolean): void {
-  const w = globalThis as Record<string, unknown>;
-  if (w[TOOL_EXPAND_KEY] === expanded) return;
-  w[TOOL_EXPAND_KEY] = expanded;
-  // Expansion is a global toggle: re-decide every message's thinking display.
-  getPatchRecord()?.rerenderAll();
-}
-
-// Pi pushes the global ctrl+o toggle through ToolExecutionComponent#setExpanded
-// for every tool row. Observe it there so ctrl+o can also expand the thinking
-// folded into the custom-ui batch headers.
-const TOOL_EXPAND_PATCHED = Symbol.for("pi-thinking-fold/tool-expand-patch");
-
-function patchToolExpansion(): () => void {
-  const prototype = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
-  if (typeof prototype.setExpanded !== "function" || prototype[TOOL_EXPAND_PATCHED]) {
-    return () => {};
-  }
-  prototype[TOOL_EXPAND_PATCHED] = true;
-  const originalSetExpanded = prototype.setExpanded as (this: ToolExecutionComponent, expanded: boolean) => void;
-  prototype.setExpanded = function (expanded: boolean) {
-    setToolExpandAll(expanded);
-    originalSetExpanded.call(this, expanded);
-  };
-  return () => {
-    prototype.setExpanded = originalSetExpanded;
-    delete prototype[TOOL_EXPAND_PATCHED];
-  };
-}
+// Pi pushes the global ctrl+o toggle through ToolExecutionComponent#setExpanded.
+// The tree walk that used to observe it here moved into the custom-ui lib
+// (installToolExpandWalk): ctrl+o now expands/collapses every tree node.
 
 function setPatchRecord(record: PatchRecord | undefined): void {
   const prototype = AssistantMessageComponent.prototype as unknown as Record<PropertyKey, unknown>;
@@ -705,50 +749,41 @@ function rebuild(
   const message = state.fullMessage;
   if (!message) return;
 
+  const tree = customUiTree();
+  // Register this row's invalidator with the lib on every rebuild (first
+  // render included) so tree state changes — anchor assignment, batch open/
+  // close, glyph changes ╰─→├─, tick-driven header animation — can force a
+  // re-render. invalidate() re-runs updateContent (patched → this rebuild).
+  tree?.registerThoughtRow(message.timestamp, () => component.invalidate());
+
   const internals = component as unknown as AssistantMessageInternals;
   const nativeHidden = internals.hideThinkingBlock;
   internals.hideThinkingBlock = false;
   try {
-    if (record.expanded || isToolExpandAll() || !message.content.some((block) => block.type === "thinking")) {
+    if (record.expanded || !message.content.some((block) => block.type === "thinking")) {
+      // ctrl+t (explicit expand-all) or no thinking: native rendering.
       state.renderedMessage = message;
       record.originalUpdate.call(component, message);
       return;
     }
 
+    const scope = tree
+      ? tree.branchScope(message.timestamp)
+      : ({ kind: "standalone", contentOpen: false } as TreeBranchScope);
     const timing = record.timings.get(message.timestamp);
     const completed = timing?.completedAt !== undefined;
-    // Claude-style merge: tool-call messages render no thinking line at all —
-    // the batch header carries the duration. While a batch is open, a still-
-    // streaming message's thinking is suppressed too (the animated batch
-    // header counts its duration live via __piCustomUiThoughtLive; without
-    // this, three "Thinking" indicators show at once: batch header, this
-    // row, and pi's native loader). pi's hidden-thinking path with an empty
-    // label renders zero lines. An explicit ctrl+t expand still wins.
-    // Merge rule (completion only): a message whose thinking was absorbed
-    // into a tool batch header (the lib tracked it — pure thinking+toolCall
-    // messages, and thinking→text messages — narrated or closing — whose
-    // reasoning folded under an open batch). Fresh thinking (no open batch
-    // when it started) is never absorbed and keeps its fold row. STREAMING
-    // rows always render: while a batch is open the label is static (the
-    // animated batch header owns the animation) but the content preview
-    // stays visible; removing the old batchOpen suppression restored the
-    // pre-unification behavior for post-tool thinking.
-    const thoughtInHeader = (globalThis as Record<string, unknown>).__piCustomUiThoughtInHeader as
-      | ((key: number | undefined) => boolean)
-      | undefined;
-    const mergeIntoHeader =
-      !record.expanded &&
-      !isToolExpandAll() &&
-      customUiMergeEnabled() &&
-      completed &&
-      typeof thoughtInHeader === "function" &&
-      thoughtInHeader(message.timestamp);
-    if (mergeIntoHeader) {
-      // Strip thinking blocks from the display copy: pi's updateContent adds a
-      // leading Spacer(1) for any message with visible content, and non-empty
-      // thinking counts — leaving a blank line at every message boundary
-      // inside the merged batch. With thinking gone, the component renders
-      // zero lines and only the text blocks (if any) remain.
+    const inBranch = scope.kind !== "standalone";
+
+    // Child of a closed batch header: hidden entirely — thinking renders at
+    // its true chronological position whenever its ancestors are open, and
+    // this ancestor is closed. Text blocks (if any) still render; the
+    // stripped display copy keeps the component at zero thinking lines.
+    // EXCEPTION: the anchor still hosts the COLLAPSED header line — a
+    // collapsed header IS the row (§2.2), and for anchored batches the fork
+    // is its only host (the first tool row doesn't carry it). Without this
+    // the whole settled batch would render nothing at all.
+    const anchorCollapsed = scope.kind === "anchor" && !scope.headerOpen;
+    if (inBranch && !scope.headerOpen && !anchorCollapsed) {
       const stripped = {
         ...message,
         content: message.content.filter((block) => block.type !== "thinking"),
@@ -759,7 +794,28 @@ function rebuild(
       record.originalUpdate.call(component, stripped);
       return;
     }
-    const behavior = resolveThinkingDisplayBehavior(message, record.options, completed);
+
+    // Display behavior: streaming children show the preview beneath a
+    // static branch label (the animated batch header owns the one-spinner
+    // rule); completed children collapse by default and open per their
+    // depth-3 flag (click / ctrl+o walk). Standalone rows keep the
+    // configured behavior unless the user opened them.
+    let behavior: EffectiveThinkingDisplayBehavior;
+    if (anchorCollapsed) {
+      // Collapsed anchored header: header line only — no branch label, no
+      // content (the branch label and reasoning return when it opens).
+      behavior = "collapse";
+    } else if (!completed) {
+      behavior = inBranch
+        ? "preview"
+        : resolveThinkingDisplayBehavior(message, record.options, false);
+    } else if (inBranch) {
+      behavior = scope.contentOpen ? "full" : "collapse";
+    } else {
+      behavior = scope.contentOpen
+        ? "full"
+        : resolveThinkingDisplayBehavior(message, record.options, true);
+    }
     const marked = createMarkedThinkingMessage(message, behavior);
     if (!marked) {
       state.renderedMessage = message;
@@ -770,35 +826,77 @@ function rebuild(
     const hasThinkingContent = message.content.some(
       (block) => block.type === "thinking" && block.thinking.trim(),
     );
+    const url = `pi-action://node/thought/${message.timestamp}`;
+    const glyph = inBranch && tree ? tree.thoughtGlyph(scope.last) : "";
+    // Content prefix: through-connector for children with following
+    // siblings, 3 spaces for last children and standalone rows; none when
+    // the tree channel is absent (custom-ui off → native look).
+    const contentPrefix = tree ? (inBranch ? tree.thoughtConnector(scope.last) : "   ") : "";
+    const prefixWidth = contentPrefix ? visibleWidth(contentPrefix) : 0;
+    // Thinking-anchored batch (§2.3): the anchor's row hosts the batch
+    // header line above its own branch label. The header carries its own
+    // OSC 8 batch link, so the label link is applied to the label only.
+    const headerLine = scope.kind === "anchor" && tree ? tree.batchHeaderLine(scope.batchIndex) : undefined;
+    // Leading blank line so the block stands apart; the trailing newline
+    // separates the header from the branch label — none when collapsed
+    // (nothing follows the header then).
+    const headerPrefix = headerLine ? (anchorCollapsed ? `\n${headerLine}` : `\n${headerLine}\n`) : "";
     const labelFor = (canExpand: boolean) => {
       const api = customUiAnim();
-      if (!completed && api) {
-        // Animated streaming label from the shared custom-ui API —
-        // dots spinner + shimmer verb, one clock with the batch header.
+      // Standalone rows keep the pre-tree presentation: one-space indent
+      // with a blank line above and below (the old label Text's padding 1/1,
+      // which branch/anchor rows must not inherit — they are flush tree
+      // glyphs). The pad sits OUTSIDE the OSC 8 span.
+      const standalonePad = (label: string) => `\n ${label}\n`;
+      if (anchorCollapsed) {
+        // The collapsed header IS the row (§2.2). The line carries its own
+        // OSC 8 batch link; no glyph/label/thought URL of our own.
+        return headerPrefix;
+      }
+      if (!completed) {
         const seconds = timing
           ? formatStreamingThinkingSeconds(record.now - timing.startedAt)
           : "0s";
-        // While a batch is open the animated header owns the indicator —
-        // suppress this row's label entirely and stream just the reasoning
-        // preview beneath it. Fresh-thinking rows (no batch) get the full
-        // animated label.
-        if (api.batchOpen) return "";
-        return api.streamingLabel(
-          seconds,
-          canExpand,
-          `  (${record.options.toggleKey} to expand)`,
-          message.timestamp,
-        );
+        if (inBranch) {
+          // Static streaming branch label — one-spinner rule: the batch
+          // header (or the fresh-thinking row elsewhere) animates, not this.
+          // staticLabel lives on the TREE channel (not the anim API) — it
+          // renders inside the message component's render pass, where a
+          // throw would crash pi (unlike guarded tool render slots).
+          //
+          // Wrap ONLY the label segment: headerPrefix may carry the anchor's
+          // header line with its own batch OSC 8 span, and a nested opener
+          // would close that span AND forfeit the thought link for every
+          // cell after it (OSC 8 does not stack) — the anchor's branch label
+          // must keep its own click target.
+          const core = tree ? tree.staticLabel(`Thinking… ${seconds}`) : `Thinking… ${seconds}`;
+          const label = tree ? tree.linkWrap(glyph + core, url) : glyph + core;
+          return headerPrefix + label;
+        }
+        // Fresh thinking (no batch): the animated standalone label.
+        if (api) {
+          return standalonePad(
+            api.streamingLabel(seconds, canExpand, `  (${record.options.toggleKey} to expand)`, message.timestamp, url),
+          );
+        }
+        return standalonePad(createStreamingThinkingLabel(record.options, timing, record.now, canExpand));
       }
-      return completed && timing
-        ? (api
-          ? api.completedLabel(
-              formatThinkingSeconds(timing.completedAt! - timing.startedAt),
-              canExpand,
-              `  (${record.options.toggleKey} to expand)`,
-            )
-          : createCompletedThinkingLabel(record.options, timing, canExpand))
-        : createStreamingThinkingLabel(record.options, timing, record.now, canExpand);
+      if (!timing) return standalonePad(createStreamingThinkingLabel(record.options, timing, record.now, canExpand));
+      const duration = formatThinkingSeconds(timing.completedAt! - timing.startedAt);
+      // Expanded children carry the (click to collapse) suffix — the label
+      // is the only collapse affordance. Collapsed labels stay bare (the
+      // click affordance is the row itself; ctrl+o stays in pi's footer).
+      const suffix = behavior === "full" ? "  (click to collapse)" : "";
+      const core = api
+        ? api.completedLabel(duration, false, suffix)
+        : createCompletedThinkingLabel(record.options, timing, false) + suffix;
+      if (inBranch) {
+        // Same no-nesting rule as above: the label segment gets the thought
+        // link; the header line keeps its own batch link.
+        const label = tree ? tree.linkWrap(glyph + core, url) : glyph + core;
+        return headerPrefix + label;
+      }
+      return tree ? standalonePad(tree.linkWrap(core, url)) : standalonePad(core);
     };
 
     state.renderedMessage = marked.message;
@@ -810,6 +908,14 @@ function rebuild(
       record.options.previewLines,
       hasThinkingContent,
       labelFor,
+      contentPrefix,
+      prefixWidth,
+      // Expanded reasoning is a click target like its label (click-to-
+      // collapse); only when the tree channel is live (custom-ui on).
+      tree ? url : "",
+      // A branch that is the batch's last child ends the tree — it owes the
+      // closing blank line (standalone rows already pad both sides).
+      tree && inBranch && scope.last,
     );
     if (!replaced) {
       // Pi changed its internal child layout. Never leak markers or damage the
@@ -918,15 +1024,6 @@ function createPatchRecord(options: Partial<ThinkingFoldOptions>): PatchRecord {
     },
   };
 
-  // Let the custom-ui extensions force a re-render of a message's fold row:
-  // a thought committed to a batch header at message_end (lib settleThoughtKey)
-  // must strip the row even though pi's final component update already ran —
-  // fold rows have no invalidator of their own.
-  const publishedRerender = (timestamp: number): void => {
-    record.rerenderTimestamp(timestamp);
-  };
-  (globalThis as Record<string, unknown>).__piCustomUiRerenderThought = publishedRerender;
-
   prototype.updateContent = function (message: AssistantMessage): void {
     const state = record.states.get(this) ?? {};
 
@@ -958,7 +1055,6 @@ export function installThinkingFoldPatch(
   record.owners += 1;
   record.updateOptions(options);
   let disposed = false;
-  const restoreToolExpansion = patchToolExpansion();
 
   return {
     get expanded() {
@@ -994,11 +1090,8 @@ export function installThinkingFoldPatch(
       record.owners -= 1;
       if (record.owners > 0 || getPatchRecord() !== record) return;
 
-      restoreToolExpansion();
       prototype.updateContent = record.originalUpdate;
       setPatchRecord(undefined);
-      const w = globalThis as Record<string, unknown>;
-      if (w.__piCustomUiRerenderThought === publishedRerender) delete w.__piCustomUiRerenderThought;
     },
   };
 }

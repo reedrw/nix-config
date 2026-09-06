@@ -62,82 +62,104 @@ the hard way; violating them fails silently.
   handle captured from a zero-line `setWidget` factory (same capture trick as the
   statusline footer; widgets, unlike footers, can be additive).
 
-## Grouping & the one Thinking indicator
+## Transcript tree & the one Thinking indicator
 
-- **Grouping rule**: consecutive tool calls form a batch; reasoning folds it
-  visually (header + glance rows appear immediately) without closing it; visible
-  assistant text, a user message, or `agent_end` closes it. A tool call joining
-  a folded batch RE-OPENS it (`trackGroupToolCall` clears `folded` and
-  invalidates the member rows) — otherwise `groupMode`'s `collapsed || folded`
-  check swallows the new call and the newest execution renders as a collapsed
-  glance instead of the expanded `latest` row. Shipping this rule missing was a
-  real bug: any thinking interleaved mid-batch (interleaved reasoning makes it
-  common) collapsed every later tool call. **Thought absorption**: thinking
-  belongs to the batch header it streamed beneath. `foldToolGroup(timestamp)`
-  remembers the streaming message (`pendingThought`); `settleThoughtKey` at
-  message_end commits it to that batch — usually AFTER the message's own text
-  collapsed the batch (closing thinking→text AND narrated
-  thinking→text→toolCall messages alike; their tools open the NEXT batch,
-  which must not restamp — forward-stamping skips messages with visible text).
-  The fork's merge rule is absorption-based (`__piCustomUiThoughtInHeader`),
-  not shape-based: absorbed fold rows are stripped, the header carries the
-  duration. Only fresh thinking (no open batch when it started) keeps its
-  standalone row. History: the original shape-based narrated exemption
-  ("stripping a visible row was the missing-fold regression") was really a
-  duration-accounting bug — stripped rows whose duration was stamped nowhere;
-  absorption fixes the general case. Fold rows have NO invalidator: after a
-  commit, custom-ui nudges the fork via `__piCustomUiRerenderThought` (its
-  `rerenderTimestamp`) or the row stays stale next to the merged header.
-- **One Thinking indicator (unification rule)**: three surfaces used to show
-  "Thinking" at once — pi's native loader row, the thinking-fold streaming row,
-  the custom-ui batch header. Rule (v3): the batch header ALWAYS animates for the
-  whole batch run; during batch thinking the fold row streams label-less (fork
-  labelFor returns "" while `__piCustomUiAnim.batchOpen` — just reasoning preview
-  beneath the header); fresh-thinking rows (no batch) get the full animated label
+- **Tree model**: the transcript is an interactive tree. Every tool batch is
+  a disclosure header (`▸/▾ Thought for Xs · Ran N tool calls` — bold grey
+  base03, italic, one leading space; collapsed by
+  default when settled); glance rows and thinking branches are its children
+  (`├─`/`╰─`, visible iff the header is open, one column in so the glyphs sit under the header's `▾` — every child prefix, continuation, and output rail shares that column);
+  each child's output/reasoning is depth 3 (visible iff the child is open).
+  `│` appears ONLY as the through-connector on the content lines of an
+  expanded mid-list child (`│  ` = 3 cells for thinking, `│` + the 5-cell
+  result indent for tool output); the last child (`╰─`) has no connector.
+  **wrapTreeText** (lib, used by PrefixedText instead of pi-tui's
+  wrapTextWithAnsi): splits tokens after `- _ / . ,` and spaces, hard-breaks
+  split-less runs at the width, fills lines to the brim (no stranded stubby
+  heads), re-opens the active OSC 8 link + SGR state on every continuation
+  and closes them at each line end. Hard `\n` = forced break. Do NOT patch
+  pi-tui's wrapper for this — the lib owns the tree wrapping.
+  Expanded CONTENT is clickable too: thinking text (fork) and tool output
+  (`ClickToggle` around every `expandedBlock`/`liveStream`/edit diff) carry
+  the node's own toggle URL per line, so clicking the body collapses it.
+  A batch whose LAST child is a thinking branch ends with one blank line
+  (fork `trailingBlank`, set when `scope.last`) — tool children get their
+  separation from the next block's own spacing, branch rows must supply
+  it themselves. Standalone thoughts pad both sides as before.
+- **OSC 8 does NOT stack**: an inner `]8;;` opener silently closes the
+  outer span, and nothing after the inner closer is linked. NEVER nest or
+  whole-line-wrap when a segment already carries a link (e.g. the anchor
+  row: wrap ONLY the `├─ Thought…` label with the thought URL — the header
+  line inside it keeps its own batch URL). Turn-summary thinking time is
+  clamped per message to its wall span and capped at the turn duration —
+  leaked live entries (aborted streams) must not inflate it.
+- **Untracked-row repaint**: pi renders a tool's call row during arg
+  streaming (before the `tool_call` event) and renders a restored
+  transcript before `session_start`'s rescan — both first passes render
+  UNTRACKED (normal mode = full-width call line, no glyph/rail; this was
+  the "long word wraps at column 0" bug). Fixes: `trackGroupToolCall`
+  invalidates the row it tracks, and `scanToolGroupsFromHistory` snapshots
+  the pre-scan invalidator registry and re-fires it for ids the scan
+  tracks (resetToolGroups would otherwise wipe the registry and leave
+  those rows untracked forever).
+  Children (tool ids + thinking timestamps) merge into one chronological
+  `children` list per batch — renderers walk it to place `├─`/`╰─`.
+- **Header diffstat**: once Edit calls in a batch settle, the header gains
+  a summed `+N −M` section (green/red) — a SEPARATE OSC 8 span after the
+  header link (never nested — an inner opener closes the outer). Clicking
+  it (`pi-action://node/edits/<i>`) sets `batch.editsOpen`, a batch-wide
+  override of edit-row output flags (dissolved by per-row toggles or
+  ctrl+o walks), and OPENING also opens the batch header — one click
+  straight to the changes. A SOLO batch of exactly ONE node (1 tool call,
+  NO reasoning block, non-edit) also toggles that call's output when the
+  header is clicked — one click expands the block; anything bigger grows
+  node by node, and an EDIT's output only opens via the diffstat click. The diffstat is a FULL toggle: its second click
+  collapses the header it opened (a user-opened header survives). Auto-
+  open of the newest child's output (16-line cap) does NOT apply to solo
+  trees carrying a reasoning block (1 tool + thoughts): their streaming
+  tool shows only its call row — treeCall keeps `isPartial` call rows
+  visible and the partial glance yields to it.
+- **State machine**: batch open/closed is USER state with live defaults
+  (`open?` + `stickyClosed?` on each batch; `openTools`/`closedTools`/
+  `openThoughts` sets on the state). A RUNNING batch auto-opens and its
+  newest child auto-opens with a 16-line cap; a user collapse of a running
+  batch is sticky (wins over auto-open until re-open); settled batches
+  default closed; user-opened children persist. There are NO derived
+  `collapsed`/`folded`/`latest` flags and no `effectiveExpanded` precedence
+  chain — clicks flip exactly one node's flag (`pi-action://node/batch/<i>`,
+  `node/tool/<id>`, `node/thought/<ts>` OSC 8 links, fullscreen only), and
+  ctrl+o walks every node via `walkTree` (the lib observes
+  `ToolExecutionComponent#setExpanded` once per gesture, deduped within
+  50ms — pi fires it per row). `scanToolGroupsFromHistory` mirrors the live
+  rules on restore.
+- **Leading thoughts anchor the batch (§2.3)**: a contiguous run of
+  pure-thinking messages directly before a batch's first tool call joins it
+  — the FIRST becomes the anchor and HOSTS the header line in the fork (via
+  the `__piCustomUiTree.batchHeaderLine` channel + linkWrap); the rest are
+  ordinary branches. Visible text or a user message dissolves the pending
+  run (hosting would reorder the think past the narration). No absorption:
+  thinking always renders at its true chronological position whenever its
+  ancestors are open — a branch of a closed header renders zero lines
+  (fork's stripped-message path). The fork registers a per-timestamp
+  invalidator (`registerThoughtRow`) on first render so tree state changes
+  (anchor assignment, open/close, `╰─`→`├─` reglyphing, tick-driven header
+  animation) re-render thought rows — the old "fold rows have no
+  invalidator" gap is closed, and `__piCustomUiRerenderThought` nudges are
+  gone with it.
+- **One Thinking indicator (unification rule)**: the running batch header is
+  the ONLY animated element while a batch runs (`batchHeaderAnimated()` = a
+  batch is running — every running batch has a visible live header, even
+  solo and sticky-closed; the dead-air loader reads it). A thought streaming
+  mid-batch renders a branch row with a STATIC `Thinking… 3s` label +
+  preview; fresh thinking (no batch) keeps the animated standalone label
   ({ frame, batchOpen, spinnerFrame, inProgressDot, streamingLabel, tick } —
   shared clock; base16 SGR, no Theme needed). pi's loader is hidden on
-  thinking_delta (`setWorkingVisible(false)`), restored on tool_call/text_delta/
-  user message/agent_end — NOT on thinking_end (flicker between consecutive
-  thinking blocks). The fork's streaming label must render through a pi-tui
-  **Text**, not Markdown (raw SGR gets mangled); its timer runs at 80ms. The
-  in-progress tool dot is dotsCircle (2-cell frames, spaces are anti-wiggle
-  padding — do not trim) and solo batches tick so it animates.
-- **Live turn token readout**: every animated spinner (live batch header,
-  fork streaming label, dead-air loader) carries a turn-wide `↑N` output-token
-  count that climbs in real time. The tracker (lib, `__piCustomUiTurnTokens` on
-  globalThis; fed from custom-ui.ts's message_update/message_end handlers) sums
-  provider-reported `usage.output` over finished assistant messages (settled)
-  and for the streaming message takes max(partial's cumulative usage.output —
-  Anthropic/Google report per chunk — and a chars/4 estimate of the streamed
-  deltas; OpenAI reports usage only on the final chunk). Counters reset per
-  turn (agent_start) and per message (assistant message_start); the readout
-  hides outside an active turn, and settled headers carry no tokens (the turn
-  summary row has the final totals).
-- While a batch's header is visible (folded, or ≥2 tools so the first row became
-  "earlier"), `tickOpenBatch` animates it on an 80 ms timer (`ensureTick` in
-  custom-ui.ts, restarted by tool_call/thinking_delta, self-stopping): dots
-  spinner (random variant per batch, cli-spinners frames) + shimmer verb
-  (pi-animations' shimmer recolored to a base0D→base0E→base0C stylix gradient
-  over base04, raw truecolor SGR — beyond theme.fg) + zentui's verb catalog
-  (deterministic per batchIndex). Settled batches render the static `✔` header;
-  restored ones too, so animation state needs no persistence. The shimmer palette
-  is memoized per base16 epoch — `refreshBase16()` in the lib re-reads
-  base16.json when its CONTENT changes (throttled to 500 ms; mtime/size cannot
-  detect a toggle-theme swap because Nix store files share mtime=1 and the
-  dark/light JSONs are byte-equal in length), bumping the epoch, so a toggle
-  mid-session recolors the shimmer within ~a second. PITFALL: cache keys
-  derived from the epoch must call `refreshBase16()` FIRST — the epoch only
-  moves during a refresh, and a key computed before it matches the stale
-  entry forever (this shipped as a real bug: /theme switches recolored
-  base16Bg rows but not the shimmer). Thinking durations (live and restored, via the
-  pi-thinking-fold fork's `__piCustomUi*` globalThis maps) surface in the batch
-  header. Extension notifications (`ctx.ui.notify` info level) fold into the open
-  batch via the patched `showExtensionNotify`. Restored sessions rebuild batches
-  via `scanToolGroupsFromHistory` on `session_start`.
-- **pi-thinking-fold is a vendored fork** (`plugins/pi-thinking-fold/`, see its
-  FORK.md): thinking lines fold into the custom-ui batch headers instead of
-  rendering their own line. Its deviations from upstream are greppable
-  (`__piCustomUi`).
+  thinking_delta (`setWorkingVisible(false)`), restored on
+  tool_call/text_delta/user message/agent_end — NOT on thinking_end
+  (flicker between consecutive thinking blocks). The fork's streaming label
+  must render through a pi-tui **Text**, not Markdown (raw SGR gets
+  mangled); its timer runs at 80ms. The in-progress tool dot is dotsCircle
+  (2-cell frames, spaces are anti-wiggle padding — do not trim).
 
 ## Compact user messages & `!` shell commands
 
