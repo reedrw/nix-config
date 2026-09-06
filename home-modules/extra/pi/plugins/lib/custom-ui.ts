@@ -29,6 +29,9 @@ import type { Theme } from "@earendil-works/pi-coding-agent";
 const MAX_LINE = 120;
 // Cap for expanded diff output; bash etc. rely on pi's upstream truncation.
 const MAX_EXPANDED_DIFF_LINES = 400;
+// Same cap for a fully expanded write: the file content rides in the call
+// args (the result only carries a byte count) and can be arbitrarily large.
+const MAX_EXPANDED_WRITE_LINES = 400;
 
 // Global style toggle: `customUi: false` in .pi/settings.json (project)
 // or ~/.pi/agent/settings.json (global; project wins) keeps pi's default
@@ -2095,7 +2098,19 @@ export const write: RenderSlots = {
 		if (context.isError) {
 			return expandedBlock(resultText(result) || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 		}
-		return resultLine(theme, "Written", false, mode);
+		// Expanded: show the written content. The result carries only a byte
+		// count — the file text lives in the call args. Mirrors the edit slot's
+		// expanded-diff block (cap, child prefix, click-to-collapse).
+		const content = typeof args.content === "string" ? args.content.replace(/\n+$/, "") : "";
+		if (!content) return resultLine(theme, "Written", false, mode);
+		const colored = withMore(content, outputCap(mode) ?? MAX_EXPANDED_WRITE_LINES, theme)
+			.split("\n")
+			.map((line) => theme.fg("toolOutput", line))
+			.join("\n");
+		const prefix = childOutputPrefix(mode, theme);
+		const contentBlock = new PrefixedText(colored, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+		const writeUrl = toolToggleUrl(context);
+		return writeUrl ? new ClickToggle(contentBlock, writeUrl) : contentBlock;
 	},
 };
 
@@ -2137,13 +2152,18 @@ function countResult(unitSingular: string, unitPlural: string, label: string, ar
 			if (context.isError) {
 				return expandedBlock(text || "error", theme, true, outputCap(mode), mode, toolToggleUrl(context));
 			}
+			// Expanded: full output. A reached result limit truncates the tool's
+			// own output — say so instead of silently showing a cut-off list.
+			// Built by hand (not expandedBlock) so the warning keeps its color.
 			const limit = result.details?.matchLimitReached ??
 				result.details?.resultLimitReached ?? result.details?.entryLimitReached;
-			if (expandedNow) {
-				return expandedBlock(text, theme, false, outputCap(mode), mode, toolToggleUrl(context));
-			}
-			const note = limit ? theme.fg("warning", " (limit)") : "";
-			return resultLine(theme, count > 0 ? `${count} ${unit}${note}` : `no ${unitPlural}${note}`, false, mode);
+			const note = limit ? theme.fg("warning", "(limit reached — results truncated by the tool)") : "";
+			const lines = capLines(text.split("\n"), outputCap(mode), theme).map((l) => theme.fg("toolOutput", l));
+			if (note) lines.unshift(note);
+			const prefix = childOutputPrefix(mode, theme);
+			const block = new PrefixedText(lines.join("\n"), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+			const url = toolToggleUrl(context);
+			return url ? new ClickToggle(block, url) : block;
 		},
 	});
 }
@@ -2285,7 +2305,10 @@ export function webToolSlots(spec: WebToolSpec): RenderSlots {
 			const lines = capLines(text.split("\n"), outputCap(mode), theme);
 			const body = [theme.fg("muted", head), ...lines.map((l) => theme.fg("toolOutput", l))].join("\n");
 			const prefix = childOutputPrefix(mode, theme);
-			return new PrefixedText(body, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+			const block = new PrefixedText(body, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+			// Click-to-collapse, like every other expanded body.
+			const url = toolToggleUrl(context);
+			return url ? new ClickToggle(block, url) : block;
 		},
 	});
 }
