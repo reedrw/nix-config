@@ -589,6 +589,19 @@ export function currentBatchSize(): number | undefined {
 	return s.batches[s.current].ids.length;
 }
 
+// True while the animated batch header is on screen: an open batch that is
+// folded (thinking streamed over it) or has ≥2 calls (the first row became
+// "earlier"). Read by the dead-air loader timer — in those states the header
+// is the one spinner even when no tool is in flight and thinking deltas have
+// paused (provider latency), so the loader must stay dark or two spinners
+// show at once.
+export function batchHeaderAnimated(): boolean {
+	const s = groupState();
+	if (s.current === undefined) return false;
+	const batch = s.batches[s.current];
+	return batch.folded || batch.ids.length >= 2;
+}
+
 export function tickOpenBatch(): boolean {
 	const s = groupState();
 	if (s.current === undefined) return false;

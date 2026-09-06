@@ -73,6 +73,7 @@ import {
 	glanceLine,
 	groupMode,
 	grep,
+	batchHeaderAnimated,
 	latestCap,
 	ls,
 	noteTurnDelta,
@@ -1540,9 +1541,19 @@ export default function customUi(pi: ExtensionAPI) {
 			//   after its tool would otherwise show nothing
 			// Bigger batches have the animated header; fresh thinking has the
 			// animated fold row; in-flight tools have the dotsCircle dot.
+			// Latency guard: while thinking is open its deltas pause during
+			// provider latency, so recency alone can't tell "dead" from
+			// "stalled mid-think" — a folded SOLO batch (animated header) and
+			// fresh thinking (animated fold row) each keep another spinner lit,
+			// and the loader must stay hidden then.
 			const jobs = currentBatchSize();
+			const liveThought = (globalThis as Record<string, unknown>)[LIVE_THOUGHT_KEY];
 			const idle =
-				Date.now() - lastAgentEventAt > 500 && inFlightTools === 0 && (jobs === undefined || jobs === 1);
+				Date.now() - lastAgentEventAt > 500 &&
+				inFlightTools === 0 &&
+				typeof liveThought !== "number" &&
+				!batchHeaderAnimated() &&
+				(jobs === undefined || jobs === 1);
 			setLoaderVisible(c, idle);
 			if (c.mode !== "tui") return;
 			try {

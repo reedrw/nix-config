@@ -1,6 +1,6 @@
 // Smoke test: drive the lib's grouping + live header through a simulated
 // batch, mimicking what the extensions' event handlers do.
-import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, settleThoughtKey, thoughtInHeader, webToolSlots, resetTurnTokens, beginTurnMessage, noteTurnDelta, noteTurnProviderOutput, settleTurnMessage, endTurnTokens, turnOutputTokens, formatTokens } from "./lib/custom-ui.ts";
+import { trackGroupToolCall, foldToolGroup, collapseToolGroup, groupMode, tickOpenBatch, batchHeaderAnimated, liveGroupHeaderLine, groupHeaderLine, resetToolGroups, scanToolGroupsFromHistory, settleThoughtKey, thoughtInHeader, webToolSlots, resetTurnTokens, beginTurnMessage, noteTurnDelta, noteTurnProviderOutput, settleTurnMessage, endTurnTokens, turnOutputTokens, formatTokens } from "./lib/custom-ui.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -131,6 +131,22 @@ trackGroupToolCall("u1");
 if (anim.batchOpen !== true) throw new Error("batchOpen must be true with an open batch");
 collapseToolGroup();
 if (anim.batchOpen !== false) throw new Error("batchOpen must clear on collapse");
+
+// batchHeaderAnimated: the dead-air loader must stay dark whenever an
+// animated batch header owns the indicator — folded batches (thinking
+// streamed over them) and ≥2-call batches, even when tools are settled and
+// thinking deltas pause mid-stream (provider latency showed two spinners).
+resetToolGroups();
+if (batchHeaderAnimated()) throw new Error("no batch → no animated header");
+trackGroupToolCall("h1");
+if (batchHeaderAnimated()) throw new Error("open solo batch → no header yet");
+foldToolGroup(4242);
+if (!batchHeaderAnimated()) throw new Error("folded solo batch → animated header");
+collapseToolGroup();
+if (batchHeaderAnimated()) throw new Error("collapsed batch → header settled");
+resetToolGroups();
+trackGroupToolCall("h2"); trackGroupToolCall("h3");
+if (!batchHeaderAnimated()) throw new Error("≥2-call batch → animated header");
 
 // shared clock: wall-clock derived — frame advances with time, not ticks
 const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
