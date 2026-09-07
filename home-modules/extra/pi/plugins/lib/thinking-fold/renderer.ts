@@ -13,6 +13,17 @@ import {
   type MarkdownTheme,
   visibleWidth,
 } from "@earendil-works/pi-tui";
+import {
+  animState,
+  branchScope,
+  forkBatchHeaderLine,
+  forkThoughtConnector,
+  forkThoughtGlyph,
+  forkStaticLabel,
+  linkWrap,
+  noteThinkingTiming,
+  registerThoughtRow,
+} from "../custom-ui.ts";
 import { resolveConfiguredThinkingBehavior } from "./model-behaviors.ts";
 
 export type ThinkingFoldMode = "auto" | "trace" | "summary";
@@ -227,13 +238,13 @@ export function createThinkingCursorLabel(
 
 // ── custom-ui unification ─────────────────────────
 //
-// custom-ui (extensions/lib/custom-ui.ts) publishes an animation API on
-// globalThis. With it present, exactly ONE animated "Thinking" indicator
-// exists: the tool-batch header while a batch is open (this package's
-// streaming thinking row is suppressed then — its duration already counts
-// into the header), otherwise THIS row, animated through the shared API
-// (dots spinner + shimmer verb, colors from the terminal's base16 palette).
-// Without the API, behavior is unchanged (static label, own row always).
+// custom-ui (lib/custom-ui.ts, same module graph) publishes an animation
+// API. With it present, exactly ONE animated "Thinking" indicator exists:
+// the tool-batch header while a batch is open (this renderer's streaming
+// thinking row is suppressed then — its duration already counts into the
+// header), otherwise THIS row, animated through the shared API (dots
+// spinner + shimmer verb, colors from the terminal's base16 palette).
+// custom-ui always loads (one extension), so the API is always live.
 interface CustomUiAnimApi {
   frame: number;
   batchOpen: boolean;
@@ -255,37 +266,19 @@ interface CustomUiAnimApi {
 }
 
 export function customUiAnim(): CustomUiAnimApi | undefined {
-  return (globalThis as Record<string, unknown>).__piCustomUiAnim as
-    | CustomUiAnimApi
-    | undefined;
+  return animState();
 }
 
-// ── custom-ui tree channel ──────────────────────────────
+// ── custom-ui tree API ──────────────────────────────
 //
-// The custom-ui lib (extensions/lib/custom-ui.ts) owns the transcript tree:
-// thinking rows are either depth-1 children of a batch (branch/anchor — the
-// anchor hosts the batch header) or standalone top-level rows. The fork
-// always renders thinking as rows; it consults branchScope(ts) for placement
-// and visibility (headerOpen) per timestamp, and builds glyphs/labels
-// through the shared helpers (no lib import — separate package).
-type TreeBranchScope =
-  | { kind: "standalone"; contentOpen: boolean }
-  | {
-      kind: "branch";
-      batchIndex: number;
-      last: boolean;
-      headerOpen: boolean;
-      contentOpen: boolean;
-    }
-  | {
-      kind: "anchor";
-      batchIndex: number;
-      last: boolean;
-      headerOpen: boolean;
-      contentOpen: boolean;
-      running: boolean;
-      count: number;
-    };
+// The custom-ui lib owns the transcript tree: thinking rows are either
+// depth-1 children of a batch (branch/anchor — the anchor hosts the batch
+// header) or standalone top-level rows. This renderer always renders
+// thinking as rows; it consults branchScope(ts) for placement and
+// visibility (headerOpen) per timestamp, and builds glyphs/labels through
+// the shared helpers (imported directly from the lib — one suite, no
+// globalThis channel).
+type TreeBranchScope = ReturnType<typeof branchScope>;
 
 interface CustomUiTreeApi {
   branchScope(ts: number | undefined): TreeBranchScope;
@@ -297,10 +290,16 @@ interface CustomUiTreeApi {
   registerThoughtRow(timestamp: number, invalidate: () => void): void;
 }
 
-function customUiTree(): CustomUiTreeApi | undefined {
-  return (globalThis as Record<string, unknown>).__piCustomUiTree as
-    | CustomUiTreeApi
-    | undefined;
+function customUiTree(): CustomUiTreeApi {
+  return {
+    branchScope,
+    batchHeaderLine: forkBatchHeaderLine,
+    linkWrap,
+    thoughtGlyph: forkThoughtGlyph,
+    thoughtConnector: forkThoughtConnector,
+    staticLabel: forkStaticLabel,
+    registerThoughtRow,
+  };
 }
 
 function foldThinkingText(
@@ -706,28 +705,11 @@ function getPatchRecord(): PatchRecord | undefined {
   ] as PatchRecord | undefined;
 }
 
-// Mirror completed thinking durations for the custom-ui extensions
-// (extensions/lib/custom-ui.ts): they fold the duration into their tool
-// batch header ("✻ Thought for 3.5s · Ran 2 tool calls") and need the same
-// timings this package reconstructs for restored sessions.
-const THOUGHT_FOR_KEY = "__piCustomUiThoughtFor";
-
-function publishThoughtFor(timestamp: number, timing: ThinkingTiming): void {
-  if (timing.completedAt === undefined) return;
-  const w = globalThis as Record<string, unknown>;
-  const map = (w[THOUGHT_FOR_KEY] ??= new Map()) as Map<number, number>;
-  map.set(timestamp, Math.max(0, timing.completedAt - timing.startedAt));
-}
-
-// Raw timings (startedAt + optional completedAt) so the custom-ui header
-// can count an in-progress reasoning block up in real time.
-const THOUGHT_LIVE_KEY = "__piCustomUiThoughtLive";
-
-function publishThoughtLive(timestamp: number, timing: ThinkingTiming): void {
-  const w = globalThis as Record<string, unknown>;
-  const map = (w[THOUGHT_LIVE_KEY] ??= new Map()) as Map<number, ThinkingTiming>;
-  map.set(timestamp, { startedAt: timing.startedAt, completedAt: timing.completedAt });
-}
+// Publish raw timings (startedAt + optional completedAt) to the shared
+// registry on the custom-ui lib (globalThis-backed — survives /reload and
+// lib module instances): the batch headers fold the duration in ("✻ Thought
+// for 3.5s · Ran 2 tool calls"), count in-progress reasoning up in real
+// time, and the turn summary reads the same timings for restored sessions.
 
 // ── Tree-aware rebuild ──────────────────────────────
 
@@ -779,7 +761,7 @@ function rebuild(
     // this ancestor is closed. Text blocks (if any) still render; the
     // stripped display copy keeps the component at zero thinking lines.
     // EXCEPTION: the anchor still hosts the COLLAPSED header line — a
-    // collapsed header IS the row (§2.2), and for anchored batches the fork
+    // collapsed header IS the row (§2.2), and for anchored batches the fold
     // is its only host (the first tool row doesn't carry it). Without this
     // the whole settled batch would render nothing at all.
     const anchorCollapsed = scope.kind === "anchor" && !scope.headerOpen;
@@ -982,13 +964,12 @@ function createPatchRecord(options: Partial<ThinkingFoldOptions>): PatchRecord {
     },
     setMessageTiming(timestamp, timing) {
       this.timings.set(timestamp, { ...timing });
-      publishThoughtFor(timestamp, timing);
-      publishThoughtLive(timestamp, timing);
+      noteThinkingTiming(timestamp, timing);
       this.rerenderTimestamp(timestamp);
     },
     beginMessage(message, startedAt = Date.now()) {
       this.timings.set(message.timestamp, { startedAt });
-      publishThoughtLive(message.timestamp, { startedAt });
+      noteThinkingTiming(message.timestamp, { startedAt });
       this.now = startedAt;
       this.rerenderTimestamp(message.timestamp);
     },
@@ -998,8 +979,7 @@ function createPatchRecord(options: Partial<ThinkingFoldOptions>): PatchRecord {
       };
       if (timing.completedAt !== undefined) return;
       this.timings.set(message.timestamp, { ...timing, completedAt });
-      publishThoughtFor(message.timestamp, { ...timing, completedAt });
-      publishThoughtLive(message.timestamp, { ...timing, completedAt });
+      noteThinkingTiming(message.timestamp, { ...timing, completedAt });
       this.now = completedAt;
       // Ctrl+T is a persistent global display preference. Auto-collapse only
       // controls the folded representation; completing a later turn must not

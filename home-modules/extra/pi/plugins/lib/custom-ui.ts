@@ -456,7 +456,7 @@ function withMore(text: string, cap: number, theme: Theme): string {
 //
 // Leading thoughts (§2.3): a contiguous run of pure-thinking messages
 // directly before a batch's first tool call joins the batch — the FIRST
-// becomes the anchor and hosts the header in the pi-thinking-fold fork; the
+// becomes the anchor and hosts the header in the thinking-fold renderer; the
 // rest are ordinary thought branches. Visible text or a user message in
 // between breaks the run and keeps them standalone.
 //
@@ -474,7 +474,7 @@ interface TreeBatch {
 	thoughts: number[];
 	// ids and thoughts merged into one ordered child list (scan/stream order).
 	children: TreeChild[];
-	// Leading thought hosting the header (fork-side); undefined for bare
+	// Leading thought hosting the header (fold-side); undefined for bare
 	// batches (the first tool row carries the header, as before).
 	anchor?: number;
 	// User toggle; undefined = live default (running → open, settled → closed).
@@ -520,7 +520,7 @@ interface GroupState {
 	// Per-row invalidate callbacks, registered by renderers, so state changes
 	// can force the affected rows to re-render — rows render cached children
 	// otherwise. Tool rows register via trackRow; thought rows register from
-	// the pi-thinking-fold fork (registerThoughtRow).
+	// the thinking-fold renderer (registerThoughtRow).
 	invalidators: Map<string, () => void>;
 	thoughtRows: Map<number, () => void>;
 	notes: Map<string, string[]>;
@@ -572,7 +572,7 @@ function invalidateRows(ids: Iterable<string>): void {
 	}
 }
 
-// Thought rows live in the fork's components; the fork registers an
+// Thought rows live in the fold's components; the fold registers an
 // invalidator per timestamp on first render (registerThoughtRow), so tree
 // state changes can re-render them too — the old "fold rows have no
 // invalidator" gap, closed.
@@ -598,7 +598,7 @@ function groupState(): GroupState {
 
 // A tool call joins the current running batch, or opens a new one. A new
 // batch consumes the pending leading-thought run: the first think becomes
-// the anchor (it hosts the header in the fork), the rest are branches —
+// the anchor (it hosts the header in the fold), the rest are branches —
 // think → tools → think → tools maps to children in exactly that order.
 export function trackGroupToolCall(toolCallId: string): void {
 	const s = groupState();
@@ -827,7 +827,7 @@ export type GroupMode =
 			batchIndex: number;
 			// First child: carries the header for bare batches (no anchor).
 			first: boolean;
-			// The header is hosted by the anchor think (fork-side) — the first
+			// The header is hosted by the anchor think (fold-side) — the first
 			// tool row must not render it too.
 			anchorHosted: boolean;
 			headerOpen: boolean;
@@ -887,32 +887,40 @@ export function groupMode(toolCallId: string | undefined | null): GroupMode {
 	};
 }
 
-// Thinking durations are published by the pi-thinking-fold fork (live while
-// streaming and reconstructed from message timestamps on session restore).
-const THOUGHT_FOR_KEY = "__piCustomUiThoughtFor";
-const THOUGHT_LIVE_KEY = "__piCustomUiThoughtLive";
+// Thinking timings, published by the thinking-fold renderer
+// (lib/thinking-fold/renderer.ts — part of this extension suite) and read
+// here for the batch headers and the turn summary. Raw entries (start +
+// optional completion); durations derive from them. Lives on globalThis: the
+// lib is imported by several independent extensions which may each get their
+// own module instance, and /reload keeps globalThis across reloads.
+const THOUGHT_TIMINGS_KEY = "__piCustomUiThoughtTimings";
 
-interface LiveTiming {
+export interface ThoughtTiming {
 	startedAt: number;
 	completedAt?: number;
 }
 
-// Batch duration: every thought branch's thinking (live map preferred — it
-// also carries in-progress entries). Thoughts are stamped into the batch at
-// thinking_delta, so a branch streaming right now counts up in real time.
-// Sub-half-second totals are noise, not a phase worth naming.
-function thoughtForMs(keys: number[] | undefined): number | undefined {
+export function noteThinkingTiming(timestamp: number, timing: ThoughtTiming): void {
 	const w = globalThis as Record<string, unknown>;
-	const liveMap = w[THOUGHT_LIVE_KEY] as Map<number, LiveTiming> | undefined;
-	const doneMap = w[THOUGHT_FOR_KEY] as Map<number, number> | undefined;
+	const map = (w[THOUGHT_TIMINGS_KEY] ??= new Map()) as Map<number, ThoughtTiming>;
+	map.set(timestamp, { startedAt: timing.startedAt, completedAt: timing.completedAt });
+}
+
+export function thoughtTiming(timestamp: number): ThoughtTiming | undefined {
+	const w = globalThis as Record<string, unknown>;
+	const map = w[THOUGHT_TIMINGS_KEY] as Map<number, ThoughtTiming> | undefined;
+	return map?.get(timestamp);
+}
+
+// Batch duration: every thought branch's thinking (in-progress entries
+// included — thoughts are stamped into the batch at thinking_delta, so a
+// branch streaming right now counts up in real time). Sub-half-second
+// totals are noise, not a phase worth naming.
+function thoughtForMs(keys: number[] | undefined): number | undefined {
 	let total = 0;
 	for (const key of keys ?? []) {
-		const lt = liveMap?.get(key);
-		if (lt) total += Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
-		else {
-			const ms = doneMap?.get(key);
-			if (typeof ms === "number") total += ms;
-		}
+		const timing = thoughtTiming(key);
+		if (timing) total += Math.max(0, (timing.completedAt ?? Date.now()) - timing.startedAt);
 	}
 	return total >= 500 ? total : undefined;
 }
@@ -930,7 +938,7 @@ export function batchHeaderAnimated(): boolean {
 // re-renders the batch — the animated header AND the in-progress dotsCircle
 // dots on running tool rows (solo batches included, so a single running tool
 // still animates). The anchor think re-renders too: it hosts the animated
-// header line (fork-side, via its registered invalidator). Returns false
+// header line (fold-side, via its registered invalidator). Returns false
 // when no batch is running, letting the caller stop its timer until the
 // next tool_call/thinking_delta restarts it.
 export function tickOpenBatch(): boolean {
@@ -1315,20 +1323,20 @@ export function handleActionUrl(url: string): boolean {
 	return true;
 }
 
-// ── Shared animation API (consumed by pi-thinking-fold) ────────
+// ── Shared animation API (consumed by lib/thinking-fold) ─────
 //
 // Unification rule: exactly ONE animated "Thinking" indicator is visible at
-// a time — the batch header while a batch is open (the fork then suppresses
+// a time — the batch header while a batch is open (the fold then suppresses
 // its own streaming thinking row; its duration already counts into the
-// header), otherwise the fork's streaming label, which renders through this
-// API so both rows share the spinner/shimmer design language. The fork falls
+// header), otherwise the fold's streaming label, which renders through this
+// API so both rows share the spinner/shimmer design language. The fold falls
 // back to its plain static label when this API is absent (custom-ui off).
 // pi's native loader row is hidden during reasoning by custom-ui.ts.
 //
 // Colors here are raw base16 SGR (accent = base0D, muted = base04) rather
-// than theme.fg: the fork has no Theme handle (its internals.theme is a
+// than theme.fg: the fold has no Theme handle (its internals.theme is a
 // MarkdownTheme), and under the stylix theme base0D/base04 ARE accent/muted.
-// The fork's streaming label must also bypass Markdown (raw SGR would be
+// The fold's streaming label must also bypass Markdown (raw SGR would be
 // mangled) — it renders the label through a pi-tui Text instead.
 
 interface AnimApi {
@@ -1339,11 +1347,11 @@ interface AnimApi {
 	readonly frame: number;
 	// Clock origin (set once at first use).
 	t0: number;
-	// True while a tool batch is open (track→collapse). Read by the fork's
+	// True while a tool batch is open (track→collapse). Read by the fold's
 	// rebuild() to decide whether its streaming thinking row should exist.
 	batchOpen: boolean;
 	// Injected by custom-ui.ts on session_start (zero-line widget capture,
-	// same trick as thinking-fold-redraw.ts): forces a TUI repaint. Animation
+	// same trick as the anim widget below): forces a TUI repaint. Animation
 	// timers MUST call this per tick — rebuilding children alone doesn't
 	// repaint, and with the native loader hidden there's no spinner loop
 	// pumping frames between streaming deltas (the frozen-label bug).
@@ -1439,7 +1447,7 @@ function setBatchOpen(open: boolean): void {
 	animState().batchOpen = open;
 }
 
-// Initialize eagerly so the fork sees the API (and batchOpen = false) even
+// Initialize eagerly so the fold sees the API (and batchOpen = false) even
 // before the first tool call.
 animState();
 
@@ -1539,7 +1547,7 @@ export function glanceLine(label: string, arg: string, summary: string, theme: T
 	return new Text(url ? linkWrap(core, url) : core, 0, 0);
 }
 
-// ── Tree interaction: toggles, ctrl+o walk, fork channel ──────
+// ── Tree interaction: toggles, ctrl+o walk, fold renderer ──
 //
 // Action URLs are tree paths, each flipping exactly ONE node's flag:
 // - pi-action://node/batch/<i> — the header row (toggle depth 2)
@@ -1677,8 +1685,7 @@ export function walkTree(expand: boolean): void {
 }
 
 // pi drives ctrl+o through ToolExecutionComponent#setExpanded for every tool
-// row in one pass; walk once per gesture, not per row. (Moved here from the
-// fork — the fork's global-flag observer died with the absorption model.)
+// row in one pass; walk once per gesture, not per row.
 // pi's global ctrl+o flag (ToolExecutionComponent#setExpanded) is synced to
 // EVERY tool row with its CURRENT value — including `false` (the default) on
 // each new component mid-stream. Only a CHANGE of the flag is a user
@@ -1766,12 +1773,15 @@ export function installTightSelfRows(): void {
 	}
 }
 
-// ── Lib ↔ fork channel (separate packages, globalThis like the others) ──
+// ── Tree-renderer API (consumed by lib/thinking-fold) ──────
 //
-// The fork always renders thinking as rows; it consults two signals per
-// timestamp — branchScope(ts) (depth-1 branch vs standalone) and the scope's
-// headerOpen flag (parent header open) — and builds branch labels, content
-// connectors, and the anchor's header line through the helpers here.
+// The thinking-fold renderer always renders thinking as rows; it consults
+// two signals per timestamp — branchScope(ts) (depth-1 branch vs standalone)
+// and the scope's headerOpen flag (parent header open) — and builds branch
+// labels, content connectors, and the anchor's header line through the
+// helpers here. These used to cross a package boundary over a globalThis
+// channel (__piCustomUiTree); thinking-fold now lives in this suite
+// (lib/thinking-fold/) and imports them directly.
 
 export type BranchScope =
 	| { kind: "standalone"; contentOpen: boolean }
@@ -1792,7 +1802,7 @@ export type BranchScope =
 			count: number;
 	  };
 
-function branchScope(ts: number | undefined): BranchScope {
+export function branchScope(ts: number | undefined): BranchScope {
 	const s = groupState();
 	const contentOpen = ts !== undefined && s.openThoughts.has(ts);
 	if (ts === undefined) return { kind: "standalone", contentOpen };
@@ -1809,8 +1819,8 @@ function branchScope(ts: number | undefined): BranchScope {
 	return { kind: "branch", ...common };
 }
 
-// Themeless header line for the fork's anchor row (the fork has no Theme
-// handle; the line builders fall back to the base16 palette).
+// Themeless header line for the anchor row (the fold's internals.theme is a
+// MarkdownTheme; the line builders fall back to the base16 palette).
 const SYNTHETIC_THEME = {
 	italic: (t: string) => `\x1b[3m${t}\x1b[23m`,
 	bold: (t: string) => `\x1b[1m${t}\x1b[22m`,
@@ -1849,7 +1859,7 @@ function batchDiffTotals(batch: TreeBatch): { adds: number; dels: number } | und
 // The batch header line (`▸/▾ …` settled, live spinner+shimmer while
 // running), link-wrapped with the batch toggle URL. Rendered by the anchor
 // think's row for thinking-anchored batches.
-function forkBatchHeaderLine(batchIndex: number): string | undefined {
+export function forkBatchHeaderLine(batchIndex: number): string | undefined {
 	const batch = groupState().batches[batchIndex];
 	if (!batch) return undefined;
 	const thoughtMs = thoughtForMs(batch.thoughts);
@@ -1861,7 +1871,7 @@ function forkBatchHeaderLine(batchIndex: number): string | undefined {
 		: groupHeaderLine(SYNTHETIC_THEME, batch.ids.length, thoughtMs, batchOpen(batch), url, diff, diffUrl);
 }
 
-function forkThoughtGlyph(last: boolean): string {
+export function forkThoughtGlyph(last: boolean): string {
 	return childLabelGlyph(last);
 }
 
@@ -1869,40 +1879,20 @@ function forkThoughtGlyph(last: boolean): string {
 // through-connector links its corner past its content to the next sibling),
 // 3 spaces for the last child (the corner already turned) — and for
 // standalone thoughts, whose content indents 3 cells with no connector.
-function forkThoughtConnector(last: boolean): string {
+export function forkThoughtConnector(last: boolean): string {
 	return last ? "    " : ` ${base16Fg("base03", TREE_BASE03)}│\x1b[39m  `;
 }
 
-function forkStaticLabel(text: string): string {
+export function forkStaticLabel(text: string): string {
 	const base03 = base16Fg("base03", "6a737d");
 	return `\x1b[1m${base03}${text}\x1b[22m\x1b[39m`;
 }
 
-interface ForkTreeApi {
-	branchScope(ts: number | undefined): BranchScope;
-	batchHeaderLine(batchIndex: number): string | undefined;
-	linkWrap(text: string, url: string): string;
-	thoughtGlyph(last: boolean): string;
-	thoughtConnector(last: boolean): string;
-	staticLabel(text: string): string;
-	registerThoughtRow(timestamp: number, invalidate: () => void): void;
-}
-
-const TREE_CHANNEL_KEY = "__piCustomUiTree";
-
-function publishTreeChannel(): void {
-	const api: ForkTreeApi = {
-		branchScope,
-		batchHeaderLine: forkBatchHeaderLine,
-		linkWrap,
-		thoughtGlyph: forkThoughtGlyph,
-		thoughtConnector: forkThoughtConnector,
-		staticLabel: forkStaticLabel,
-		registerThoughtRow: (timestamp, invalidate) => {
-			groupState().thoughtRows.set(timestamp, invalidate);
-		},
-	};
-	(globalThis as Record<string, unknown>)[TREE_CHANNEL_KEY] = api;
+// The fold registers a per-timestamp invalidator on first render so tree
+// state changes (anchor assignment, open/close, ╰→├─ reglyphing,
+// tick-driven header animation) re-render thought rows.
+export function registerThoughtRow(timestamp: number, invalidate: () => void): void {
+	groupState().thoughtRows.set(timestamp, invalidate);
 }
 
 // ── Tree-aware slot helpers ─────────────────────────────────
@@ -2373,7 +2363,3 @@ export function webToolSlots(spec: WebToolSpec): RenderSlots {
 		},
 	});
 }
-
-// Publish the fork channel eagerly — the fork renders thinking rows from the
-// first restored message on.
-publishTreeChannel();

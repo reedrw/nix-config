@@ -93,9 +93,11 @@ import {
 	trackThoughtStart,
 	animState,
 	trackGroupToolCall,
+	thoughtTiming,
 	webToolSlots,
 	write,
 } from "./lib/custom-ui.ts";
+import { installThinkingFold } from "./lib/thinking-fold/index.ts";
 import {
 	calculateImageRows,
 	Container,
@@ -1323,6 +1325,15 @@ export default function customUi(pi: ExtensionAPI) {
 		};
 	}
 
+	// Thinking fold (lib/thinking-fold — the consolidated former
+	// pi-thinking-fold package + thinking-fold-redraw shim). Installs
+	// unconditionally: with customUi disabled it still folds thinking rows in
+	// pi's native look (upstream behavior) — only the tree placement and
+	// shared animation are customUi-specific. Its event handlers register
+	// before custom-ui's own below; nothing in either depends on that order
+	// (the ctrl+t listener pair and the anim requestRender are self-contained).
+	installThinkingFold(pi);
+
 	// With the style disabled nothing further happens here: pi's built-ins
 	// stay as they are (read was registered below; bash stays with nix-comma).
 	if (!customUiEnabled()) return;
@@ -1670,28 +1681,17 @@ export default function customUi(pi: ExtensionAPI) {
 		// stale leaked timings (aborted streams never complete their live
 		// entry; restore publishes full-message durations) otherwise inflate
 		// the sum into absurdities like "thought for 1h 27m" in an 8m turn.
-		const w = globalThis as Record<string, unknown>;
-		const done = w.__piCustomUiThoughtFor as Map<number, number> | undefined;
-		const live = w.__piCustomUiThoughtLive as
-			| Map<number, { startedAt: number; completedAt?: number }>
-			| undefined;
 		const turnWall = Math.max(0, Date.now() - turnStartedAt);
 		let thoughtMs = 0;
 		for (const ts of turnTimestamps) {
 			const span = turnThoughtBounds.get(ts);
 			// Messages without thinking content contribute nothing — their
-			// live entries (if any) never complete and would leak their full
+			// timing entries (if any) never complete and would leak their full
 			// duration into the sum.
 			if (span === undefined) continue;
-			const d = done?.get(ts);
-			let value: number;
-			if (typeof d === "number" && d >= 0) {
-				value = d;
-			} else {
-				const lt = live?.get(ts);
-				if (!lt) continue;
-				value = Math.max(0, (lt.completedAt ?? Date.now()) - lt.startedAt);
-			}
+			const timing = thoughtTiming(ts);
+			if (!timing) continue;
+			const value = Math.max(0, (timing.completedAt ?? Date.now()) - timing.startedAt);
 			thoughtMs += Math.min(value, span, turnWall);
 		}
 		thoughtMs = Math.min(thoughtMs, turnWall);
@@ -1715,9 +1715,9 @@ export default function customUi(pi: ExtensionAPI) {
 		setLoaderVisible(ctx, false);
 		if (ctx.mode === "print" || ctx.mode === "json") return;
 		// Capture the TUI so animation ticks can force repaints — the zero-line
-		// widget capture trick (same as thinking-fold-redraw.ts; the UI context
-		// exposes no requestRender). Published on the shared anim API so the
-		// pi-thinking-fold timer can drive its streaming label with it too.
+		// widget capture trick; the UI context exposes no requestRender).
+		// Published on the shared anim API so the thinking-fold timer can
+		// drive its streaming label with it too.
 		ctx.ui.setWidget("custom-ui-anim", (t) => {
 			animState().requestRender = () => t.requestRender();
 			// Click-to-expand: patch the TUI's openUrl to intercept pi-action://

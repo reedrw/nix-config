@@ -76,25 +76,44 @@ let
     }
   ) (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".ts" file) dir);
 
-  # Shared library modules for the extensions (lib/custom-ui.ts etc.). Not
-  # auto-discovered by pi, but the extensions' ./lib/… imports resolve against
-  # ~/.pi/agent/extensions/lib/ at runtime, so the files must land there.
-  libPlugins = lib.mapAttrs' (
-    file: _:
+  # Shared library modules for the extensions. Not auto-discovered by pi, but
+  # the extensions' ./lib/… imports resolve against ~/.pi/agent/extensions/lib/
+  # at runtime, so the files must land there. All files ship in ONE derivation:
+  # node/jiti resolve imports to each file's REAL store path (symlinks are
+  # dereferenced), so lib-internal relative imports (./shared-settings/…,
+  # ../custom-ui.ts) would strand in a sibling derivation if each file were
+  # packaged alone. Two shapes: single-file modules (lib/*.ts) and multi-file
+  # libraries (lib/<dir>/…, e.g. thinking-fold — JSON data and LICENSE
+  # included, relative paths preserved).
+  libPlugins =
     let
-      name = lib.removeSuffix ".ts" file;
-    in
-    {
-      name = "lib/${name}";
-      value = runCommand "pi-extension-lib-${name}"
+      libFilesRec =
+        dir: prefix:
+        lib.concatLists (
+          lib.mapAttrsToList (
+            name: type:
+              if type == "directory" then
+                libFilesRec (dir + "/${name}") "${prefix}${name}/"
+              else if type == "regular" && (prefix != "" || lib.hasSuffix ".ts" name) then
+                [ { inherit name prefix; } ]
+              else [ ]
+          ) (builtins.readDir dir)
+        );
+      libDrv = runCommand "pi-extension-lib"
         {
           passthru.piKind = "lib";
         }
         ''
-          install -Dm644 ${./lib/${file}} "$out/lib/${file}"
+          mkdir -p "$out"
+          cp -a ${./lib}/. "$out/lib/"
         '';
-    }
-  ) (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".ts" file) (builtins.readDir ./lib));
+    in
+    builtins.listToAttrs (
+      map (rel: {
+        name = rel;
+        value = libDrv;
+      }) (map ({ name, prefix }: "lib/${prefix}${name}") (libFilesRec ./lib ""))
+    );
   # Vendored packages: subdirectories with a package.json, built by their
   # default.nix (the version lives in package.json).
   vendoredPlugins = lib.mapAttrs (

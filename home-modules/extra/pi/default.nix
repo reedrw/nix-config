@@ -36,12 +36,17 @@ let
 
   # Shared extension libraries (pi doesn't auto-load extensions/lib/*, but the
   # extensions' ./lib/… relative imports resolve there at runtime).
+  # Lib plugin attr names are store-relative paths under extensions/ —
+  # "lib/<name>.ts" for single-file modules, "lib/<dir>/<file>" for
+  # multi-file libraries (thinking-fold). The name already carries the real
+  # file extension; map 1:1 into place. source points INTO the derivation at
+  # the file (the derivation root is a directory).
   libFiles = lib.listToAttrs (
     lib.mapAttrsToList (name: plugin: {
-      name = ".pi/agent/extensions/${name}.ts";
+      name = ".pi/agent/extensions/${name}";
       value = {
         force = true;
-        source = "${plugin}/${name}.ts";
+        source = "${plugin}/${name}";
       };
     }) libPlugins
   );
@@ -231,10 +236,11 @@ let
 in
 {
   home = {
-    # Through the alias overlay so pkgs/patches-style tweaks (wheel scroll
-    # speed) apply; no wrapper needed — nix-locate (for nix-comma.ts) is
-    # already on PATH via home.packages in home-modules/core/comma/default.nix.
-    packages = [ pkgs.pi-coding-agent ];
+    # mv.tip tracks the newest indexed nixpkgs revision — plain nixpkgs
+    # (release) lags far behind for pi. No wrapper needed — nix-locate (for
+    # nix-comma.ts) is already on PATH via home.packages in
+    # home-modules/core/comma/default.nix.
+    packages = [ pkgs.mv.tip.pi-coding-agent ];
 
     # pi-output-styles keeps its user default (/style … --save) and custom
     # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.

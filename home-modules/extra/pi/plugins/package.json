@@ -1,0 +1,4 @@
+{
+  "//": "Typecheck scope marker only — never installed or loaded. Makes tsc (NodeNext) treat the plugins tree as ESM so lib/thinking-fold's import.meta usage typechecks; jiti provides import.meta at runtime regardless.",
+  "type": "module"
+}

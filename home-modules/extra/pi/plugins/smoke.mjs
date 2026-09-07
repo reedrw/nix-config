@@ -19,6 +19,12 @@ import {
 	webToolSlots,
 	bash,
 	edit,
+	branchScope,
+	forkBatchHeaderLine,
+	forkThoughtConnector,
+	forkThoughtGlyph,
+	forkStaticLabel,
+	noteThinkingTiming,
 	resetTurnTokens,
 	beginTurnMessage,
 	noteTurnDelta,
@@ -37,6 +43,11 @@ import {
 } from "./lib/custom-ui.ts";
 import { getCapabilities, setCapabilities } from "@earendil-works/pi-tui";
 import { ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
+import { installThinkingFold } from "./lib/thinking-fold/index.ts";
+import {
+	formatThinkingSeconds,
+	formatStreamingThinkingSeconds,
+} from "./lib/thinking-fold/renderer.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -44,8 +55,16 @@ const theme = {
 	bold: (t) => `\x1b[1m${t}\x1b[0m`,
 };
 
-const tree = globalThis.__piCustomUiTree;
-if (!tree) throw new Error("lib must publish __piCustomUiTree");
+// The tree-renderer API the fold consumes (direct lib exports now — the
+// __piCustomUiTree globalThis channel died with the consolidation).
+const tree = {
+	branchScope,
+	batchHeaderLine: forkBatchHeaderLine,
+	linkWrap,
+	thoughtGlyph: forkThoughtGlyph,
+	thoughtConnector: forkThoughtConnector,
+	staticLabel: forkStaticLabel,
+};
 
 // ── Tree state machine (live) ────────────────────────────────────
 // A running batch auto-opens; its newest child auto-opens with the 16-line
@@ -146,7 +165,8 @@ toggleThought(1001);
 if (tree.branchScope(1001).contentOpen) throw new Error("thought toggle must close the branch");
 
 // header thought total: sum of the batch's branches (durations from the fork)
-globalThis.__piCustomUiThoughtFor = new Map([[1000, 30000], [1001, 16500]]);
+noteThinkingTiming(1000, { startedAt: 1000, completedAt: 31000 }); // 30s
+noteThinkingTiming(1001, { startedAt: 1001, completedAt: 17501 }); // 16.5s
 const anchorHeader = tree.batchHeaderLine(0);
 if (!anchorHeader.includes("46s") || anchorHeader.includes("Thought for")) {
 	// running header: whole-second live timer, present tense (no "Thought for")
@@ -431,7 +451,7 @@ if (partialGlance.length !== 0) throw new Error(`partial glance must yield to th
 closeBatch();
 resetToolGroups();
 
-// ── Unification contract (custom-ui ↔ pi-thinking-fold) ──────────
+// ── Unification contract (custom-ui ↔ thinking-fold) ─────────────
 const anim = globalThis.__piCustomUiAnim;
 if (!anim) throw new Error("lib must publish __piCustomUiAnim");
 if (typeof anim.frame !== "number") throw new Error("anim.frame missing");
@@ -876,5 +896,13 @@ enableLinkActions({ mode: "fullscreen", openUrl: () => {}, requestRender() {} })
 	if (multi.slice(1).some((l) => noAnsi(l).length > 20)) throw new Error(`post-newline run must hard-break: ${JSON.stringify(multi.map(noAnsi))}`);
 }
 console.log("OK-TREE-WRAP");
+
+// Consolidated thinking-fold: importing the modules exercises the whole
+// fold → lib graph (a broken import here would be a silent renderer
+// fallback in pi), and the pure helpers anchor the public surface.
+if (typeof installThinkingFold !== "function") throw new Error("installThinkingFold missing");
+if (formatThinkingSeconds(1500) !== "1.5s") throw new Error("formatThinkingSeconds broke");
+if (formatStreamingThinkingSeconds(90_000) !== "1m 30s") throw new Error("formatStreamingThinkingSeconds broke");
+console.log("OK-THINKING-FOLD");
 disableLinkActions();
 setCapabilities(realCaps);

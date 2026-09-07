@@ -1,3 +1,11 @@
+// Thinking fold — behavior + rendering of reasoning rows. Originally a
+// vendored fork of @99percentpeople/pi-thinking-fold v0.1.9 (MIT, see
+// LICENSE) whose renderer was tree-aware; since the custom-ui consolidation
+// it lives inside this extension suite (lib/thinking-fold/) and imports the
+// shared lib directly — the former __piCustomUiTree/__piCustomUiAnim
+// globalThis channels are gone. Rebase against upstream by re-reading their
+// extensions/thinking-fold sources and re-applying the tree/unification
+// deviations, which are commented inline in renderer.ts.
 import type { AssistantMessage, AssistantMessageEvent } from "@earendil-works/pi-ai";
 import { registerExtensionSettings } from "./shared-settings/index.ts";
 import {
@@ -68,7 +76,7 @@ function lineValues(current: number): string[] {
     .map(String);
 }
 
-export default function (pi: ExtensionAPI) {
+export function installThinkingFold(pi: ExtensionAPI) {
   let config = loadThinkingFoldConfig();
   let patch: ThinkingFoldPatchHandle | undefined;
   let removeInputListener: (() => void) | undefined;
@@ -218,12 +226,37 @@ export default function (pi: ExtensionAPI) {
     restoreTimings(ctx, patch);
 
     removeInputListener?.();
-    removeInputListener = ctx.ui.onTerminalInput((data) => {
+    // Deferred repaint (the absorbed thinking-fold-redraw shim): the toggle
+    // listener below returns { consume: true }, and pi's input loop returns
+    // early on consumed input — BEFORE the requestImmediateRender() that
+    // follows every unconsumed keypress — so a fold state change would not
+    // paint until the next key. This non-consuming listener registers
+    // FIRST (listeners fire in registration order) and defers one tick; by
+    // the time the timeout fires, the toggle below has already mutated the
+    // rows. requestRender is the shared anim handle (custom-ui's zero-line
+    // widget capture), read lazily at fire time.
+    let repaintScheduled = false;
+    const removeRepaintListener = ctx.ui.onTerminalInput((data) => {
+      if (!patch || repaintScheduled || !getKeybindings().matches(data, "app.thinking.toggle")) {
+        return undefined;
+      }
+      repaintScheduled = true;
+      setTimeout(() => {
+        repaintScheduled = false;
+        customUiAnim()?.requestRender?.();
+      }, 0);
+      return undefined;
+    });
+    const removeToggleListener = ctx.ui.onTerminalInput((data) => {
       if (!patch || !getKeybindings().matches(data, "app.thinking.toggle")) return;
 
       patch.toggle();
       return { consume: true };
     });
+    removeInputListener = () => {
+      removeRepaintListener();
+      removeToggleListener();
+    };
   });
 
   pi.on("message_start", (event, ctx) => {

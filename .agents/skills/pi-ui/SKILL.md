@@ -18,6 +18,31 @@ the hard way; violating them fails silently.
 - Rendering slots are shared via `plugins/lib/custom-ui.ts` (a `lib/` plugin kind —
   not auto-loaded by pi, but installed to `~/.pi/agent/extensions/lib/` for
   `./lib/…` relative imports).
+- **thinking-fold lives inside the suite** (`lib/thinking-fold/`, the former
+  vendored `pi-thinking-fold` package; the former `thinking-fold-redraw.ts`
+  shim is the deferred-repaint listener inside `installThinkingFold`). It is
+  installed by `custom-ui.ts` unconditionally BEFORE the `customUiEnabled()`
+  gate — with the style off it still folds reasoning in pi's native look.
+  Because it shares the entry's module graph, the old globalThis channels are
+  gone: the fold imports the lib's tree helpers (`branchScope`,
+  `forkBatchHeaderLine`, glyphs, `registerThoughtRow`) and `animState()`
+  directly, and publishes timings via the lib's `noteThinkingTiming` /
+  `thoughtTiming` registry (`__piCustomUiThoughtTimings` — still globalThis:
+  the lib is instantiated per extension entry, and /reload keeps globalThis).
+  Multi-file `lib/<dir>/` trees are packaged recursively by
+  `plugins/default.nix` (all regular files, relative paths preserved — JSON
+  data and LICENSE included). ALL lib files ship in ONE derivation: node/jiti
+  resolve imports to each file's REAL store path (symlinks dereferenced), so
+  per-file derivations strand lib-internal relative imports (`../custom-ui.ts`)
+  in a sibling store path that doesn't exist. Symptom was "Cannot find module
+  './shared-settings/index.ts'" at extension load.
+- **Theme coupling is one file contract**: all raw-SGR color goes through
+  `base16Fg`/`base16Bg`, which read `~/.pi/agent/extensions/lib/base16.json`
+  (nix-generated from stylix) and fall back to hardcoded Ayu Dark hexes when
+  absent. On a light terminal without that file, the base01 bands render
+  near-black under light-theme text — broken contrast, by design of the
+  fallback. A theme-based fallback tier (resolve roles from the live pi
+  `Theme` via `getFgAnsi`/`getBgAnsi`) is the planned fix.
 - **Register tools at LOAD time, never in `session_start`**: pi's session-switch
   flows (in-app `/resume`, `/new`, `/fork`, tree navigation) render the restored
   transcript BEFORE re-binding extensions (`rebindCurrentSession({
@@ -54,13 +79,13 @@ the hard way; violating them fails silently.
 - **Consumed input suppresses repaint**: the TUI input loop `return`s on
   `{ consume: true }` from `onTerminalInput` listeners BEFORE the
   `requestImmediateRender()` that follows every keypress, and the UI context
-  exposes no requestRender. pi-thinking-fold consumes ctrl+t and mutates
-  components, so folds apply only on the next key. Fix: `thinking-fold-redraw.ts`
-  shim — global extensions load before configured packages (loader discovery
-  order: project `.pi/extensions/` → `~/.pi/agent/extensions/` → settings.json
-  packages), so its listener sees ctrl+t first and defers a render via a TUI
-  handle captured from a zero-line `setWidget` factory (same capture trick as the
-  statusline footer; widgets, unlike footers, can be additive).
+  exposes no requestRender. The fold consumes ctrl+t and mutates components,
+  so folds would apply only on the next key. Fix (inside `installThinkingFold`'s
+  session_start): a non-consuming listener registered BEFORE the toggle
+  listener fires first, matches the same keybinding, and defers a render one
+  tick via the shared anim handle (`animState().requestRender`, captured from
+  a zero-line `setWidget` factory in custom-ui's session_start; widgets,
+  unlike footers, can be additive).
 
 ## Transcript tree & the one Thinking indicator
 
@@ -79,11 +104,11 @@ the hard way; violating them fails silently.
   heads), re-opens the active OSC 8 link + SGR state on every continuation
   and closes them at each line end. Hard `\n` = forced break. Do NOT patch
   pi-tui's wrapper for this — the lib owns the tree wrapping.
-  Expanded CONTENT is clickable too: thinking text (fork) and tool output
+  Expanded CONTENT is clickable too: thinking text (fold renderer) and tool output
   (`ClickToggle` around every `expandedBlock`/`liveStream`/edit diff) carry
   the node's own toggle URL per line, so clicking the body collapses it.
   A batch whose LAST child is a thinking branch ends with one blank line
-  (fork `trailingBlank`, set when `scope.last`) — tool children get their
+  (fold `trailingBlank`, set when `scope.last`) — tool children get their
   separation from the next block's own spacing, branch rows must supply
   it themselves. Standalone thoughts pad both sides as before.
 - **OSC 8 does NOT stack**: an inner `]8;;` opener silently closes the
@@ -146,13 +171,13 @@ the hard way; violating them fails silently.
   rules on restore.
 - **Leading thoughts anchor the batch (§2.3)**: a contiguous run of
   pure-thinking messages directly before a batch's first tool call joins it
-  — the FIRST becomes the anchor and HOSTS the header line in the fork (via
-  the `__piCustomUiTree.batchHeaderLine` channel + linkWrap); the rest are
-  ordinary branches. Visible text or a user message dissolves the pending
+  — the FIRST becomes the anchor and HOSTS the header line in the fold
+  renderer (via the lib's `forkBatchHeaderLine` + linkWrap, direct imports); the
+  rest are ordinary branches. Visible text or a user message dissolves the pending
   run (hosting would reorder the think past the narration). No absorption:
   thinking always renders at its true chronological position whenever its
   ancestors are open — a branch of a closed header renders zero lines
-  (fork's stripped-message path). The fork registers a per-timestamp
+  (fold's stripped-message path). The fold registers a per-timestamp
   invalidator (`registerThoughtRow`) on first render so tree state changes
   (anchor assignment, open/close, `╰─`→`├─` reglyphing, tick-driven header
   animation) re-render thought rows — the old "fold rows have no
@@ -168,7 +193,7 @@ the hard way; violating them fails silently.
   shared clock; base16 SGR, no Theme needed). pi's loader is hidden on
   thinking_delta (`setWorkingVisible(false)`), restored on
   tool_call/text_delta/user message/agent_end — NOT on thinking_end
-  (flicker between consecutive thinking blocks). The fork's streaming label
+  (flicker between consecutive thinking blocks). The fold's streaming label
   must render through a pi-tui **Text**, not Markdown (raw SGR gets
   mangled); its timer runs at 80ms. The in-progress tool dot is dotsCircle
   (2-cell frames, spaces are anti-wiggle padding — do not trim).
@@ -208,7 +233,14 @@ surfaces as runtime ReferenceErrors which pi then swallows (renderer fallback /
 event-handler error log). When image-history.ts was merged into custom-ui.ts, six
 dropped imports (node:crypto/fs/url + lib helpers) silently killed inline image
 embedding, the history-entry fallback, and read-row rendering — the TS2304s were
-the only signal. Take TS2304s seriously.
+the only signal. Take TS2304s seriously. Scope: tsconfig includes `*.ts` +
+`lib/**/*.ts` (the fold was outside the old include — keep new code inside it).
+The tracked `plugins/package.json` (`"type": "module"`) is a typecheck-scope
+marker only — never installed; without it NodeNext infers CJS and
+`lib/thinking-fold/model-behaviors.ts`'s `import.meta` usage fails with TS1470.
+When the include scope changes, REGENERATE the baseline from the pre-change tree
+with the NEW tsconfig (extract via `git archive`, copy tsconfig, symlink
+`node_modules`) — otherwise new coverage reads as new errors.
 
 Setup: the plugins dir has a tracked `tsconfig.json` (strict, NodeNext) and needs
 an **untracked real `node_modules/` dir** of symlinks (a symlinked `node_modules`
@@ -222,7 +254,7 @@ dir). Find the store path with `readlink -f "$(command -v pi)"` and strip
 count.
 
 `smoke.mjs` (tracked) drives the grouping state machine + header renderers
-headlessly under `nix run nixpkgs#nodejs -- --experimental-strip-types smoke.mjs`
+headlessly under `nix run nixpkgs#nodejs -- --experimental-transform-types smoke.mjs`
 — the working-tree lib imports run without pi, so renderer changes can be
 asserted without a live TUI.
 
