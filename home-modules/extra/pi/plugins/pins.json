@@ -671,8 +671,8 @@
       "hash": "sha512-SozWqMNv8vAro468zl8Pp8hHzOu5JLoncwuEz3k3UE/E8/jmFVteWMiKI0bQl9lXbZSHxQYrvL7S4UH/wyi6QQ=="
     },
     "pi-web-access": {
-      "version": "0.27.0",
-      "hash": "sha512-D/z7ILwbnJeDjzFPC1j3G1OvO+j2vl2H13ByYcH5FLbrJ1yBdbBwTBcl96Bbt2NEqH5vdmoZ/EpbDG8BTF9W7Q==",
+      "version": "0.28.0",
+      "hash": "sha512-NMiRWiRXt46oNOoef+9WUN9IKzwADXuM9Wu6fPgMBScIVO8wQK3+dUV0CkmkvTHWADv8PBCqxcDSufVwqF++9Q==",
       "dependencies": [
         "@mozilla/readability",
         "defuddle",
@@ -937,8 +937,8 @@
       ]
     },
     "undici": {
-      "version": "8.10.1",
-      "hash": "sha512-YQ3WlbqjYMmNpdvDH64jAgLjxuAR9+649calDWhbshYaeQGO2bR4nI94ORJmwI3J9YhoKQnpyGOK+0zlWS5N5Q=="
+      "version": "8.10.2",
+      "hash": "sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ=="
     },
     "unpdf": {
       "version": "1.8.1",
