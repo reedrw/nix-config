@@ -28,6 +28,7 @@ import {
 	turnOutputTokens,
 	formatTokens,
 	installToolExpandWalk,
+	installTightSelfRows,
 	handleActionUrl,
 	linkWrap,
 	wrapTreeText,
@@ -191,6 +192,43 @@ walkFromCtrlOSim: {
 	if (groupMode("c1").headerOpen) throw new Error("setExpanded(false) must walk the tree closed");
 }
 resetToolGroups();
+
+// Framing-blank strip (prototype replacement for the old pkgs/alias.nix
+// postFixup sed): a self-shell row must never START with a blank line —
+// whether the dist still pushes its framing blank or not (both must render
+// identically); image-spacer rows and non-self shells pass through untouched.
+installTightSelfRows();
+{
+	const proto = ToolExecutionComponent.prototype;
+	const selfRow = (imageComponents = []) => ({
+		hideComponent: false,
+		hasRendererDefinition: () => true,
+		getRenderShell: () => "self",
+		selfRenderContainer: { render: () => ["glance row"] },
+		imageComponents,
+		imageSpacers: [],
+	});
+	let out = proto.render.call(selfRow(), 80);
+	if (out[0] !== "glance row" || out.length !== 1) {
+		throw new Error(`self-shell row must not start blank: ${JSON.stringify(out)}`);
+	}
+	// Image rows keep whatever blanks their spacer lines contribute.
+	out = proto.render.call(selfRow([{ render: () => ["IMG"] }]), 80);
+	if (out[0] !== "glance row" || !out.includes("IMG")) {
+		throw new Error(`image row must render content then image: ${JSON.stringify(out)}`);
+	}
+	// Non-self shells pass through untouched (Container.render on the fake).
+	out = proto.render.call(
+		{
+			hideComponent: false,
+			hasRendererDefinition: () => true,
+			getRenderShell: () => "default",
+			children: [],
+		},
+		80,
+	);
+	if (out.length !== 0) throw new Error(`default shell must pass through: ${JSON.stringify(out)}`);
+}
 
 // pi syncs its (default false) flag onto EVERY new tool component mid-stream —
 // those unchanged-flag syncs must NOT close a running batch (the vanished-

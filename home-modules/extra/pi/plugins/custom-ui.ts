@@ -75,6 +75,7 @@ import {
 	groupMode,
 	grep,
 	installToolExpandWalk,
+	installTightSelfRows,
 	outputCap,
 	batchHeaderAnimated,
 	ls,
@@ -1342,6 +1343,10 @@ export default function customUi(pi: ExtensionAPI) {
 	// replacing the fork's global-flag observer.
 	installToolExpandWalk();
 
+	// Drop pi's framing blank above self-shell tool rows (replaces the
+	// postFixup sed the pkgs/alias.nix override used to carry) — collapsed
+	// glance rows stack tightly, Claude Code style.
+	installTightSelfRows();
 
 	// Systemic notify routing: any extension's ctx.ui.notify (info level) is
 	// folded into the open batch as a note line under its latest tool row

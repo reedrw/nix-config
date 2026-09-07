@@ -93,6 +93,18 @@ the hard way; violating them fails silently.
   line inside it keeps its own batch URL). Turn-summary thinking time is
   clamped per message to its wall span and capped at the turn duration —
   leaked live entries (aborted streams) must not inflate it.
+- **pi's dist is NOT patched anymore**: the former `pkgs/alias.nix` postFixup
+  seds (wheel scroll ×5 in fullscreen, framing blank above self-shell tool
+  rows) are extension prototype patches now — `wheel-scroll.ts` patches
+  `TuiAltScreen.prototype.routeWheel` (direction ×N ≡ wheelScrollLines = N;
+  N comes from `wheelScrollLines` in settings.json, default 5), and the lib's `installTightSelfRows`
+  strips the blank pi pushes above every self-shell row plus shifts
+  `handleMouse` events back (post-0.84 upstream assumes the blank line for
+  click y-coordinates — feature-detected). Module identity with pi's own
+  imports is guaranteed: the extension loader's jiti alias table resolves
+  `@earendil-works/pi-tui` / `@earendil-works/pi-coding-agent` to pi's own
+  module instances (loader.js `getAliases()`), so prototype patches from
+  extensions reach the real classes. Don't re-add dist seds.
 - **Untracked-row repaint**: pi renders a tool's call row during arg
   streaming (before the `tool_call` event) and renders a restored
   transcript before `session_start`'s rescan — both first passes render

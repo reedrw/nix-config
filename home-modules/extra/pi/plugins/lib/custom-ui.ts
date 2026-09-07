@@ -1705,6 +1705,67 @@ export function installToolExpandWalk(): void {
 	};
 }
 
+// pi's ToolExecutionComponent.render frames every self-shell tool row with a
+// blank line above it (`lines.push("")` before the content). Between the
+// tree view's stacked glance rows that reads as a stray gap after every
+// child, so drop it — the prototype-patch replacement for the postFixup sed
+// the pkgs/alias.nix override used to carry. Prototype level covers every
+// self-shell row the sed covered: live streaming, restored transcripts, and
+// the untracked pre-bind first passes.
+// Newer upstream also routes clicks through handleMouse with a +1 y-offset
+// that assumes the framing blank; shift events back into its coordinates so
+// clicks stay aligned once the blank is gone. Feature-detected: 0.84.x has
+// no handleMouse yet.
+const TOOL_RENDER_PATCHED = Symbol.for("pi-custom-ui/tool-exec-render");
+
+export function installTightSelfRows(): void {
+	const prototype = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
+	if (typeof prototype.render !== "function" || prototype[TOOL_RENDER_PATCHED]) return;
+	prototype[TOOL_RENDER_PATCHED] = true;
+	// hasRendererDefinition/getRenderShell/imageComponents are TS-private on
+	// ToolExecutionComponent; intersecting collapses the type to never (same
+	// trap as the Loader patch), so patch through a plain structural view.
+	type ToolExecView = {
+		hasRendererDefinition(): boolean;
+		getRenderShell(): string;
+		imageComponents?: unknown[];
+	};
+	const originalRender = prototype.render as (this: ToolExecView, width: number) => string[];
+	prototype.render = function (this: ToolExecView, width: number) {
+		const lines = originalRender.call(this, width);
+		// The framing blank is pushed iff contentLines.length > 0; the only
+		// other way a self-shell row starts blank is an image spacer above
+		// empty content, excluded via imageComponents. Our renderers never
+		// begin a row with a blank line, so a leading blank here is always
+		// pi's framing.
+		if (
+			lines.length > 0 &&
+			lines[0].trim() === "" &&
+			!this.imageComponents?.length &&
+			this.hasRendererDefinition() &&
+			this.getRenderShell() === "self"
+		) {
+			return lines.slice(1);
+		}
+		return lines;
+	};
+	if (typeof prototype.handleMouse === "function") {
+		type MouseEvt = { y: number } & Record<string, unknown>;
+		const originalHandleMouse = prototype.handleMouse as (
+			this: ToolExecView,
+			event: MouseEvt,
+		) => unknown;
+		prototype.handleMouse = function (this: ToolExecView, event: MouseEvt) {
+			if (!(this.hasRendererDefinition() && this.getRenderShell() === "self")) {
+				return originalHandleMouse.call(this, event);
+			}
+			// handleMouse still subtracts 1 (blank-line space); shift events
+			// down one so y-1 lands back on the row the user clicked.
+			return originalHandleMouse.call(this, { ...event, y: event.y + 1 });
+		};
+	}
+}
+
 // ── Lib ↔ fork channel (separate packages, globalThis like the others) ──
 //
 // The fork always renders thinking as rows; it consults two signals per

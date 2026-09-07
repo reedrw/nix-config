@@ -273,6 +273,12 @@ in
           defaultThinkingLevel = "high";
           theme = "stylix";
           tuiMode = "fullscreen";
+          # Consumed by plugins/wheel-scroll.ts: lines scrolled per mouse-wheel
+          # tick in fullscreen mode (pi-tui's wheelScrollLines; pi constructs
+          # TuiAltScreen without it and exposes no setting). Edit the deployed
+          # ~/.pi/agent/settings.json by hand to tune between switches — the
+          # extension re-reads it per event.
+          wheelScrollLines = 5;
           packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
           # Claude Code style tool rendering (one-line calls, terse results).
           # Flip to false to fall back to pi's default boxed tool rendering;
