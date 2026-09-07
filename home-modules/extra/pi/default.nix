@@ -273,7 +273,7 @@ in
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
-          lastChangelogVersion = "0.84.2";
+          lastChangelogVersion = pkgs.mv.tip.pi-coding-agent.version;
           defaultProvider = "openrouter";
           defaultModel = "z-ai/glm-5.3-flash";
           defaultThinkingLevel = "high";
