@@ -86,6 +86,7 @@ import {
 	readTextResult,
 	resetTurnTokens,
 	scanToolGroupsFromHistory,
+	setLiveThemeSource,
 	settleStatus,
 	settleTurnMessage,
 	shimmerFrame,
@@ -1712,6 +1713,12 @@ export default function customUi(pi: ExtensionAPI) {
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;
 		userMessageUi = ctx.ui as { theme?: Theme };
+		// Live-theme tier for the lib's base16 resolvers: ctx.ui.theme is a
+		// live getter over pi's theme singleton, so re-reading it per call
+		// tracks /theme changes without an event hook. Registered on
+		// globalThis — plan-stack and other lib consumers resolve through it
+		// without their own registration.
+		setLiveThemeSource(() => ctx.ui.theme);
 		setLoaderVisible(ctx, false);
 		if (ctx.mode === "print" || ctx.mode === "json") return;
 		// Capture the TUI so animation ticks can force repaints — the zero-line

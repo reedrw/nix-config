@@ -1060,23 +1060,34 @@ const SHIMMER_FALLBACK: Rgb[] = [
 	[95, 95, 255], [95, 175, 255], [0, 255, 255],
 ];
 
-// Gradient stops + base tone, memoized per (palette epoch, stops key).
-// base16() bumps the epoch whenever it re-reads a changed base16.json, so a
-// toggle-theme mid-session recolors the shimmer on the next frame; stale
-// entries are bounded (epochs only bump on theme changes).
+// Gradient stops + base tone, memoized per (palette epoch, theme instance,
+// color mode, stops key). base16() bumps the epoch whenever it re-reads a
+// changed base16.json, so a toggle-theme mid-session recolors the shimmer on
+// the next frame; themeId() keys theme-tier colors by the live Theme
+// instance (swapped by /theme); stale entries are bounded (epochs only bump
+// on palette changes, theme ids only on theme swaps).
 const shimmerPalettes = new Map<string, { grad: Rgb[]; base: Rgb }>();
 function shimmerColors(stops: readonly string[]): { grad: Rgb[]; base: Rgb } {
 	refreshBase16(); // may bump the epoch — must run before the cache key
-	const key = `${base16Epoch()}:${stops.join(",")}`;
+	const t = liveTheme();
+	const key = `${base16Epoch()}:${themeId(t)}:${t?.getColorMode() ?? ""}:${stops.join(",")}`;
 	let p = shimmerPalettes.get(key);
 	if (!p) {
-		const grad = stops
+		// Tier 1: palette hexes. Tier 2: the live theme — RGB parsed from its
+		// SGR, only in truecolor mode (256color has no honest RGB; keep static
+		// fallbacks there). Tier 3: pi-animations' rainbow.
+		let grad = stops
 			.map(base16)
 			.map((hex) => hexToRgbTuple(hex ?? ""))
 			.filter((c): c is Rgb => c !== undefined);
+		if (grad.length < 2 && t) {
+			grad = stops.map((name) => themeNameRgb(t, name)).filter((c): c is Rgb => c !== undefined);
+		}
+		let base = hexToRgbTuple(base16("base04") ?? "");
+		if (base === undefined && t) base = themeNameRgb(t, "base04");
 		p = {
 			grad: grad.length >= 2 ? grad : SHIMMER_FALLBACK,
-			base: hexToRgbTuple(base16("base04") ?? "") ?? [200, 200, 200],
+			base: base ?? [200, 200, 200],
 		};
 		shimmerPalettes.set(key, p);
 	}
@@ -1516,21 +1527,132 @@ function base16(name: string): string | undefined {
 	return entry.palette[name];
 }
 
-// Truecolor SGR foreground for a base16 color (hex without '#'); falls back
-// to `fallbackHex` when the palette is unavailable.
+// ── Live-theme tier ───────────────────────────────────────────────
+// ctx.ui.theme is a live getter over pi's theme module singleton, so a source
+// that re-reads it tracks /theme changes with no event hook. The registration
+// lives on globalThis (lib instances are per-extension); custom-ui.ts's
+// session_start (the first ctx-bearing event) publishes it, and every lib
+// instance then resolves through the shared source. When unregistered, this
+// tier is simply skipped and the static Ayu fallback applies.
+type ThemeSource = () => Theme | undefined;
+
+export function setLiveThemeSource(getTheme: ThemeSource | undefined): void {
+	(globalThis as Record<string, unknown>).__piCustomUiThemeSource = getTheme;
+}
+
+function liveTheme(): Theme | undefined {
+	const get = (globalThis as Record<string, unknown>).__piCustomUiThemeSource as
+		| ThemeSource
+		| undefined;
+	if (get === undefined) return undefined;
+	try {
+		return get();
+	} catch {
+		return undefined;
+	}
+}
+
+// Per-instance identity for cache keys — /theme swaps the Theme instance, and
+// the same-named theme file can also be reloaded (bumping name+mode strings
+// would miss that).
+const themeIds = new WeakMap<Theme, number>();
+let nextThemeId = 1;
+function themeId(t: Theme | undefined): number {
+	if (t === undefined) return 0;
+	let id = themeIds.get(t);
+	if (id === undefined) {
+		id = nextThemeId++;
+		themeIds.set(t, id);
+	}
+	return id;
+}
+
+// base16 name → live-theme roles, tried in order: getFgAnsi/getBgAnsi THROW
+// on absent colors (the thinking*/search* slots are optional), so the next
+// role is tried. Only names the suite actually uses are mapped. Palette hexes
+// win first (tier 1); this is tier 2; static Ayu hexes are tier 3.
+const THEME_FG_ROLES: Record<string, readonly string[]> = {
+	base03: ["syntaxComment", "muted"],
+	base04: ["muted", "toolOutput"],
+	base08: ["error"],
+	base09: ["thinkingMax", "warning"], // orange — no direct role; thinkingMax is optional
+	base0A: ["warning"],
+	base0B: ["success"],
+	base0C: ["thinkingLow", "mdCode"],
+	base0D: ["accent", "mdLink"],
+	base0E: ["customMessageLabel", "thinkingHigh"],
+};
+const THEME_BG_ROLES: Record<string, readonly string[]> = {
+	// The band backgrounds must flip with the theme's polarity (light theme →
+	// light band): the dark Ayu fallback is what made light terminals unreadable.
+	base01: ["userMessageBg", "customMessageBg", "selectedBg"],
+};
+
+// Truecolor SGR → RGB tuple (theme.getFgAnsi output). Undefined for other
+// color modes (256color gradients have no honest RGB) or unparseable colors.
+function themeFgRgb(t: Theme, name: string): Rgb | undefined {
+	if (t.getColorMode() !== "truecolor") return undefined;
+	try {
+		const m = /\x1b\[38;2;(\d+);(\d+);(\d+)m/.exec(t.getFgAnsi(name as Parameters<Theme["getFgAnsi"]>[0]));
+		return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+// RGB tuple for a base16 NAME via the live theme: walks the name's role
+// chain (themeFgRgb returns undefined per role; absent colors throw). Used
+// where raw RGB is needed (the shimmer gradient/base tone) instead of SGR.
+function themeNameRgb(t: Theme, name: string): Rgb | undefined {
+	for (const role of THEME_FG_ROLES[name] ?? []) {
+		const rgb = themeFgRgb(t, role);
+		if (rgb !== undefined) return rgb;
+	}
+	return undefined;
+}
+
+// SGR foreground for a base16 color (hex without '#'). Three tiers: the
+// base16.json palette (stylix — exact scheme), the live pi theme (the
+// theme's own SGR for the mapped role, correct for the terminal's color
+// mode), then the Ayu Dark `fallbackHex` (theme-less installs).
 export function base16Fg(name: string, fallbackHex: string): string {
-	let hex = base16(name);
-	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) hex = fallbackHex;
-	const n = parseInt(hex, 16);
+	const hex = base16(name);
+	if (typeof hex === "string" && /^[0-9a-f]{6}$/i.test(hex)) {
+		const n = parseInt(hex, 16);
+		return `\x1b[38;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
+	}
+	const t = liveTheme();
+	if (t !== undefined) {
+		for (const role of THEME_FG_ROLES[name] ?? []) {
+			try {
+				return t.getFgAnsi(role as Parameters<Theme["getFgAnsi"]>[0]);
+			} catch {
+				// Optional color absent — try the next role.
+			}
+		}
+	}
+	const n = parseInt(fallbackHex, 16);
 	return `\x1b[38;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
 }
 
-// Truecolor SGR background for a base16 color (hex without '#'); falls back
-// to `fallbackHex` when the palette is unavailable.
+// SGR background for a base16 color; same three tiers as base16Fg.
 export function base16Bg(name: string, fallbackHex: string): string {
-	let hex = base16(name);
-	if (typeof hex !== "string" || !/^[0-9a-f]{6}$/i.test(hex)) hex = fallbackHex;
-	const n = parseInt(hex, 16);
+	const hex = base16(name);
+	if (typeof hex === "string" && /^[0-9a-f]{6}$/i.test(hex)) {
+		const n = parseInt(hex, 16);
+		return `\x1b[48;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
+	}
+	const t = liveTheme();
+	if (t !== undefined) {
+		for (const role of THEME_BG_ROLES[name] ?? []) {
+			try {
+				return t.getBgAnsi(role as Parameters<Theme["getBgAnsi"]>[0]);
+			} catch {
+				// Optional color absent — try the next role.
+			}
+		}
+	}
+	const n = parseInt(fallbackHex, 16);
 	return `\x1b[48;2;${(n >> 16) & 0xff};${(n >> 8) & 0xff};${n & 0xff}m`;
 }
 

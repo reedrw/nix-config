@@ -36,13 +36,25 @@ the hard way; violating them fails silently.
   per-file derivations strand lib-internal relative imports (`../custom-ui.ts`)
   in a sibling store path that doesn't exist. Symptom was "Cannot find module
   './shared-settings/index.ts'" at extension load.
-- **Theme coupling is one file contract**: all raw-SGR color goes through
-  `base16Fg`/`base16Bg`, which read `~/.pi/agent/extensions/lib/base16.json`
-  (nix-generated from stylix) and fall back to hardcoded Ayu Dark hexes when
-  absent. On a light terminal without that file, the base01 bands render
-  near-black under light-theme text — broken contrast, by design of the
-  fallback. A theme-based fallback tier (resolve roles from the live pi
-  `Theme` via `getFgAnsi`/`getBgAnsi`) is the planned fix.
+- **Theme coupling is a three-tier resolver**: all raw-SGR color goes through
+  `base16Fg`/`base16Bg` (lib): (1) the nix-generated stylix palette at
+  `~/.pi/agent/extensions/lib/base16.json` wins when present — exact scheme;
+  (2) the live pi `Theme` — roles mapped per base16 name in `THEME_FG_ROLES`/
+  `THEME_BG_ROLES` (getFgAnsi/getBgAnsi THROW on absent colors — try the next
+  role); returns the theme's own SGR, correct for the terminal's color mode;
+  (3) static Ayu Dark hexes. custom-ui.ts's `session_start` (first ctx-bearing
+  event) publishes `setLiveThemeSource(() => ctx.ui.theme)` — `ctx.ui.theme` is
+  a live getter over pi's theme singleton, so `/theme` changes are tracked
+  with no event hook; the source lives on globalThis (shared by every lib
+  instance). The shimmer gradient parses theme RGB ONLY in truecolor mode
+  (`themeNameRgb`); 256color keeps static fallbacks (no honest RGB). Cache
+  keys: shimmer palettes key on palette epoch + theme instance id (WeakMap)
+  + color mode + stops; the smoke's theme-tier section must use stops unique
+  to that section (cache keys don't distinguish palette CONTENT within the
+  500ms TTL, so reused stops can hit entries computed under an earlier
+  palette state). Without the palette file the bands follow the theme's
+  polarity (light theme → light band) instead of rendering dark Ayu bands
+  under light-theme text.
 - **Register tools at LOAD time, never in `session_start`**: pi's session-switch
   flows (in-app `/resume`, `/new`, `/fork`, tree navigation) render the restored
   transcript BEFORE re-binding extensions (`rebindCurrentSession({

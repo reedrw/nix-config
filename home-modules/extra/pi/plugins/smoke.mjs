@@ -40,6 +40,10 @@ import {
 	wrapTreeText,
 	enableLinkActions,
 	disableLinkActions,
+	base16Fg,
+	base16Bg,
+	setLiveThemeSource,
+	shimmerFrame,
 } from "./lib/custom-ui.ts";
 import { getCapabilities, setCapabilities } from "@earendil-works/pi-tui";
 import { ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
@@ -904,5 +908,63 @@ if (typeof installThinkingFold !== "function") throw new Error("installThinkingF
 if (formatThinkingSeconds(1500) !== "1.5s") throw new Error("formatThinkingSeconds broke");
 if (formatStreamingThinkingSeconds(90_000) !== "1m 30s") throw new Error("formatStreamingThinkingSeconds broke");
 console.log("OK-THINKING-FOLD");
+
+// ── Live-theme fallback tier ─────────────────────────────
+// With the base16 palette emptied (no stylix file), the resolvers fall
+// through to the live pi theme (roles via getFgAnsi/getBgAnsi, which throw
+// on absent colors), then to the static Ayu hexes.
+const realBase16Cache = globalThis.__piCustomUiBase16CacheV2;
+globalThis.__piCustomUiBase16CacheV2 = { palette: {}, raw: "", checkedAt: Date.now() };
+const mkTheme = (mode) => ({
+	getColorMode: () => mode,
+	getFgAnsi: (c) => {
+		if (c === "muted") return "\x1b[38;2;11;22;33m";
+		if (c === "accent") return "\x1b[38;2;1;2;3m";
+		if (c === "warning") return "\x1b[38;2;4;5;6m";
+		if (c === "customMessageLabel") return "\x1b[38;2;21;22;23m";
+		if (c === "thinkingLow") return "\x1b[38;2;31;32;33m";
+		throw new Error(`unknown color ${c}`);
+	},
+	getBgAnsi: (c) => {
+		if (c === "userMessageBg") return "\x1b[48;2;7;8;9m";
+		throw new Error(`unknown bg ${c}`);
+	},
+});
+setLiveThemeSource(() => mkTheme("truecolor"));
+// base04 → muted role
+if (base16Fg("base04", "000000") !== "\x1b[38;2;11;22;33m") throw new Error("fg must fall through to the theme tier");
+// base01 → userMessageBg (the light-terminal band fix)
+if (base16Bg("base01", "000000") !== "\x1b[48;2;7;8;9m") throw new Error("bg must fall through to the theme tier");
+// absent optional role (syntaxComment) falls to the next role (muted)
+if (base16Fg("base03", "000000") !== "\x1b[38;2;11;22;33m") throw new Error("absent role must fall to the next role");
+// a throwing source degrades to the static Ayu hex tier
+setLiveThemeSource(() => {
+	throw new Error("no theme");
+});
+if (base16Fg("base04", "010203") !== "\x1b[38;2;1;2;3m") throw new Error("unresolvable tiers must use the static fallback");
+// palette tier wins again once the stylix cache is back
+setLiveThemeSource(() => mkTheme("truecolor"));
+globalThis.__piCustomUiBase16CacheV2 = realBase16Cache;
+if (base16Fg("base04", "000000") === "\x1b[38;2;11;22;33m") throw new Error("palette tier must win over the theme tier");
+// shimmer: truecolor theme colors recolor the gradient vs the static rainbow;
+// 256color mode must NOT parse theme SGR (no honest RGB) — stays static.
+// (The palette must be emptied again here — the assertion above restored it,
+// and the palette tier outranks the theme tier. The stops differ from every
+// other smoke section on purpose: the shimmer cache keys on epoch+theme,
+// not on palette CONTENT within the 500ms TTL, so reused stops could hit a
+// stale entry computed under the earlier real-palette state.)
+const THEME_TIER_STOPS = ["base0D", "base0E"];
+setLiveThemeSource(() => mkTheme("truecolor"));
+globalThis.__piCustomUiBase16CacheV2 = { palette: {}, raw: "", checkedAt: Date.now() };
+const themedShimmer = shimmerFrame("Thinking…", 3, THEME_TIER_STOPS);
+setLiveThemeSource(undefined);
+const staticShimmer = shimmerFrame("Thinking…", 3, THEME_TIER_STOPS);
+if (themedShimmer === staticShimmer) throw new Error("theme tier must recolor the shimmer");
+if (!/\x1b\[38;2;\d+;\d+;\d+m/.test(staticShimmer)) throw new Error("static shimmer tier lost");
+setLiveThemeSource(() => mkTheme("256color"));
+const mode256Shimmer = shimmerFrame("Thinking…", 3, THEME_TIER_STOPS);
+if (mode256Shimmer !== staticShimmer) throw new Error("256color mode must keep the static shimmer");
+setLiveThemeSource(undefined);
+console.log("OK-THEME-TIER");
 disableLinkActions();
 setCapabilities(realCaps);
