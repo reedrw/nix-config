@@ -1862,21 +1862,22 @@ export function installTightSelfRows(): void {
 		hasRendererDefinition(): boolean;
 		getRenderShell(): string;
 		imageComponents?: unknown[];
+		selfRenderContainer?: { render(width: number): string[] };
 	};
 	const originalRender = prototype.render as (this: ToolExecView, width: number) => string[];
 	prototype.render = function (this: ToolExecView, width: number) {
 		const lines = originalRender.call(this, width);
-		// The framing blank is pushed iff contentLines.length > 0; the only
-		// other way a self-shell row starts blank is an image spacer above
-		// empty content, excluded via imageComponents. Our renderers never
-		// begin a row with a blank line, so a leading blank here is always
-		// pi's framing.
+		// The framing blank is pushed iff contentLines.length > 0 (pi renders
+		// content first, then image spacers) — so when the row starts blank,
+		// it's either pi's framing (content non-empty: always strip) or a real
+		// image spacer above empty content (keep it). Distinguish by rendering
+		// the content container again; children cache, so this is cheap.
 		if (
 			lines.length > 0 &&
 			lines[0].trim() === "" &&
-			!this.imageComponents?.length &&
 			this.hasRendererDefinition() &&
-			this.getRenderShell() === "self"
+			this.getRenderShell() === "self" &&
+			(this.selfRenderContainer?.render(width)?.length ?? 0) > 0
 		) {
 			return lines.slice(1);
 		}
