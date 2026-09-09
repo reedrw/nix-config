@@ -968,3 +968,28 @@ setLiveThemeSource(undefined);
 console.log("OK-THEME-TIER");
 disableLinkActions();
 setCapabilities(realCaps);
+
+// ── Validation-failed tool calls still join the batch ───────────
+// pi fires tool_call from beforeToolCall, which runs AFTER
+// validateToolArguments — a call whose args fail schema validation never
+// emits it. custom-ui therefore tracks on tool_execution_start (forwarded
+// before validation); trackGroupToolCall must be idempotent since valid
+// calls fire both events. Regression: the failed edit row must re-render as
+// a tree child (glyph + rail), not dangle full-width untracked.
+resetToolGroups();
+const vctx = kctx("vfail", { args: { path: "a.ts" } });
+const preTrack = plainRow(edit.renderCall({ path: "a.ts" }, theme, vctx));
+if (preTrack.includes("├") || preTrack.includes("╰")) throw new Error("pre-track render must be untracked");
+trackGroupToolCall("vfail");
+trackGroupToolCall("vfail"); // tool_call may fire too — no double-join
+if (groupMode("vfail").kind !== "child") throw new Error("tracked row must be a batch child");
+const vCall = plainRow(edit.renderCall({ path: "a.ts" }, theme, vctx));
+if (!vCall.includes("tool call")) throw new Error("solo failed edit must host its live batch header");
+if (!vCall.includes("╰─") && !vCall.includes("├─")) throw new Error("failed edit row must carry a tree glyph");
+// a settled batch keeps hiding failed children like any other (no special case)
+trackGroupToolCall("t9"); trackGroupToolCall("vfail2"); closeBatch();
+if (plainRow(edit.renderCall({ path: "b.ts" }, theme, kctx("vfail2", { args: { path: "b.ts" } }))).length !== 0) {
+	throw new Error("hidden child of a settled batch must render nothing");
+}
+resetToolGroups();
+console.log("OK-VALIDATION-FAIL-RAIL");

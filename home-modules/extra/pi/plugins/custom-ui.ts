@@ -1546,7 +1546,13 @@ export default function customUi(pi: ExtensionAPI) {
 		lastAgentEventAt = Date.now();
 	};
 
-	pi.on("tool_call", async (event, ctx) => {
+	// Tracked on tool_execution_start, NOT tool_call: pi fires tool_call from
+	// beforeToolCall, which runs AFTER validateToolArguments — a call whose
+	// args fail schema validation (e.g. the model sends `edits` as a string)
+	// throws before the event and its row would render untracked forever:
+	// full-width, no tree glyph/rail, no batch header. tool_execution_start is
+	// forwarded to extensions before validation and covers every call.
+	pi.on("tool_execution_start", async (event) => {
 		noteAgentActivity();
 		inFlightTools += 1;
 		const e = event as { toolCallId?: string };
@@ -1555,9 +1561,19 @@ export default function customUi(pi: ExtensionAPI) {
 			ensureTick();
 		}
 	});
-	pi.on("tool_result", async () => {
+	pi.on("tool_call", async () => {
+		noteAgentActivity();
+	});
+	// execution_start/end is the balanced pair: tool_result (fired from
+	// afterToolCall) never fires for validation-failed or blocked calls, so
+	// decrementing there leaked the counter and permanently suppressed the
+	// dead-air loader. tool_execution_end fires for every finalized call.
+	pi.on("tool_execution_end", async () => {
 		noteAgentActivity();
 		inFlightTools = Math.max(0, inFlightTools - 1);
+	});
+	pi.on("tool_result", async () => {
+		noteAgentActivity();
 	});
 	pi.on("agent_start", async (_event, ctx) => {
 		noteAgentActivity();

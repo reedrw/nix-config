@@ -600,8 +600,12 @@ function groupState(): GroupState {
 // batch consumes the pending leading-thought run: the first think becomes
 // the anchor (it hosts the header in the fold), the rest are branches —
 // think → tools → think → tools maps to children in exactly that order.
+// Idempotent: custom-ui tracks on tool_execution_start (fires for every
+// call, BEFORE pi validates args) and keeps the legacy tool_call handler;
+// a call that passes validation fires both.
 export function trackGroupToolCall(toolCallId: string): void {
 	const s = groupState();
+	if (s.memberBatch.has(toolCallId)) return;
 	s.order.set(toolCallId, ++s.counter);
 	if (s.current === undefined) {
 		const anchorRun = s.leadingRun;
