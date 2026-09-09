@@ -2411,9 +2411,10 @@ export function genericSlots(label: string, argOf: (args: any) => string): Rende
 }
 
 // ---------------------------------------------------------------------------
-// web tools — pi-web-access's web_search / fetch_content / source_check can't
-// adopt the style at registration time (tool-name ownership is exclusive and
-// the package doesn't consult the __piCustomUi maybeDecorate API), so
+// web tools — pi-web-access's web_search / fetch_content / source_check /
+// get_search_content can't adopt the style at registration time (tool-name
+// ownership is exclusive and the package doesn't consult the __piCustomUi
+// maybeDecorate API), so
 // custom-ui.ts prototype-patches ToolExecutionComponent's renderer getters and
 // routes those tools here. Same skeleton as genericSlots, but the settled
 // summary and the live phase line are derived from the tool's `details`

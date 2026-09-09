@@ -1202,11 +1202,12 @@ function installCompactBashCommands(getTheme: () => Theme | undefined): void {
 	};
 }
 
-// ── pi-web-access tools: Search / Fetch / Check ────────────
+// ── pi-web-access tools: Search / Fetch / Check / Content ──
 
-// web_search, fetch_content, and source_check are registered by the
-// pi-web-access package. Tool names are owned exclusively by their registrar
-// and the package doesn't consult the maybeDecorate API, so the slots can't
+// web_search, fetch_content, source_check, and get_search_content are
+// registered by the pi-web-access package. Tool names are owned exclusively
+// by their registrar and the package doesn't consult the maybeDecorate API,
+// so the slots can't
 // be swapped at registration; instead ToolExecutionComponent's renderer
 // getters are prototype-patched (fork-style, guarded against stacking) to
 // route those tools to the lib's details-driven renderers. History rebuilds
@@ -1266,6 +1267,37 @@ const webToolSpecs: Record<string, ReturnType<typeof webToolSlots>> = {
 			typeof d?.sourceCount === "number"
 				? `${d.sourceCount} sources · ${d.passageCount ?? 0} passages`
 				: undefined,
+	}),
+	// get_search_content (the package's own renderer labels it "get_content"):
+	// mirrors its renderCall target (query/url selector + slice + findText)
+	// and renderResult status line (matches / results / chars slice).
+	get_search_content: webToolSlots({
+		label: "Content",
+		argOf: (args) => {
+			const target =
+				typeof args?.query === "string" ? `query="${args.query}"`
+				: args?.queryIndex !== undefined ? `queryIndex=${args.queryIndex}`
+				: typeof args?.url === "string"
+					? (args.url.length > 30 ? `${args.url.slice(0, 27)}…` : args.url)
+				: args?.urlIndex !== undefined ? `urlIndex=${args.urlIndex}`
+				: "";
+			const id = typeof args?.responseId === "string" ? args.responseId.slice(0, 8) : "";
+			return [target, id, args?.findText !== undefined ? "find" : ""].filter(Boolean).join(" · ");
+		},
+		summary: (d) => {
+			if (typeof d?.matchCount === "number") {
+				return typeof d.returnedMatches === "number" && d.returnedMatches < d.matchCount
+					? `${d.returnedMatches}/${d.matchCount} matches`
+					: `${d.matchCount} matches`;
+			}
+			if (typeof d?.resultCount === "number") return `${d.resultCount} results`;
+			if (typeof d?.contentLength === "number") {
+				if ((d.offset ?? 0) === 0 && d.nextOffset == null) return fmtChars(d.contentLength);
+				const returned = typeof d.returnedChars === "number" ? fmtChars(d.returnedChars) : "?";
+				return `${returned} of ${fmtChars(d.contentLength)} @ ${d.offset ?? 0}`;
+			}
+			return undefined;
+		},
 	}),
 };
 
