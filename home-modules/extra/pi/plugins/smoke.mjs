@@ -349,6 +349,19 @@ const plainRow = (c) => {
 		.replace(/\[[a-zA-Z]+\]/g, "");
 };
 const kctx = (id, extra = {}) => ({ toolCallId: id, state: {}, args: {}, expanded: false, isError: false, isPartial: true, invalidate: () => {}, ...extra });
+// The suite is fully synchronous until its first await, so every deferred
+// repaint the lib scheduled (setTimeout 0) is queued and drains in one burst
+// there — and the repaint chain is NESTED (invalidate → setTimeout →
+// re-render), so a fixed sleep can expire before the second hop runs. Poll
+// for the expected state instead (the old `await setTimeout(10)` flaked).
+async function waitFor(what, predicate, detail, timeoutMs = 2000) {
+	const deadline = Date.now() + timeoutMs;
+	for (;;) {
+		if (predicate()) return;
+		if (Date.now() > deadline) throw new Error(`${what} (timed out): ${detail?.() ?? ""}`);
+		await new Promise((r) => setTimeout(r, 5));
+	}
+}
 const stripSgr = (s) => s.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").replace(/\x1b\]8;;[^\x1b]*\x1b\\/g, "");
 const callOf = (id) => plainRow(bash.renderCall({ command: "echo hi" }, theme, kctx(id, { args: { command: "echo hi" } })));
 const resultOf = (id, text = "out\nout2", extra = {}) =>
@@ -834,10 +847,11 @@ scanToolGroupsFromHistory([
 	{ type: "message", message: { role: "user", content: [{ type: "text", text: "go" }] } },
 	{ type: "message", message: { role: "assistant", timestamp: 1, content: [{ type: "toolCall", id: "rs1" }, { type: "toolCall", id: "rs2" }] } },
 ]);
-await new Promise((r) => setTimeout(r, 10));
-if (!/[├╰]─/.test(repaints[0]()) || !/[├╰]─/.test(repaints[1]())) {
-	throw new Error(`rescan must repaint pre-scan rows with tree grammar: ${JSON.stringify([repaints[0](), repaints[1]()])}`);
-}
+await waitFor(
+	"rescan must repaint pre-scan rows with tree grammar",
+	() => /[├╰]─/.test(repaints[0]()) && /[├╰]─/.test(repaints[1]()),
+	() => JSON.stringify([repaints[0](), repaints[1]()]),
+);
 resetToolGroups();
 
 // ── Streaming-args race: pi renders the call row before tool_call tracks it ──
@@ -851,8 +865,11 @@ raceCtx.invalidate = () => setTimeout(renderRace, 0);
 renderRace(); // untracked first pass (args streaming)
 if (/[├╰]─/.test(raceRendered)) throw new Error("pre-track sanity: row must render untracked");
 trackGroupToolCall("ft1");
-await new Promise((r) => setTimeout(r, 10));
-if (!/[├╰]─/.test(raceRendered)) throw new Error(`tool_call must repaint the row it tracks: ${JSON.stringify(raceRendered)}`);
+await waitFor(
+	"tool_call must repaint the row it tracks",
+	() => /[├╰]─/.test(raceRendered),
+	() => JSON.stringify(raceRendered),
+);
 resetToolGroups();
 
 console.log("OK-RESUME-REPAINT");

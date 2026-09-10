@@ -772,19 +772,24 @@ function evictPreviouslyNewest(previous: string | undefined, current: string): v
 }
 
 
+// Content parts arrive as `unknown` (the slot signature is loose), so the
+// image shape is narrowed explicitly instead of asserted.
+function isImagePart(part: unknown): part is { type: "image"; data: string; mimeType: string } {
+	if (typeof part !== "object" || part === null) return false;
+	const p = part as { type?: unknown; data?: unknown; mimeType?: unknown };
+	return p.type === "image" && typeof p.data === "string" && p.data.length > 0 && typeof p.mimeType === "string";
+}
+
 function imagePortion(
 	result: unknown,
 	options: { expanded?: boolean },
-	theme: { fg: (color: string, text: string) => string },
+	theme: Theme,
 	context: { toolCallId: string; invalidate: () => void },
 	): Container | undefined {
 	const content = Array.isArray((result as { content?: unknown })?.content)
 		? (result as { content: unknown[] }).content
 		: [];
-	const images = content.filter(
-		(part): part is { type: "image"; data: string; mimeType: string } =>
-			part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
-		);
+	const images = content.filter(isImagePart);
 	if (images.length === 0) return undefined;
 
 	const stack = new Container();
@@ -1406,7 +1411,7 @@ export default function customUi(pi: ExtensionAPI) {
 			message: string,
 			type?: string,
 		) => void;
-		notifyProto.showExtensionNotify = function (message: string, type?: string) {
+		notifyProto.showExtensionNotify = function (this: InteractiveMode, message: string, type?: string) {
 			if ((type ?? "info") === "info" && pushToolNote(message)) return;
 			originalNotify.call(this, message, type);
 		};
@@ -1803,9 +1808,23 @@ export default function customUi(pi: ExtensionAPI) {
 
 	// Original tools are recreated per cwd at execute time (cached); the
 	// registration itself only borrows description/parameters/prompt metadata
-	// from the cwd at load time.
-	const cache = new Map<string, Record<string, ReturnType<typeof createEditTool>>>();
-	function builtins(cwd: string) {
+	// from the cwd at load time. The five tools have different param schemas,
+	// so the cache holds them at the registerTool wire type (each keeps its own
+	// `parameters` at runtime; only the shared shape is typed here) — typing it
+	// as one tool's shape would coerce the other four, and a plain union would
+	// not satisfy registerTool's generic inference.
+	const slots = { edit, write, grep, find, ls } as const;
+	type BuiltinName = keyof typeof slots;
+	type RegisteredTool = Parameters<ExtensionAPI["registerTool"]>[0];
+	// The factories return AgentTools (4-arg execute, no ctx — the cwd is
+	// captured in the closure); the registration wire type declares 5 because
+	// pi passes the context to registered tools. Cache the real shape so the
+	// original executes with its own arity.
+	type BuiltinTool = Omit<RegisteredTool, "execute"> & {
+		execute: (toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any) => Promise<any>;
+	};
+	const cache = new Map<string, Record<BuiltinName, BuiltinTool>>();
+	function builtins(cwd: string): Record<BuiltinName, BuiltinTool> {
 		let tools = cache.get(cwd);
 		if (!tools) {
 			tools = {
@@ -1820,9 +1839,8 @@ export default function customUi(pi: ExtensionAPI) {
 		return tools;
 	}
 
-	const slots = { edit, write, grep, find, ls } as const;
-	for (const name of Object.keys(slots) as Array<keyof typeof slots>) {
-		const original = builtins(process.cwd())[name]!;
+	for (const name of Object.keys(slots) as BuiltinName[]) {
+		const original = builtins(process.cwd())[name];
 		const slot = slots[name];
 		pi.registerTool({
 			...original,
@@ -1830,7 +1848,7 @@ export default function customUi(pi: ExtensionAPI) {
 			renderCall: slot.renderCall,
 			renderResult: slot.renderResult,
 			async execute(toolCallId, params, signal, onUpdate, ctx) {
-				return builtins(ctx.cwd)[name]!.execute(toolCallId, params, signal, onUpdate);
+				return builtins(ctx.cwd)[name].execute(toolCallId, params, signal, onUpdate);
 			},
 		});
 	}

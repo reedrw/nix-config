@@ -34,7 +34,7 @@ import { homedir } from "node:os";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import { Type } from "typebox";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { defineTool, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import type { Type as TType } from "typebox";
 
 const NIX_INDEX_DB = join(homedir(), ".cache/nix-index");
@@ -601,7 +601,9 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	// an earlier auto-provision, or make a known attr available on demand.
 	// Opts into custom-ui rendering via its runtime API (if loaded); without
 	// it the tool registers plain.
-	const provisionTool = {
+	// defineTool keeps the schema inference for a standalone definition (a plain
+	// object literal would leave the execute params implicitly `any`).
+	const provisionTool = defineTool({
 		name: "nix_provision",
 		label: "Nix Provision",
 		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Provisions are recorded in the session, so resuming it restores them (offering to rebuild any that were garbage collected). Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
@@ -651,7 +653,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 				details: { attr: params.attr, branch: resolution.branch, binDirs: resolution.binDirs },
 			};
 		},
-	};
+	});
 	const styleApi = (globalThis as Record<string, unknown>).__piCustomUi as
 		| { maybeDecorate: (tool: any, opts?: { label?: string; argOf?: (args: any) => string }) => any }
 		| undefined;

@@ -240,35 +240,50 @@ ends up with one blank line before and after.
 
 ## Typecheck + smoke gates (run before committing plugin changes)
 
-Strict `tsc --noEmit` over the plugins dir finds missing imports that jiti only
-surfaces as runtime ReferenceErrors which pi then swallows (renderer fallback /
-event-handler error log). When image-history.ts was merged into custom-ui.ts, six
-dropped imports (node:crypto/fs/url + lib helpers) silently killed inline image
-embedding, the history-entry fallback, and read-row rendering — the TS2304s were
-the only signal. Take TS2304s seriously. Scope: tsconfig includes `*.ts` +
-`lib/**/*.ts` (the fold was outside the old include — keep new code inside it).
-The tracked `plugins/package.json` (`"type": "module"`) is a typecheck-scope
-marker only — never installed; without it NodeNext infers CJS and
+`plugins/typecheck.sh` is the gate: it rebuilds the dev `node_modules` of
+symlinks into the installed pi and runs `tsc --noEmit`, which is now **clean —
+any error it prints is yours**. Runtime never uses that dir (pi's jiti loader
+aliases `@earendil-works/*` itself; the nix package ships no node_modules), but
+tsc needs real files. The script exists because hand-rolling the symlinks is
+error-prone, and one omission is silent and vicious: without
+`@earendil-works/pi-ai` on disk, `import type { AssistantMessage }` becomes
+`any` and every use site cascades into `TS7006 implicitly has an 'any' type` —
+which reads like sloppy code, not a missing symlink. Notes it encodes:
+`node_modules/` must be a REAL dir (a symlinked one breaks resolution — the
+store is read-only), `@earendil-works/` must be a real dir too (the store's own
+`@earendil-works` dir has no `pi-coding-agent`, and `pi-coding-agent` must
+resolve to the monorepo root), and every bundled `@earendil-works/*` package is
+linked (pi-ai, pi-agent-core, pi-tui, …). Re-run it after a pi update; it finds
+pi via `readlink -f "$(command -v pi)"` minus `/bin/pi`. The tracked
+`plugins/package.json` (`"type": "module"`) is a typecheck-scope marker only —
+never installed; without it NodeNext infers CJS and
 `lib/thinking-fold/model-behaviors.ts`'s `import.meta` usage fails with TS1470.
-When the include scope changes, REGENERATE the baseline from the pre-change tree
-with the NEW tsconfig (extract via `git archive`, copy tsconfig, symlink
-`node_modules`) — otherwise new coverage reads as new errors.
 
-Setup: the plugins dir has a tracked `tsconfig.json` (strict, NodeNext) and needs
-an **untracked real `node_modules/` dir** of symlinks (a symlinked `node_modules`
-itself fails — /nix/store is read-only): every entry of pi's bundled
-`node_modules/*`, plus `@earendil-works/pi-coding-agent` → the monorepo root and
-`@earendil-works/pi-tui` → pi's bundled
-`node_modules/@earendil-works/pi-tui` (the store monorepo has no `packages/`
-dir). Find the store path with `readlink -f "$(command -v pi)"` and strip
-`/bin/pi`. Always diff errors against a baseline of the pre-change tree (e.g.
-`git archive <base> … plugins | tar -x` + same tsconfig) — only *new* errors
-count.
+Strict `tsc` finds missing imports that jiti only surfaces as runtime
+ReferenceErrors which pi then swallows (renderer fallback / event-handler error
+log). When image-history.ts was merged into custom-ui.ts, six dropped imports
+(node:crypto/fs/url + lib helpers) silently killed inline image embedding, the
+history-entry fallback, and read-row rendering — the TS2304s were the only
+signal. Take TS2304s seriously. Scope: tsconfig includes `*.ts` + `lib/**/*.ts`
+(the fold was outside the old include — keep new code inside it). When the
+include scope changes, regenerate a baseline from the pre-change tree with the
+NEW tsconfig (`git archive <base> … plugins | tar -x`, copy `tsconfig.json`,
+run the same symlink setup) and diff — otherwise new coverage reads as new
+errors.
 
 `smoke.mjs` (tracked) drives the grouping state machine + header renderers
 headlessly under `nix run nixpkgs#nodejs -- --experimental-transform-types smoke.mjs`
 — the working-tree lib imports run without pi, so renderer changes can be
-asserted without a live TUI.
+asserted without a live TUI. It MUST be deterministic: **never `await` a fixed
+sleep** before asserting on a deferred repaint. The suite is synchronous until
+its first `await`, so every `setTimeout(0)` the lib scheduled is backlogged and
+drains in one burst there; the repaint chain is nested (`invalidate →
+setTimeout → re-render`), so a 10 ms sleep regularly expired between the two
+hops and looked like a broken change ("rescan must repaint pre-scan rows…"
+threw ~50 % of runs on an untouched tree — agents then chased a phantom
+regression). Use the `waitFor(what, predicate, detail)` helper (polls every
+5 ms, 2 s cap) for anything async — it waits for the second hop instead of
+racing it.
 
 ## Debugging pi's TUI headlessly
 
