@@ -1,6 +1,7 @@
 // Pi statusline — port of the Claude Code statusline.
 // Shows the model, thinking level (effort), a context-usage meter, session
-// spend, and the git repo + branch. Toggle with /statusbar; auto-enables
+// spend, a prompt-cache hit rate, and the git repo + branch. Toggle with
+// /statusbar; auto-enables
 // in TUI sessions. (The Claude 5h/7d rate-limit meters have no pi equivalent
 // and are replaced by the spend indicator.)
 //
@@ -9,7 +10,8 @@
 // "maximum" gets a rolling rainbow. A live tok/s meter (rolling 3s window
 // over output tokens) and turn timer sit between the ctx bar and spend
 // meter while streaming; once the turn settles they freeze into a dimmed
-// summary of the last turn.
+// summary of the last turn. A session-wide prompt-cache hit rate sits to
+// the right of the tok/s meter in both states.
 //
 // Uses raw ANSI codes matching claude-statusline.sh so the palette matches
 // the terminal theme, not pi's internal theme.
@@ -53,6 +55,36 @@ function tokColor(rate: number): string {
   if (rate < 30) return RED;
   if (rate < 80) return YELLOW;
   return GREEN;
+}
+
+// prompt-cache hit rate: green >= 80%, yellow >= 50%, red below
+function hitColor(pct: number): string {
+  if (pct >= 80) return GREEN;
+  if (pct >= 50) return YELLOW;
+  return RED;
+}
+
+// Session-wide prompt-cache hit rate over the current branch: cached prompt
+// tokens vs all prompt tokens (non-cache input + cache reads + cache writes;
+// writes count as misses — the first turn of a session always is one).
+// Returns null until some assistant usage exists (e.g. a brand-new session).
+// liveRead/livePrompt fold in the in-flight request's input-side usage, which
+// isn't in the branch yet (message_end fires before persistence).
+function cacheHitPct(ctx: any, liveRead = 0, livePrompt = 0): number | null {
+  let read = 0;
+  let prompt = 0;
+  for (const e of ctx.sessionManager.getBranch()) {
+    if (e.type === "message" && e.message.role === "assistant") {
+      const u = e.message.usage;
+      if (!u) continue;
+      read += u.cacheRead ?? 0;
+      prompt += (u.cacheRead ?? 0) + (u.input ?? 0) + (u.cacheWrite ?? 0);
+    }
+  }
+  read += liveRead;
+  prompt += livePrompt;
+  if (prompt === 0) return null;
+  return (read / prompt) * 100;
 }
 
 function bar(pct: number): string {
@@ -148,6 +180,11 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   let lastTokT: number | null = null; // time of the most recent token
   let streamMs = 0; // time spent actually receiving tokens (TTFT excluded)
   let turnTokens = 0;
+  // in-flight request's input-side usage for the cache hit meter (overwritten
+  // per message_update; zeroed on message_end so it never double-counts with
+  // the branch, where the message lands right after)
+  let liveRead = 0;
+  let livePrompt = 0;
   // starts with a placeholder so the meter is visible before the first turn
   let frozen: { rate: number | null; ms: number } = { rate: null, ms: 0 };
   let lastTokRender = 0;
@@ -226,7 +263,14 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                   parts.push(meter("📁 ctx", Math.round(usage.percent)));
                 }
 
-                // tok/s + turn timer between the ctx bar and the spend meter
+                // tok/s + turn timer between the ctx bar and the spend meter;
+                // the cache hit rate gets its own column after them (session-
+                // cumulative, so it reads the same live and frozen)
+                const hitPct = cacheHitPct(ctx, liveRead, livePrompt);
+                const cacheBit =
+                  hitPct != null
+                    ? `${hitColor(hitPct)}🎯 ${Math.round(hitPct)}% cache${RESET}`
+                    : `${DIM}🎯 --% cache${RESET}`;
                 if (waiting) {
                   const bits: string[] = [];
                   if (rate != null) {
@@ -241,6 +285,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                     bits.push(`${DIM}${fmtDuration(elapsedMs)}${RESET}`);
                   }
                   parts.push(bits.join(`${DIM} · ${RESET}`));
+                  parts.push(cacheBit);
                 } else {
                   const rateBit =
                     frozen.rate != null
@@ -248,6 +293,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                       : `${DIM}⚡ -- tok/s${RESET}`;
                   const durBit = `${DIM}${fmtDuration(frozen.ms)}${RESET}`;
                   parts.push(rateBit + `${DIM} · ${RESET}` + durBit);
+                  parts.push(cacheBit);
                 }
 
                 parts.push(dimPart(`💵 $${sessionSpend(ctx).toFixed(2)}`));
@@ -298,6 +344,8 @@ export default function statuslineExtension(pi: ExtensionAPI) {
     msgStreamStart = null;
     lastTokT = null;
     streamMs = 0;
+    liveRead = 0;
+    livePrompt = 0;
     frozen = { rate: null, ms: 0 };
     syncTimer(ctx);
   });
@@ -326,6 +374,12 @@ export default function statuslineExtension(pi: ExtensionAPI) {
     const msg = event.message as any;
     const raw = msg?.usage?.output ?? 0;
     const ev = (event as any).assistantMessageEvent;
+
+    // live input-side usage for the cache hit meter (0 until the provider
+    // reports it, which for most providers happens with the usage stream)
+    const lu = msg?.usage;
+    liveRead = lu?.cacheRead ?? 0;
+    livePrompt = liveRead + (lu?.input ?? 0) + (lu?.cacheWrite ?? 0);
 
     // per-message accounting: usage.output is per assistant message and
     // can even decrease mid-stream with some providers, so track the
@@ -383,7 +437,11 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   });
 
   // Redraw when the context window or spend changes after each response.
+  // Zero the live cache-usage tracker: the completed message is about to be
+  // persisted into the branch, so counting both would double it.
   pi.on("message_end", async () => {
+    liveRead = 0;
+    livePrompt = 0;
     tuiRef?.requestRender();
   });
 
