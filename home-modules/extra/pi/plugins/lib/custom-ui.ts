@@ -1272,7 +1272,16 @@ export function formatTokens(n: number): string {
 // custom-ui.ts session_start) can re-patch openUrl to intercept
 // pi-action:// URLs and translate them into expansion toggles. In regular
 // (non-fullscreen) mode the terminal handles hyperlinks natively and pi
-// never sees the click, so links are only emitted while the patch is live.
+// never sees the click, so action links are only emitted while the patch is
+// live — URL links (below) are emitted whenever the terminal supports them.
+//
+// OSC 8 does NOT stack: an inner opener silently closes the outer link and
+// everything after the inner closer is unlinked again. So an action link is
+// never applied over text that already carries — or should carry — its own
+// hyperlink. Every wrap is split into runs: URLs (and pre-existing OSC 8
+// spans) keep a plain link that just opens the target, the rest carries the
+// toggle URL. pi's Markdown renderer emits no OSC 8, so bare URLs in
+// reasoning/tool output are plain text and are linkified here.
 
 const LINKS_KEY = "__piCustomUiLinksEnabled";
 
@@ -1284,11 +1293,146 @@ function linksEnabled(): boolean {
 	return (globalThis as Record<string, unknown>)[LINKS_KEY] === true && getCapabilities().hyperlinks;
 }
 
+// Cheap "is there anything to linkify" probe (the splitter uses a sticky
+// regex, which must not be shared with a stateless test).
+const URL_ANY_RE = /(?:https?:\/\/|www\.)/;
+// A URL starting exactly at the current index.
+const URL_AT_RE = /(?:https?:\/\/|www\.)[^\s<>"'`{}|\\^[\]]+/y;
+// Trailing sentence punctuation is not part of the URL.
+const URL_TAIL_RE = /[.,;:!?'"]+$/;
+
+// Split raw match → display text (without trailing punctuation/closers) and
+// the href to open. A scheme-less `www.` gets https:// for the target only.
+function trimUrlTail(raw: string): { shown: string; href: string } {
+	let shown = raw.replace(URL_TAIL_RE, "");
+	const dropUnmatched = (open: string, close: string): void => {
+		const opens = shown.split(open).length - 1;
+		let closes = shown.split(close).length - 1;
+		while (closes > opens && shown.endsWith(close)) {
+			shown = shown.slice(0, -1);
+			closes--;
+		}
+	};
+	dropUnmatched("(", ")");
+	dropUnmatched("[", "]");
+	dropUnmatched("{", "}");
+	const href = /^www\./i.test(shown) ? `https://${shown}` : shown;
+	return { shown, href };
+}
+
+// Length of the ANSI/OSC sequence at `i`, or 0 when none starts there.
+function ansiSequenceLength(text: string, i: number): number {
+	if (text[i] !== "\x1b") return 0;
+	const next = text[i + 1];
+	if (next === "[") {
+		let j = i + 2;
+		while (j < text.length && !/[@-~]/.test(text[j]!)) j++;
+		return j < text.length ? j + 1 - i : text.length - i;
+	}
+	if (next === "]" || next === "_") {
+		// OSC (hyperlinks, titles) and APC (kitty graphics, cursor markers)
+		// share the BEL / ST terminator.
+		let j = i + 2;
+		while (j < text.length) {
+			if (text[j] === "\x07") return j + 1 - i;
+			if (text[j] === "\x1b" && text[j + 1] === "\\") return j + 2 - i;
+			j++;
+		}
+		return text.length - i;
+	}
+	return 0;
+}
+
+type LinkRun =
+	| { kind: "plain"; text: string }
+	| { kind: "url"; text: string; href: string }
+	| { kind: "linked"; text: string }; // pre-existing OSC 8 span, never rewrapped
+
+// Split rendered text into plain runs, URL runs, and opaque already-linked
+// spans. ANSI codes stay attached to the plain text that follows them.
+function splitLinkRuns(text: string): LinkRun[] {
+	const runs: LinkRun[] = [];
+	let plain = "";
+	let i = 0;
+	const flush = (): void => {
+		if (plain !== "") runs.push({ kind: "plain", text: plain });
+		plain = "";
+	};
+	while (i < text.length) {
+		const seq = ansiSequenceLength(text, i);
+		if (seq > 0) {
+			const code = text.slice(i, i + seq);
+			i += seq;
+			if (code.startsWith("\x1b]8;")) {
+				// Consume the whole existing hyperlink span (opener → next OSC 8
+				// sequence) so an action link never nests inside it.
+				flush();
+				let span = code;
+				while (i < text.length) {
+					const inner = ansiSequenceLength(text, i);
+					if (inner > 0) {
+						const innerCode = text.slice(i, i + inner);
+						span += innerCode;
+						i += inner;
+						if (innerCode.startsWith("\x1b]8;")) break;
+						continue;
+					}
+					span += text[i];
+					i++;
+				}
+				runs.push({ kind: "linked", text: span });
+				continue;
+			}
+			plain += code;
+			continue;
+		}
+		URL_AT_RE.lastIndex = i;
+		const match = URL_AT_RE.exec(text);
+		if (match?.index === i) {
+			const { shown, href } = trimUrlTail(match[0]);
+			if (shown === "") {
+				plain += match[0];
+				i += match[0].length;
+				continue;
+			}
+			flush();
+			runs.push({ kind: "url", text: shown, href });
+			i += shown.length;
+			continue;
+		}
+		plain += text[i];
+		i++;
+	}
+	flush();
+	return runs;
+}
+
+// Apply the action URL to plain runs and the target URL to URL runs. Existing
+// hyperlink spans are passed through verbatim (no nesting).
+function applyLinkRuns(runs: LinkRun[], actionUrl: string | undefined): string {
+	let out = "";
+	for (const run of runs) {
+		if (run.kind === "linked") out += run.text;
+		else if (run.kind === "url") out += `\x1b]8;;${run.href}\x1b\\${run.text}\x1b]8;;\x1b\\`;
+		else if (actionUrl !== undefined) out += `\x1b]8;;${actionUrl}\x1b\\${run.text}\x1b]8;;\x1b\\`;
+		else out += run.text;
+	}
+	return out;
+}
+
 // Wrap a rendered string fragment in an OSC 8 hyperlink pointing at a
-// pi-action:// toggle. No-op when action links are unavailable (regular
-// mode, unsupported terminal, before session_start).
+// pi-action:// toggle, leaving URLs with a link that just opens them. The
+// action link is omitted when actions are unavailable (regular mode,
+// unsupported terminal, before session_start) — URLs stay linked then too,
+// since the terminal resolves those itself. Unsupported terminals get the
+// text unchanged.
 export function linkWrap(text: string, url: string): string {
-	return linksEnabled() ? `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\` : text;
+	if (text === "" || !getCapabilities().hyperlinks) return text;
+	const actionUrl = linksEnabled() ? url : undefined;
+	if (!text.includes("\x1b") && !URL_ANY_RE.test(text)) {
+		return actionUrl === undefined ? text : `\x1b]8;;${actionUrl}\x1b\\${text}\x1b]8;;\x1b\\`;
+	}
+	return applyLinkRuns(splitLinkRuns(text), actionUrl);
 }
 
 export interface TuiLinkHandle {

@@ -697,6 +697,23 @@ if (!tree.linkWrap("label", "pi-action://node/thought/9").includes(`${FAKE}pi-ac
 	throw new Error("fork linkWrap must wrap the thought URL");
 }
 
+// URLs keep their own hyperlink: an action link must never cover (or nest
+// inside) a URL span, while the surrounding text still toggles.
+const URL = "https://example.com/a.(b)";
+const urlWrapped = linkWrap(`see ${URL} now`, "pi-action://node/tool/u1");
+if (!urlWrapped.includes(`${FAKE}${URL}\x1b\\`)) throw new Error(`URL must keep its own link: ${JSON.stringify(urlWrapped)}`);
+if (!urlWrapped.includes(`${FAKE}pi-action://node/tool/u1`)) throw new Error("non-URL text must still carry the action link");
+// the action span closes before the URL span opens (no nesting)
+const seeClose = urlWrapped.indexOf(`see \x1b]8;;\x1b\\`);
+const urlOpen = urlWrapped.indexOf(`${FAKE}${URL}`);
+if (seeClose === -1 || urlOpen === -1 || seeClose > urlOpen) {
+	throw new Error(`action link must close before the URL opens: ${JSON.stringify(urlWrapped)}`);
+}
+// a trailing sentence period stays outside the URL link
+const dotted = linkWrap("go to https://example.com.", "pi-action://node/tool/u2");
+if (!dotted.includes(`${FAKE}https://example.com\x1b\\`)) throw new Error("URL link must exclude the trailing period");
+if (!dotted.includes(`https://example.com\x1b]8;;\x1b\\`)) throw new Error("URL link must close after the URL");
+
 // dispatch through the patched openUrl toggles state; other URLs fall through
 trackGroupToolCall("h1"); closeBatch();
 handle.openUrl("pi-action://node/tool/h1");
@@ -704,6 +721,10 @@ if (groupMode("h1").outputOpen !== true) throw Error("patched openUrl must toggl
 handle.openUrl("https://example.com");
 if (handle.opened !== "https://example.com") throw new Error("non-action URLs must reach the original handler");
 disableLinkActions();
+// regular mode: no action links, but URLs stay clickable via the terminal
+const noAction = linkWrap("see https://example.com now", "pi-action://node/tool/u3");
+if (!noAction.includes(`${FAKE}https://example.com\x1b\\`)) throw new Error("URLs must stay linked without action links");
+if (noAction.includes("pi-action:")) throw new Error("regular mode must not emit action links");
 setCapabilities(realCaps);
 const bareAfter = groupHeaderLine(theme, 2, 900, false, "pi-action://node/batch/0");
 if (bareAfter.includes(FAKE)) throw new Error("disableLinkActions must stop link emission");

@@ -130,6 +130,17 @@ the hard way; violating them fails silently.
   line inside it keeps its own batch URL). Turn-summary thinking time is
   clamped per message to its wall span and capped at the turn duration —
   leaked live entries (aborted streams) must not inflate it.
+- **`linkWrap` is URL-aware**: it splits every wrapped string into runs —
+  bare URLs (`https?://`, `www.`; trailing sentence punctuation/unmatched
+  closers trimmed, `www.` target gets `https://`) and pre-existing OSC 8
+  spans stay opaque and keep a plain hyperlink that just opens the target;
+  only the remaining text gets the pi-action toggle URL. pi's Markdown emits
+  no OSC 8, so URLs in reasoning/tool output are plain text and are linkified
+  here; this also means URLs stay clickable in regular (non-fullscreen) mode
+  (URL links are emitted whenever `getCapabilities().hyperlinks`, the action
+  link still requires `linksEnabled()`). Adding another raw `]8;;` wrapper
+  around rendered text re-introduces the nesting bug — route it through
+  `linkWrap`.
 - **pi's dist is NOT patched anymore**: the former `pkgs/alias.nix` postFixup
   seds (wheel scroll ×5 in fullscreen, framing blank above self-shell tool
   rows) are extension prototype patches now — `wheel-scroll.ts` patches
