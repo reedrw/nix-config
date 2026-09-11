@@ -1465,10 +1465,43 @@ export function disableLinkActions(): void {
 	setLinksEnabled(false);
 }
 
+// ── Action URLs owned by other extensions ────────────────────
+//
+// The openUrl patch above is owned by the lib, but extensions outside the
+// suite (e.g. the statusline) may want clickable footer chips. They register
+// a handler here — globalThis, like every cross-extension channel — and the
+// first handler returning true claims the URL. The deferred repaint at the
+// bottom of handleActionUrl covers the handler's state change too.
+
+const ACTION_HANDLERS_KEY = "__piCustomUiActionHandlers";
+
+export type ActionUrlHandler = (url: string) => boolean;
+
+export function registerActionUrlHandler(handler: ActionUrlHandler): void {
+	const gt = globalThis as Record<string, unknown>;
+	let handlers = gt[ACTION_HANDLERS_KEY] as Set<ActionUrlHandler> | undefined;
+	if (!handlers) {
+		handlers = new Set<ActionUrlHandler>();
+		gt[ACTION_HANDLERS_KEY] = handlers;
+	}
+	handlers.add(handler);
+}
+
 // Dispatch a clicked action URL; false when the URL is not ours (the caller
 // falls back to opening it in the default browser handler). URLs are tree
 // paths: each flips exactly ONE node's flag.
 export function handleActionUrl(url: string): boolean {
+	const handlers = (globalThis as Record<string, unknown>)[ACTION_HANDLERS_KEY] as
+		| Set<ActionUrlHandler>
+		| undefined;
+	if (handlers) {
+		for (const handler of handlers) {
+			if (handler(url)) {
+				setTimeout(() => animState().requestRender?.(), 0);
+				return true;
+			}
+		}
+	}
 	const match = /^pi-action:\/\/node\/(batch|tool|thought|edits)\/(\S+)$/.exec(url);
 	if (!match) return false;
 	const [, kind, id] = match;

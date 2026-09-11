@@ -20,6 +20,7 @@ import { execFileSync } from "node:child_process";
 import { basename } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth } from "@earendil-works/pi-tui";
+import { linkWrap, registerActionUrlHandler } from "./lib/custom-ui.ts";
 
 const BAR_WIDTH = 10;
 const BRANCH_ICON = "\ue725"; // same git branch glyph as claude-statusline.sh
@@ -35,6 +36,12 @@ const PURPLE = "\x1b[35m";
 const BLUE = "\x1b[34m";
 
 const TICK_MS = 120;
+
+// Click target for the routing expansion: the model name and the expanded
+// info line both carry this OSC 8 pi-action link (fullscreen only — linkWrap
+// is inert otherwise, and pi never sees the click in regular mode anyway).
+const ROUTING_URL = "pi-action://statusline/routing";
+const ENDPOINTS_TTL_MS = 5 * 60_000;
 const RAINBOW = [RED, YELLOW, GREEN, CYAN, BLUE, PURPLE];
 const LEVEL_COLORS: Record<string, string> = {
   low: YELLOW,
@@ -149,10 +156,187 @@ function repoName(cwd: string): string {
   }
 }
 
+// ── OpenRouter routing capture ────────────────────────────────
+//
+// pi-ai's openai-completions parser drops OpenRouter's routing metadata: the
+// `provider` field on every SSE chunk and the actual billed `usage.cost` on
+// the final usage chunk. Patch globalThis.fetch once (globalThis flag —
+// /reload re-imports this module and would otherwise chain a second patch)
+// and tee the SSE of openrouter.ai chat-completions responses to harvest
+// both. The tee'd branch is drained in the background and never disturbs
+// pi's own read of the original body. State lives on globalThis so a
+// reloaded instance reads what the surviving patch captures.
+
+interface OrRouting {
+	provider: string | null;
+	cost: number | null; // OpenRouter's billed cost for the latest request
+	at: number; // Date.now() of the last captured request
+	bump?: () => void; // current instance's render nudge
+}
+
+const ROUTING_KEY = "__piStatuslineRouting";
+
+function routing(): OrRouting {
+	const gt = globalThis as Record<string, unknown>;
+	let r = gt[ROUTING_KEY] as OrRouting | undefined;
+	if (!r) {
+		r = { provider: null, cost: null, at: 0 };
+		gt[ROUTING_KEY] = r;
+	}
+	return r;
+}
+
+function ingestRoutingChunk(chunk: any): void {
+	const provider = typeof chunk?.provider === "string" && chunk.provider !== "" ? chunk.provider : null;
+	const raw = chunk?.usage?.cost ?? null;
+	const cost = typeof raw === "number" ? raw : typeof raw === "string" && raw !== "" ? Number(raw) : null;
+	if (provider === null && !(cost != null && Number.isFinite(cost))) return;
+	const r = routing();
+	if (provider !== null) r.provider = provider;
+	if (cost != null && Number.isFinite(cost)) r.cost = cost;
+	r.at = Date.now();
+	r.bump?.();
+}
+
+// Consume a tee'd response body and feed every SSE data line (or a JSON
+// fallback) to ingestRoutingChunk. Aborts and network errors are expected
+// here (pi may cancel the stream) — swallow everything.
+function drainRoutingClone(clone: Response): void {
+	const ct = clone.headers.get("content-type") ?? "";
+	if (ct.includes("text/event-stream") && clone.body) {
+		void (async () => {
+			try {
+				const reader = clone.body!.getReader();
+				const decoder = new TextDecoder();
+				let buf = "";
+				for (;;) {
+					const { done, value } = await reader.read();
+					if (done) break;
+					buf += decoder.decode(value, { stream: true });
+					let nl: number;
+					while ((nl = buf.indexOf("\n")) !== -1) {
+						const line = buf.slice(0, nl).trim();
+						buf = buf.slice(nl + 1);
+						if (!line.startsWith("data:")) continue;
+						const data = line.slice(5).trim();
+						if (data === "" || data === "[DONE]") continue;
+						try {
+							ingestRoutingChunk(JSON.parse(data));
+						} catch {
+							// partial/invalid SSE line — ignore
+						}
+					}
+				}
+			} catch {
+				// aborted stream — stop harvesting
+			}
+		})();
+	} else if (ct.includes("json")) {
+		void clone
+			.text()
+			.then((text) => ingestRoutingChunk(JSON.parse(text)))
+			.catch(() => {});
+	}
+}
+
+const OPENROUTER_URL_RE = /openrouter\.ai\/api\/v1\/chat\/completions/;
+
+function installRoutingFetchPatch(): void {
+	const gt = globalThis as Record<string, unknown> & { fetch: typeof fetch };
+	const flag = gt as { __piStatuslineFetchPatched?: boolean };
+	if (flag.__piStatuslineFetchPatched) return;
+	flag.__piStatuslineFetchPatched = true;
+	const original = gt.fetch.bind(gt);
+	gt.fetch = async (input: any, init?: any) => {
+		const url = typeof input === "string" ? input : input instanceof URL ? input.href : (input?.url as string) ?? "";
+		const res = await original(input, init);
+		try {
+			if (OPENROUTER_URL_RE.test(url) && res.ok) drainRoutingClone(res.clone());
+		} catch {
+			// teeing must never break the real request
+		}
+		return res;
+	};
+}
+
+// ── OpenRouter endpoint metadata (public, no auth) ────────────
+//
+// The endpoints API lists every routed provider for a model with its
+// quantization, 1-day uptime, and provider-reported throughput. We match the
+// entry against the routed provider captured from the stream above.
+
+let endpointCache: { modelId: string; at: number; data: any[] | null } | null = null;
+let endpointLoad: Promise<void> | null = null;
+
+function loadEndpointData(modelId: string, onDone: () => void): Promise<void> {
+	endpointCache = { modelId, at: Date.now(), data: null };
+	const load = (async () => {
+		try {
+			const res = await fetch(`https://openrouter.ai/api/v1/models/${modelId}/endpoints`);
+			if (!res.ok) throw new Error(String(res.status));
+			const body = (await res.json()) as any;
+			// the whole list is cached; the entry matching the routed provider is
+			// picked lazily at render time (routing can change between loads)
+			const endpoints = (body?.data?.endpoints ?? []) as any[];
+			if (endpointCache && endpointCache.modelId === modelId) {
+				endpointCache.data = endpoints.length > 0 ? endpoints : null;
+			}
+		} catch {
+			if (endpointCache && endpointCache.modelId === modelId) endpointCache.data = null;
+		} finally {
+			onDone();
+		}
+	})();
+	endpointLoad = load.finally(() => {
+		endpointLoad = null;
+	});
+	return endpointLoad;
+}
+
+function endpointFor(modelId: string, provider: string | null): { data: any | null; loading: boolean } {
+	if (!endpointCache || endpointCache.modelId !== modelId) return { data: null, loading: false };
+	if (!Array.isArray(endpointCache.data)) return { data: null, loading: endpointLoad !== null };
+	if (provider === null) return { data: null, loading: false };
+	const match = endpointCache.data.find((e: any) => e.provider_name === provider);
+	return { data: match ?? null, loading: false };
+}
+
+function fmtRoutingCost(cost: number): string {
+	if (cost === 0) return "$0";
+	return `$${cost >= 0.01 ? cost.toFixed(2) : cost.toFixed(5)}`;
+}
+
 export default function statuslineExtension(pi: ExtensionAPI) {
   let enabled = false;
   let tuiRef: { requestRender(): void } | null = null;
   let cachedRepo: string | null = null;
+  let uiCtx: any = null;
+
+  // Routing expansion: clicking the model name (or the info line itself)
+  // toggles a second footer line describing the OpenRouter routing. Clicks
+  // arrive as OSC 8 pi-action links resolved by the custom-ui suite's
+  // openUrl patch (fullscreen only); the handler is registered on the lib's
+  // globalThis registry so it survives /reload as long as the URL is ours.
+  let expanded = false;
+
+  const ensureEndpointData = () => {
+    const model = uiCtx?.model;
+    if (!model || model.provider !== "openrouter" || !model.id) return;
+    const fresh =
+      endpointCache && endpointCache.modelId === model.id && Date.now() - endpointCache.at < ENDPOINTS_TTL_MS;
+    if (fresh) return;
+    void loadEndpointData(model.id, () => tuiRef?.requestRender());
+  };
+
+  registerActionUrlHandler((url) => {
+    if (url !== ROUTING_URL) return false;
+    expanded = !expanded;
+    if (expanded) ensureEndpointData();
+    return true;
+  });
+
+  installRoutingFetchPatch();
+  routing().bump = () => tuiRef?.requestRender();
 
   // Animation state: a tick timer that runs while the agent is working
   // (drives the max-effort rainbow and keeps the turn timer ticking).
@@ -222,6 +406,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   };
 
   const setFooter = (ctx: any, on: boolean) => {
+    uiCtx = ctx;
     ctx.ui.setFooter(
       on
         ? (tui: any, _theme: any, footerData: any) => {
@@ -241,9 +426,10 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                 const parts: string[] = [];
 
                 // model and effort sit together, like model_part in the Claude script
+                // (the model chip carries the routing toggle link)
                 const modelBits: string[] = [];
                 const model = modelPart(ctx.model);
-                if (model) modelBits.push(model);
+                if (model) modelBits.push(linkWrap(model, ROUTING_URL));
 
                 const level = ctx.thinkingLevel;
                 if (level === "max") {
@@ -309,7 +495,9 @@ export default function statuslineExtension(pi: ExtensionAPI) {
 
                 // single left-aligned line, like the Claude statusline
                 const line = parts.join(`${DIM}  |  ${RESET}`);
-                return [truncateToWidth(line, width)];
+                const lines = [truncateToWidth(line, width)];
+                if (expanded) lines.push(truncateToWidth(linkWrap(routingLine(), ROUTING_URL), width));
+                return lines;
               },
             };
           }
@@ -321,6 +509,33 @@ export default function statuslineExtension(pi: ExtensionAPI) {
     enabled = !enabled;
     setFooter(ctx, enabled);
     ctx.ui.notify(enabled ? "Statusline enabled" : "Default footer restored", "info");
+  };
+
+  // Second footer line: where OpenRouter is routing the current model.
+  // Provider name + billed cost are captured from the live stream (fetch
+  // patch above); quantization/uptime/throughput come from OpenRouter's
+  // public endpoints API, matched against the routed provider.
+  const routingLine = (): string => {
+    const model = uiCtx?.model;
+    if (model?.provider !== "openrouter" || !model.id) {
+      return `${DIM}↳ routing: ${model?.provider ?? "?"} (not OpenRouter)${RESET}`;
+    }
+    const r = routing();
+    if (r.provider === null && r.cost === null) {
+      return `${DIM}↳ openrouter · no routing captured this session${RESET}`;
+    }
+    const bits: string[] = [];
+    bits.push(`${BOLD}${CYAN}↳ ${r.provider ?? "?"}${RESET}`);
+    const { data: ep, loading } = endpointFor(model.id, r.provider);
+    if (ep) {
+      if (ep.quantization) bits.push(`${PURPLE}${String(ep.quantization).toUpperCase()}${RESET}`);
+      if (ep.uptime_last_1d != null) bits.push(`${GREEN}${ep.uptime_last_1d.toFixed(2)}% up${RESET}`);
+      if (ep.throughput_last_30m != null) bits.push(`${YELLOW}${Math.round(ep.throughput_last_30m)} tok/s${RESET}`);
+    } else if (loading) {
+      bits.push(`${DIM}…${RESET}`);
+    }
+    if (r.cost != null) bits.push(`${YELLOW}${fmtRoutingCost(r.cost)}${RESET}`);
+    return bits.join(`${DIM} · ${RESET}`);
   };
 
   pi.registerCommand("statusbar", {
@@ -449,6 +664,14 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   pi.on("thinking_level_select", async (_event, ctx) => {
     tuiRef?.requestRender();
     syncTimer(ctx);
+  });
+
+  // Model switches may leave the endpoints cache pointing at the old model.
+  pi.on("model_select", async (_event, ctx) => {
+    if (!expanded) return;
+    uiCtx = ctx;
+    ensureEndpointData();
+    tuiRef?.requestRender();
   });
 
   pi.on("session_start", async (_event, ctx) => {
