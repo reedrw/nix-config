@@ -10,15 +10,22 @@
 // Commands:
 //   /pet [small|normal|large]  — show the pet (above the prompt input)
 //   /pet-stop                  — close it
+//   /pet-whisper [on|off|now]  — periodic AI-generated mutterings in a speech
+//                                bubble over her head (port of the original's
+//                                碎碎念 whisper feature; default on, 5 min
+//                                cycle, bubble lingers 10 s), or trigger one
+//                                immediately with "now"
 //
 // Requires fullscreen mode and a kitty-graphics terminal (kitty, Ghostty,
 // WezTerm, Warp). Works inside tmux (`allow-passthrough on`) via the stdout
 // filter in lib/pet/tmux.ts.
 
 import { readFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { ModelRuntime } from "@earendil-works/pi-coding-agent";
 import {
 	allocateImageId,
 	getCapabilities,
@@ -38,6 +45,7 @@ import {
 } from "./lib/pet/anim.ts";
 import { buildTransmitSequence, deleteImageLine, placementLine } from "./lib/pet/kitty.ts";
 import { installTmuxPassthrough, outerTerminalHasKittyGraphics } from "./lib/pet/tmux.ts";
+import { base16Fg } from "./lib/custom-ui.ts";
 
 // ---- Assets (installed as ~/.pi/agent/extensions/pet-assets/) ----
 const ASSETS_DIR = join(dirname(fileURLToPath(import.meta.url)), "pet-assets");
@@ -88,6 +96,139 @@ function loadFrames(name: string): string[] {
 const SIZE_ROWS: Record<string, number> = { small: 6, normal: 9, large: 12 };
 const MAX_COLS = 48;
 
+// ---- Whispers (碎碎念) ----
+// Port of the original's whisper feature: a short AI-generated line in a
+// speech bubble over her head. Terminal-native: the bubble is ordinary widget
+// rows above the placement line, so it never obscures output.
+const WHISPER_INTERVAL_MS = 5 * 60_000; // original default: eventsRefreshSec.whisper = 300
+const WHISPER_TTL_MS = 10_000; // bubble lingers 10 s, like the original
+const WHISPER_MAX_CHARS = 90;
+
+// Persona adapted from the original dsh-pet whisperPrompt (assets/config.jsonc):
+// "你是主人桌面上的Q版蓝发小女仆，会时不时碎碎念一句。说话要自然随意、
+//  短短一句（20字以内），温柔乖巧带点俏皮，说人话不啰嗦，不要解释你自己，
+//  不要提你是AI。" — one short natural line, gentle and a bit playful, no
+//  self-explanation, no rambling. Adapted: she's a digital maid and the
+//  personification of the coding agent itself, and the person at the
+//  keyboard is just that — a user, not a "master".
+const WHISPER_SYSTEM = `You are a little digital maid — the personification of the coding agent running in this terminal. Every now and then you mutter a line to yourself. Speak naturally and casually — one short line (max 12 words), gentle and sweet with a bit of playfulness. Talk like a real person, don't ramble, don't explain yourself. Occasionally you may glance at the coding work going on in the session and sigh about it.`;
+// The original's user-side instruction ("随便说一句日常碎碎念，一句就好，
+// 20字以内。"), translated; the session digest is appended when present.
+const WHISPER_USER = `Just say a random everyday muttering — one line, max 12 words.`;
+
+// Models love typographic punctuation (’ … –), but those are East Asian
+// "ambiguous width" — the terminal may render them 2 columns wide while
+// String.length says 1, which makes bubble rows outgrow their borders.
+// Normalize to unambiguous ASCII before drawing.
+const WHISPER_CHAR_MAP: Record<string, string> = {
+	"\u2018": "'", // ‘
+	"\u2019": "'", // ’
+	"\u201c": '"', // “
+	"\u201d": '"', // ”
+	"\u2026": "...", // …
+	"\u2013": "-", // –
+	"\u2014": "-", // —
+	"\uFF5E": "~", // ～ fullwidth tilde
+	"\u301c": "~", // 〜 wave dash
+};
+
+function normalizeWhisperText(text: string): string {
+	let out = text;
+	for (const [from, to] of Object.entries(WHISPER_CHAR_MAP)) out = out.split(from).join(to);
+	return out;
+}
+
+// Display width for bubble layout: East Asian Wide/Fullwidth chars take two
+// terminal columns (she may still slip a Chinese word into an English line).
+function textWidth(s: string): number {
+	let w = 0;
+	for (const ch of s) {
+		const code = ch.codePointAt(0) ?? 0;
+		if (
+			(code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
+			(code >= 0x2e80 && code <= 0xa4cf) || // CJK radicals .. Yi
+			(code >= 0xac00 && code <= 0xd7a3) || // Hangul syllables
+			(code >= 0xf900 && code <= 0xfaff) || // CJK compatibility ideographs
+			(code >= 0xfe30 && code <= 0xfe4f) || // CJK compatibility forms
+			(code >= 0xff00 && code <= 0xff60) || // fullwidth forms
+			(code >= 0xffe0 && code <= 0xffe6) || // fullwidth signs
+			(code >= 0x20000 && code <= 0x3fffd) // CJK ext B+
+		) {
+			w += 2;
+		} else {
+			w += 1;
+		}
+	}
+	return w;
+}
+
+// Cached across /pet recreations so OAuth-backed ModelRuntime isn't rebuilt
+// (and its model catalog refetched) every time.
+function sharedModelRuntime(): Promise<ModelRuntime> {
+	const g = globalThis as Record<string, unknown>;
+	if (!g.__piPetModelRuntime) {
+		g.__piPetModelRuntime = ModelRuntime.create();
+	}
+	return g.__piPetModelRuntime as Promise<ModelRuntime>;
+}
+
+function extractMessageText(message: { content: unknown }): string {
+	const content = message.content;
+	if (typeof content === "string") return content;
+	if (!Array.isArray(content)) return "";
+	return content
+		.filter((b): b is { type: "text"; text: string } =>
+			Boolean(b) && typeof b === "object" && (b as { type?: unknown }).type === "text"
+				&& typeof (b as { text?: unknown }).text === "string")
+		.map((b) => b.text)
+		.join(" ");
+}
+
+interface WhisperContextSource {
+	model: { provider: string; id: string } | undefined;
+	recentActivityDigest(): string;
+}
+
+/**
+ * One-shot whisper generation: a tiny LLM call (no tools, no history) that
+ * turns a brief digest of the main agent's recent activity into one line.
+ * Failures are silent — the whisper is cosmetic.
+ */
+function makeWhisperGenerator(source: WhisperContextSource): () => Promise<string> {
+	// The whisper call is its own one-shot conversation — providers that route
+	// by session (opencode-go's x-opencode-session) get a dedicated id.
+	const sessionId = randomUUID();
+	return async () => {
+		const model = source.model;
+		if (!model) throw new Error("no model");
+		const runtime = await sharedModelRuntime();
+		const digest = source.recentActivityDigest();
+		const userText = digest
+			? `${WHISPER_USER}\n(What the user has been busy with: ${digest})`
+			: WHISPER_USER;
+		const message = await runtime.completeSimple(model as never, {
+			systemPrompt: WHISPER_SYSTEM,
+			messages: [
+				{
+					role: "user",
+					content: userText,
+					timestamp: Date.now(),
+				},
+			],
+		}, {
+			transformHeaders: async (headers) => ({
+				...headers,
+				"x-opencode-session": sessionId,
+				"x-opencode-client": "pi",
+			}),
+		});
+		if (message.stopReason === "error") throw new Error(message.errorMessage ?? "whisper failed");
+		const text = extractMessageText(message).trim().replace(/^"|"$/g, "");
+		if (!text) throw new Error("empty whisper");
+		return text.slice(0, WHISPER_MAX_CHARS);
+	};
+}
+
 // ---- Widget component ----
 class PetWidget implements Component {
 	private tui: TUI;
@@ -109,6 +250,14 @@ class PetWidget implements Component {
 	private timer: ReturnType<typeof setInterval> | null = null;
 	private onResize: () => void = () => {};
 
+	// Whisper state (碎碎念): bubble text + expiry, auto cycle, generator.
+	private whisperText: string | null = null;
+	private whisperUntil = 0;
+	private whisperBusy = false;
+	private whisperEnabled = true;
+	private whisperTimer: ReturnType<typeof setInterval> | null = null;
+	private whisperGenerator: (() => Promise<string>) | null = null;
+
 	constructor(tui: TUI, requestRender: () => void, targetRows: number) {
 		this.tui = tui;
 		this.requestRender = requestRender;
@@ -129,6 +278,61 @@ class PetWidget implements Component {
 		// First animation: something from the idle chain (usually breathing).
 		const first = pickIdleChain(this.available) ?? Object.keys(this.available)[0];
 		if (first) this.play(first);
+
+		this.whisperTimer = setInterval(() => void this.whisperCycle(), WHISPER_INTERVAL_MS);
+		this.whisperTimer.unref?.();
+	}
+
+	// ---- Whispers ----
+
+	setWhisperGenerator(gen: () => Promise<string>): void {
+		this.whisperGenerator = gen;
+	}
+
+	setWhisperEnabled(enabled: boolean): void {
+		this.whisperEnabled = enabled;
+		if (!enabled) this.clearWhisper();
+	}
+
+	getWhisperEnabled(): boolean {
+		return this.whisperEnabled;
+	}
+
+	/** Fire one whisper now (manual trigger or auto cycle tick). */
+	async whisperNow(): Promise<boolean> {
+		if (this.disposed || this.whisperBusy || !this.whisperGenerator) return false;
+		this.whisperBusy = true;
+		// She ponders while the line is generated (only when idle — never
+		// fight the agent-state animations).
+		const wasIdle = this.state === "idle" && !this.interaction;
+		if (wasIdle && this.available.has(thinkingAnim)) {
+			this.interaction = thinkingAnim;
+			this.play(thinkingAnim);
+		}
+		try {
+			const text = await this.whisperGenerator();
+			if (this.disposed) return false;
+			this.whisperText = text;
+			this.whisperUntil = Date.now() + WHISPER_TTL_MS;
+			this.requestRender();
+			return true;
+		} catch {
+			return false;
+		} finally {
+			this.whisperBusy = false;
+		}
+	}
+
+	private async whisperCycle(): Promise<void> {
+		if (!this.whisperEnabled || this.whisperText !== null) return;
+		await this.whisperNow();
+	}
+
+	private clearWhisper(): void {
+		if (this.whisperText === null) return;
+		this.whisperText = null;
+		this.whisperUntil = 0;
+		this.requestRender();
 	}
 
 	/** Switch animations. Same-name calls are ignored (no retransmit) unless forced. */
@@ -183,7 +387,11 @@ class PetWidget implements Component {
 
 	/** Animation-chain driver: runs the state machine as animations end. */
 	private tick(): void {
-		if (this.disposed || this.line === null || Date.now() < this.animEndsAt) return;
+		if (this.disposed || this.line === null) return;
+		if (this.whisperText !== null && Date.now() >= this.whisperUntil) {
+			this.clearWhisper();
+		}
+		if (Date.now() < this.animEndsAt) return;
 		if (this.interaction) {
 			// Interaction anim finished — resume the agent-state animation.
 			this.interaction = null;
@@ -228,9 +436,49 @@ class PetWidget implements Component {
 		// leading spaces offset it to the middle (recomputed per render, so
 		// terminal resizes recenter).
 		const pad = Math.max(0, Math.floor((width - this.sizeCols) / 2));
-		const lines: string[] = [" ".repeat(pad) + this.line];
+		const lines: string[] = [];
+		if (this.whisperText !== null && Date.now() < this.whisperUntil) {
+			lines.push(...this.renderWhisperBubble(width));
+		}
+		lines.push(" ".repeat(pad) + this.line);
 		for (let i = 1; i < this.sizeRows; i++) lines.push("");
 		return lines;
+	}
+
+	/** Speech bubble centered above her; plain text rows, 10 s lifetime. */
+	private renderWhisperBubble(width: number): string[] {
+		const text = normalizeWhisperText(this.whisperText!);
+		// base16Fg returns the SGR prefix; wrap into colorizer functions.
+		const border = (s: string) => base16Fg("base03", "4a5568") + s + "\x1b[0m";
+		const fg = (s: string) => base16Fg("base06", "e6e1cf") + s + "\x1b[0m";
+		const maxTextWidth = Math.min(56, Math.max(20, width - 8));
+		// Greedy word wrap (plain text — whispers are generated without markup).
+		const words = text.split(/\s+/);
+		const rows: string[] = [];
+		let current = "";
+		for (const word of words) {
+			if (current && textWidth(current + " " + word) > maxTextWidth) {
+				rows.push(current);
+				current = word;
+			} else {
+				current = current ? current + " " + word : word;
+			}
+		}
+		if (current) rows.push(current);
+		if (rows.length === 0) return [];
+		const bubbleWidth = Math.max(...rows.map(textWidth)) + 2;
+		const pad = Math.max(0, Math.floor((width - bubbleWidth) / 2));
+		const out: string[] = [];
+		out.push(" ".repeat(pad) + border(`╭${"─".repeat(bubbleWidth)}╮`));
+		for (const row of rows) {
+			const filling = " ".repeat(bubbleWidth - textWidth(row) - 2);
+			out.push(" ".repeat(pad) + border("│ ") + fg(row) + border(filling + " │"));
+		}
+		// Bottom with a little tail pointing down at her.
+		out.push(" ".repeat(pad) + border(`╰${"─".repeat(bubbleWidth)}╯`));
+		const tailPad = Math.max(0, pad + Math.floor(bubbleWidth / 2));
+		out.push(" ".repeat(tailPad) + border("v"));
+		return out;
 	}
 
 	invalidate(): void {}
@@ -240,6 +488,10 @@ class PetWidget implements Component {
 		if (this.timer) {
 			clearInterval(this.timer);
 			this.timer = null;
+		}
+		if (this.whisperTimer) {
+			clearInterval(this.whisperTimer);
+			this.whisperTimer = null;
 		}
 		process.stdout.removeListener("resize", this.onResize);
 		if (this.imageId !== null) {
@@ -271,6 +523,32 @@ function setPetRef(handle: PetHandle | null): void {
 }
 
 const WIDGET_KEY = "pet";
+
+// Brief digest of the main agent's recent activity for whisper generation.
+// Defensive role checks — session entries are a wide union.
+function recentActivityDigest(sm: { getEntries(): unknown[] }): string {
+	const parts: string[] = [];
+	for (const entry of sm.getEntries().slice(-8)) {
+		if (!entry || typeof entry !== "object") continue;
+		const e = entry as { type?: string; message?: { role?: string; content?: unknown } };
+		const msg = e.message;
+		if (!msg || typeof msg !== "object") continue;
+		if (msg.role === "user") {
+			const text = extractMessageText(msg as { content: unknown });
+			if (text) parts.push(`user asked: ${text.slice(0, 80)}`);
+		} else if (msg.role === "assistant") {
+			const text = extractMessageText(msg as { content: unknown });
+			const content = Array.isArray(msg.content) ? msg.content : [];
+			const tools = content
+				.filter((b): b is { type: "toolCall"; name: string } =>
+					Boolean(b) && typeof b === "object" && (b as { type?: unknown }).type === "toolCall")
+				.map((b) => b.name);
+			const bits = [text.slice(0, 80), tools.length ? `[tools: ${tools.join(", ")}]` : ""].filter(Boolean);
+			if (bits.length) parts.push(`agent: ${bits.join(" ")}`);
+		}
+	}
+	return parts.join("\n");
+}
 
 export default function petExtension(pi: ExtensionAPI) {
 	pi.registerCommand("pet", {
@@ -326,9 +604,46 @@ export default function petExtension(pi: ExtensionAPI) {
 					};
 				}
 				const widget = new PetWidget(tui, () => tui.requestRender(), targetRows);
+				// Whisper generation: one-shot LLM call seeded with a digest of
+				// the main agent's recent activity (captured ctx stays valid for
+				// the session — sessionManager is a live object).
+				if (ctx.model) {
+					const source = {
+						model: ctx.model,
+						recentActivityDigest: () => recentActivityDigest(ctx.sessionManager),
+					};
+					widget.setWhisperGenerator(makeWhisperGenerator(source));
+				}
 				setPetRef({ widget });
 				return widget;
 			});
+		},
+	});
+
+	pi.registerCommand("pet-whisper", {
+		description: "Toggle the pet's whispered mutterings, or trigger one now",
+		getArgumentCompletions: (prefix: string) => {
+			const opts = ["on", "off", "now"];
+			const items = opts.filter((s) => s.startsWith(prefix)).map((s) => ({ value: s, label: s }));
+			return items.length > 0 ? items : null;
+		},
+		handler: async (args, ctx) => {
+			const handle = petRef();
+			if (!handle) {
+				ctx.ui.notify("No pet running — use /pet first", "info");
+				return;
+			}
+			const arg = (args ?? "").trim().toLowerCase();
+			if (arg === "on" || arg === "off") {
+				handle.widget.setWhisperEnabled(arg === "on");
+				ctx.ui.notify(`Whispers ${arg}`, "info");
+				return;
+			}
+			// Default (no args) or "now": one whisper immediately.
+			const ok = await handle.widget.whisperNow();
+			if (!ok) {
+				ctx.ui.notify("Whisper unavailable (no model, or one is already brewing)", "info");
+			}
 		},
 	});
 

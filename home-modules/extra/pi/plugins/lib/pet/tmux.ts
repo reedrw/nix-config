@@ -31,6 +31,34 @@ interface TmuxGlobal {
 // write).
 const MAX_PENDING = 16 << 20;
 
+const TMUX_DCS = "\x1bPtmux;";
+
+/** Length of a `ESC P tmux ;` introducer. */
+const TMUX_DCS_LEN = TMUX_DCS.length; // 7: ESC + "Ptmux;"
+
+/**
+ * Find the end (exclusive) of a `DCS tmux;` passthrough sequence starting at
+ * `start`. Inside the payload every ESC is doubled (tmux's convention), so a
+ * lone `ESC \` terminates the DCS while `ESC ESC` is a literal ESC. Returns
+ * -1 when the sequence is unterminated (split across writes).
+ */
+function findDcsTmuxEnd(s: string, start: number): number {
+	let j = start + TMUX_DCS_LEN;
+	while (j < s.length) {
+		if (s[j] !== "\x1b") {
+			j += 1;
+			continue;
+		}
+		if (s[j + 1] === "\x1b") {
+			j += 2; // doubled ESC → literal ESC inside the payload
+			continue;
+		}
+		if (s[j + 1] === "\\") return j + 2; // ST terminator
+		j += 2; // ESC + anything else: payload content, keep scanning
+	}
+	return -1;
+}
+
 function makeApcWrapper(): { wrap: (chunk: string) => string; hasPending: () => boolean } {
 	let pending = "";
 	const wrap = (chunk: string): string => {
@@ -39,11 +67,35 @@ function makeApcWrapper(): { wrap: (chunk: string) => string; hasPending: () => 
 		let out = "";
 		let i = 0;
 		for (;;) {
-			const start = s.indexOf("\x1b_G", i);
-			if (start === -1) {
+			// Next point of interest: a bare kitty APC, or an already-wrapped
+			// tmux DCS. Other extensions do their own passthrough wrapping
+			// (pi-image-view wraps its gallery transmissions), and those DCS
+			// payloads contain ESC _ G — re-wrapping them corrupts the sequence
+			// (nested DCS tmux), so they must pass through verbatim.
+			const apc = s.indexOf("\x1b_G", i);
+			const dcs = s.indexOf(TMUX_DCS, i);
+			if (apc === -1 && dcs === -1) {
 				out += s.slice(i);
 				return out;
 			}
+			if (dcs !== -1 && (apc === -1 || dcs < apc)) {
+				const dcsEnd = findDcsTmuxEnd(s, dcs);
+				if (dcsEnd === -1) {
+					// Unterminated DCS — buffer the tail for the next chunk.
+					out += s.slice(i, dcs);
+					const tail = s.slice(dcs);
+					if (tail.length > MAX_PENDING) {
+						out += tail; // give up: emit raw
+						return out;
+					}
+					pending = tail;
+					return out;
+				}
+				out += s.slice(i, dcsEnd);
+				i = dcsEnd;
+				continue;
+			}
+			const start = apc!;
 			out += s.slice(i, start);
 			// Kitty sequences are terminated by ST (ESC \) or BEL. Payloads are
 			// base64/params and never contain ESC, so the first terminator ends
