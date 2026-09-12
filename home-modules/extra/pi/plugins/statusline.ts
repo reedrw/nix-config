@@ -242,6 +242,30 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   const ensureGoUsage = (ctx: any) =>
     ensureOpencodeUsage(ctx?.model, () => tuiRef?.requestRender());
 
+  // Background prefetch for the Go quota meters: without this the first
+  // click on the model chip waited on the network before the meters drew.
+  // Warm once as soon as a session exists, then keep the cache fresh every
+  // couple of minutes (the lib's TTL + in-flight dedup still gate the real
+  // fetches). The interval re-reads uiCtx each fire, so a model switch
+  // redirects it at the current gateway; unref'd so it never holds the
+  // process open.
+  const OPENCODE_PREFETCH_MS = 120_000;
+  let prefetchTimer: ReturnType<typeof setInterval> | null = null;
+
+  const stopPrefetch = () => {
+    if (prefetchTimer) {
+      clearInterval(prefetchTimer);
+      prefetchTimer = null;
+    }
+  };
+
+  const startPrefetch = (ctx: any) => {
+    ensureGoUsage(ctx);
+    if (prefetchTimer) return;
+    prefetchTimer = setInterval(() => ensureGoUsage(uiCtx), OPENCODE_PREFETCH_MS);
+    prefetchTimer.unref?.();
+  };
+
   // Routing expansion: clicking the model name (or the info line itself)
   // toggles a second footer line describing the OpenRouter routing. Clicks
   // arrive as OSC 8 pi-action links resolved by the custom-ui suite's
@@ -482,6 +506,8 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   const toggle = (ctx: any) => {
     enabled = !enabled;
     setFooter(ctx, enabled);
+    if (enabled) startPrefetch(ctx);
+    else stopPrefetch();
     ctx.ui.notify(enabled ? "Statusline enabled" : "Default footer restored", "info");
   };
 
@@ -669,23 +695,34 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   });
 
   // Model switches may leave the endpoints cache pointing at the old model.
+  // The background prefetch also needs the freshest model — it gates on
+  // isOpencodeGoModel itself, so pointing it at a non-Go model just no-ops.
   pi.on("model_select", async (_event, ctx) => {
-    if (!expanded) return;
     uiCtx = ctx;
+    if (!expanded) return;
     ensureEndpointData();
     tuiRef?.requestRender();
   });
 
   pi.on("session_start", async (_event, ctx) => {
-    if (ctx.mode !== "tui" || enabled) return;
+    if (ctx.mode !== "tui") return;
+    uiCtx = ctx;
+    if (enabled) {
+      // session switch with the footer already up (/new, /fork):
+      // keep the prefetch warm
+      startPrefetch(ctx);
+      return;
+    }
     enabled = true;
     setFooter(ctx, true);
+    startPrefetch(ctx);
   });
 
   pi.on("session_shutdown", async (_event, ctx) => {
     waiting = false;
     turnStart = null;
     syncTimer(ctx);
+    stopPrefetch();
     tuiRef = null;
   });
 }
