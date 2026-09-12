@@ -25,7 +25,7 @@
 // failed. In all of those the extension leaves history exactly as it found it.
 //
 // Note: a commit already carrying ANY Co-Authored-By line is left alone - the
-// check is only whether the expected model trailer is *present*, not whether
+// check is only whether the expected pi-mono trailer is *present*, not whether
 // it is the only one.
 //
 // Opt-outs (a commit with no trailer is a legitimate state: it means a human
@@ -41,26 +41,13 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const MARKER = "[co-author]";
 
-// Vendor segment (before "/") of the model id -> noreply domain. Vendors not
-// listed here accept any noreply email rather than guessing a wrong domain.
-const VENDOR_DOMAINS: Record<string, string> = {
-	"z-ai": "z.ai",
-	anthropic: "anthropic.com",
-	openai: "openai.com",
-	google: "google.com",
-	deepseek: "deepseek.com",
-	moonshotai: "moonshot.ai",
-	qwen: "qwen.ai",
-	mistral: "mistral.ai",
-};
-
-function vendorOf(modelId: string): string {
-	return modelId.split("/")[0];
-}
-
-function expectedTrailer(modelId: string): string | undefined {
-	const domain = VENDOR_DOMAINS[vendorOf(modelId)];
-	return domain ? `Co-Authored-By: ${modelId} <noreply@${domain}>` : undefined;
+// Every agent commit is co-authored by pi itself (https://github.com/pi-mono),
+// with the running model's id recorded in the name. The email is GitHub's
+// canonical noreply form for that account (id+login@users.noreply.github.com),
+// so GitHub renders the trailer as a link to the profile.
+function expectedTrailer(modelId: string | undefined): string {
+	const name = modelId ? `pi (${modelId})` : "pi";
+	return `Co-Authored-By: ${name} <261679550+pi-mono@users.noreply.github.com>`;
 }
 
 function trailerValue(trailer: string): string {
@@ -240,10 +227,7 @@ export default function coAuthorExtension(pi: ExtensionAPI) {
 		if (state === undefined) return;
 		headBefore.delete(event.toolCallId);
 
-		const modelId = ctx.model?.id;
-		if (!modelId) return;
-		const trailer = expectedTrailer(modelId);
-		if (!trailer) return;
+		const trailer = expectedTrailer(ctx.model?.id);
 
 		const { dir } = state;
 		const before = state.head;
@@ -327,7 +311,7 @@ export default function coAuthorExtension(pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event) => {
 		if (event.systemPrompt.includes(`${MARKER} extension appends`)) return;
 		return {
-			systemPrompt: `${event.systemPrompt}\n\n## Commit attribution\n\nDo not add Co-Authored-By trailers to commit messages, and never rewrite history (rebase/reset/cherry-pick) to add one. The ${MARKER} extension appends the correct trailer (derived from the running model) to every commit you make - including several commits in a single command. If the user says a change is theirs and should carry no model co-author, end that commit message with a trailer line: Co-Authored-By: none`,
+			systemPrompt: `${event.systemPrompt}\n\n## Commit attribution\n\nDo not add Co-Authored-By trailers to commit messages, and never rewrite history (rebase/reset/cherry-pick) to add one. The ${MARKER} extension appends the trailer (co-authoring every commit as https://github.com/pi-mono, with the running model's id in the co-author name) to every commit you make - including several commits in a single command. If the user says a change is theirs and should carry no model co-author, end that commit message with a trailer line: Co-Authored-By: none`,
 		};
 	});
 }
