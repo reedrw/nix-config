@@ -153,6 +153,25 @@ the hard way; violating them fails silently.
   `@earendil-works/pi-tui` / `@earendil-works/pi-coding-agent` to pi's own
   module instances (loader.js `getAliases()`), so prototype patches from
   extensions reach the real classes. Don't re-add dist seds.
+- **Pi 0.85 wraps each thinking section in a `MouseRegion`** (per-block
+  click-to-toggle in fullscreen — `AssistantMessageComponent` also gained
+  `thinkingVisibilityOverrides`; 0.84.x rendered the Markdown bare). The fold
+  finds marked sections by matching `Markdown.text`, so it MUST peel the
+  wrapper (`unwrapThinkingSection` in `renderer.ts`) and replace the wrapper
+  itself: `getMarkdownInternals` fails on a `MouseRegion` (its `child` is
+  TS-private — reach it through a structural view, never by intersecting the
+  type), which silently sends `replaceMarkedThinkingSections` down its
+  "pi changed its layout" fallback to FULL native rendering. Symptom was
+  "reasoning no longer folds after the 0.85 update". `tightenThinkingSpacing`
+  also matches on `RenderedThinkingSection`, so leaving the wrapper around the
+  replacement would strand blank spacers. Dropping pi's wrapper is safe:
+  `tui-alt-screen` activates a clicked OSC 8 `pressedUrl` via `openUrl`
+  BEFORE dispatching the MouseRegion click, so the fold's `pi-action://`
+  links keep owning the row. The fold also clears
+  `thinkingVisibilityOverrides` before rendering the marked copy (only on its
+  own path — the ctrl+t native path keeps pi's click-to-hide), since a stale
+  override makes pi emit its hidden `Text` instead of the marker-bearing
+  Markdown and defeats detection.
 - **Untracked-row repaint**: pi renders a tool's call row during arg
   streaming (before the `tool_call` event) and renders a restored
   transcript before `session_start`'s rescan — both first passes render
@@ -285,7 +304,10 @@ errors.
 `smoke.mjs` (tracked) drives the grouping state machine + header renderers
 headlessly under `nix run nixpkgs#nodejs -- --experimental-transform-types smoke.mjs`
 — the working-tree lib imports run without pi, so renderer changes can be
-asserted without a live TUI. It MUST be deterministic: **never `await` a fixed
+asserted without a live TUI. It also installs the real fold patch and builds a
+real `AssistantMessageComponent` (from the installed pi) around a thinking
+message, asserting the row lands as a `RenderedThinkingSection` with no
+`MouseRegion` left — the guard for the 0.85 reasoning-fold regression. It MUST be deterministic: **never `await` a fixed
 sleep** before asserting on a deferred repaint. The suite is synchronous until
 its first `await`, so every `setTimeout(0)` the lib scheduled is backlogged and
 drains in one burst there; the repaint chain is nested (`invalidate →

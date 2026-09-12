@@ -46,11 +46,12 @@ import {
 	shimmerFrame,
 } from "./lib/custom-ui.ts";
 import { getCapabilities, setCapabilities } from "@earendil-works/pi-tui";
-import { ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
+import { ToolExecutionComponent, AssistantMessageComponent } from "@earendil-works/pi-coding-agent";
 import { installThinkingFold } from "./lib/thinking-fold/index.ts";
 import {
 	formatThinkingSeconds,
 	formatStreamingThinkingSeconds,
+	installThinkingFoldPatch,
 } from "./lib/thinking-fold/renderer.ts";
 
 const theme = {
@@ -945,6 +946,37 @@ console.log("OK-TREE-WRAP");
 if (typeof installThinkingFold !== "function") throw new Error("installThinkingFold missing");
 if (formatThinkingSeconds(1500) !== "1.5s") throw new Error("formatThinkingSeconds broke");
 if (formatStreamingThinkingSeconds(90_000) !== "1m 30s") throw new Error("formatStreamingThinkingSeconds broke");
+// Pi 0.85 wraps every thinking section in a MouseRegion (per-block
+// click-to-toggle). The fold must peel that wrapper off: it owns the row's
+// interaction (its OSC 8 pi-action links win over MouseRegion on release) and
+// tightenThinkingSpacing matches on RenderedThinkingSection. Left in place,
+// the marked section is never found and reasoning silently falls back to
+// FULL native rendering — the 0.85 "reasoning no longer folds" regression.
+// The installed pi is the real 0.85+ component, so this exercises the exact
+// upstream layout.
+{
+	const foldPatch = installThinkingFoldPatch({});
+	try {
+		const thinkMessage = {
+			role: "assistant",
+			timestamp: 4242,
+			stopReason: "stop",
+			content: [{ type: "thinking", thinking: "reasoning that must fold away" }],
+		};
+		foldPatch.beginMessage(thinkMessage, 0);
+		foldPatch.completeMessage(thinkMessage, 2000);
+		const component = new AssistantMessageComponent(thinkMessage, false);
+		const kinds = component.contentContainer.children.map((child) => child.constructor.name);
+		if (kinds.includes("MouseRegion")) {
+			throw new Error(`pi's MouseRegion wrapper must be peeled off the fold section: ${JSON.stringify(kinds)}`);
+		}
+		if (!kinds.includes("RenderedThinkingSection")) {
+			throw new Error(`folded reasoning must be a RenderedThinkingSection (fold fell back to native): ${JSON.stringify(kinds)}`);
+		}
+	} finally {
+		foldPatch.dispose();
+	}
+}
 console.log("OK-THINKING-FOLD");
 
 // ── Live-theme fallback tier ─────────────────────────────

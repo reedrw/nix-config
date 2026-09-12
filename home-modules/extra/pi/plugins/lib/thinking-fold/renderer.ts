@@ -5,6 +5,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import {
   Markdown,
+  MouseRegion,
   Spacer,
   Text,
   type Component,
@@ -70,6 +71,11 @@ interface AssistantMessageInternals {
   contentContainer?: { children?: Component[] };
   hideThinkingBlock?: boolean;
   hiddenThinkingLabel?: string;
+  // 0.85+: per-run click-to-toggle overrides set by pi's own MouseRegion
+  // handler. The fold owns thinking visibility, so it clears them (a stale
+  // override would make pi emit a hidden Text instead of the marker-bearing
+  // Markdown and defeat section detection).
+  thinkingVisibilityOverrides?: Map<number, boolean>;
 }
 
 interface MarkdownInternals {
@@ -565,6 +571,21 @@ function cloneNativeMarkdown(component: Component, text: string): Markdown | und
   );
 }
 
+// Pi 0.85 wraps each thinking section in a MouseRegion (per-block
+// click-to-toggle in fullscreen; 0.84.x renders the Markdown bare). The fold
+// owns the section's interaction (OSC 8 pi-action links win over MouseRegion
+// on release — tui-alt-screen activates pressedUrl before dispatching the
+// click), and tightenThinkingSpacing matches on RenderedThinkingSection, so
+// the wrapper must be peeled off rather than left around our replacement.
+// `child` is TS-private on MouseRegion (a plain runtime field) — a structural
+// view is the only way to read it; intersecting with MouseRegion collapses
+// the type to never (same trap as the Loader patch).
+function unwrapThinkingSection(component: Component): Component {
+  if (!(component instanceof MouseRegion)) return component;
+  const view = component as unknown as { child?: Component };
+  return view.child ?? component;
+}
+
 function replaceMarkedThinkingSections(
   component: AssistantMessageComponent,
   marked: MarkedThinkingMessage,
@@ -595,11 +616,14 @@ function replaceMarkedThinkingSections(
   for (let index = 0; index < children.length; index++) {
     const child = children[index];
     if (!child) continue;
-    const markdown = getMarkdownInternals(child);
+    // The marked Markdown may sit inside pi's MouseRegion wrapper; the
+    // replacement replaces that wrapper (see unwrapThinkingSection).
+    const sectionComponent = unwrapThinkingSection(child);
+    const markdown = getMarkdownInternals(sectionComponent);
     const section = markdown?.text ? pending.get(markdown.text) : undefined;
     if (!section) continue;
 
-    const content = cloneNativeMarkdown(child, section.text);
+    const content = cloneNativeMarkdown(sectionComponent, section.text);
     // The animated label carries raw SGR (spinner + shimmer) that Markdown
     // rendering would mangle — when the custom-ui animation API is present,
     // render the label through a plain Text instead (same setText/render
@@ -612,7 +636,7 @@ function replaceMarkedThinkingSections(
         // defaults are 1/1 — the old flat look tolerated them, the tree
         // doesn't).
         ? new Text("", 0, 0)
-        : cloneNativeMarkdown(child, "")
+        : cloneNativeMarkdown(sectionComponent, "")
       : undefined;
     if (!content || (section.showLabel && !label)) return false;
     children[index] = new RenderedThinkingSection(content, label, context);
@@ -798,6 +822,13 @@ function rebuild(
         ? "full"
         : resolveThinkingDisplayBehavior(message, record.options, true);
     }
+    // 0.85 only: drop pi's per-run visibility overrides before re-rendering
+    // the marked copy. A surviving override makes pi emit its hidden `Text`
+    // instead of the marker-bearing Markdown, so the marked run would never
+    // be found and the fold would fall back to full native rendering. Only
+    // this path clears them — the native (ctrl+t expanded) path keeps pi's
+    // own click-to-hide behavior.
+    internals.thinkingVisibilityOverrides?.clear();
     const marked = createMarkedThinkingMessage(message, behavior);
     if (!marked) {
       state.renderedMessage = message;
