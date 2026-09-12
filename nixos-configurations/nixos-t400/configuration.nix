@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
 
@@ -13,6 +13,8 @@
 
   custom.boot.bios.enable = true;
   boot.loader.grub.device = "/dev/sda";
+
+  boot.kernelPackages = pkgs.linuxPackages;
 
   programs.dconf.enable = true;
 

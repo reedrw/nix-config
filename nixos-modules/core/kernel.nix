@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   hardware.firmware = with pkgs; [ linux-firmware ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = lib.mkDefault pkgs.linuxPackages_zen;
     kernelParams = [ "ip=dhcp" "clearcpuid=umip" ];
     kernelModules = [
       # Nuvoton nct6687 needs this driver
