@@ -6,8 +6,10 @@
 //   - buildTransmitSequence(): root frame (a=t — transmit WITHOUT displaying,
 //     so no stray placement lands at the cursor) + animation frames (a=f) +
 //     loop start (a=a s=3 v=1 — kitty animates the image itself, with zero
-//     further work from pi). Written directly to stdout when the animation
-//     switches, OUTSIDE pi's render pipeline.
+//     further work from pi). Written directly to stdout when an animation is
+//     transmitted for the first time; pet.ts keeps transmitted animations
+//     alive in an LRU and replays them placement-only, so old image data is
+//     freed by the cache's eviction, not here.
 //   - placementLine(): a tiny placement-only image line returned by the
 //     overlay component's render(). pi's alt-screen renderer recognizes
 //     \x1b_G lines, caches uploaded image ids, and re-emits placements on
@@ -49,8 +51,6 @@ export interface TransmitOptions {
 	frames: string[];
 	/** Gap between frames in ms (uniform). */
 	gapMs: number;
-	/** Image id to delete (data + placements) once the new one is stored. */
-	prevImageId?: number;
 }
 
 /**
@@ -70,9 +70,6 @@ export function buildTransmitSequence(opts: TransmitOptions): string {
 	// loop forever (s=3, v=1).
 	seq += `\x1b_Ga=a,i=${imageId},r=1,z=${gapMs},q=2\x1b\\`;
 	seq += `\x1b_Ga=a,i=${imageId},s=3,v=1,q=2\x1b\\`;
-	if (opts.prevImageId !== undefined) {
-		seq += `\x1b_Ga=d,d=I,i=${opts.prevImageId},q=2\x1b\\`;
-	}
 	return seq;
 }
 
@@ -88,6 +85,16 @@ export function placementLine(imageId: number, cols: number, rows: number, place
 /** Delete an image and free its data (uppercase I). */
 export function deleteImageLine(imageId: number): string {
 	return `\x1b_Ga=d,d=I,i=${imageId},q=2\x1b\\`;
+}
+
+/**
+ * Delete only an image's placements, keeping its transmitted data (lowercase
+ * d=i). Used when switching animations: the previous animation's placement
+ * must go away (otherwise old and new render stacked in the same cells), but
+ * its frames stay alive for cache replays.
+ */
+export function deletePlacementLine(imageId: number): string {
+	return `\x1b_Ga=d,d=i,i=${imageId},q=2\x1b\\`;
 }
 
 /** Scale an image (pixel dims) to fit a cell box, returning cell dims. */

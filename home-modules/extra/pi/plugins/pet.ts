@@ -43,7 +43,7 @@ import {
 	thinkingAnim,
 	type PetState,
 } from "./lib/pet/anim.ts";
-import { buildTransmitSequence, deleteImageLine, placementLine } from "./lib/pet/kitty.ts";
+import { buildTransmitSequence, deleteImageLine, deletePlacementLine, placementLine } from "./lib/pet/kitty.ts";
 import { installTmuxPassthrough, outerTerminalHasKittyGraphics } from "./lib/pet/tmux.ts";
 import { base16Fg } from "./lib/custom-ui.ts";
 
@@ -58,6 +58,12 @@ interface AnimMeta {
 }
 
 let manifest: Record<string, AnimMeta> | null = null;
+// Frame cache: base64 PNGs per animation. LRU-capped — the full asset set is
+// ~420MB on disk (~570MB as base64), so an unbounded cache would balloon Node's
+// RSS over a long session. The currently transmitting animation is always the
+// most recent entry, so an LRU eviction never pulls frames out from under an
+// in-flight transmit.
+const FRAME_CACHE_MAX = 8;
 const frameCache = new Map<string, string[]>();
 
 function loadManifest(): Record<string, AnimMeta> {
@@ -76,7 +82,13 @@ function availableAnims(): Set<string> {
 
 function loadFrames(name: string): string[] {
 	let frames = frameCache.get(name);
-	if (!frames) {
+	if (frames) {
+		// LRU bump
+		frameCache.delete(name);
+		frameCache.set(name, frames);
+		return frames;
+	}
+	{
 		const meta = loadManifest()[name];
 		if (!meta) throw new Error(`pet: unknown animation ${name}`);
 		frames = [];
@@ -85,6 +97,13 @@ function loadFrames(name: string): string[] {
 			frames.push(readFileSync(file).toString("base64"));
 		}
 		frameCache.set(name, frames);
+		// Evict the oldest animation's frames over the cap (never the one just
+		// loaded — it's the newest entry).
+		while (frameCache.size > FRAME_CACHE_MAX) {
+			const oldest = frameCache.keys().next();
+			if (oldest.done || oldest.value === name) break;
+			frameCache.delete(oldest.value);
+		}
 	}
 	return frames;
 }
@@ -95,6 +114,9 @@ function loadFrames(name: string): string[] {
 // the target height and the animation's own aspect in play().
 const SIZE_ROWS: Record<string, number> = { small: 6, normal: 9, large: 12 };
 const MAX_COLS = 48;
+// How many transmitted animations to keep alive in kitty (each holds ~100
+// decoded frames, tens of MB — keep the cap modest).
+const TX_CACHE_MAX = 6;
 
 // ---- Whispers (碎碎念) ----
 // Port of the original's whisper feature: a short AI-generated line in a
@@ -230,7 +252,7 @@ function makeWhisperGenerator(source: WhisperContextSource): () => Promise<strin
 }
 
 // ---- Widget component ----
-class PetWidget implements Component {
+export class PetWidget implements Component {
 	private tui: TUI;
 	private requestRender: () => void;
 	private targetRows: number;
@@ -238,7 +260,13 @@ class PetWidget implements Component {
 	private line: string | null = null;
 	private sizeCols = 1;
 	private sizeRows = 1;
-	private imageId: number | null = null;
+	/** LRU of transmitted animations: animName → kitty image id (data kept
+	 * alive in kitty so replay is placement-only). */
+	private txCache = new Map<string, number>();
+	/** Image id whose placement is currently on screen. */
+	private displayedId: number | null = null;
+	/** Animation currently being transmitted (placement not yet live). */
+	private txInFlight: string | null = null;
 	private currentAnim: string | null = null;
 	private animEndsAt = 0;
 	private state: PetState = "idle";
@@ -268,8 +296,8 @@ class PetWidget implements Component {
 
 		// Terminal resize: pi's full redraw repaints our placement line at the
 		// new center, but the old kitty placement stays put (images survive
-		// clears and pi doesn't manage ours). Replay the current
-		// animation with a fresh image id — the transmit deletes the old one.
+		// clears and pi doesn't manage ours). Force a replay — with a warm
+		// transmit cache that's just a fresh placement line.
 		this.onResize = () => {
 			if (this.currentAnim) this.play(this.currentAnim, true);
 		};
@@ -278,6 +306,21 @@ class PetWidget implements Component {
 		// First animation: something from the idle chain (usually breathing).
 		const first = pickIdleChain(this.available) ?? Object.keys(this.available)[0];
 		if (first) this.play(first);
+
+		// Warm the frame cache for the state animations in the background:
+		// thinking/coding fire on agent_start — exactly when the user just hit
+		// enter, so their first-play disk+base64 cost must not land there.
+		setImmediate(() => {
+			for (const name of [thinkingAnim, codingAnim]) {
+				if (this.available.has(name) && !frameCache.has(name)) {
+					try {
+						loadFrames(name);
+					} catch {
+						// missing assets — the state machine already falls back
+					}
+				}
+			}
+		});
 
 		this.whisperTimer = setInterval(() => void this.whisperCycle(), WHISPER_INTERVAL_MS);
 		this.whisperTimer.unref?.();
@@ -338,10 +381,13 @@ class PetWidget implements Component {
 	/** Switch animations. Same-name calls are ignored (no retransmit) unless forced. */
 	private play(name: string, force = false): void {
 		if (this.disposed || (!force && name === this.currentAnim) || !this.available.has(name)) return;
+		// A transmit is in flight — its completion callback owns the display
+		// swap; playing now would place an image whose data hasn't arrived.
+		// The tick driver retries once animEndsAt passes.
+		if (this.txInFlight !== null) return;
 		const meta = loadManifest()[name]!;
 		const frames = loadFrames(name);
 		const gapMs = Math.round(1000 / meta.fps);
-		const id = allocateImageId();
 		// Height-driven placement size: rows = target, cols from the animation's
 		// own cropped aspect (real cell dimensions — cells are ~2:1).
 		const cell = getCellDimensions();
@@ -352,6 +398,42 @@ class PetWidget implements Component {
 				Math.ceil((meta.width * this.targetRows * cell.heightPx) / meta.height / cell.widthPx),
 			),
 		);
+
+		// Transmitted-animation cache: kitty keeps image data until we free it,
+		// so replaying a recently played animation costs only a placement line —
+		// no multi-MB retransmit on the tty (whose parse + PNG-decode work lands
+		// on tmux's/kitty's main thread, right where keystrokes flow). LRU:
+		// bump on hit, evict the oldest entry (freeing its kitty data) over cap.
+		const cachedId = this.txCache.get(name);
+		if (cachedId !== undefined) {
+			this.txCache.delete(name);
+			this.txCache.set(name, cachedId);
+		}
+
+		if (cachedId !== undefined) {
+			// Cache hit: placement-only switch, zero bytes of image data.
+			// renderImage only recomputes cell size and (re)registers the
+			// metadata pi's placement cache needs; its sequence is discarded.
+			const rendered = renderImage(frames[0]!, { widthPx: meta.width, heightPx: meta.height }, {
+				imageId: cachedId,
+				maxWidthCells: cols,
+				maxHeightCells: this.targetRows,
+				moveCursor: false,
+			});
+			this.sizeCols = rendered?.columns ?? cols;
+			this.sizeRows = rendered?.rows ?? this.targetRows;
+			this.currentAnim = name;
+			this.animEndsAt = Date.now() + frames.length * gapMs;
+			// Drop the previous animation's placement (data stays cached) before
+			// the new one lands — otherwise both render stacked in the same cells.
+			this.retirePlacement(cachedId);
+			this.displayedId = cachedId;
+			this.line = placementLine(cachedId, this.sizeCols, this.sizeRows);
+			this.requestRender();
+			return;
+		}
+
+		const id = allocateImageId();
 		// renderImage registers the kitty metadata pi's renderer needs for its
 		// placement cache; the sequence it builds is discarded — transmission
 		// happens below, outside pi's render pipeline.
@@ -363,26 +445,130 @@ class PetWidget implements Component {
 		});
 		const sizeCols = rendered?.columns ?? cols;
 		const sizeRows = rendered?.rows ?? this.targetRows;
-		// Transmit + start the loop OUTSIDE pi's render pipeline. The widget
-		// line is placement-only, so pi's repaints never retransmit frames — a
-		// retransmitted image id is deleted and re-created by kitty, which
-		// resets the animation to frame 1 on every repaint.
-		process.stdout.write(
-			buildTransmitSequence({ imageId: id, frames, gapMs, prevImageId: this.imageId ?? undefined }),
-		);
-		this.imageId = id;
-		this.sizeCols = sizeCols;
-		this.sizeRows = sizeRows;
-		this.line = placementLine(id, sizeCols, sizeRows);
+		this.txCache.set(name, id);
+		this.evictTxCache();
 		this.currentAnim = name;
 		this.animEndsAt = Date.now() + frames.length * gapMs;
-		this.requestRender();
+		this.sizeCols = sizeCols;
+		this.sizeRows = sizeRows;
+		// Transmit + start the loop OUTSIDE pi's render pipeline, written
+		// asynchronously in yielded chunks: a multi-MB single write makes tmux
+		// and kitty parse/decode the whole burst in one go, stalling input.
+		// The placement line only swaps in once the data is fully sent — a
+		// placement arriving before its image data would be dropped by kitty
+		// (q=2 hides the error) and stay blank until the next repaint. Until
+		// then the previous animation (still cached) keeps showing; its
+		// placement is retired in the completion callback.
+		const prevId = this.displayedId;
+		this.displayedId = null;
+		this.txInFlight = name;
+		this.writeYielding(buildTransmitSequence({ imageId: id, frames, gapMs }), () => {
+			this.txInFlight = null;
+			if (this.disposed) return;
+			// A later play() took over the display while we were transmitting —
+			// it owns the placement swap; our data is cached and stays warm.
+			if (this.displayedId !== null) return;
+			this.retirePlacement(id, prevId);
+			this.displayedId = id;
+			this.line = placementLine(id, sizeCols, sizeRows);
+			this.requestRender();
+		});
+	}
+
+	/**
+	 * Remove the previous animation's on-screen placement without freeing its
+	 * data (lowercase d=i): cached animations keep their frames for replay.
+	 * `except` lets the caller skip the id that is about to be (re)placed —
+	 * e.g. a forced replay of the same animation, where the placement must
+	 * stay until the fresh one replaces it in the same render pass.
+	 */
+	private retirePlacement(newId: number, except?: number | null): void {
+		const prev = except !== undefined ? except : this.displayedId;
+		if (prev === null || prev === undefined || prev === newId) return;
+		process.stdout.write(deletePlacementLine(prev));
+	}
+
+	/**
+	 * Write a large APC payload in chunks, yielding to the event loop between
+	 * writes so keystroke processing and pi's own rendering aren't starved by
+	 * a single multi-megabyte stdout burst. Chunks are whole APC sequences, so
+	 * interleaving with pi's writes (or a concurrent transmit) is safe — APCs
+	 * carry no cursor state.
+	 */
+	private writeYielding(seq: string, done: () => void): void {
+		// Split at APC boundaries, never mid-sequence: the tmux passthrough
+		// wrapper buffers an unterminated APC tail in anticipation of the next
+		// write — if pi's own render write arrived in between (setImmediate
+		// interleaving makes that routine), the wrapper would swallow pi's
+		// bytes into the APC payload and garble the frame. Whole sequences per
+		// chunk keep the wrapper stateless across our writes.
+		const CHUNK = 256 * 1024;
+		const chunks: string[] = [];
+		let start = 0;
+		let end = 0;
+		while (end < seq.length) {
+			const st = seq.indexOf("\x1b\\", end);
+			if (st === -1) {
+				// Tail without a terminator: emit as one final chunk (shouldn't
+				// happen — buildTransmitSequence emits only complete APCs).
+				chunks.push(seq.slice(start));
+				end = seq.length;
+				break;
+			}
+			end = st + 2;
+			if (end - start >= CHUNK || end === seq.length) {
+				chunks.push(seq.slice(start, end));
+				start = end;
+			}
+		}
+		let i = 0;
+		const step = (): void => {
+			if (this.disposed) return;
+			if (i < chunks.length) {
+				process.stdout.write(chunks[i]);
+				i += 1;
+				setImmediate(step);
+			} else {
+				done();
+			}
+		};
+		step();
+	}
+
+	/** Free kitty data for the oldest cached animations over the cap. */
+	private evictTxCache(): void {
+		while (this.txCache.size > TX_CACHE_MAX) {
+			const oldest = this.txCache.entries().next();
+			if (oldest.done) break;
+			const [name, id] = oldest.value;
+			// The currently displayed animation was just LRU-bumped; it can't
+			// be the oldest entry unless the cap is 0.
+			if (name === this.currentAnim) break;
+			this.txCache.delete(name);
+			if (!this.disposed) process.stdout.write(deleteImageLine(id));
+		}
+	}
+
+	/**
+	 * Next idle-chain animation. Strongly prefers already-transmitted
+	 * animations (replay is free); occasionally explores a fresh one to keep
+	 * the chain varied and warm the cache.
+	 */
+	private nextIdle(): string | null {
+		const cached = new Set(
+			[...this.txCache.keys()].filter((a) => this.available.has(a) && a !== this.currentAnim),
+		);
+		if (cached.size >= 2 && Math.random() < 0.8) {
+			const next = pickIdleChain(cached, this.currentAnim ?? undefined);
+			if (next) return next;
+		}
+		return pickIdleChain(this.available, this.currentAnim ?? undefined);
 	}
 
 	private stateAnim(): string {
 		if (this.state === "thinking") return thinkingAnim;
 		if (this.state === "coding") return codingAnim;
-		return pickIdleChain(this.available, this.currentAnim ?? undefined) ?? thinkingAnim;
+		return this.nextIdle() ?? thinkingAnim;
 	}
 
 	/** Animation-chain driver: runs the state machine as animations end. */
@@ -399,7 +585,7 @@ class PetWidget implements Component {
 			return;
 		}
 		if (this.state === "idle") {
-			const next = pickIdleChain(this.available, this.currentAnim ?? undefined);
+			const next = this.nextIdle();
 			if (next) this.play(next);
 		} else if (this.currentAnim === this.stateAnim()) {
 			// Looping state animation: kitty loops seamlessly, just extend.
@@ -494,13 +680,13 @@ class PetWidget implements Component {
 			this.whisperTimer = null;
 		}
 		process.stdout.removeListener("resize", this.onResize);
-		if (this.imageId !== null) {
-			// Widget is gone — free the kitty image data. Raw write is safe:
-			// APC sequences carry no cursor movement and kitty parses them
+		if (this.txCache.size > 0) {
+			// Widget is gone — free all cached kitty image data. Raw writes are
+			// safe: APC sequences carry no cursor movement and kitty parses them
 			// between pi's writes (the tmux passthrough filter, if installed,
 			// wraps this along with everything else).
-			process.stdout.write(deleteImageLine(this.imageId));
-			this.imageId = null;
+			for (const id of this.txCache.values()) process.stdout.write(deleteImageLine(id));
+			this.txCache.clear();
 		}
 		this.line = null;
 	}
