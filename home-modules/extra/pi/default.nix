@@ -274,8 +274,8 @@ in
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
           lastChangelogVersion = pkgs.mv.tip.pi-coding-agent.version;
-          defaultProvider = "openrouter";
-          defaultModel = "z-ai/glm-5.3-flash";
+          defaultProvider = "opencode-go";
+          defaultModel = "glm-5.3-flash";
           defaultThinkingLevel = "high";
           theme = "stylix";
           tuiMode = "fullscreen";
