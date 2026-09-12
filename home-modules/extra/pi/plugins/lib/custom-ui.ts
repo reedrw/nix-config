@@ -1477,25 +1477,32 @@ const ACTION_HANDLERS_KEY = "__piCustomUiActionHandlers";
 
 export type ActionUrlHandler = (url: string) => boolean;
 
-export function registerActionUrlHandler(handler: ActionUrlHandler): void {
+// Map (not Set) so a handler can replace itself: a /reload re-runs the
+// importing extension's top level, and without an id every reload stacked
+// ANOTHER closure — the stale pre-reload one was consulted first (insertion
+// order), claimed the URL, and flipped state belonging to the dead module
+// instance (the footer's clicks went dead until a full pi restart).
+function actionHandlers(): Map<string | symbol, ActionUrlHandler> {
 	const gt = globalThis as Record<string, unknown>;
-	let handlers = gt[ACTION_HANDLERS_KEY] as Set<ActionUrlHandler> | undefined;
+	let handlers = gt[ACTION_HANDLERS_KEY] as Map<string | symbol, ActionUrlHandler> | undefined;
 	if (!handlers) {
-		handlers = new Set<ActionUrlHandler>();
+		handlers = new Map();
 		gt[ACTION_HANDLERS_KEY] = handlers;
 	}
-	handlers.add(handler);
+	return handlers;
+}
+
+export function registerActionUrlHandler(handler: ActionUrlHandler, id?: string): void {
+	actionHandlers().set(id ?? Symbol("action-url-handler"), handler);
 }
 
 // Dispatch a clicked action URL; false when the URL is not ours (the caller
 // falls back to opening it in the default browser handler). URLs are tree
 // paths: each flips exactly ONE node's flag.
 export function handleActionUrl(url: string): boolean {
-	const handlers = (globalThis as Record<string, unknown>)[ACTION_HANDLERS_KEY] as
-		| Set<ActionUrlHandler>
-		| undefined;
-	if (handlers) {
-		for (const handler of handlers) {
+	const handlers = actionHandlers();
+	if (handlers.size > 0) {
+		for (const handler of handlers.values()) {
 			if (handler(url)) {
 				setTimeout(() => animState().requestRender?.(), 0);
 				return true;

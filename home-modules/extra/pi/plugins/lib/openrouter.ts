@@ -775,30 +775,30 @@ export function setSharedUiCtx(ctx: unknown): void {
 
 // ── action URLs owned by this lib ────────────────────────────
 //
-// installPinActions() registers ONE handler for PIN_URL (opens the dialog
-// using the shared UI context) and the sort URLs (dispatch to the open
-// dialog's sink). Idempotent via a globalThis flag: both importing
-// extensions may call it, and /reload keeps globalThis.
+// installPinActions() registers ONE id-keyed handler for PIN_URL (opens the
+// dialog using the shared UI context) and the sort URLs (dispatch to the
+// open dialog's sink). A /reload replaces the registration (same id) instead
+// of stacking a stale closure — see registerActionUrlHandler in custom-ui.ts.
 
 export function installPinActions(): void {
-	const gt = globalThis as Record<string, unknown>;
-	if (gt.__piOpenrouterActionsInstalled) return;
-	gt.__piOpenrouterActionsInstalled = true;
-	registerActionUrlHandler((url) => {
-		if (url === PIN_URL) {
-			void openPinDialog();
-			return true;
-		}
-		const sortMatch = SORT_URL_RE.exec(url);
-		if (sortMatch) {
-			const sink = (globalThis as Record<string, unknown>).__piOpenrouterSortSink as
-				| ((col: number) => void)
-				| undefined;
-			sink?.(Number(sortMatch[1]));
-			return true;
-		}
-		return false;
-	});
+	registerActionUrlHandler(
+		(url) => {
+			if (url === PIN_URL) {
+				void openPinDialog();
+				return true;
+			}
+			const sortMatch = SORT_URL_RE.exec(url);
+			if (sortMatch) {
+				const sink = (globalThis as Record<string, unknown>).__piOpenrouterSortSink as
+					| ((col: number) => void)
+					| undefined;
+				sink?.(Number(sortMatch[1]));
+				return true;
+			}
+			return false;
+		},
+		"openrouter-pin",
+	);
 }
 
 // OpenRouter endpoint metadata loader with TTL, for display code that
