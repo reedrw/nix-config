@@ -29,6 +29,12 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth } from "@earendil-works/pi-tui";
 import { linkWrap, registerActionUrlHandler } from "./lib/custom-ui.ts";
 import {
+	ensureOpencodeUsage,
+	isOpencodeGoModel,
+	opencodeUsage,
+	type OpencodeUsage,
+} from "./lib/opencode.ts";
+import {
 	PIN_URL,
 	endpointFor,
 	ensureEndpointData as ensureEndpointDataLib,
@@ -127,8 +133,8 @@ function bar(pct: number): string {
   return pctColor(pct) + "█".repeat(filled) + DIM + "░".repeat(empty) + RESET;
 }
 
-function meter(label: string, pct: number): string {
-  return `${BOLD}${CYAN}${label}${RESET} ${bar(pct)} ${pctColor(pct)}${BOLD}${pct}%${RESET}`;
+function meter(label: string, pct: number, resetSuffix = ""): string {
+  return `${BOLD}${CYAN}${label}${RESET} ${bar(pct)} ${pctColor(pct)}${BOLD}${pct}%${RESET}${resetSuffix}`;
 }
 
 // Same style as reset_label in claude-statusline.sh (the rate-limit timers).
@@ -170,6 +176,46 @@ function fmtDuration(ms: number): string {
   return `${Math.floor(s / 60)}m${String(s % 60).padStart(2, "0")}s`;
 }
 
+// Same style as reset_label in claude-statusline.sh (the rate-limit timers):
+// a dimmed countdown to the window reset, appended after the meter. A days
+// tier is added on top for windows longer than the shell script's 7-day max
+// (the Go plan's monthly window resets ~30 days out).
+function resetLabel(resetsAt: string | undefined): string {
+  if (!resetsAt) return "";
+  const diff = (Date.parse(resetsAt) - Date.now()) / 1000;
+  if (!Number.isFinite(diff) || diff <= 0) return "";
+  if (diff >= 86400)
+    return ` ${DIM}${Math.floor(diff / 86400)}d${String(Math.floor((diff % 86400) / 3600)).padStart(2, "0")}h${RESET}`;
+  if (diff >= 3600)
+    return ` ${DIM}${Math.floor(diff / 3600)}h${String(Math.floor((diff % 3600) / 60)).padStart(2, "0")}m${RESET}`;
+  if (diff >= 60) return ` ${DIM}${Math.floor(diff / 60)}m${RESET}`;
+  return ` ${DIM}${Math.floor(diff)}s${RESET}`;
+}
+
+// Moon-phase emoji for the monthly meter: the rendered phase tracks the
+// real moon. Sun and moon ecliptic longitudes from the compact trig
+// approximations SunCalc uses (github.com/mourner/suncalc, BSD) — their
+// difference is the phase angle, accurate to well under a degree, far
+// beyond what an 8-emoji scale can express. The old mean-synodic-month
+// trick drifted ~1 day and sat on the 🌑/🌒 boundary half the time.
+const RAD = Math.PI / 180;
+const MOON_PHASE_EMOJI = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
+
+function moonEmoji(now = Date.now()): string {
+  // days since J2000 (suncalc's toDays)
+  const d = now / 86400000 - 0.5 + 2440588 - 2451545;
+  const sunM = RAD * (357.5291 + 0.98560028 * d);
+  const sunL =
+    RAD * (280.46 + 0.9856474 * d) +
+    RAD * 1.9148 * Math.sin(sunM) +
+    RAD * 0.02 * Math.sin(2 * sunM);
+  const moonM = RAD * (134.963 + 13.064993 * d);
+  const moonL = RAD * (218.316 + 13.176396 * d) + RAD * 6.289 * Math.sin(moonM);
+  // 0 new · ¼ first quarter · ½ full · ¾ last quarter
+  const phase = ((((moonL - sunL) / (2 * Math.PI)) % 1) + 1) % 1;
+  return MOON_PHASE_EMOJI[Math.round(phase * 8) % 8];
+}
+
 function repoName(cwd: string): string {
   try {
     const url = execFileSync("git", ["remote", "get-url", "origin"], {
@@ -190,6 +236,12 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   let cachedRepo: string | null = null;
   let uiCtx: any = null;
 
+  // Quota refresh when the Go usage line is (or may be) visible. The
+  // render path also calls ensure, but message_end is where spending
+  // actually moved the bars.
+  const ensureGoUsage = (ctx: any) =>
+    ensureOpencodeUsage(ctx?.model, () => tuiRef?.requestRender());
+
   // Routing expansion: clicking the model name (or the info line itself)
   // toggles a second footer line describing the OpenRouter routing. Clicks
   // arrive as OSC 8 pi-action links resolved by the custom-ui suite's
@@ -199,30 +251,40 @@ export default function statuslineExtension(pi: ExtensionAPI) {
 
   const ensureEndpointData = () => ensureEndpointDataLib(uiCtx?.model, () => tuiRef?.requestRender());
 
-  registerActionUrlHandler((url) => {
-    if (url === ROUTING_URL) {
-      expanded = !expanded;
-      if (expanded) ensureEndpointData();
-      return true;
-    }
-    // fallbacks for the pin URLs — normally owned by pin-provider.ts via the
-    // lib (registered earlier, so its handler wins when both are loaded)
-    if (url === PIN_URL) {
-      expanded = true;
-      ensureEndpointData();
-      void openPinDialog(uiCtx, { onRequestRender: () => tuiRef?.requestRender() });
-      return true;
-    }
-    const sortMatch = /^pi-action:\/\/pin-provider\/sort\/(\d)$/.exec(url);
-    if (sortMatch) {
-      const sink = (globalThis as Record<string, unknown>).__piOpenrouterSortSink as
-        | ((col: number) => void)
-        | undefined;
-      sink?.(Number(sortMatch[1]));
-      return true;
-    }
-    return false;
-  });
+  // id-keyed so a /reload replaces this registration instead of stacking a
+  // stale closure that would swallow the click (the dead instance's handler
+  // is consulted first and flips state nothing renders anymore)
+  registerActionUrlHandler(
+    (url) => {
+      if (url === ROUTING_URL) {
+        expanded = !expanded;
+        if (expanded) {
+          ensureEndpointData();
+          ensureGoUsage(uiCtx);
+        }
+        return true;
+      }
+      // fallbacks for the pin URLs — normally owned by pin-provider.ts via
+      // the lib (its handler usually claims them first)
+      if (url === PIN_URL) {
+        expanded = true;
+        ensureEndpointData();
+        ensureGoUsage(uiCtx);
+        void openPinDialog(uiCtx, { onRequestRender: () => tuiRef?.requestRender() });
+        return true;
+      }
+      const sortMatch = /^pi-action:\/\/pin-provider\/sort\/(\d)$/.exec(url);
+      if (sortMatch) {
+        const sink = (globalThis as Record<string, unknown>).__piOpenrouterSortSink as
+          | ((col: number) => void)
+          | undefined;
+        sink?.(Number(sortMatch[1]));
+        return true;
+      }
+      return false;
+    },
+    "statusline",
+  );
 
   installRoutingFetchPatch();
   // the lib's dialog needs a session ctx even when opened from its own
@@ -388,11 +450,17 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                 // single left-aligned line, like the Claude statusline
                 const line = parts.join(`${DIM}  |  ${RESET}`);
                 const lines = [truncateToWidth(line, width)];
-                // read the routing state before the local `routing` string
-                // below shadows the lib import inside this block
-                const routed = routing();
+                const routed = routing(); // before the local `routing` below shadows the lib import
                 if (expanded) {
-                  const model = ctx.model as { provider?: string; id?: string } | undefined;
+                  const model = ctx.model as { provider?: string; id?: string; baseUrl?: string } | undefined;
+                  // OpenCode Go: the plan's own limit windows replace the
+                  // OpenRouter routing info there is nothing to route
+                  if (isOpencodeGoModel(model)) {
+                    ensureGoUsage(ctx);
+                    lines.push(
+                      truncateToWidth(linkWrap(goUsageLine(), ROUTING_URL), width),
+                    );
+                  } else {
                   const routing = truncateToWidth(linkWrap(routingLine(), ROUTING_URL), width);
                   // sibling span — the button must not sit inside the line's link
                   const button =
@@ -401,6 +469,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                   const { loading } = endpointFor(model?.id ?? "", routed.provider);
                   const loadingBit = loading ? `${DIM} …${RESET}` : "";
                   lines.push(truncateToWidth(routing + button + loadingBit, width));
+                  }
                 }
                 return lines;
               },
@@ -444,6 +513,30 @@ export default function statuslineExtension(pi: ExtensionAPI) {
       bits.push(`${BOLD}${GREEN}📌 pin: ${name}${RESET}`);
     }
     return bits.join(`${DIM} · ${RESET}`);
+  };
+
+  // Second footer line for OpenCode Go models: the plan's three
+  // dollar-metered limit windows (rolling 5h, weekly, monthly) as ctx-style
+  // bars, straight from the server's quota endpoint. The whole line carries
+  // the routing toggle link, so clicking it still collapses.
+  const goUsageLine = (): string => {
+    const u = opencodeUsage();
+    if (!u.data && !u.loading) return `${DIM}↳ OpenCode Go: usage unavailable${RESET}`;
+    const windows: [keyof OpencodeUsage, string][] = [
+      // same icons as the claude statusline's rate-limit meters
+      ["rolling", "⌚ 5h"],
+      ["weekly", "📅 wk"],
+      ["monthly", `${moonEmoji()} mo`],
+    ];
+    const bits = windows.map(([key, label]) => {
+      const w = u.data?.[key];
+      const pct = w?.percent;
+      if (typeof pct !== "number" || !Number.isFinite(pct)) {
+        return `${DIM}${label} --%${RESET}`;
+      }
+      return meter(label, Math.round(pct), resetLabel(w?.resetsAt));
+    });
+    return `${DIM}↳ OpenCode Go${RESET} ${DIM}·${RESET} ` + bits.join(`${DIM} · ${RESET}`);
   };
 
   pi.registerCommand("statusbar", {
@@ -565,6 +658,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   pi.on("message_end", async () => {
     liveRead = 0;
     livePrompt = 0;
+    if (expanded) ensureGoUsage(uiCtx);
     tuiRef?.requestRender();
   });
 
