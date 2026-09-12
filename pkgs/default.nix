@@ -8,6 +8,7 @@ let
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
     unscene = self.callPackage ./unscene { };
     update-all = pkgs.callPackage ./update-all { };
+    wheel-wizard-unwrapped = pkgs.callPackage ./wheel-wizard/unwrapped.nix { };
     wheel-wizard = pkgs.callPackage ./wheel-wizard { };
     xdcc-dl = pkgs.callPackage ./xdcc-dl { };
     xdcc-tar = pkgs.callPackage ./xdcc-tar { };
