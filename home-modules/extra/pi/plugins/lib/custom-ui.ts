@@ -18,10 +18,10 @@
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { Container, getCapabilities, Text, visibleWidth } from "@earendil-works/pi-tui";
+import { Container, getCapabilities, getKeybindings, Text, visibleWidth } from "@earendil-works/pi-tui";
 import type { Component } from "@earendil-works/pi-tui";
 import { keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
-import type { Theme } from "@earendil-works/pi-coding-agent";
+import type { ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 
 // Max width of a one-line call/summary before ellipsis. Terminal-width-aware
 // wrapping is left to Text for expanded output; single-line slots are capped
@@ -1995,15 +1995,38 @@ export function walkTree(expand: boolean): void {
 }
 
 // pi drives ctrl+o through ToolExecutionComponent#setExpanded for every tool
-// row in one pass; walk once per gesture, not per row.
-// pi's global ctrl+o flag (ToolExecutionComponent#setExpanded) is synced to
-// EVERY tool row with its CURRENT value — including `false` (the default) on
-// each new component mid-stream. Only a CHANGE of the flag is a user
-// gesture; walking on the per-row syncs would sticky-close the running
-// batch the moment its second tool's component was created (children
-// vanished under a live header).
+// row in one pass; the tree walk runs once per gesture, not per row.
+// pi's global ctrl+o flag is synced to EVERY tool row with its CURRENT value —
+// including `false` (the default) on each new component mid-stream — so a
+// per-row sync must not be mistaken for a gesture: walking on those would
+// sticky-close a running batch the moment its second tool's component was
+// created (children vanished under a live header). Only a CHANGE of the flag
+// counts, and only while the gesture is armed.
+//
+// 0.85 also calls setExpanded from a MOUSE handler: pi wraps every tool
+// result component in a MouseRegion that toggles that ONE row
+// (createResultRegion). Observed the same way, a single click on any row cell
+// that carries no link walked the WHOLE tree — one click expanded every batch
+// and every thought branch, and the walk's invalidations made the transcript
+// lag. So the walk is armed by the actual `app.tools.expand`
+// keypress only: the input listener below runs before the editor's action
+// (TUI input listeners precede focused-component input), arms a one-tick flag,
+// and pi's per-row setExpanded burst lands inside that tick.
+//
+// The flag and the listener handle live on globalThis: the prototype patch is
+// one-shot per process, so after /reload the INSTALLED closure is the previous
+// module instance's — a module-scoped flag would be written by the new
+// instance and never read by the old one (ctrl+o would silently stop walking).
+const EXPAND_GESTURE_KEY = "__piCustomUiExpandGesture";
+const EXPAND_LISTENER_KEY = "__piCustomUiExpandListener";
 let lastExpandedFlag = false;
+
+function gestureArmed(): boolean {
+	return (globalThis as Record<string, unknown>)[EXPAND_GESTURE_KEY] === true;
+}
+
 function walkFromCtrlO(expand: boolean): void {
+	if (!gestureArmed()) return;
 	if (expand === lastExpandedFlag) return;
 	lastExpandedFlag = expand;
 	walkTree(expand);
@@ -2011,6 +2034,8 @@ function walkFromCtrlO(expand: boolean): void {
 
 const TOOL_EXPAND_PATCHED = Symbol.for("pi-custom-ui/tool-expand-walk");
 
+// Prototype patch: observe pi's global expand flag. Safe to call before any
+// session exists (the walk itself is gated on the keypress arm below).
 export function installToolExpandWalk(): void {
 	const prototype = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
 	if (typeof prototype.setExpanded !== "function" || prototype[TOOL_EXPAND_PATCHED]) return;
@@ -2020,6 +2045,35 @@ export function installToolExpandWalk(): void {
 		walkFromCtrlO(expanded === true);
 		originalSetExpanded.call(this, expanded);
 	};
+}
+
+// Arm the walk for the current input tick. Called by the keypress listener
+// below; exposed so tests can drive the gate without pi's keybinding registry
+// (smoke runs outside pi, where `getKeybindings()` knows only pi-tui's own
+// bindings and `app.tools.expand` never matches).
+export function noteToolExpandGesture(): void {
+	const gt = globalThis as Record<string, unknown>;
+	gt[EXPAND_GESTURE_KEY] = true;
+	// Disarm after the current input dispatch: pi's editor runs the action on
+	// this same tick and syncs every row before the timer fires.
+	setTimeout(() => {
+		gt[EXPAND_GESTURE_KEY] = false;
+	}, 0);
+}
+
+// Register the keypress listener per session_start (like the fold's ctrl+t
+// listener), never stacking: a session switch — or a /reload, which
+// re-instantiates this module — must not leave a dead ctx's listener behind.
+export function armToolExpandGesture(ctx: ExtensionContext): void {
+	if (ctx.mode !== "tui") return;
+	const gt = globalThis as Record<string, unknown>;
+	(gt[EXPAND_LISTENER_KEY] as (() => void) | undefined)?.();
+	gt[EXPAND_LISTENER_KEY] = ctx.ui.onTerminalInput((data) => {
+		if (!getKeybindings().matches(data, "app.tools.expand")) return undefined;
+		noteToolExpandGesture();
+		// Never consume: pi's editor owns the key.
+		return undefined;
+	});
 }
 
 // pi's ToolExecutionComponent.render frames every self-shell tool row with a
@@ -2082,6 +2136,26 @@ export function installTightSelfRows(): void {
 			return originalHandleMouse.call(this, { ...event, y: event.y + 1 });
 		};
 	}
+	// 0.85 wraps every result component in a MouseRegion whose click handler
+	// toggles that ONE row's native `expanded` (createResultRegion). For our
+	// own rows the tree owns expansion (the row's cells toggle it through the
+	// tree's own links), so an uncovered cell (a blank spacer, the framing line
+	// the render patch above strips) must fall through to text selection
+	// instead of flipping pi's per-row state behind the tree's back
+	// (which also re-renders the row with a mismatched summary). Returning the
+	// component unwrapped removes the region; foreign tools (no renderer
+	// definition) keep pi's native click-to-expand.
+	if (typeof prototype.createResultRegion === "function") {
+		const originalCreateResultRegion = prototype.createResultRegion as (
+			this: ToolExecView,
+			component: Component,
+		) => Component;
+		prototype.createResultRegion = function (this: ToolExecView, component: Component) {
+			const region = originalCreateResultRegion.call(this, component);
+			return this.hasRendererDefinition() && this.getRenderShell() === "self" ? component : region;
+		};
+	}
+
 }
 
 // ── Tree-renderer API (consumed by lib/thinking-fold) ──────

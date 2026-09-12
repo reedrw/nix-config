@@ -34,6 +34,8 @@ import {
 	turnOutputTokens,
 	formatTokens,
 	installToolExpandWalk,
+	armToolExpandGesture,
+	noteToolExpandGesture,
 	installTightSelfRows,
 	handleActionUrl,
 	linkWrap,
@@ -208,13 +210,46 @@ if (tree.branchScope(2000).contentOpen) throw new Error("ctrl+o collapse must cl
 
 // ctrl+o via pi's setExpanded (the lib observes the prototype patch)
 installToolExpandWalk();
-walkFromCtrlOSim: {
+// The walk is armed by the real `app.tools.expand` keypress only: pi 0.85 also
+// calls setExpanded from a per-row MOUSE handler (0.85's createResultRegion
+// MouseRegion), and unarmed those clicks walked the WHOLE tree — one click
+// expanded every batch and thought, and the invalidations made it lag.
+let pressCtrlO = () => {};
+{
 	const proto = ToolExecutionComponent.prototype;
 	const fake = { expanded: false, updateDisplay() {} };
+	// unarmed: a click/stream sync must not walk, in either direction
 	proto.setExpanded.call(fake, true);
-	if (!groupMode("c1").headerOpen) throw new Error("setExpanded(true) must walk the tree open");
+	if (groupMode("c1").headerOpen) throw new Error("unarmed setExpanded must not walk the tree");
 	proto.setExpanded.call(fake, false);
-	if (groupMode("c1").headerOpen) throw new Error("setExpanded(false) must walk the tree closed");
+	if (groupMode("c1").headerOpen) throw new Error("unarmed setExpanded(false) must not walk either");
+	// the real listener wiring: a fake ctx captures the handler it registers
+	let keyHandler;
+	armToolExpandGesture({
+		mode: "tui",
+		ui: {
+			onTerminalInput: (handler) => {
+				keyHandler = handler;
+				return () => {};
+			},
+		},
+	});
+	if (typeof keyHandler !== "function") throw new Error("armToolExpandGesture must register a terminal input listener");
+	// `app.tools.expand` is pi's binding, which a bare node process does not
+	// have — drive the arm step the listener calls (its key matching is the
+	// same pattern as the fold's ctrl+t listener, exercised in the real TUI)
+	pressCtrlO = () => noteToolExpandGesture();
+	pressCtrlO();
+	proto.setExpanded.call(fake, true);
+	if (!groupMode("c1").headerOpen) throw new Error("ctrl+o must walk the tree open");
+	pressCtrlO();
+	proto.setExpanded.call(fake, false);
+	if (groupMode("c1").headerOpen) throw new Error("ctrl+o must walk the tree closed");
+	// the gate disarms itself after the input tick — a stuck arm would put
+	// mouse clicks back in charge of the global walk
+	await new Promise((resolve) => setTimeout(resolve, 0));
+	proto.setExpanded.call(fake, true);
+	if (groupMode("c1").headerOpen) throw new Error("the expand gesture must disarm after one tick");
 }
 resetToolGroups();
 
@@ -253,6 +288,21 @@ installTightSelfRows();
 		80,
 	);
 	if (out.length !== 0) throw new Error(`default shell must pass through: ${JSON.stringify(out)}`);
+	// 0.85's per-row click MouseRegion is stripped for self-shell rows (the
+	// tree owns expansion; an uncovered cell must fall through to selection),
+	// while foreign/default rows keep pi's native click-to-expand
+	const regionTarget = { render: () => ["row"] };
+	if (proto.createResultRegion.call(selfRow(), regionTarget) !== regionTarget) {
+		throw new Error("self-shell rows must not be wrapped in pi's click MouseRegion");
+	}
+	if (
+		proto.createResultRegion.call(
+			{ hasRendererDefinition: () => false, getRenderShell: () => "default" },
+			regionTarget,
+		) === regionTarget
+	) {
+		throw new Error("default-shell rows must keep pi's result region");
+	}
 }
 
 // pi syncs its (default false) flag onto EVERY new tool component mid-stream —
@@ -263,12 +313,17 @@ trackGroupToolCall("z1"); trackGroupToolCall("z2");
 {
 	const proto = ToolExecutionComponent.prototype;
 	const fake = { expanded: false, updateDisplay() {} };
+	// unchanged-flag syncs must not close a running batch — even while the
+	// gesture flag is armed (pi syncs the flag onto every new component)
+	pressCtrlO();
 	proto.setExpanded.call(fake, false);
 	proto.setExpanded.call(fake, false);
 	if (!groupMode("z1").headerOpen) throw new Error("unchanged-flag sync must not close the running batch");
 	if (!groupMode("z2").outputOpen) throw new Error("unchanged-flag sync must not collapse children");
+	pressCtrlO();
 	proto.setExpanded.call(fake, true);
 	if (!groupMode("z1").headerOpen || !groupMode("z1").outputOpen) throw new Error("ctrl+o expand must walk the tree open");
+	pressCtrlO();
 	proto.setExpanded.call(fake, false);
 	if (groupMode("z1").headerOpen || groupMode("z1").outputOpen) throw new Error("ctrl+o collapse must walk the tree closed");
 }

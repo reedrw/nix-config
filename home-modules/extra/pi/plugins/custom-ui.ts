@@ -57,6 +57,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import {
 	attachNotes,
+	armToolExpandGesture,
 	bash,
 	beginTurnMessage,
 	closeBatch,
@@ -1797,6 +1798,9 @@ export default function customUi(pi: ExtensionAPI) {
 		});
 		const scanEntries = ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>;
 		scanToolGroupsFromHistory(scanEntries);
+		// Arm the ctrl+o tree walk from the real keypress: a mouse-driven
+		// per-row setExpanded must not walk every node (see the lib).
+		armToolExpandGesture(ctx);
 		// Rebuild the newest-image-read pointer. (`read` itself is registered
 		// at load time with per-cwd execute — see registerReadTool — so no
 		// re-registration is needed on session switches.)

@@ -206,10 +206,22 @@ the hard way; violating them fails silently.
   default closed; user-opened children persist. There are NO derived
   `collapsed`/`folded`/`latest` flags and no `effectiveExpanded` precedence
   chain — clicks flip exactly one node's flag (`pi-action://node/batch/<i>`,
-  `node/tool/<id>`, `node/thought/<ts>` OSC 8 links, fullscreen only), and
-  ctrl+o walks every node via `walkTree` (the lib observes
-  `ToolExecutionComponent#setExpanded` once per gesture, deduped within
-  50ms — pi fires it per row). `scanToolGroupsFromHistory` mirrors the live
+  `node/tool/<id>`, `node/thought/<ts>` OSC 8 links,
+  fullscreen only), and
+  ctrl+o walks every node via `walkTree`. That walk is **armed only by the
+  real `app.tools.expand` keypress** (`armToolExpandGesture` registers a
+  non-consuming `onTerminalInput` listener per session_start; the arm lasts
+  one tick, and the flag change is still deduped because pi syncs its global
+  flag onto every row). Two constraints make this mandatory: pi 0.85's
+  per-row result `MouseRegion` calls `setExpanded`, and an unguarded observer
+  turned ANY such click into a whole-tree walk — one click on a row cell
+  without a click region expanded every batch and thought (that walk's
+  invalidations is the "UI lags" part of the bug). `installTightSelfRows`
+  also strips that MouseRegion for self-shell rows (`createResultRegion`
+  returns the component unwrapped) so an uncovered cell falls through to
+  text selection instead of flipping pi's per-row `expanded` behind the
+  tree's back; foreign tools keep pi's native click-to-expand.
+  `scanToolGroupsFromHistory` mirrors the live
   rules on restore.
 - **Leading thoughts anchor the batch (§2.3)**: a contiguous run of
   pure-thinking messages directly before a batch's first tool call joins it
