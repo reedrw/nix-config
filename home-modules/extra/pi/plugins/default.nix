@@ -120,6 +120,25 @@ let
     name: _: asPackage (callPackage ./${name} { })
   ) (lib.filterAttrs (name: type: type == "directory" && builtins.pathExists ./${name}/package.json) dir);
 
+  # Generated asset directories shipped next to the extensions (currently the
+  # pet's kitty-graphics frames). Mapped by pi/default.nix to
+  # ~/.pi/agent/extensions/<name> as a directory symlink; extensions resolve
+  # them relative to their own import.meta.url.
+  assetPlugins = lib.mapAttrs' (
+    name: _:
+    let
+      built = callPackage ./${name} { };
+    in
+    {
+      inherit name;
+      value = built // {
+        passthru = (built.passthru or { }) // {
+          piKind = "assets";
+        };
+      };
+    }
+  ) (lib.filterAttrs (name: type: type == "directory" && builtins.pathExists ./${name}/default.nix && !builtins.pathExists ./${name}/package.json) dir);
+
   # Pinned npm roots, keyed by the attr name pi loads them under. Each is the
   # unpacked package plus a symlink to the shared flat node_modules.
   npmPlugins = lib.listToAttrs (
@@ -135,4 +154,4 @@ let
     }) pins.roots
   );
 in
-extensionPlugins // libPlugins // vendoredPlugins // npmPlugins
+extensionPlugins // libPlugins // assetPlugins // vendoredPlugins // npmPlugins

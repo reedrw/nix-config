@@ -23,6 +23,7 @@ let
   extensionPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "extension") plugins;
   libPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "lib") plugins;
   dirPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "package") plugins;
+  assetPlugins = lib.filterAttrs (_: p: p.passthru.piKind == "assets") plugins;
 
   extensionFiles = lib.listToAttrs (
     lib.mapAttrsToList (name: plugin: {
@@ -59,6 +60,18 @@ let
         source = plugin;
       };
     }) dirPlugins
+  );
+
+  # Generated asset directories (e.g. the pet's kitty-graphics frames) symlinked
+  # next to the extensions; extensions resolve them via import.meta.url.
+  assetFiles = lib.listToAttrs (
+    lib.mapAttrsToList (name: plugin: {
+      name = ".pi/agent/extensions/${name}";
+      value = {
+        force = true;
+        source = plugin;
+      };
+    }) assetPlugins
   );
 
   # Stylix base16 scheme attrs (base00..base0F, hex without '#'). Consumed
@@ -246,7 +259,7 @@ in
     # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
     sessionVariables.PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
 
-    file = extensionFiles // libFiles // dirPackageFiles // {
+    file = extensionFiles // libFiles // assetFiles // dirPackageFiles // {
       # Palette consumed by lib/custom-ui.ts (see base16Json above).
       ".pi/agent/extensions/lib/base16.json" = {
         force = true;
