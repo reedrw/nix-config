@@ -517,6 +517,15 @@ interface GroupState {
 	openTools: Set<string>;
 	closedTools: Set<string>;
 	openThoughts: Set<number>;
+	// Click-to-expand while a thought STREAMS. streamOpen holds the rows a
+	// user explicitly clicked open — they persist into the settled row (the
+	// settled renderer reads them via branchScope's contentOpen, exactly like
+	// openThoughts). streamExpand is the persistent follow mode a streaming
+	// click arms: every FOLLOWING reasoning block streams in full too, but
+	// settles to the default fold — only the explicitly clicked row stays
+	// open once settled. Cleared by ctrl+o walks and session restore.
+	streamOpen: Set<number>;
+	streamExpand: boolean;
 	// Per-row invalidate callbacks, registered by renderers, so state changes
 	// can force the affected rows to re-render — rows render cached children
 	// otherwise. Tool rows register via trackRow; thought rows register from
@@ -546,6 +555,8 @@ function freshGroupState(): GroupState {
 		openTools: new Set(),
 		closedTools: new Set(),
 		openThoughts: new Set(),
+		streamOpen: new Set(),
+		streamExpand: false,
 		invalidators: new Map(),
 		thoughtRows: new Map(),
 		notes: new Map(),
@@ -588,6 +599,18 @@ function invalidateChild(child: TreeChild | undefined): void {
 	if (!child) return;
 	if (child.kind === "tool") invalidateRows([child.id]);
 	else invalidateThoughtRows([child.ts]);
+}
+
+// A streaming-click mode change re-shapes every currently streaming row
+// (explicit streamOpen rows keep their own flag, so only mode-covered rows
+// flip). Settled rows are unaffected — they follow openThoughts.
+function invalidateStreamingThoughtRows(): void {
+	const s = groupState();
+	const streaming = [...s.thoughtRows.keys()].filter((ts) => {
+		const timing = thoughtTiming(ts);
+		return timing !== undefined && timing.completedAt === undefined;
+	});
+	if (streaming.length > 0) invalidateThoughtRows(streaming);
 }
 
 function groupState(): GroupState {
@@ -1959,9 +1982,32 @@ export function toggleTool(toolCallId: string): void {
 	invalidateRows([toolCallId]);
 }
 
-// Toggle one thought branch's depth-3 reasoning.
+// Toggle one thought branch's depth-3 reasoning. While the thought is still
+// STREAMING the click toggles its effective expansion — its own streamOpen
+// entry OR the streamExpand follow mode — and arms/disarms the follow mode
+// to match: after an expanding click, every future reasoning block streams
+// in full until the next streaming click disarms it. The clicked row itself
+// persists into the settled row via streamOpen. A missing timing (restored
+// session) counts as settled: the persistent openThoughts toggle applies.
 export function toggleThought(timestamp: number): void {
 	const s = groupState();
+	const timing = thoughtTiming(timestamp);
+	if (timing !== undefined && timing.completedAt === undefined) {
+		if (s.streamOpen.has(timestamp) || s.streamExpand) {
+			s.streamOpen.delete(timestamp);
+			s.streamExpand = false;
+		} else {
+			s.streamOpen.add(timestamp);
+			s.streamExpand = true;
+		}
+		invalidateStreamingThoughtRows();
+		invalidateThoughtRows([timestamp]);
+		return;
+	}
+	// Settled: a surviving streamOpen entry (clicked while streaming, now
+	// settled) folds into openThoughts here, so each subsequent click flips
+	// exactly one flag and the toggle stays truthful.
+	s.streamOpen.delete(timestamp);
 	if (s.openThoughts.has(timestamp)) s.openThoughts.delete(timestamp);
 	else s.openThoughts.add(timestamp);
 	invalidateThoughtRows([timestamp]);
@@ -1982,6 +2028,8 @@ export function walkTree(expand: boolean): void {
 	s.openTools.clear();
 	s.closedTools.clear();
 	s.openThoughts.clear();
+	s.streamOpen.clear();
+	s.streamExpand = false;
 	if (expand) {
 		for (const batch of s.batches) {
 			for (const id of batch.ids) s.openTools.add(id);
@@ -2189,7 +2237,16 @@ export type BranchScope =
 
 export function branchScope(ts: number | undefined): BranchScope {
 	const s = groupState();
-	const contentOpen = ts !== undefined && s.openThoughts.has(ts);
+	// contentOpen folds the streaming-click state in: explicit streamOpen
+	// entries (persist into the settled row) and the streamExpand follow
+	// mode (covers every currently streaming thought). A missing timing
+	// (restored session) counts as settled — the mode never auto-opens it.
+	const timing = ts !== undefined ? thoughtTiming(ts) : undefined;
+	const contentOpen =
+		ts !== undefined &&
+		(s.openThoughts.has(ts) ||
+			s.streamOpen.has(ts) ||
+			(s.streamExpand && timing !== undefined && timing.completedAt === undefined));
 	if (ts === undefined) return { kind: "standalone", contentOpen };
 	const idx = s.thoughtBatch.get(ts);
 	if (idx === undefined) return { kind: "standalone", contentOpen };

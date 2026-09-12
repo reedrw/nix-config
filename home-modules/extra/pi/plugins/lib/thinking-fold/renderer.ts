@@ -812,9 +812,16 @@ function rebuild(
       // content (the branch label and reasoning return when it opens).
       behavior = "collapse";
     } else if (!completed) {
-      behavior = inBranch
-        ? "preview"
-        : resolveThinkingDisplayBehavior(message, record.options, false);
+      // Streaming: a branch shows the preview beneath its static label —
+      // unless contentOpen says otherwise: a user-clicked row (streamOpen,
+      // persisted into the settled row) or the streamExpand follow mode
+      // (every streaming block renders full until the next streaming click
+      // disarms it). Settled rows keep their own depth-3 flag either way.
+      behavior = scope.contentOpen
+        ? "full"
+        : inBranch
+          ? "preview"
+          : resolveThinkingDisplayBehavior(message, record.options, false);
     } else if (inBranch) {
       behavior = scope.contentOpen ? "full" : "collapse";
     } else {

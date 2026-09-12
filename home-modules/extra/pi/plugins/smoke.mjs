@@ -48,7 +48,7 @@ import {
 	shimmerFrame,
 } from "./lib/custom-ui.ts";
 import { getCapabilities, setCapabilities } from "@earendil-works/pi-tui";
-import { ToolExecutionComponent, AssistantMessageComponent } from "@earendil-works/pi-coding-agent";
+import { ToolExecutionComponent, AssistantMessageComponent, initTheme } from "@earendil-works/pi-coding-agent";
 import { installThinkingFold } from "./lib/thinking-fold/index.ts";
 import {
 	formatThinkingSeconds,
@@ -165,7 +165,9 @@ if (scope.last) throw new Error("previous last child must lose the corner when t
 scope = tree.branchScope(1000);
 if (scope.kind !== "anchor" || scope.last) throw new Error("anchor must stay a non-last child");
 
-// depth-3 thought toggle
+// depth-3 thought toggle (settled: the timing below marks 1001 completed,
+// so the click takes the persistent openThoughts path, not the stream one)
+noteThinkingTiming(1001, { startedAt: 1001, completedAt: 17501 });
 toggleThought(1001);
 if (!tree.branchScope(1001).contentOpen) throw new Error("thought toggle must open the branch");
 toggleThought(1001);
@@ -187,6 +189,50 @@ const settledHeader = tree.batchHeaderLine(0);
 if (settledHeader.includes("▾") || !settledHeader.includes("▸")) throw new Error("settled closed header must show ▸");
 if (!settledHeader.includes("Thought for 46.5s")) throw new Error(`settled header must sum branch durations: ${JSON.stringify(settledHeader)}`);
 if (!settledHeader.includes("Ran 2 tool calls")) throw new Error("settled header lost its tool count");
+resetToolGroups();
+
+// ── Streaming thought click: persistent expand + follow mode ──
+// Clicking a STREAMING thought expands it in full (like a tool call row) via
+// streamOpen, which PERSISTS into the settled row. The click also arms the
+// streamExpand follow mode: every following reasoning block streams full
+// until the next streaming click disarms it — but followed blocks settle to
+// the default fold. Distinct from ctrl+t: no per-node walk, and settled
+// rows keep the default depth-3 flags.
+resetToolGroups();
+trackThoughtStart(3000); // standalone streaming thought (pending anchor run)
+noteThinkingTiming(3000, { startedAt: 3000 }); // no completedAt → streaming
+handleActionUrl("pi-action://node/thought/3000");
+if (!tree.branchScope(3000).contentOpen) throw new Error("streaming click must expand the thought");
+trackGroupToolCall("sq1"); // next tool call: the thought anchors the new batch
+if (!tree.branchScope(3000).contentOpen) throw new Error("stream click must persist across new content");
+noteThinkingTiming(3000, { startedAt: 3000, completedAt: 4000 });
+toggleBatch(0); // open the settled anchor header
+if (!tree.branchScope(3000).contentOpen) throw new Error("clicked thought must stay open once settled");
+closeBatch();
+resetToolGroups();
+
+// the streaming click is a toggle, and the follow mode covers future blocks
+resetToolGroups();
+trackThoughtStart(3100);
+noteThinkingTiming(3100, { startedAt: 3100 });
+handleActionUrl("pi-action://node/thought/3100");
+handleActionUrl("pi-action://node/thought/3100");
+if (tree.branchScope(3100).contentOpen) throw new Error("second streaming click must collapse back to preview");
+trackGroupToolCall("sq2"); // the thought joins the running batch as a branch
+handleActionUrl("pi-action://node/thought/3100");
+if (!tree.branchScope(3100).contentOpen) throw new Error("streaming branch click must expand");
+trackThoughtStart(3200); // a following thought, never clicked itself
+noteThinkingTiming(3200, { startedAt: 3200 });
+if (!tree.branchScope(3200).contentOpen) throw new Error("follow mode must stream following thoughts full without a click");
+closeBatch(); // visible text / user message / agent_end: mode survives
+if (!tree.branchScope(3100).contentOpen) throw new Error("clicked branch must stay open across batch close");
+noteThinkingTiming(3200, { startedAt: 3200, completedAt: 3300 });
+if (tree.branchScope(3200).contentOpen) throw new Error("follow mode must not persist a followed block into settle");
+// settled click semantics untouched
+handleActionUrl("pi-action://node/thought/3200");
+if (!tree.branchScope(3200).contentOpen) throw new Error("settled toggle must still open");
+handleActionUrl("pi-action://node/thought/3200");
+if (tree.branchScope(3200).contentOpen) throw new Error("settled toggle must still close");
 resetToolGroups();
 
 // ── ctrl+o walk: expand/collapse every node ─────────────────────
@@ -1028,6 +1074,67 @@ if (formatStreamingThinkingSeconds(90_000) !== "1m 30s") throw new Error("format
 		if (!kinds.includes("RenderedThinkingSection")) {
 			throw new Error(`folded reasoning must be a RenderedThinkingSection (fold fell back to native): ${JSON.stringify(kinds)}`);
 		}
+	} finally {
+		foldPatch.dispose();
+	}
+}
+
+// Streaming click → full + follow mode: with the thought still streaming
+// (no completedAt), the streamOpen flag renders ALL reasoning lines through
+// the fold renderer (same interaction as clicking a tool call row) and
+// persists across new content. The armed streamExpand mode also renders a
+// FOLLOWING streaming thought in full without its own click; the next
+// streaming click collapses that row and disarms the mode.
+{
+	const foldPatch = installThinkingFoldPatch({});
+	try {
+		resetToolGroups();
+		initTheme("dark"); // Markdown rendering needs pi's theme singleton
+		const lines = Array.from({ length: 8 }, (_, i) => `reasoning line ${i + 1}`);
+		const streamMsg = {
+			role: "assistant",
+			timestamp: 5100,
+			content: [{ type: "thinking", thinking: lines.join("\n") }],
+		};
+		foldPatch.beginMessage(streamMsg, 0); // streaming: no completeMessage
+		const renderThink = (msg) => {
+			const component = new AssistantMessageComponent(msg, false);
+			const section = component.contentContainer.children.find(
+				(child) => child.constructor.name === "RenderedThinkingSection",
+			);
+			if (!section) throw new Error(`streaming think must fold (no MouseRegion fallback): ${JSON.stringify(component.contentContainer.children.map((c) => c.constructor.name))}`);
+			return section.render(100).join("\n");
+		};
+		// default streaming behavior: preview (last 5 lines) — early lines hidden
+		if (renderThink(streamMsg).includes("reasoning line 1")) throw new Error("streaming preview must hide early lines");
+		handleActionUrl("pi-action://node/thought/5100"); // streaming click → full
+		const full = renderThink(streamMsg);
+		if (!full.includes("reasoning line 1") || !full.includes("reasoning line 8")) {
+			throw new Error(`streaming click must render the reasoning in full: ${JSON.stringify(full)}`);
+		}
+		handleActionUrl("pi-action://node/thought/5100"); // toggle back to preview
+		if (renderThink(streamMsg).includes("reasoning line 1")) throw new Error("second streaming click must return to preview");
+		handleActionUrl("pi-action://node/thought/5100"); // expand again…
+		trackGroupToolCall("sq3"); // …then new content must NOT quash it
+		if (!renderThink(streamMsg).includes("reasoning line 1")) throw new Error("stream expansion must persist across new content");
+		// follow mode: a second streaming thought renders full without a click
+		const streamMsg2 = {
+			role: "assistant",
+			timestamp: 5200,
+			content: [{ type: "thinking", thinking: lines.join("\n") }],
+		};
+		foldPatch.beginMessage(streamMsg2, 0);
+		if (!renderThink(streamMsg2).includes("reasoning line 1")) throw new Error("follow mode must render following thoughts full");
+		handleActionUrl("pi-action://node/thought/5200"); // click collapses it and disarms the mode
+		if (renderThink(streamMsg2).includes("reasoning line 1")) throw new Error("streaming click on a followed row must collapse it");
+		const streamMsg3 = {
+			role: "assistant",
+			timestamp: 5300,
+			content: [{ type: "thinking", thinking: lines.join("\n") }],
+		};
+		foldPatch.beginMessage(streamMsg3, 0);
+		if (renderThink(streamMsg3).includes("reasoning line 1")) throw new Error("disarmed follow mode must return to streaming preview");
+		resetToolGroups();
 	} finally {
 		foldPatch.dispose();
 	}
