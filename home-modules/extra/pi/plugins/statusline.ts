@@ -148,8 +148,9 @@ function rainbowLabel(label: string, shift: number): string {
 function modelPart(model: { id: string; name?: string } | undefined): string {
   if (!model?.id) return "";
   // Prefer the registry display name, minus the "Vendor: " prefix (e.g.
-  // "Z.ai: GLM 5.3 Flash" -> "GLM 5.3 Flash")
-  const display = (model.name ?? model.id).replace(/^[^:]+:\s+/, "");
+  // "Z.ai: GLM 5.3 Flash" -> "GLM 5.3 Flash"), with dashes as spaces
+  // ("Kimi-K2.5" -> "Kimi K2.5")
+  const display = (model.name ?? model.id).replace(/^[^:]+:\s+/, "").replaceAll("-", " ");
   return `${BOLD}${PURPLE}◆ ${display}${RESET}`;
 }
 
