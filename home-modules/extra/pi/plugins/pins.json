@@ -663,16 +663,16 @@
       ]
     },
     "pi-context-view": {
-      "version": "0.5.0",
-      "hash": "sha512-9NID030s3Oqi0gH4NNVYxdayY2kKZ5Rv/gm429mTgjoKv0UKnzI82THLlAtoOVT/3lyBxn9LnqrR5wCabbB4Zw=="
+      "version": "0.5.2",
+      "hash": "sha512-qDsLmtN4yIr7cB4SncYZnSON0zCQi77ejRcyva2hE1a3Vk9IbWC1pqEBr9naCZivkusDFbbcqHV7Mu+7tNdqJQ=="
     },
     "pi-output-styles": {
       "version": "0.3.3",
       "hash": "sha512-SozWqMNv8vAro468zl8Pp8hHzOu5JLoncwuEz3k3UE/E8/jmFVteWMiKI0bQl9lXbZSHxQYrvL7S4UH/wyi6QQ=="
     },
     "pi-web-access": {
-      "version": "0.28.0",
-      "hash": "sha512-NMiRWiRXt46oNOoef+9WUN9IKzwADXuM9Wu6fPgMBScIVO8wQK3+dUV0CkmkvTHWADv8PBCqxcDSufVwqF++9Q==",
+      "version": "0.29.0",
+      "hash": "sha512-1l4sAWYkFhiBynJf/mXuxmCHxjhiAyWJ4rfQVFu8UPa0JQhCS9oXAmNXcL0Q1SfrO00plmb6L4IkypJ3n1Q4Kg==",
       "dependencies": [
         "@mozilla/readability",
         "defuddle",
@@ -690,8 +690,8 @@
       "hash": "sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg=="
     },
     "promise.try": {
-      "version": "2.0.1",
-      "hash": "sha512-7Lvq1rrywExCch6Uyw8P5G0HrgYs1u2rxY+0HFBMoA5IqndrJrSGc+ybRnPY1N78F8x+j9BaOWNbg7bzTMG9NA==",
+      "version": "2.0.2",
+      "hash": "sha512-v52t0zwjhZX4x52T69jDMO11oKAt6l7NosmY+H+3MD7s16iXUYbFrA+DOcW5rvl+mBIWJAFbbTaExDxPUgaowg==",
       "dependencies": [
         "call-bind",
         "define-properties",

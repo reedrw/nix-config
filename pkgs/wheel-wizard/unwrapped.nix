@@ -2,13 +2,13 @@
 
 buildDotnetModule (self: {
   pname = "wheel-wizard-unwrapped";
-  version = "2.5.5";
+  version = "2.5.6";
 
   src = fetchFromGitHub {
     owner = "TeamWheelWizard";
     repo = "WheelWizard";
     rev = "v${self.version}";
-    sha256 = "sha256-pzo2x4pMdsCkZRMMNro8PosOhy1kLhLK+uiNJJ/9fwk=";
+    sha256 = "sha256-jTCHHnba/BCdOYOw9zedkJWdp8MuRrxJKbBHXCzU9I4=";
   };
 
   projectFile = "WheelWizard.sln";
