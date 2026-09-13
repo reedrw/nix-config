@@ -39,7 +39,11 @@ import {
 	CODING_TOOLS,
 	codingAnim,
 	pickClick,
+	pickError,
 	pickIdleChain,
+	pickSuccess,
+	pickTidying,
+	pickWaiting,
 	thinkingAnim,
 	type PetState,
 } from "./lib/pet/anim.ts";
@@ -568,6 +572,8 @@ export class PetWidget implements Component {
 	private stateAnim(): string {
 		if (this.state === "thinking") return thinkingAnim;
 		if (this.state === "coding") return codingAnim;
+		if (this.state === "waiting") return pickWaiting(this.available) ?? thinkingAnim;
+		if (this.state === "tidying") return pickTidying(this.available) ?? codingAnim;
 		return this.nextIdle() ?? thinkingAnim;
 	}
 
@@ -602,6 +608,26 @@ export class PetWidget implements Component {
 		this.state = state;
 		if (this.interaction) return; // tick resumes the state anim when it ends
 		this.play(this.stateAnim());
+	}
+
+	/**
+	 * One-shot terminal-state animation (success / error at turn end, waiting).
+	 * Plays once over the current state, then the state animation resumes —
+	 * same semantics as the original's 终态 animations.
+	 */
+	playOnce(name: string | null): void {
+		if (!name || this.disposed || !this.available.has(name)) return;
+		this.interaction = name;
+		this.play(name);
+	}
+
+	/** Terminal work-status one-shots (pick from inside the widget). */
+	playSuccess(): void {
+		this.playOnce(pickSuccess(this.available));
+	}
+
+	playError(): void {
+		this.playOnce(pickError(this.available));
 	}
 
 	handleMouse(event: TuiMouseEvent): { handled: boolean } | undefined {
@@ -857,6 +883,35 @@ export default function petExtension(pi: ExtensionAPI) {
 		if (CODING_TOOLS.has(event.toolName)) {
 			petRef()?.widget.setState("coding");
 		}
+	});
+
+	// Waiting tier: pi is blocked on a user-facing prompt (approval, select,
+	// input) — she paces back and forth until it's answered.
+	pi.on("ui_prompt_start", () => {
+		const widget = petRef()?.widget;
+		if (!widget) return;
+		widget.setState("waiting");
+	});
+	pi.on("ui_prompt_end", () => {
+		const widget = petRef()?.widget;
+		if (!widget) return;
+		// Resume whatever the run was doing (thinking/coding) or idle.
+		widget.setState("idle");
+	});
+
+	// Terminal states at run end: celebrate on success, sulk on error —
+	// one-shot, then back to idle (the original's 终态 semantics).
+	pi.on("agent_end", (event) => {
+		const widget = petRef()?.widget;
+		if (!widget) return;
+		const last = [...event.messages].reverse().find((m) => m.role === "assistant");
+		const stop = (last as { stopReason?: string } | undefined)?.stopReason;
+		if (stop === "error") {
+			widget.playError();
+		} else if (stop === "stop" || stop === "aborted") {
+			widget.playSuccess();
+		}
+		widget.setState("idle");
 	});
 
 	pi.on("agent_settled", () => {

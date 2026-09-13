@@ -7,7 +7,7 @@
 // omitted — they need the pet to travel across the screen, which the terminal
 // overlay can do later via offset animation, but v1 stays put.
 
-export type PetState = "idle" | "thinking" | "coding";
+export type PetState = "idle" | "thinking" | "coding" | "waiting" | "tidying";
 
 /** Weighted idle-chain entry: either a category of animations or a fixed one. */
 interface ChainEntry {
@@ -111,6 +111,27 @@ export function pickIdleChain(available: Set<string>, avoid?: string): string | 
 
 export function pickClick(available: Set<string>): string | null {
 	return pick(CLICK_ANIMS, available);
+}
+
+// ---- Work status (工作状态) ----
+// The original's six tiers: thinking / working / tidying / waiting / success /
+// error, with one-shot animations for the terminal states.
+const SUCCESS_ANIMS = ["工作状态-雀跃庆祝"];
+const ERROR_ANIMS = ["工作状态-垂头叹气冒汗"];
+const WAITING_ANIMS = ["工作状态-原地踱步张望"];
+const TIDYING_ANIMS = ["工作状态-清点归档"];
+
+export function pickSuccess(available: Set<string>): string | null {
+	return pick(SUCCESS_ANIMS, available);
+}
+export function pickError(available: Set<string>): string | null {
+	return pick(ERROR_ANIMS, available);
+}
+export function pickWaiting(available: Set<string>): string | null {
+	return pick(WAITING_ANIMS, available);
+}
+export function pickTidying(available: Set<string>): string | null {
+	return pick(TIDYING_ANIMS, available);
 }
 
 export const dragAnim = DRAG_ANIM;
