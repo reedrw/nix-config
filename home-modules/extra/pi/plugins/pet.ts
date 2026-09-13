@@ -49,7 +49,7 @@ import {
 	thinkingAnim,
 	type PetState,
 } from "./lib/pet/anim.ts";
-import { buildTransmitSequence, deleteImageLine, deletePlacementLine, placementLine } from "./lib/pet/kitty.ts";
+import { buildTransmitChunks, deleteImageLine, deletePlacementLine, placementLine } from "./lib/pet/kitty.ts";
 import { installTmuxPassthrough, outerTerminalHasKittyGraphics } from "./lib/pet/tmux.ts";
 import { base16Fg } from "./lib/custom-ui.ts";
 
@@ -167,12 +167,24 @@ function normalizeWhisperText(text: string): string {
 	return out;
 }
 
-// Display width for bubble layout: East Asian Wide/Fullwidth chars take two
-// terminal columns (she may still slip a Chinese word into an English line).
+// Display width for bubble layout: East Asian Wide/Fullwidth chars AND emoji
+// take two terminal columns (she may slip a Chinese word or an emoji into a
+// line), while variation selectors and zero-width joiners (the emoji's
+// ASCII-ish guts) take none. Miscounting either way pushes the bubble's
+// right border out of alignment. Note the legacy symbol range (arrows, ☀,
+// ♥, … U+2190–2BFF) is East-Asian-AMBIGUOUS — 1 cell in Western terminals,
+// so it deliberately stays in the 1-column bucket.
 function textWidth(s: string): number {
 	let w = 0;
 	for (const ch of s) {
 		const code = ch.codePointAt(0) ?? 0;
+		if (
+			code === 0x200d || // ZWJ
+			code === 0xfe0f || // VS16 (emoji presentation selector)
+			code === 0xfe0e // VS15 (text presentation selector)
+		) {
+			continue; // zero-width
+		}
 		if (
 			(code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
 			(code >= 0x2e80 && code <= 0xa4cf) || // CJK radicals .. Yi
@@ -181,6 +193,8 @@ function textWidth(s: string): number {
 			(code >= 0xfe30 && code <= 0xfe4f) || // CJK compatibility forms
 			(code >= 0xff00 && code <= 0xff60) || // fullwidth forms
 			(code >= 0xffe0 && code <= 0xffe6) || // fullwidth signs
+			(code >= 0x1f300 && code <= 0x1faff) || // emoji (misc symbols .. supplemental)
+			(code >= 0x1f1e6 && code <= 0x1f1ff) || // regional indicators (flags)
 			(code >= 0x20000 && code <= 0x3fffd) // CJK ext B+
 		) {
 			w += 2;
@@ -256,9 +270,17 @@ function makeWhisperGenerator(source: WhisperContextSource): (turnEnd: boolean) 
 			}),
 		});
 		if (message.stopReason === "error") throw new Error(message.errorMessage ?? "whisper failed");
-		const text = extractMessageText(message).trim().replace(/^"|"$/g, "");
-		if (!text) throw new Error("empty whisper");
-		return text.slice(0, WHISPER_MAX_CHARS);
+		const raw = extractMessageText(message).trim().replace(/^"|"$/g, "");
+		if (raw.length === 0) throw new Error("empty whisper");
+		// Cap the line, but never mid-word: cut back to the last space and mark
+		// the trim (a guillotined tail reads as a render bug — see the "inta…"
+		// incident). Counted in UTF-16 units, so an emoji spends 2 of the budget.
+		let text = raw;
+		if (text.length > WHISPER_MAX_CHARS) {
+			const cut = text.lastIndexOf(" ", WHISPER_MAX_CHARS);
+			text = (cut > 0 ? text.slice(0, cut) : text.slice(0, WHISPER_MAX_CHARS)).replace(/[\s,.;:—-]+$/, "") + "…";
+		}
+		return text;
 	};
 }
 
@@ -472,18 +494,19 @@ export class PetWidget implements Component {
 		this.animEndsAt = Date.now() + frames.length * gapMs;
 		this.sizeCols = sizeCols;
 		this.sizeRows = sizeRows;
-		// Transmit + start the loop OUTSIDE pi's render pipeline, written
-		// asynchronously in yielded chunks: a multi-MB single write makes tmux
-		// and kitty parse/decode the whole burst in one go, stalling input.
-		// The placement line only swaps in once the data is fully sent — a
-		// placement arriving before its image data would be dropped by kitty
-		// (q=2 hides the error) and stay blank until the next repaint. Until
-		// then the previous animation (still cached) keeps showing; its
-		// placement is retired in the completion callback.
+		// Transmit + start the loop OUTSIDE pi's render pipeline, one FRAME per
+		// burst (a frame's m=1 chain must stay contiguous — see writeYielding:
+		// an interleaved transfer would have its continuation chunks merged
+		// into whatever transmission is in progress). The placement line only
+		// swaps in once the data is fully sent — a placement arriving before
+		// its image data would be dropped by kitty (q=2 hides the error) and
+		// stay blank until the next repaint. Until then the previous animation
+		// (still cached) keeps showing; its placement is retired in the
+		// completion callback.
 		const prevId = this.displayedId;
 		this.displayedId = null;
 		this.txInFlight = name;
-		this.writeYielding(buildTransmitSequence({ imageId: id, frames, gapMs }), () => {
+		this.writeYielding(buildTransmitChunks({ imageId: id, frames, gapMs }), () => {
 			this.txInFlight = null;
 			if (this.disposed) return;
 			// A later play() took over the display while we were transmitting —
@@ -510,43 +533,22 @@ export class PetWidget implements Component {
 	}
 
 	/**
-	 * Write a large APC payload in chunks, yielding to the event loop between
-	 * writes so keystroke processing and pi's own rendering aren't starved by
-	 * a single multi-megabyte stdout burst. Chunks are whole APC sequences, so
-	 * interleaving with pi's writes (or a concurrent transmit) is safe — APCs
-	 * carry no cursor state.
+	 * Write animation frames in bursts, yielding to the event loop between
+	 * FRAMES (never mid-frame): kitty's chunked-transfer state machine
+	 * attributes continuation chunks — which carry no image id — to the
+	 * transmission in progress, so yielding inside a frame's m=1 chain lets
+	 * another writer's transfer (an image embed from custom-ui, pi's own
+	 * renderImage) interleave and corrupt both streams. One contiguous frame
+	 * chain per burst makes interleaving impossible. Frame chains are whole
+	 * APCs, so the tmux passthrough wrapper's buffering stays stateless
+	 * across bursts.
 	 */
-	private writeYielding(seq: string, done: () => void): void {
-		// Split at APC boundaries, never mid-sequence: the tmux passthrough
-		// wrapper buffers an unterminated APC tail in anticipation of the next
-		// write — if pi's own render write arrived in between (setImmediate
-		// interleaving makes that routine), the wrapper would swallow pi's
-		// bytes into the APC payload and garble the frame. Whole sequences per
-		// chunk keep the wrapper stateless across our writes.
-		const CHUNK = 256 * 1024;
-		const chunks: string[] = [];
-		let start = 0;
-		let end = 0;
-		while (end < seq.length) {
-			const st = seq.indexOf("\x1b\\", end);
-			if (st === -1) {
-				// Tail without a terminator: emit as one final chunk (shouldn't
-				// happen — buildTransmitSequence emits only complete APCs).
-				chunks.push(seq.slice(start));
-				end = seq.length;
-				break;
-			}
-			end = st + 2;
-			if (end - start >= CHUNK || end === seq.length) {
-				chunks.push(seq.slice(start, end));
-				start = end;
-			}
-		}
+	private writeYielding(frames: string[], done: () => void): void {
 		let i = 0;
 		const step = (): void => {
 			if (this.disposed) return;
-			if (i < chunks.length) {
-				process.stdout.write(chunks[i]);
+			if (i < frames.length) {
+				process.stdout.write(frames[i]);
 				i += 1;
 				setImmediate(step);
 			} else {

@@ -3,13 +3,18 @@
 // The pet is a terminal-driven kitty animation. Transmission and placement are
 // deliberately SEPARATE channels:
 //
-//   - buildTransmitSequence(): root frame (a=t — transmit WITHOUT displaying,
-//     so no stray placement lands at the cursor) + animation frames (a=f) +
-//     loop start (a=a s=3 v=1 — kitty animates the image itself, with zero
-//     further work from pi). Written directly to stdout when an animation is
-//     transmitted for the first time; pet.ts keeps transmitted animations
-//     alive in an LRU and replays them placement-only, so old image data is
-//     freed by the cache's eviction, not here.
+//   - buildTransmitChunks(): per-frame chunk chains (root frame a=t —
+//     transmit WITHOUT displaying, so no stray placement lands at the cursor;
+//     animation frames a=f; loop start a=a s=3 v=1 — kitty animates the image
+//     itself, with zero further work from pi). Returned as ONE STRING PER
+//     FRAME: a frame's m=1 continuation chain must be written in a single
+//     stdout burst (kitty attributes continuation chunks — which carry no
+//     image id — to the transmission in progress, so an interleaved transfer
+//     from another writer mid-chain corrupts both). Written directly to
+//     stdout when an animation is transmitted for the first time; pet.ts
+//     keeps transmitted animations alive in an LRU and replays them
+//     placement-only, so old image data is freed by the cache's eviction,
+//     not here.
 //   - placementLine(): a tiny placement-only image line returned by the
 //     overlay component's render(). pi's alt-screen renderer recognizes
 //     \x1b_G lines, caches uploaded image ids, and re-emits placements on
@@ -54,23 +59,31 @@ export interface TransmitOptions {
 }
 
 /**
- * Build the one-shot transmit + loop-start sequence for an animation. Written
- * to stdout directly (never rendered): APC sequences carry no cursor movement,
- * so interleaving with pi's output frames is safe.
+ * Build the transmit + loop-start sequences for an animation, ONE STRING PER
+ * FRAME (frame 0 transmits with a=t, the rest append with a=f; the loop-start
+ * controls ride with the last frame). Each string is a complete m=1 chunk
+ * chain that must be written in a single stdout burst — splitting a chain
+ * across event-loop turns lets another writer's kitty transfer interleave,
+ * and kitty attributes continuation chunks to whatever transmission is in
+ * progress, corrupting both. Written to stdout directly (never rendered): APC
+ * sequences carry no cursor movement, so interleaving whole chains with pi's
+ * output frames is safe.
  */
-export function buildTransmitSequence(opts: TransmitOptions): string {
+export function buildTransmitChunks(opts: TransmitOptions): string[] {
 	const { imageId, frames, gapMs } = opts;
-	// lowercase a=t transmits WITHOUT displaying (uppercase T would also place
-	// the image at the current cursor position — a stray ghost placement).
-	let seq = chunked(`a=t,i=${imageId},f=100,q=2`, frames[0]!);
-	for (let i = 1; i < frames.length; i++) {
-		seq += chunked(`a=f,i=${imageId},f=100,q=2,z=${gapMs}`, frames[i]!, true);
-	}
+	const out = frames.map((b64, i) =>
+		// lowercase a=t transmits WITHOUT displaying (uppercase T would also
+		// place the image at the current cursor position — a stray ghost
+		// placement).
+		i === 0
+			? chunked(`a=t,i=${imageId},f=100,q=2`, b64)
+			: chunked(`a=f,i=${imageId},f=100,q=2,z=${gapMs}`, b64, true)
+	);
 	// Root frame gap (a=f's z only sets gaps for frames 2..N), then run the
 	// loop forever (s=3, v=1).
-	seq += `\x1b_Ga=a,i=${imageId},r=1,z=${gapMs},q=2\x1b\\`;
-	seq += `\x1b_Ga=a,i=${imageId},s=3,v=1,q=2\x1b\\`;
-	return seq;
+	out[out.length - 1] += `\x1b_Ga=a,i=${imageId},r=1,z=${gapMs},q=2\x1b\\`;
+	out[out.length - 1] += `\x1b_Ga=a,i=${imageId},s=3,v=1,q=2\x1b\\`;
+	return out;
 }
 
 /**
