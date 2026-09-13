@@ -11,11 +11,12 @@
 //   /pet [small|normal|large]  — toggle the pet above the prompt input (a
 //                                second /pet, or clicking the 🐋 in the
 //                                statusline footer, stops it)
-//   /pet-whisper [on|off|now]  — periodic AI-generated mutterings in a speech
-//                                bubble over her head (port of the original's
-//                                碎碎念 whisper feature; default on, 5 min
-//                                cycle, bubble lingers 10 s), or trigger one
-//                                immediately with "now"
+//   /pet-whisper [on|off|now]  — AI-generated mutterings in a speech bubble
+//                                over her head (port of the original's 碎碎念
+//                                whisper feature; default on — after every
+//                                agent turn plus a 5 min idle cycle, bubble
+//                                lingers 10 s), or trigger one immediately
+//                                with "now"
 //
 // Requires fullscreen mode and a kitty-graphics terminal (kitty, Ghostty,
 // WezTerm, Warp). Works inside tmux (`allow-passthrough on`) via the stdout
@@ -138,10 +139,11 @@ const WHISPER_MAX_CHARS = 90;
 //  self-explanation, no rambling. Adapted: she's a digital maid and the
 //  personification of the coding agent itself, and the person at the
 //  keyboard is just that — a user, not a "master".
-const WHISPER_SYSTEM = `You are a little digital maid — the personification of the coding agent running in this terminal. Every now and then you mutter a line to yourself. Speak naturally and casually — one short line (max 12 words), gentle and sweet with a bit of playfulness. Talk like a real person, don't ramble, don't explain yourself. Occasionally you may glance at the coding work going on in the session and sigh about it.`;
+const WHISPER_SYSTEM = `You are a little digital maid — the personification of the coding agent running in this terminal. Every now and then you mutter a line to yourself. Speak naturally and casually — one short line (max 12 words), gentle and sweet with a bit of playfulness. Talk like a real person, don't ramble, don't explain yourself, and don't mention tools or commands — react to what the work was ABOUT. Occasionally you may glance at the coding work going on in the session and sigh about it.`;
 // The original's user-side instruction ("随便说一句日常碎碎念，一句就好，
 // 20字以内。"), translated; the session digest is appended when present.
 const WHISPER_USER = `Just say a random everyday muttering — one line, max 12 words.`;
+const WHISPER_USER_TURN_END = `The conversation just finished a turn — react to what it was about (not the mechanics). One line, max 12 words.`;
 
 // Models love typographic punctuation (’ … –), but those are East Asian
 // "ambiguous width" — the terminal may render them 2 columns wide while
@@ -213,7 +215,8 @@ function extractMessageText(message: { content: unknown }): string {
 
 interface WhisperContextSource {
 	model: { provider: string; id: string } | undefined;
-	recentActivityDigest(): string;
+	/** turnEnd: the digest feeds a whisper right after an agent turn. */
+	recentActivityDigest(turnEnd?: boolean): string;
 }
 
 /**
@@ -221,18 +224,21 @@ interface WhisperContextSource {
  * turns a brief digest of the main agent's recent activity into one line.
  * Failures are silent — the whisper is cosmetic.
  */
-function makeWhisperGenerator(source: WhisperContextSource): () => Promise<string> {
+function makeWhisperGenerator(source: WhisperContextSource): (turnEnd: boolean) => Promise<string> {
 	// The whisper call is its own one-shot conversation — providers that route
 	// by session (opencode-go's x-opencode-session) get a dedicated id.
 	const sessionId = randomUUID();
-	return async () => {
+	return async (turnEnd) => {
 		const model = source.model;
 		if (!model) throw new Error("no model");
 		const runtime = await sharedModelRuntime();
 		const digest = source.recentActivityDigest();
+		// After a turn she should react to the RESULT, not the mechanics —
+		// the digest is shaped accordingly and the prompt says so.
+		const base = turnEnd ? WHISPER_USER_TURN_END : WHISPER_USER;
 		const userText = digest
-			? `${WHISPER_USER}\n(What the user has been busy with: ${digest})`
-			: WHISPER_USER;
+			? `${base}\n(What just happened: ${digest})`
+			: base;
 		const message = await runtime.completeSimple(model as never, {
 			systemPrompt: WHISPER_SYSTEM,
 			messages: [
@@ -289,7 +295,9 @@ export class PetWidget implements Component {
 	private whisperBusy = false;
 	private whisperEnabled = true;
 	private whisperTimer: ReturnType<typeof setInterval> | null = null;
-	private whisperGenerator: (() => Promise<string>) | null = null;
+	private whisperGenerator: ((turnEnd: boolean) => Promise<string>) | null = null;
+	/** Set by whisperAfterTurn so the generator prompt matches the moment. */
+	private whisperTurnEnd = false;
 
 	constructor(tui: TUI, requestRender: () => void, targetRows: number) {
 		this.tui = tui;
@@ -333,7 +341,7 @@ export class PetWidget implements Component {
 
 	// ---- Whispers ----
 
-	setWhisperGenerator(gen: () => Promise<string>): void {
+	setWhisperGenerator(gen: (turnEnd: boolean) => Promise<string>): void {
 		this.whisperGenerator = gen;
 	}
 
@@ -358,7 +366,8 @@ export class PetWidget implements Component {
 			this.play(thinkingAnim);
 		}
 		try {
-			const text = await this.whisperGenerator();
+			const text = await this.whisperGenerator(this.whisperTurnEnd);
+			this.whisperTurnEnd = false;
 			if (this.disposed) return false;
 			this.whisperText = text;
 			this.whisperUntil = Date.now() + WHISPER_TTL_MS;
@@ -374,6 +383,13 @@ export class PetWidget implements Component {
 	private async whisperCycle(): Promise<void> {
 		if (!this.whisperEnabled || this.whisperText !== null) return;
 		await this.whisperNow();
+	}
+
+	/** Whisper at the end of an agent turn (no-op when whispers are off). */
+	whisperAfterTurn(): void {
+		if (!this.whisperEnabled) return;
+		this.whisperTurnEnd = true;
+		void this.whisperNow();
 	}
 
 	private clearWhisper(): void {
@@ -758,27 +774,57 @@ function retractPetBridge(): void {
 const WIDGET_KEY = "pet";
 
 // Brief digest of the main agent's recent activity for whisper generation.
+// Shaped so a tiny flash model reacts to the WORK, not the mechanics:
+// - the user's actual question (head),
+// - the FINAL assistant message's TAIL — conclusions live at the end of a
+//   response; the head is preamble like "Let me look at the results…",
+//   which is why whispers used to parrot tool usage instead of content,
+// - tool calls collapsed to a COUNT (names invite "time to run bash!"
+//   mutterings; what she ran is not what the turn was about).
 // Defensive role checks — session entries are a wide union.
 function recentActivityDigest(sm: { getEntries(): unknown[] }): string {
+	const entries = sm.getEntries();
 	const parts: string[] = [];
-	for (const entry of sm.getEntries().slice(-8)) {
-		if (!entry || typeof entry !== "object") continue;
-		const e = entry as { type?: string; message?: { role?: string; content?: unknown } };
-		const msg = e.message;
+	// Last real user question (head is enough — it's usually one line).
+	for (let i = entries.length - 1; i >= 0; i--) {
+		const e = entries[i] as { message?: { role?: string; content?: unknown } } | null;
+		const msg = e?.message;
 		if (!msg || typeof msg !== "object") continue;
 		if (msg.role === "user") {
-			const text = extractMessageText(msg as { content: unknown });
-			if (text) parts.push(`user asked: ${text.slice(0, 80)}`);
-		} else if (msg.role === "assistant") {
-			const text = extractMessageText(msg as { content: unknown });
-			const content = Array.isArray(msg.content) ? msg.content : [];
-			const tools = content
-				.filter((b): b is { type: "toolCall"; name: string } =>
-					Boolean(b) && typeof b === "object" && (b as { type?: unknown }).type === "toolCall")
-				.map((b) => b.name);
-			const bits = [text.slice(0, 80), tools.length ? `[tools: ${tools.join(", ")}]` : ""].filter(Boolean);
-			if (bits.length) parts.push(`agent: ${bits.join(" ")}`);
+			const text = extractMessageText(msg as { content: unknown }).trim();
+			if (text) parts.push(`the user asked: ${text.slice(0, 120)}`);
+			break;
 		}
+	}
+	// Tool-call count since that question (a number, not names).
+	let tools = 0;
+	let sawUser = false;
+	for (let i = entries.length - 1; i >= 0; i--) {
+		const e = entries[i] as { message?: { role?: string; content?: unknown } } | null;
+		const msg = e?.message;
+		if (!msg || typeof msg !== "object") continue;
+		if (msg.role === "user") {
+			sawUser = true;
+			break;
+		}
+		if (msg.role === "assistant") {
+			const content = Array.isArray(msg.content) ? msg.content : [];
+			tools += content.filter((b) =>
+				Boolean(b) && typeof b === "object" && (b as { type?: unknown }).type === "toolCall").length;
+		}
+	}
+	if (sawUser && tools > 0) parts.push(tools === 1 ? "one tool ran" : `${tools} tools ran`);
+	// The response's tail: the last assistant message with actual text, last
+	// ~200 chars (cut at a word boundary; skip tool-call-only messages).
+	for (let i = entries.length - 1; i >= 0; i--) {
+		const e = entries[i] as { message?: { role?: string; content?: unknown } } | null;
+		const msg = e?.message;
+		if (!msg || typeof msg !== "object" || msg.role !== "assistant") continue;
+		const text = extractMessageText(msg as { content: unknown }).trim();
+		if (!text) continue;
+		const tail = text.length > 200 ? text.slice(-200).replace(/^\S+\s*/, "") : text;
+		parts.push(`the response ended with: …${tail.replace(/\s+/g, " ")}`);
+		break;
 	}
 	return parts.join("\n");
 }
@@ -938,6 +984,10 @@ export default function petExtension(pi: ExtensionAPI) {
 			widget.playSuccess();
 		}
 		widget.setState("idle");
+		// She comments on the turn she just watched (whisperOn/off respected
+		// inside; the success/error one-shot is already playing, so no
+		// thinking-anim fight — whisperNow only ponders from pure idle).
+		widget.whisperAfterTurn();
 	});
 
 	pi.on("agent_settled", () => {
