@@ -22,6 +22,9 @@
 }:
 let
   rev = "7d3aa2defc4fe548ad389f5c0f1a8dd793ae309e";
+  # The original dsh-pet (which pi-dsh-pet forked its assets from) ships 15
+  # event animations the fork omits: 6 balance (余额), 6 work-status
+  # (工作状态), 3 speaking (碎碎念). Merged into the same manifest.
   fps = 10;
 in
 stdenvNoCC.mkDerivation {
@@ -35,12 +38,19 @@ stdenvNoCC.mkDerivation {
     hash = "sha256-sw9iZM2y4SQQK1QrWTm2I4s7h6Sp1oZBZxTiChP+k38=";
   };
 
+  dshSrc = fetchFromGitHub {
+    owner = "PC2005-cloud";
+    repo = "dsh-pet";
+    rev = "814b0e47812dfd51dbc2df4ca272b57403c5e9cd";
+    hash = "sha256-91EteHFjHCoWsfv4D6szya6ZNBpwmXbrtppFVZvLgfE=";
+  };
+
   nativeBuildInputs = [ ffmpeg python3 ];
 
   buildPhase = ''
     runHook preBuild
     mkdir -p "$out"
-    python3 ${./build.py} "$src" "$out" ${toString fps}
+    python3 ${./build.py} "$src" "$out" ${toString fps} "$dshSrc/dsh-pet/assets/webm"
     runHook postBuild
   '';
 

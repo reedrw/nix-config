@@ -18,7 +18,11 @@
 # pads with spaces), so the band must hug the character — uncropped frames
 # would leave a large empty "hole" next to the pet.
 #
-# Usage: build.py <src> <out> <fps>
+# Usage: build.py <src> <out> <fps> [<extra-src> ...]
+# Each source dir must contain <src>/assets/thumb/*.webm (pi-dsh-pet layout)
+# or <src>/*.webm (dsh-pet layout, webm/ contents copied to its root).
+# Later sources fill in animations the earlier ones lack (SOMWHY's fork
+# omits the balance / work-status / speaking event animations).
 import json
 import os
 import re
@@ -28,6 +32,7 @@ import sys
 import zlib
 
 src, out, fps = sys.argv[1], sys.argv[2], int(sys.argv[3])
+extra_srcs = sys.argv[4:]
 TARGET_H = 320  # output pixel height (uniform character size across animations)
 MAX_FRAMES = 160
 KEY = "colorkey=0x000000:0.08:0.04"
@@ -92,11 +97,18 @@ def bbox(webm):
 
 
 manifest = {}
-thumbs = os.path.join(src, "assets", "thumb")
-for fname in sorted(os.listdir(thumbs)):
+sources = [(src, os.path.join(src, "assets", "thumb"))]
+for extra in extra_srcs:
+    sources.append((extra, extra))
+seen = set()
+for _src, thumbs in sources:
+  for fname in sorted(os.listdir(thumbs)):
     if not fname.endswith(".webm"):
         continue
     name = fname[:-5]
+    if name in seen:
+        continue
+    seen.add(name)
     webm = os.path.join(thumbs, fname)
     d = os.path.join(out, name)
     os.makedirs(d, exist_ok=True)
