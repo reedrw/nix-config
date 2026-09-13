@@ -12,6 +12,9 @@
 // dialog, which lives in pin-provider.ts + lib/openrouter.ts — including
 // the pin state and the request injection that enforces it.
 //
+// A whale (🐋) sits right-justified on the status line; clicking it toggles
+// the desktop pet (/pet) through pet.ts's globalThis toggle bridge.
+//
 // While the agent is working (between agent_start and agent_settled) the
 // effort label animates: the level's color pulses through grey text, and
 // "maximum" gets a rolling rainbow. A live tok/s meter (rolling 3s window
@@ -26,7 +29,7 @@
 import { execFileSync } from "node:child_process";
 import { basename } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { truncateToWidth } from "@earendil-works/pi-tui";
+import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 import { linkWrap, registerActionUrlHandler } from "./lib/custom-ui.ts";
 import {
 	ensureOpencodeUsage,
@@ -68,6 +71,12 @@ const TICK_MS = 120;
 // line's link (fullscreen only — linkWrap is inert otherwise, and pi never
 // sees the click in regular mode anyway).
 const ROUTING_URL = "pi-action://statusline/routing";
+
+// Right-aligned whale chip: clicking it toggles the desktop pet (/pet) via
+// pet.ts's globalThis bridge. Dim when the pet is away, bold cyan when it's
+// up; the pi-action link only fires in fullscreen, where the pet lives anyway.
+const PET_URL = "pi-action://statusline/pet";
+const WHALE = "🐋";
 
 // OpenRouter's billed cost for the captured routing line
 function fmtRoutingCost(cost: number): string {
@@ -290,6 +299,18 @@ export default function statuslineExtension(pi: ExtensionAPI) {
       }
       // fallbacks for the pin URLs — normally owned by pin-provider.ts via
       // the lib (its handler usually claims them first)
+      if (url === PET_URL) {
+        const bridge = (globalThis as Record<string, unknown>).__piPetToggle as
+          | { toggle: (ctx: unknown, args?: string) => Promise<void> }
+          | undefined;
+        if (!bridge) {
+          uiCtx?.ui.notify("pet extension not loaded", "error");
+        } else {
+          // The pet's own widget draws itself; a repaint refreshes the whale chip.
+          void Promise.resolve(bridge.toggle(uiCtx)).finally(() => tuiRef?.requestRender());
+        }
+        return true;
+      }
       if (url === PIN_URL) {
         expanded = true;
         ensureEndpointData();
@@ -471,9 +492,14 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                 }
                 parts.push(repo);
 
-                // single left-aligned line, like the Claude statusline
-                const line = parts.join(`${DIM}  |  ${RESET}`);
-                const lines = [truncateToWidth(line, width)];
+                // single left-aligned line, like the Claude statusline, with the
+                // pet-toggle whale pinned to the right edge (its own OSC 8 span —
+                // never nested inside another link)
+                const body = truncateToWidth(parts.join(`${DIM}  |  ${RESET}`), Math.max(0, width - 3));
+                const petOn = Boolean((globalThis as Record<string, unknown>).__piPetOverlay);
+                const whale = petOn ? `${BOLD}${CYAN}${WHALE}${RESET}` : `${DIM}${WHALE}${RESET}`;
+                const pad = Math.max(0, width - visibleWidth(body) - visibleWidth(whale));
+                const lines = [body + " ".repeat(pad) + linkWrap(whale, PET_URL)];
                 const routed = routing(); // before the local `routing` below shadows the lib import
                 if (expanded) {
                   const model = ctx.model as { provider?: string; id?: string; baseUrl?: string } | undefined;

@@ -8,8 +8,9 @@
 // unlike an overlay, whose band is padded with spaces over the transcript.
 //
 // Commands:
-//   /pet [small|normal|large]  — show the pet (above the prompt input)
-//   /pet-stop                  — close it
+//   /pet [small|normal|large]  — toggle the pet above the prompt input (a
+//                                second /pet, or clicking the 🐋 in the
+//                                statusline footer, stops it)
 //   /pet-whisper [on|off|now]  — periodic AI-generated mutterings in a speech
 //                                bubble over her head (port of the original's
 //                                碎碎念 whisper feature; default on, 5 min
@@ -24,7 +25,7 @@ import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { ModelRuntime } from "@earendil-works/pi-coding-agent";
 import {
 	allocateImageId,
@@ -734,6 +735,26 @@ function setPetRef(handle: PetHandle | null): void {
 	else delete (globalThis as Record<string, unknown>).__piPetOverlay;
 }
 
+// Cross-extension bridge: the statusline footer's 🐋 toggles the pet with the
+// session ctx it holds (ui.setWidget lives on the base ExtensionContext, so
+// this works outside command handlers). Re-registered on every load, so
+// /reload replaces the stale closure; identity-guarded teardown so the old
+// instance's session_shutdown can't clobber the new registration.
+interface PetToggleBridge {
+	toggle: (ctx: ExtensionContext, args?: string) => Promise<void>;
+}
+
+const petToggleBridge: PetToggleBridge = { toggle: (ctx, args) => togglePet(ctx, args ?? "") };
+
+function publishPetBridge(): void {
+	(globalThis as Record<string, unknown>).__piPetToggle = petToggleBridge;
+}
+
+function retractPetBridge(): void {
+	const g = globalThis as Record<string, unknown>;
+	if (g.__piPetToggle === petToggleBridge) delete g.__piPetToggle;
+}
+
 const WIDGET_KEY = "pet";
 
 // Brief digest of the main agent's recent activity for whisper generation.
@@ -762,75 +783,95 @@ function recentActivityDigest(sm: { getEntries(): unknown[] }): string {
 	return parts.join("\n");
 }
 
+/** Stop the running pet (if any). Safe to call from any ctx with a ui. */
+function stopPet(ctx: ExtensionContext): void {
+	const handle = petRef();
+	if (!handle) return;
+	setPetRef(null);
+	handle.widget.dispose(); // idempotent; also fires if pi replaces the widget
+	ctx.ui.setWidget(WIDGET_KEY, undefined);
+	ctx.ui.notify("Pet closed", "info");
+}
+
+/**
+ * Toggle the pet: stop it when running, otherwise start it with the given
+ * size argument. Shared by /pet and the statusline 🐋 bridge.
+ */
+async function togglePet(ctx: ExtensionContext, args: string): Promise<void> {
+	if (ctx.mode !== "tui") {
+		ctx.ui.notify("/pet requires interactive mode", "error");
+		return;
+	}
+	if (petRef()) {
+		stopPet(ctx);
+		return;
+	}
+	if (process.env.TMUX) {
+		// tmux swallows kitty graphics unless wrapped in DCS passthrough;
+		// install a stdout filter that wraps every kitty sequence (ours
+		// and pi's own image management) for the outer terminal. Only safe
+		// under tmux — a bare terminal can't unwrap `DCS tmux;`.
+		if (!outerTerminalHasKittyGraphics()) {
+			ctx.ui.notify("/pet in tmux needs a kitty-graphics outer terminal (kitty, Ghostty, WezTerm, Warp)", "error");
+			return;
+		}
+		installTmuxPassthrough();
+	} else if (getCapabilities().images !== "kitty") {
+		ctx.ui.notify("/pet needs a kitty-graphics terminal (kitty, Ghostty, WezTerm, Warp)", "error");
+		return;
+	}
+	const sizeArg = args.trim().toLowerCase();
+	const targetRows = SIZE_ROWS[sizeArg in SIZE_ROWS ? sizeArg : "normal"]!;
+
+	try {
+		loadManifest();
+	} catch (e) {
+		ctx.ui.notify(`pet assets missing: ${(e as Error).message}`, "error");
+		return;
+	}
+
+	ctx.ui.setWidget(WIDGET_KEY, (tui) => {
+		// Fullscreen only: the regular-mode renderer has no kitty placement
+		// cache, so image lines there would retransmit on every repaint.
+		const fullscreen =
+			(tui as unknown as { altScreenActive?: boolean }).altScreenActive !== undefined;
+		if (!fullscreen) {
+			ctx.ui.notify("/pet needs fullscreen mode", "error");
+			return {
+				render: () => [] as string[],
+				invalidate() {},
+			};
+		}
+		const widget = new PetWidget(tui, () => tui.requestRender(), targetRows);
+		// Whisper generation: one-shot LLM call seeded with a digest of
+		// the main agent's recent activity (captured ctx stays valid for
+		// the session — sessionManager is a live object).
+		if (ctx.model) {
+			const source = {
+				model: ctx.model,
+				recentActivityDigest: () => recentActivityDigest(ctx.sessionManager),
+			};
+			widget.setWhisperGenerator(makeWhisperGenerator(source));
+		}
+		setPetRef({ widget });
+		return widget;
+	});
+}
+
 export default function petExtension(pi: ExtensionAPI) {
 	pi.registerCommand("pet", {
-		description: "Show the desktop pet above the prompt (kitty graphics; fullscreen + kitty/Ghostty/WezTerm)",
+		description: "Toggle the desktop pet above the prompt input (kitty graphics; fullscreen + kitty/Ghostty/WezTerm)",
 		getArgumentCompletions: (prefix: string) => {
 			const sizes = ["small", "normal", "large"];
 			const items = sizes.filter((s) => s.startsWith(prefix)).map((s) => ({ value: s, label: s }));
 			return items.length > 0 ? items : null;
 		},
 		handler: async (args, ctx) => {
-			if (ctx.mode !== "tui") {
-				ctx.ui.notify("/pet requires interactive mode", "error");
-				return;
-			}
-			if (process.env.TMUX) {
-				// tmux swallows kitty graphics unless wrapped in DCS passthrough;
-				// install a stdout filter that wraps every kitty sequence (ours
-				// and pi's own image management) for the outer terminal. Only safe
-				// under tmux — a bare terminal can't unwrap `DCS tmux;`.
-				if (!outerTerminalHasKittyGraphics()) {
-					ctx.ui.notify("/pet in tmux needs a kitty-graphics outer terminal (kitty, Ghostty, WezTerm, Warp)", "error");
-					return;
-				}
-				installTmuxPassthrough();
-			} else if (getCapabilities().images !== "kitty") {
-				ctx.ui.notify("/pet needs a kitty-graphics terminal (kitty, Ghostty, WezTerm, Warp)", "error");
-				return;
-			}
-			if (petRef()) {
-				ctx.ui.notify("Pet already running — use /pet-stop first", "info");
-				return;
-			}
-			const sizeArg = (args ?? "").trim().toLowerCase();
-			const targetRows = SIZE_ROWS[sizeArg in SIZE_ROWS ? sizeArg : "normal"]!;
-
-			try {
-				loadManifest();
-			} catch (e) {
-				ctx.ui.notify(`pet assets missing: ${(e as Error).message}`, "error");
-				return;
-			}
-
-			ctx.ui.setWidget(WIDGET_KEY, (tui) => {
-				// Fullscreen only: the regular-mode renderer has no kitty placement
-				// cache, so image lines there would retransmit on every repaint.
-				const fullscreen =
-					(tui as unknown as { altScreenActive?: boolean }).altScreenActive !== undefined;
-				if (!fullscreen) {
-					ctx.ui.notify("/pet needs fullscreen mode", "error");
-					return {
-						render: () => [] as string[],
-						invalidate() {},
-					};
-				}
-				const widget = new PetWidget(tui, () => tui.requestRender(), targetRows);
-				// Whisper generation: one-shot LLM call seeded with a digest of
-				// the main agent's recent activity (captured ctx stays valid for
-				// the session — sessionManager is a live object).
-				if (ctx.model) {
-					const source = {
-						model: ctx.model,
-						recentActivityDigest: () => recentActivityDigest(ctx.sessionManager),
-					};
-					widget.setWhisperGenerator(makeWhisperGenerator(source));
-				}
-				setPetRef({ widget });
-				return widget;
-			});
+			await togglePet(ctx, args ?? "");
 		},
 	});
+
+	publishPetBridge();
 
 	pi.registerCommand("pet-whisper", {
 		description: "Toggle the pet's whispered mutterings, or trigger one now",
@@ -856,21 +897,6 @@ export default function petExtension(pi: ExtensionAPI) {
 			if (!ok) {
 				ctx.ui.notify("Whisper unavailable (no model, or one is already brewing)", "info");
 			}
-		},
-	});
-
-	pi.registerCommand("pet-stop", {
-		description: "Close the desktop pet",
-		handler: async (_args, ctx) => {
-			const handle = petRef();
-			if (!handle) {
-				ctx.ui.notify("No pet running", "info");
-				return;
-			}
-			setPetRef(null);
-			handle.widget.dispose(); // idempotent; also fires if pi replaces the widget
-			ctx.ui.setWidget(WIDGET_KEY, undefined);
-			ctx.ui.notify("Pet closed", "info");
 		},
 	});
 
@@ -919,6 +945,7 @@ export default function petExtension(pi: ExtensionAPI) {
 	});
 
 	pi.on("session_shutdown", (_event, ctx) => {
+		retractPetBridge();
 		const handle = petRef();
 		if (handle) {
 			setPetRef(null);
