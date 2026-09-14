@@ -37,6 +37,14 @@ GREEN = "\033[32m" if sys.stdout.isatty() else ""
 RED = "\033[31m" if sys.stdout.isatty() else ""
 DIM = "\033[2m" if sys.stdout.isatty() else ""
 RESET = "\033[0m" if sys.stdout.isatty() else ""
+# when piped (e.g. into the CI PR comment), emit lines prefixed with +/- so the
+# output renders with diff syntax highlighting inside a ```diff block
+DIFF_MODE = not sys.stdout.isatty()
+
+
+def out(kind, text):
+    """print a report line; 'add'/'del'/'ctx' map to +/-/space in diff mode"""
+    print(f"{ {'add': '+', 'del': '-', 'ctx': ' '}[kind] }{text}" if DIFF_MODE else text)
 
 
 def human(nbytes):
@@ -57,9 +65,15 @@ def closure(installable):
 
 
 def main():
-    if len(sys.argv) != 3:
+    global GREEN, RED, DIM, RESET, DIFF_MODE
+    args = sys.argv[1:]
+    DIFF_MODE = "--diff" in args
+    args = [a for a in args if a != "--diff"]
+    if len(args) != 2:
         sys.exit(__doc__)
-    old, new = closure(sys.argv[1]), closure(sys.argv[2])
+    if sys.stdout.isatty() and not DIFF_MODE:
+        GREEN, RED, DIM, RESET = "\033[32m", "\033[31m", "\033[2m", "\033[0m"
+    old, new = closure(args[0]), closure(args[1])
 
     def nv(path):
         return path.rsplit("/", 1)[-1].split("-", 1)[1]
@@ -98,6 +112,23 @@ def main():
                 parent[child] = n
                 q.append(child)
 
+    # same, but for the old closure (to explain removals)
+    old_refs = {p["path"]: set(p["references"]) for p in old}
+    old_referenced = {r for p in old for r in p["references"]}
+    old_toplevel = next(
+        p["path"]
+        for p in old
+        if not any(p["path"] in old_refs[q["path"]] for q in old if q["path"] != p["path"])
+    )
+    old_parent = {old_toplevel: None}
+    q = deque([old_toplevel])
+    while q:
+        n = q.popleft()
+        for child in old_refs.get(n, []):
+            if child not in old_parent:
+                old_parent[child] = n
+                q.append(child)
+
     old_by_nv = defaultdict(int)
     for p in old:
         old_by_nv[nv(p["path"])] += 1
@@ -125,12 +156,12 @@ def main():
         if cnt > new_cnt.get(nm, 0):
             old_versions_by_base[b].add(nm[len(b) + 1:])
 
-    def short_chain(path):
+    def short_chain(path, parents):
         """toplevel->path chain, plumbing squeezed out"""
         chain, node = [], path
         while node is not None:
             chain.append(deep_clean(node))
-            node = parent.get(node)
+            node = parents.get(node)
         chain.reverse()
         out = [nm for nm in chain if not PLUMBING.match(nm)]
         return [nm for i, nm in enumerate(out) if i == 0 or out[i - 1] != nm]
@@ -139,54 +170,83 @@ def main():
     new_versions = {p["path"] for p in added if old_by_nv[nv(p["path"])] == 0}
     for path in sorted(new_versions):
         cur, prev = tree, None
-        for nm in short_chain(path):
-            prev = cur.setdefault(nm, {"__leaves__": [], "__kids__": {}})
+        for nm in short_chain(path, parent):
+            prev = cur.setdefault(nm, {"__new__": [], "__gone__": [], "__kids__": {}})
             cur = prev["__kids__"]
-        prev.setdefault("__leaves__", []).append(path)
+        prev.setdefault("__new__", []).append(path)
+
+    # packages whose last version vanished (no version of the base remains):
+    # traced through the OLD closure and attached under the deepest node they
+    # share with the tree, so removals appear in red next to what dropped them
+    new_bases = {base(nm) for nm in new_cnt}
+    gone_paths = [
+        p["path"]
+        for p in removed
+        if not PLUMBING.match(deep_clean(p["path"])) and base(deep_clean(p["path"])) not in new_bases
+    ]
+    for path in sorted(gone_paths):
+        chain = short_chain(path, old_parent)
+        node, k = tree, 0
+        while k < len(chain) and chain[k] in node:
+            node = node[chain[k]]["__kids__"]
+            k += 1
+        prev = None
+        for nm in chain[k:]:
+            prev = node.setdefault(nm, {"__new__": [], "__gone__": [], "__kids__": {}})
+            node = prev["__kids__"]
+        prev.setdefault("__gone__", []).append(path)
 
     def transition(nm):
-        """'openssl 3.6.3 → 3.6.4 (+x MiB)' if an old version of this package existed"""
+        """('openssl 3.6.3 → 3.6.4 (+x MiB)', kind) — swaps are neutral; only
+        brand-new packages (no previous version at all) count as additions"""
         b = base(nm)
         newv = nm[len(b) + 1:]
         olds = sorted(v for v in old_versions_by_base.get(b, ()) if v != newv)
         delta = added_size.get(nm, 0) - removed_size.get(nm, 0)
         size = f" ({human(delta)})" if abs(delta) >= 8 * 1024 else ""
         if not olds:
-            return f"{GREEN}{nm}{RESET}{size}"
-        return f"{b} {RED}{', '.join(olds)}{RESET} → {GREEN}{newv}{RESET}{size}"
+            return f"{GREEN}{b} {newv}{RESET}{size}", "add"
+        return f"{b} {', '.join(olds)} → {newv}{size}", "ctx"
 
     total_old = sum(p.get("narSize", 0) for p in old)
     total_new = sum(p.get("narSize", 0) for p in new)
     churn = [p for p in added if p["path"] not in new_versions]
 
-    print(f"SIZE: {human(total_old)} → {human(total_new)} ({human(total_new - total_old)})")
-    print(
+    out("ctx", f"SIZE: {human(total_old)} → {human(total_new)} ({human(total_new - total_old)})")
+    out(
+        "ctx",
         f"{DIM}total: {len(added)} paths in, {len(removed)} out ({human(total_new - total_old)} net); "
-        f"omitted from tree: {len(churn)} same-version swaps{RESET}"
+        f"omitted from tree: {len(churn)} same-version swaps{RESET}",
     )
     print()
 
     def render(node, prefix="", depth=0):
-        lines = []
         entries = [k for k in sorted(node) if not k.startswith("__")]
         for i, nm in enumerate(entries):
-            kids = node[nm]["__kids__"]
+            nd = node[nm]
+            kids = nd["__kids__"]
             sub = [k for k in kids if not k.startswith("__")]
-            leaves = node[nm].get("__leaves__", [])
             last = i == len(entries) - 1
-            label = transition(nm) if leaves else nm
-            marker = f" {DIM}·{RESET}" if not leaves else ""
-            tail = f"   ({len(sub)} deps)" if len(sub) > 3 and depth >= 1 else ""
-            lines.append(f"{prefix}{'└── ' if last else '├── '}{label}{marker}{tail}")
             ext = "    " if last else "│   "
-            lines.extend(render(kids, prefix + ext, depth + 1))
-        return lines
+            if nd["__new__"]:
+                label, kind = transition(nm)
+                marker = ""
+            elif nd["__gone__"]:
+                b = base(nm)
+                delta = -removed_size.get(nm, 0)
+                size = f" ({human(delta)})" if abs(delta) >= 8 * 1024 else ""
+                label = f"{RED}{b} {nm[len(b) + 1:]}{RESET}{size}"
+                marker, kind = f" {DIM}✗{RESET}", "del"
+            else:
+                label, marker, kind = nm, f" {DIM}·{RESET}", "ctx"
+            tail = f"   ({len(sub)} deps)" if len(sub) > 3 and depth >= 1 else ""
+            out(kind, f"{prefix}{'└── ' if last else '├── '}{label}{marker}{tail}")
+            render(kids, prefix + ext, depth + 1)
 
     if tree:
-        for line in render(tree):
-            print(line)
+        render(tree)
     else:
-        print("No version transitions.")
+        out("ctx", "No version transitions.")
 
 
 if __name__ == "__main__":

@@ -138,8 +138,7 @@ jobs:
         git checkout "$(git rev-parse @~)"
         ./install.sh -v --build ${{ matrix.output }} -o result-old
         echo "diff_closure<<EOF" >> $GITHUB_ENV
-        # TODO remove pipe to sed when NixOS/nix#4626 is fixed
-        nix run .#why-diff -- ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
+        nix run .#why-diff -- --diff ./result-old ./result-new >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
       env:
         NIXPKGS_ALLOW_UNFREE: 1
@@ -150,7 +149,7 @@ jobs:
       with:
         message: |
           ### Closure diff for `${{ matrix.output }}`
-          ```
+          ```diff
           ${{ env.diff_closure }}
           ```
         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
