@@ -157,8 +157,13 @@ def main():
 
     total_old = sum(p.get("narSize", 0) for p in old)
     total_new = sum(p.get("narSize", 0) for p in new)
+    churn = [p for p in added if p["path"] not in new_versions]
 
     print(f"SIZE: {human(total_old)} → {human(total_new)} ({human(total_new - total_old)})")
+    print(
+        f"{DIM}total: {len(added)} paths in, {len(removed)} out ({human(total_new - total_old)} net); "
+        f"omitted from tree: {len(churn)} same-version swaps{RESET}"
+    )
     print()
 
     def render(node, prefix="", depth=0):
@@ -168,7 +173,6 @@ def main():
             kids = node[nm]["__kids__"]
             sub = [k for k in kids if not k.startswith("__")]
             leaves = node[nm].get("__leaves__", [])
-            sub = [k for k in kids if not k.startswith("__")]
             last = i == len(entries) - 1
             label = transition(nm) if leaves else nm
             marker = f" {DIM}·{RESET}" if not leaves else ""
@@ -183,18 +187,6 @@ def main():
             print(line)
     else:
         print("No version transitions.")
-
-    churn = [p for p in added if p["path"] not in new_versions]
-    churn_size = sum(
-        added_size[deep_clean(p["path"])] - removed_size[deep_clean(p["path"])]
-        for p in churn
-        if deep_clean(p["path"]) in removed_size
-    )
-    print()
-    print(
-        f"{DIM}total: {len(added)} paths in, {len(removed)} out ({human(total_new - total_old)} net); "
-        f"omitted from tree: {len(churn)} same-version swaps{RESET}"
-    )
 
 
 if __name__ == "__main__":

@@ -24,32 +24,14 @@
 
   # systemd.user.extraConfig = config.systemd.extraConfig;
 
+  # On every (dry-)activation, print a why-trace of what changed in the closure
+  # (pkgs/why-diff): per-transition "old → new" versions nested under the
+  # package that pulled them in, instead of diff-closures' flat table.
   system.activationScripts.diff = {
     supportsDryActivation = true;
     text = ''
       if [[ -e /run/current-system ]]; then
-        ${lib.getExe pkgs.nushell} -c "
-          let diff_closure = ${lib.getExe pkgs.nix} store diff-closures /run/current-system '$systemConfig';
-          if \$diff_closure != \"\" {
-            let table = \$diff_closure
-            | lines
-            | where \$it =~ KiB
-            | where \$it =~ →
-            | parse -r '^(?<Package>\S+): (?<Old_Version>[^,]+)(?:.*) → (?<New_Version>[^,]+)(?:.*, )(?<DiffBin>.*)$'
-            | insert Diff {
-              get DiffBin
-              | ansi strip
-              | str trim -l -c '+'
-              | into filesize
-            }
-            | reject DiffBin
-            | sort-by -r Diff
-            if (\$table | is-not-empty) {
-              print \$table
-              \$table | math sum
-            }
-          }
-        "
+        ${lib.getExe pkgs.why-diff} /run/current-system "$systemConfig" || true
       fi
     '';
   };

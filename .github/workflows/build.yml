@@ -139,7 +139,7 @@ jobs:
         ./install.sh -v --build ${{ matrix.output }} -o result-old
         echo "diff_closure<<EOF" >> $GITHUB_ENV
         # TODO remove pipe to sed when NixOS/nix#4626 is fixed
-        nix store diff-closures ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
+        nix run .#why-diff -- ./result-old ./result-new | sed 's/\x1b\[[0-9;]*m//g' >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
       env:
         NIXPKGS_ALLOW_UNFREE: 1
