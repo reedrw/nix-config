@@ -539,6 +539,16 @@ interface GroupState {
 	// Settled diffstat per edit toolCallId (+added/−removed lines), summed
 	// into the batch header's diff section.
 	editStats: Map<string, { adds: number; dels: number }>;
+	// Tool calls whose streaming has started (toolcall_start delivered). The
+	// TUI creates a call row as early as the first text delta — pi's message
+	// content array is shared across streaming events, so the block can exist
+	// before its toolcall_start event — and such a pre-start row must render
+	// untracked: adopting it would open a batch the narration's closeBatch
+	// (the next text delta) dissolves, stranding the row hidden. The first
+	// render after the start event adopts instead, so the row is born in
+	// tree form and its args grow into it. Cleared at message_end (args are
+	// complete for every call by then) and at agent_start.
+	streamingCalls: Set<string>;
 }
 
 const GROUP_STATE_KEY = "__piCustomUiToolGroups";
@@ -562,6 +572,7 @@ function freshGroupState(): GroupState {
 		notes: new Map(),
 		editIds: new Set(),
 		editStats: new Map(),
+		streamingCalls: new Set(),
 	};
 }
 
@@ -695,6 +706,31 @@ export function trackThoughtStart(ts: number): void {
 	} else {
 		if (!s.leadingRun.includes(ts)) s.leadingRun.push(ts);
 	}
+}
+
+// Record that a tool call's streaming has started (toolcall_start
+// delivered) — the adoption gate in groupMode. Also marks every toolCall
+// block already present in the shared content array, so a delta event for
+// one call covers its siblings.
+export function noteStreamingCall(toolCallId: string): void {
+	if (toolCallId) groupState().streamingCalls.add(toolCallId);
+}
+
+export function clearStreamingCalls(): void {
+	groupState().streamingCalls.clear();
+}
+
+// True when the currently running batch has a member whose args are still
+// streaming. Narration (visible text) must not dissolve such a batch — the
+// streaming row is already a member and would strand hidden under a settled
+// header. Only interleaved-block providers hit this; sequential streams
+// (text fully before toolcall_start) have empty markers here and close
+// normally.
+export function batchHasStreamingMembers(): boolean {
+	const s = groupState();
+	if (s.current === undefined) return false;
+	const batch = s.batches[s.current];
+	return batch.ids.some((id) => s.streamingCalls.has(id));
 }
 
 // Close the running batch: visible assistant text, a user message, or
@@ -872,9 +908,35 @@ export type GroupMode =
 			spinner: number;
 	  };
 
-export function groupMode(toolCallId: string | undefined | null): GroupMode {
+export function groupMode(toolCallId: string | undefined | null, context?: any): GroupMode {
 	if (!toolCallId) return { kind: "normal" };
 	const s = groupState();
+	// Streaming rows adopt into the live tree at their first render — pi
+	// renders the call row while args are still streaming, before
+	// tool_execution_start fires and trackGroupToolCall runs. Adopting then
+	// makes the row a tree child from frame one instead of snapping from a
+	// full-width untracked line into tree form when execution begins.
+	// Idempotent: the later trackGroupToolCall no-ops.
+	//
+	// Gated on the call's streaming having STARTED (toolcall_start delivered,
+	// recorded via noteStreamingCall) plus a context that proves this is the
+	// live streaming render (isPartial + not yet executing). pi's message
+	// content array is shared across streaming events, so the TUI creates the
+	// row as early as the first text delta — BEFORE toolcall_start, args
+	// empty. Adopting there would open a batch that the narration's
+	// closeBatch (the very next text delta) dissolves, stranding the row as a
+	// hidden child of a settled batch. Adopting on the start event instead is
+	// chronologically safe: every earlier text delta's closeBatch already
+	// ran, so the row opens its batch after the narration. Only render slots
+	// pass a context; action handlers and state queries can't adopt.
+	if (
+		s.memberBatch.get(toolCallId) === undefined &&
+		context?.isPartial === true &&
+		context?.executionStarted === false &&
+		s.streamingCalls.has(toolCallId)
+	) {
+		trackGroupToolCall(toolCallId);
+	}
 	const idx = s.memberBatch.get(toolCallId);
 	if (idx === undefined) return { kind: "normal" };
 	const batch = s.batches[idx];
@@ -2378,7 +2440,7 @@ export function treeCall(mode: GroupMode, theme: Theme, context: any, call: () =
 export const bash: RenderSlots = withToolNotes({
 	renderShell: "self",
 	renderCall(args, theme, context) {
-		const mode = groupMode(context?.toolCallId);
+		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
 			const timeout = args.timeout ? theme.fg("muted", ` (timeout ${args.timeout}s)`) : "";
 			return callLine("Bash", args.command ?? "", theme, timeout, mode, context);
@@ -2426,7 +2488,7 @@ export const bash: RenderSlots = withToolNotes({
 // ---------------------------------------------------------------------------
 
 export function readCallSlot(args: any, theme: Theme, context?: any): Component {
-	const mode = groupMode(context?.toolCallId);
+	const mode = groupMode(context?.toolCallId, context);
 	return treeCall(mode, theme, context, () => {
 		let arg = shortenPath(args.path ?? "");
 		if (args.offset !== undefined || args.limit !== undefined) {
@@ -2496,7 +2558,7 @@ export const edit: RenderSlots = withToolNotes({
 		// Register before groupMode so the batch-wide editsOpen override
 		// applies from the row's very first render.
 		if (context?.toolCallId) groupState().editIds.add(context.toolCallId);
-		const mode = groupMode(context?.toolCallId);
+		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
 			const count = Array.isArray(args.edits) ? args.edits.length : 0;
 			const suffix = count > 1 ? theme.fg("muted", ` (${count} edits)`) : "";
@@ -2561,7 +2623,7 @@ export const edit: RenderSlots = withToolNotes({
 export const write: RenderSlots = {
 	renderShell: "self",
 	renderCall(args, theme, context) {
-		const mode = groupMode(context?.toolCallId);
+		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
 			const lines = typeof args.content === "string" ? args.content.split("\n").length : 0;
 			const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
@@ -2616,7 +2678,7 @@ function countResult(unitSingular: string, unitPlural: string, label: string, ar
 	return withToolNotes({
 		renderShell: "self" as const,
 		renderCall(args: any, theme: Theme, context: any): Component {
-			const mode = groupMode(context?.toolCallId);
+			const mode = groupMode(context?.toolCallId, context);
 			return treeCall(mode, theme, context, () => callLine(label, argOf(args), theme, "", mode, context));
 		},
 		renderResult(result: any, { expanded, isPartial }: any, theme: Theme, context: any): Component {
@@ -2692,7 +2754,7 @@ export function genericSlots(label: string, argOf: (args: any) => string): Rende
 	return withToolNotes({
 		renderShell: "self",
 		renderCall(args, theme, context) {
-			const mode = groupMode(context?.toolCallId);
+			const mode = groupMode(context?.toolCallId, context);
 			return treeCall(mode, theme, context, () => callLine(label, argOf(args ?? {}), theme, "", mode, context));
 		},
 		renderResult(result, { expanded, isPartial }, theme, context) {
@@ -2757,7 +2819,7 @@ export function webToolSlots(spec: WebToolSpec): RenderSlots {
 	return withToolNotes({
 		renderShell: "self",
 		renderCall(args, theme, context) {
-			const mode = groupMode(context?.toolCallId);
+			const mode = groupMode(context?.toolCallId, context);
 			return treeCall(mode, theme, context, () => callLine(spec.label, spec.argOf(args ?? {}), theme, "", mode, context));
 		},
 		renderResult(result, { expanded, isPartial }, theme, context) {

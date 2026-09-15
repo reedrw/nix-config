@@ -59,7 +59,9 @@ import {
 	attachNotes,
 	armToolExpandGesture,
 	bash,
+	batchHasStreamingMembers,
 	beginTurnMessage,
+	clearStreamingCalls,
 	closeBatch,
 	genericSlots,
 	customUiEnabled,
@@ -80,6 +82,7 @@ import {
 	outputCap,
 	batchHeaderAnimated,
 	ls,
+	noteStreamingCall,
 	noteTurnDelta,
 	noteTurnProviderOutput,
 	pushToolNote,
@@ -1584,6 +1587,9 @@ export default function customUi(pi: ExtensionAPI) {
 	pi.on("agent_start", async (_event, ctx) => {
 		noteAgentActivity();
 		setLoaderVisible(ctx, false);
+		// Stale streaming-start markers (a turn aborted mid-args never hits
+		// message_end) must not adopt rows of a later turn.
+		clearStreamingCalls();
 		// The dead-air loader is OUR animated label (dots glyph + shimmer verb,
 		// written per-tick below) — pi's native indicator is hidden entirely so
 		// the row shows exactly one spinner.
@@ -1678,12 +1684,36 @@ export default function customUi(pi: ExtensionAPI) {
 			// timing map.
 			setLiveThought(undefined);
 		}
+		if (type === "toolcall_start" || type === "toolcall_delta") {
+			// Record that these calls' streaming has started — the lib-side
+			// adoption gate (groupMode) adopts a streaming row into the tree on
+			// its first render after this. pi's shared content array can
+			// contain the block before its start event, so marking here (the
+			// event boundary) is what keeps the pre-start phase untracked and
+			// the narration's closeBatch chronologically safe. The tick
+			// animates the live header the adopted batch opens; it self-stops
+			// when nothing is animating.
+			const content = e.message?.content;
+			if (Array.isArray(content)) {
+				for (const part of content) {
+					if (part?.type === "toolCall" && typeof part.id === "string") noteStreamingCall(part.id);
+				}
+			}
+			ensureTick();
+		}
 		if (type === "text_delta" && hasVisibleText(e.message)) {
 			// Visible text settles the batch — narration separates tool
 			// groups, and the pending leading-think run dissolves with it.
-			closeBatch();
-			stopThoughtTick();
-			setLiveThought(undefined);
+			// Except for interleaved-block providers: narration streaming AFTER
+			// a tool call started streaming must not dissolve the batch — its
+			// adopted streaming row would strand hidden under a settled
+			// header. Sequential streams (text fully before toolcall_start)
+			// have empty markers here and close normally.
+			if (!batchHasStreamingMembers()) {
+				closeBatch();
+				stopThoughtTick();
+				setLiveThought(undefined);
+			}
 		}
 	});
 	// Per-assistant-message bookkeeping for the turn summary: timestamps (to
@@ -1693,6 +1723,10 @@ export default function customUi(pi: ExtensionAPI) {
 		noteAgentActivity();
 		const message = (event as { message?: { role?: unknown; timestamp?: number; content?: unknown; usage?: { input?: number; output?: number; cacheRead?: number } } }).message;
 		if (message?.role !== "assistant") return;
+		// Every call's args are complete by message_end — the streaming-start
+		// markers have served their purpose (rows adopted during streaming;
+		// validation-failed calls tracked at tool_execution_start).
+		clearStreamingCalls();
 		if (typeof message.timestamp === "number") {
 			turnTimestamps.add(message.timestamp);
 			const hasThinking = Array.isArray(message.content)

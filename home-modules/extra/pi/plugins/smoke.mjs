@@ -27,6 +27,9 @@ import {
 	noteThinkingTiming,
 	resetTurnTokens,
 	beginTurnMessage,
+	noteStreamingCall,
+	clearStreamingCalls,
+	batchHasStreamingMembers,
 	noteTurnDelta,
 	noteTurnProviderOutput,
 	settleTurnMessage,
@@ -993,6 +996,65 @@ await waitFor(
 	() => /[├╰]─/.test(raceRendered),
 	() => JSON.stringify(raceRendered),
 );
+resetToolGroups();
+
+// ── Streaming rows adopt into the tree at their FIRST render ─────
+// pi renders the call row while args still stream, before tool_execution_start
+// tracks it. Once the call's streaming has STARTED (toolcall_start delivered —
+// noteStreamingCall), a live render context (isPartial, executionStarted:false)
+// must adopt the row into the running batch at that very first render: a tree
+// child from frame one, no full-width untracked line, and no reformat snap when
+// execution starts. Adoption is opt-in: only render slots pass a context, so
+// state queries (and the context-free kctx above) stay side-effect free.
+resetToolGroups();
+let streamRendered = "";
+const streamArgs = { command: "ec" };
+const streamCtx = { ...kctx("ad1", { args: streamArgs }), executionStarted: false };
+noteStreamingCall("ad1"); // toolcall_start delivered
+const renderStream = () => {
+	streamRendered = plainRow(bash.renderCall(streamArgs, theme, streamCtx));
+};
+streamCtx.invalidate = () => setTimeout(renderStream, 0);
+renderStream();
+if (!/[├╰]─/.test(streamRendered)) throw new Error(`streaming row must render as a tree child on its first pass: ${JSON.stringify(streamRendered)}`);
+if (groupMode("ad1").kind !== "child") throw new Error("streaming row must be tracked at first render");
+trackGroupToolCall("ad1"); // execution start after args complete
+trackGroupToolCall("ad1"); // tool_call fires too — no double-join
+renderStream();
+if (!/[├╰]─/.test(streamRendered)) throw new Error("execution start must keep the tree form (no untracked snap)");
+resetToolGroups();
+
+// Empty args but streaming STARTED (the provider streams empty arg deltas
+// first): the row must still adopt — a bare `Bash` label born in tree form
+// under the live header, with no snap when the args arrive.
+resetToolGroups();
+const bareArgsCtx = { ...kctx("ad2", { args: {} }), executionStarted: false };
+noteStreamingCall("ad2");
+const bareRendered = plainRow(bash.renderCall({}, theme, bareArgsCtx));
+if (!/[├╰]─/.test(bareRendered)) throw new Error(`started streaming row with empty args must adopt (tree-form bare label): ${JSON.stringify(bareRendered)}`);
+resetToolGroups();
+
+// The PRE-START phase must NOT adopt: pi's shared content array creates the
+// row as early as the first text delta — before toolcall_start — and adopting
+// there would open a batch the narration's closeBatch immediately dissolves.
+resetToolGroups();
+const earlyCtx = { ...kctx("ad3", { args: {} }), executionStarted: false };
+const earlyRendered = plainRow(bash.renderCall({}, theme, earlyCtx));
+if (/[├╰]─/.test(earlyRendered)) throw new Error("pre-start streaming row must not adopt (stays untracked)");
+if (groupMode("ad3").kind === "child") throw new Error("pre-start streaming row must not be tracked");
+resetToolGroups();
+
+// Narration must not dissolve a batch with a still-streaming member — an
+// interleaved-block provider streaming text after a tool call would strand
+// the adopted row hidden under a settled header otherwise.
+resetToolGroups();
+trackGroupToolCall("i1");
+if (batchHasStreamingMembers()) throw new Error("no streaming member before noteStreamingCall");
+noteStreamingCall("i1");
+if (!batchHasStreamingMembers()) throw new Error("streaming member must block the narration close");
+clearStreamingCalls();
+if (batchHasStreamingMembers()) throw new Error("markers cleared at message_end must unblock the close");
+closeBatch(); // and the close itself still works
 resetToolGroups();
 
 console.log("OK-RESUME-REPAINT");

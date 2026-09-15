@@ -172,15 +172,33 @@ the hard way; violating them fails silently.
   own path — the ctrl+t native path keeps pi's click-to-hide), since a stale
   override makes pi emit its hidden `Text` instead of the marker-bearing
   Markdown and defeats detection.
-- **Untracked-row repaint**: pi renders a tool's call row during arg
-  streaming (before the `tool_call` event) and renders a restored
-  transcript before `session_start`'s rescan — both first passes render
-  UNTRACKED (normal mode = full-width call line, no glyph/rail; this was
-  the "long word wraps at column 0" bug). Fixes: `trackGroupToolCall`
-  invalidates the row it tracks, and `scanToolGroupsFromHistory` snapshots
-  the pre-scan invalidator registry and re-fires it for ids the scan
-  tracks (resetToolGroups would otherwise wipe the registry and leave
-  those rows untracked forever).
+- **Streaming rows adopt at first render; untracked repaint is restore-only**: pi
+  renders a tool's call row while args stream (before the `tool_call` event) and
+  renders a restored transcript before `session_start`'s rescan. LIVE streaming
+  rows join the tree immediately: `groupMode(id, context)` — only render slots
+  pass a context — calls `trackGroupToolCall` when the id is untracked and the
+  context proves the live streaming render (`isPartial === true &&
+  `executionStarted === false`) AND the call's streaming has started
+  (`s.streamingCalls.has(id)` — recorded by the entry's `message_update`
+  handler on `toolcall_start`/`toolcall_delta` via `noteStreamingCall`, cleared
+  at `message_end` and `agent_start`). Two traps make the gate load-bearing:
+  (1) pi's message content array is SHARED across streaming events, so the TUI
+  creates the row as early as the first text delta — before `toolcall_start`,
+  args empty — and adopting there opens a batch the narration's `closeBatch`
+  dissolves on the next text delta, stranding the row as a hidden child of a
+  settled batch (renders `▸ Ran N tool calls` forever). The event boundary is
+  what makes adoption chronologically safe: every earlier text delta's
+  closeBatch already ran. (2) Interleaved-block providers (text AFTER a tool
+  call in one message) would strand the streaming member when narration closes
+  the batch — the entry's text_delta close is guarded with
+  `batchHasStreamingMembers()`. Adopted rows never render untracked (the old
+  full-width "long word wraps at column 0" snap) — the pre-start phase renders
+  untracked until `toolcall_start`, and `trackGroupToolCall`'s idempotency
+  makes the later execution_start a no-op. Restored rows (results present →
+  `isPartial` false) still render UNTRACKED in the pre-scan pass;
+  `scanToolGroupsFromHistory` snapshots the pre-scan invalidator registry and
+  re-fires it for ids the scan tracks (resetToolGroups would otherwise wipe
+  the registry and leave those rows untracked forever).
   Children (tool ids + thinking timestamps) merge into one chronological
   `children` list per batch — renderers walk it to place `├─`/`╰─`.
 - **Header diffstat**: once Edit calls in a batch settle, the header gains
