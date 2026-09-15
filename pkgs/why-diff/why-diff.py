@@ -225,7 +225,6 @@ def main():
         f"{DIM}total: {len(added)} paths in, {len(removed)} out ({human(total_new - total_old)} net); "
         f"omitted from tree: {len(churn)} same-version swaps{RESET}",
     )
-    print()
 
     def render(node, prefix="", depth=0):
         entries = [k for k in sorted(node) if not k.startswith("__")]
