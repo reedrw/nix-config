@@ -169,8 +169,13 @@ def main():
     tree = {}
     new_versions = {p["path"] for p in added if old_by_nv[nv(p["path"])] == 0}
     for path in sorted(new_versions):
+        chain = short_chain(path, parent)
+        if not chain:
+            # an added path whose whole chain is plumbing (e.g. a renamed
+            # toplevel after a nixpkgs bump) is infra churn, not a transition
+            continue
         cur, prev = tree, None
-        for nm in short_chain(path, parent):
+        for nm in chain:
             prev = cur.setdefault(nm, {"__new__": [], "__gone__": [], "__kids__": {}})
             cur = prev["__kids__"]
         prev.setdefault("__new__", []).append(path)
@@ -186,6 +191,8 @@ def main():
     ]
     for path in sorted(gone_paths):
         chain = short_chain(path, old_parent)
+        if not chain:
+            continue
         node, k = tree, 0
         while k < len(chain) and chain[k] in node:
             node = node[chain[k]]["__kids__"]
