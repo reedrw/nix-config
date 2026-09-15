@@ -146,7 +146,7 @@ jobs:
 
     - name: Post diff to PR comment
       if: ${{ steps.diff.outcome == 'success' && env.diff_closure != '' }}
-      uses: phulsechinmay/rewritable-pr-comment@v0.3.0
+      uses: phulsechinmay/rewritable-pr-comment@v0.4.0
       with:
         message: |
           ### Closure diff for `${{ matrix.output }}`
