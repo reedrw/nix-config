@@ -107,19 +107,31 @@ type AttrResolution =
 	| { kind: "failed"; detail: string };
 
 // /nix/store fence: broad searches over the store are blocked once per
-// session with a pointer to evaluation-based lookup (the store is enormous —
-// such scans grind for minutes and find nothing useful). A second attempt is
+// session with a pointer to evaluation-based lookup. Even when a scan runs
+// fast (narrow store globs do), the answer is misleading — hashes are
+// unordered, so the picked path may be a stale or wrong build — and
+// full-store greps over 200k+ paths genuinely grind. A second attempt is
 // allowed through for the rare case where evaluation genuinely can't answer
 // the query. Targeted access to a specific store path is never blocked.
+// Heredoc bodies are stripped before matching, so a command that merely
+// MENTIONS /nix/store inside a written script isn't mistaken for a search.
 const SEARCH_TOOL_WORD = /\b(?:find|grep|egrep|fgrep|rg|ripgrep|fd|fdfind|tree|ls)\b/;
 const STORE_ROOT_TOKEN = /\/nix\/store\/?(?=\s|$|["')\]])/;
 const STORE_GLOB_TOKEN = /\/nix\/store\/\*/;
+const QUOTED_STRING = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g;
+// Body runs from the <<[-]'DELIM' marker line to the line that is just the
+// delimiter (leading tabs allowed — bash strips them for <<-). Unmatched or
+// never-terminated bodies are left in place — the fallback then over-blocks
+// at worst, never under-blocks a real search.
+const HEREDOC_BODY = /<<-?\s*['"]?(\w+)['"]?[^\n]*\n[\s\S]*?\n[ \t]*\1[ \t]*(?:\n|$)/g;
 
 function isStoreRootSearch(command: string): boolean {
 	for (const segment of command.split(/[;&|]+/)) {
-		// Strip quoted substrings so patterns that merely mention /nix/store
-		// (`rg '/nix/store' .agents/`) aren't mistaken for store searches.
-		const bare = segment.replace(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g, " ");
+		// Strip heredoc bodies first (they can contain quotes and store paths
+		// that are data, not a search target), then quoted substrings, so
+		// patterns that merely mention /nix/store (`rg '/nix/store' .agents/`)
+		// aren't mistaken for store searches.
+		const bare = segment.replace(HEREDOC_BODY, "\n").replace(QUOTED_STRING, " ");
 		if (SEARCH_TOOL_WORD.test(bare) && (STORE_ROOT_TOKEN.test(bare) || STORE_GLOB_TOKEN.test(bare))) {
 			return true;
 		}
@@ -606,7 +618,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	const provisionTool = defineTool({
 		name: "nix_provision",
 		label: "Nix Provision",
-		description: `Provision a nixpkgs package for this session: builds it (cached after the first time) and prepends its bin directories to PATH for all later bash calls. Later provisions shadow earlier ones for same-named binaries. Provisions are recorded in the session, so resuming it restores them (offering to rebuild any that were garbage collected). Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
+		description: `Provision a nixpkgs package for this session: builds it and prepends its bin directories to PATH for all later bash calls; later provisions shadow earlier same-named ones. Use it when a ${MARKER} note lists several candidate attrs (nothing is built until you choose), to override an earlier auto-provision, or to make a known attr available on demand.`,
 		promptSnippet: "Provision a nixpkgs attr onto this session's PATH",
 		promptGuidelines: [
 			`Use nix_provision when a ${MARKER} tool result lists multiple candidate attrs and you need a specific variant, or to swap a previously provisioned binary for a different variant.`,
@@ -668,7 +680,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event) => {
 		if (event.systemPrompt.includes(MARKER)) return;
 		return {
-			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. Broad searches over /nix/store (find, grep, rg, ls on the store root) are blocked once per session with a warning and allowed on retry — resolve store paths with \`nix eval\` instead.`,
+			systemPrompt: `${event.systemPrompt}\n\n## Missing commands\n\nCommands that are not installed on this machine fail with "command not found". When that happens, an extension automatically finds the binary in the nix-index database, builds it, and prepends its bin directory to PATH for the rest of the session — the tool result will say so. Simply re-run the command; do not apologize, install anything, or give up. If a tool result lists several candidate attrs, pick the variant you need with the nix_provision tool before re-running. Failed existence checks (which, command -v, type) are answered with availability info instead — nothing is provisioned until you call nix_provision. Broad searches over /nix/store are blocked once per session (allowed on retry) — store hashes are unordered, so a scan can't tell which build is current; resolve store paths with \`nix eval\` instead.`,
 		};
 	});
 
@@ -681,7 +693,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		storeSearchWarned = true;
 		return {
 			block: true,
-			reason: `${MARKER} a direct search over /nix/store/ is almost always the wrong tool: the store is enormous, so broad scans grind for minutes and find nothing useful. Resolve store paths by evaluation instead, e.g. \`nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw\` (see the nix-conventions skill). If evaluation genuinely cannot answer this, re-run the same command and it will be allowed through.`,
+			reason: `${MARKER} /nix/store hashes are unordered — a scan can't tell which build is current or what version it holds. Resolve store paths by evaluation instead: \`nix eval nixpkgs#<package> --apply 'p: p.outPath' --raw\`. If evaluation can't answer this, re-run the same command — the second attempt is allowed through.`,
 		};
 	});
 
