@@ -219,6 +219,12 @@ def main():
     total_new = sum(p.get("narSize", 0) for p in new)
     churn = [p for p in added if p["path"] not in new_versions]
 
+    # nothing at version level: in the terminal (activation hook) say nothing
+    # at all - pure churn and infra swaps are not worth interrupting the
+    # activation output for; --diff callers still get the full report
+    if not tree and not DIFF_MODE:
+        return
+
     out("ctx", f"SIZE: {human(total_old)} → {human(total_new)} ({human(total_new - total_old)})")
     out(
         "ctx",
