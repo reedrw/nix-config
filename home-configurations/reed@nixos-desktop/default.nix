@@ -4,7 +4,6 @@
   imports = [
     ../reed.nix
     ./firefox.nix
-    ./kitty.nix
     ./mpv
     ./sway.nix
     ./syncthing.nix

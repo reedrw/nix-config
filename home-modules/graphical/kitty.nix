@@ -26,10 +26,14 @@ in
     '');
     shellIntegration.mode = null;
     settings = let
-      family = "FantasqueSansM Nerd Font";
+      # Mono variant: identical latin glyphs to the plain "Nerd Font" family,
+      # but its private-use icon glyphs are single-cell by design (the plain
+      # variant draws them double-width, which oversizes statusline/prompt
+      # icons).
+      family = "FantasqueSansM Nerd Font Mono";
     in {
       font_size = dp 10;
-      font_family = "${family} Bold";
+      font_family = ''family="${family}" style="Regular"'';
       bold_font = ''family="${family}" style="Bold"'';
       italic_font = "${family} Italic";
       bold_italic_font = "${family} Bold Italic";
