@@ -19,6 +19,11 @@
 // as-is; local other formats and all remote URLs are resized+converted to
 // PNG (same pipeline as history cells) into an on-disk cache that the sync
 // transformer serves; remote failures are negative-cached for a day.
+// The cache lives under pi's agent dir (~/.pi/agent/image-cache) — persisted
+// like pi-image-view's user-image blobs, so images survive reboots on
+// impermanence setups. Locally-referenced images also get a persistent
+// path-keyed snapshot, so they keep rendering after their source file is
+// deleted (a /tmp screenshot, for example).
 //
 // User messages and `!` shell commands get the zentui-style compact look
 // (accent rail + base01 band, no box) via prototype patches of
@@ -142,9 +147,10 @@ const BLOB_MARKER_SOURCE =
 const BLOB_MARKER_RE = new RegExp(BLOB_MARKER_SOURCE, "g");
 const BLOB_MARKER_TEST_RE = new RegExp(BLOB_MARKER_SOURCE);
 // Standard markdown image referencing an absolute local image path, a file://
-// URL, or any http(s) URL. Local PNG is transmitted as-is; local other
-// formats and ALL remote URLs are converted to PNG first (see CONVERT_DIR
-// below). Remote URLs need no file extension (cataas.com/cat et al.) — the
+// URL, or any http(s) URL. Local PNG is transmitted as-is (with a persistent
+// snapshot kept in step); local other formats and ALL remote URLs are
+// converted to PNG first (see IMAGE_CACHE_DIR below). Remote URLs need no
+// file extension (cataas.com/cat et al.) — the
 // magic-byte sniff decides if it's an image, and failures are negative-
 // cached so re-renders don't refetch. No title support (keep the target
 // charset URL-ish); must not collide with blob markers (those use `[[`, not
@@ -324,11 +330,17 @@ function loadImageData(target: string): string | undefined {
 	}
 }
 
-// ── Non-PNG conversion cache (kitty f=100 requires PNG) ─────
+// ── Persistent image cache (kitty f=100 requires PNG) ──────
 
-const CONVERT_DIR = join(
-	process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"),
-	"pi-embedded-images",
+// Not ~/.cache: this cache holds the only remaining copy of images whose
+// source is gone, so it must persist (".pi" is in the repo's impermanence
+// keep-list; ~/.cache is wiped). Same guarantee pi-image-view's blob store
+// has for user-submitted images — now for agent-embedded ones too. The
+// tradeoff is unbounded growth (pi-image-view made the same call: no
+// automatic deletion until cleanup can be proven safe).
+const IMAGE_CACHE_DIR = join(
+	process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent"),
+	"image-cache",
 );
 const IMAGE_MIME_BY_EXT: Record<string, string> = {
 	jpg: "image/jpeg",
@@ -341,9 +353,9 @@ const IMAGE_MIME_BY_EXT: Record<string, string> = {
 	tif: "image/tiff",
 	tiff: "image/tiff",
 };
-// In-flight conversions keyed by source path (dedupes fire-and-forget
+// In-flight snapshot builds keyed by source path (dedupes fire-and-forget
 // triggers from repeated renders).
-const converting = new Set<string>();
+const snapshotting = new Set<string>();
 
 // Remote fetch budgets. message_end waits up to REMOTE_WAIT_MS per image so
 // the finalized paint can inline it; slower fetches land in the cache and
@@ -359,39 +371,75 @@ function fileImageTargetPath(target: string): string {
 	return target.startsWith("file://") ? fileURLToPath(target) : target;
 }
 
-function convertedPngPath(path: string): string | undefined {
+// Source snapshots: a persistent PNG copy of every locally-referenced image
+// (PNG included), keyed by the source path with an mtime+size meta sidecar
+// for freshness. The transformer prefers the live file but falls back to the
+// snapshot, so an image embedded in a reply keeps rendering after its source
+// is deleted — or after a reboot, since snapshots live in the persisted
+// agent dir. This replaces the old content-keyed (path+mtime+size) conversion
+// cache for local non-PNGs and extends the guarantee to local PNGs, which
+// were previously never cached at all.
+
+function snapshotKey(path: string): string {
+	// "source:" prefix keeps path keys disjoint from "remote:" URL keys.
+	return createHash("sha256").update(`source:${path}`).digest("hex");
+}
+
+function snapshotFile(path: string): string {
+	return join(IMAGE_CACHE_DIR, `${snapshotKey(path)}.png`);
+}
+
+function readSnapshotMeta(path: string): { mtimeMs?: number; size?: number } | undefined {
 	try {
-		const st = statSync(path);
-		// Key on path+mtime+size so a changed file re-converts and a moved file
-		// doesn't collide.
-		const key = createHash("sha256").update(`${path}:${st.mtimeMs}:${st.size}`).digest("hex");
-		const cachePath = join(CONVERT_DIR, `${key}.png`);
-		return existsSync(cachePath) ? cachePath : undefined;
+		return JSON.parse(readFileSync(join(IMAGE_CACHE_DIR, `${snapshotKey(path)}.json`), "utf8")) as {
+			mtimeMs?: number;
+			size?: number;
+		};
 	} catch {
 		return undefined;
 	}
 }
 
-async function ensureConvertedPng(path: string): Promise<void> {
-	const mimeType = IMAGE_MIME_BY_EXT[path.slice(path.lastIndexOf(".") + 1).toLowerCase()];
-	if (!mimeType || converting.has(path)) return;
-	converting.add(path);
+// Resolved snapshot path for rendering: defined iff a FRESH snapshot exists
+// (source stat matches the meta) or the source is gone and any snapshot
+// remains. A stale snapshot (source changed since) resolves to undefined so
+// the re-snapshot kicks in — mirrors the old content-keyed freshness check.
+function freshSnapshotPngPath(path: string): string | undefined {
+	const snapshot = snapshotFile(path);
 	try {
 		const st = statSync(path);
-		const key = createHash("sha256").update(`${path}:${st.mtimeMs}:${st.size}`).digest("hex");
-		const cachePath = join(CONVERT_DIR, `${key}.png`);
-		if (existsSync(cachePath)) return;
+		const meta = readSnapshotMeta(path);
+		if (meta && meta.mtimeMs === st.mtimeMs && meta.size === st.size) return snapshot;
+		return undefined;
+	} catch {
+		// Source unreadable/absent: the snapshot is the last copy there is.
+		return existsSync(snapshot) ? snapshot : undefined;
+	}
+}
+
+async function ensureSourceSnapshot(path: string): Promise<void> {
+	if (snapshotting.has(path)) return;
+	snapshotting.add(path);
+	try {
+		const st = statSync(path);
+		const snapshot = snapshotFile(path);
+		const meta = readSnapshotMeta(path);
+		if (meta && meta.mtimeMs === st.mtimeMs && meta.size === st.size && existsSync(snapshot)) return;
+		const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
+		const mimeType = ext === "png" ? "image/png" : IMAGE_MIME_BY_EXT[ext];
+		if (!mimeType) return; // unknown extension — nothing renderable to snapshot
 		const data = readFileSync(path).toString("base64");
 		// Same resize+convert pipeline as history cells (worker-thread Photon, so
 		// the TUI keeps ticking). 800px is plenty for the 44×15-cell display cap.
 		const out = await toHistoryImage({ data, mimeType });
 		if (out.mimeType !== "image/png") return; // conversion failed
-		mkdirSync(CONVERT_DIR, { recursive: true });
-		writeFileSync(cachePath, Buffer.from(out.data, "base64"));
+		mkdirSync(IMAGE_CACHE_DIR, { recursive: true });
+		writeFileSync(snapshot, Buffer.from(out.data, "base64"));
+		writeFileSync(join(IMAGE_CACHE_DIR, `${snapshotKey(path)}.json`), JSON.stringify({ mtimeMs: st.mtimeMs, size: st.size }));
 	} catch {
-		// Best-effort: the marker just stays a plain link.
+		// Source vanished mid-read etc.: best-effort, any existing snapshot stays.
 	} finally {
-		converting.delete(path);
+		snapshotting.delete(path);
 	}
 }
 
@@ -400,7 +448,7 @@ function remotePngPath(url: string): string {
 	// freshness check: a URL's content changing is rare, and re-fetching on
 	// every render is not worth it.
 	const key = createHash("sha256").update(`remote:${url}`).digest("hex");
-	return join(CONVERT_DIR, `${key}.png`);
+	return join(IMAGE_CACHE_DIR, `${key}.png`);
 }
 
 /** Sniff the image format from magic bytes; undefined for non-images. */
@@ -454,7 +502,7 @@ async function ensureRemotePng(url: string): Promise<void> {
 			if (Date.now() - Number(readFileSync(failPath, "utf8")) < REMOTE_FAIL_RETRY_MS) return;
 		} catch { /* no marker — proceed */ }
 		const result = await fetchRemoteImage(url);
-		mkdirSync(CONVERT_DIR, { recursive: true });
+		mkdirSync(IMAGE_CACHE_DIR, { recursive: true });
 		if (result.kind !== "image") {
 			if (result.kind === "reject") writeFileSync(failPath, String(Date.now()));
 			return;
@@ -487,9 +535,9 @@ function markdownImageTargets(message: { content?: unknown }): string[] {
 	const out: string[] = [];
 	const push = (text: string) => {
 		for (const m of text.matchAll(LOCAL_IMAGE_RE)) {
-			const target = m[1];
-			// Local PNGs need no conversion — skip. Everything else pre-converts.
-			if (target && !/\.png$/i.test(target)) out.push(fileImageTargetPath(target));
+			// Every local image is snapshotted (PNGs included) so the reply keeps
+			// rendering after the source disappears.
+			if (m[1]) out.push(fileImageTargetPath(m[1]));
 		}
 		for (const m of text.matchAll(REMOTE_IMAGE_RE)) {
 			// Remote images always need a fetch, even when the URL says .png.
@@ -513,6 +561,10 @@ function markdownImageTargets(message: { content?: unknown }): string[] {
 function transformMessageMarkdown(markdown: string, availableWidth: number): string {
 	const render = (match: string, target: string, offset: number, full: string) => {
 		let data: string | undefined;
+		// Local file backing the caption link: the live source when it was
+		// served, the snapshot when the render fell back to it. Remote targets
+		// leave this undefined — the URL itself is the link.
+		let localHrefPath: string | undefined;
 		if (/^https?:\/\//i.test(target)) {
 			// Remote: serve from the fetch cache when present; otherwise kick off
 			// the download (picked up on a later render) and fall through to the
@@ -526,18 +578,38 @@ function transformMessageMarkdown(markdown: string, availableWidth: number): str
 			}
 		} else {
 			const path = fileImageTargetPath(target);
+			const snapshot = freshSnapshotPngPath(path);
 			if (/\.png$/i.test(path)) {
-				data = loadImageData(target);
-			} else {
-				// Local non-PNG: serve from the conversion cache when present;
-				// otherwise kick off conversion (picked up on a later render) and
-				// fall through to the plain link for now. message_end pre-converts,
-				// so the finalized render normally finds the cache already populated.
-				const cachePath = convertedPngPath(path);
-				if (cachePath) {
-					data = loadImageData(cachePath);
+				// Live file first (full fidelity); fall back to the persistent
+				// snapshot when the source is unreadable (deleted, unmounted…).
+				const live = loadImageData(target);
+				if (live !== undefined) {
+					data = live;
+					localHrefPath = path;
+					// Keep the snapshot in step while the source still exists so
+					// the image survives later deletion. message_end pre-snapshots,
+					// so this normally only fires for messages restored from older
+					// sessions that predate the snapshot.
+					if (!snapshot) void ensureSourceSnapshot(path);
+				} else if (snapshot) {
+					data = loadImageData(snapshot);
+					localHrefPath = snapshot;
 				} else {
-					void ensureConvertedPng(path);
+					void ensureSourceSnapshot(path);
+				}
+			} else {
+				// Local non-PNG: only the snapshot PNG (converted+resized) is
+				// renderable (kitty f=100). Serve it when fresh; otherwise kick
+				// off snapshotting (picked up on a later render) and fall through
+				// to the plain link for now. message_end pre-snapshots, so the
+				// finalized render normally finds the cache already populated.
+				if (snapshot) {
+					data = loadImageData(snapshot);
+					// The display copy is resized, but the caption should still
+					// open the full-resolution original while it exists.
+					localHrefPath = existsSync(path) ? path : snapshot;
+				} else {
+					void ensureSourceSnapshot(path);
 				}
 			}
 		}
@@ -550,10 +622,12 @@ function transformMessageMarkdown(markdown: string, availableWidth: number): str
 		// The caption is a markdown link: pi-tui renders those as OSC 8
 		// hyperlinks, so clicking it opens the original at full resolution
 		// (remote images open in the browser; local files in the image viewer).
-		// Percent-escape parens so the markdown destination can't break early.
+		// When the render fell back to a snapshot, the link follows it — the
+		// original path would be dead. Percent-escape parens so the markdown
+		// destination can't break early.
 		const href = (/^https?:\/\//i.test(target)
 			? target
-			: pathToFileURL(fileImageTargetPath(target)).href
+			: pathToFileURL(localHrefPath ?? fileImageTargetPath(target)).href
 		).replaceAll("(", "%28").replaceAll(")", "%29");
 		const label = dims ? `${dims.widthPx}×${dims.heightPx} ↗` : "open ↗";
 		const needsBreakBefore = offset > 0 && full[offset - 1] !== "\n";
@@ -972,8 +1046,9 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 		"inline image in the TUI with a clickable size caption that opens the " +
 		"full-resolution original. Absolute local paths only; PNG displays " +
 		"as-is, other formats and remote URLs are fetched/converted automatically " +
-		"and cached. Relative paths, missing files, or non-image URLs render as " +
-		"plain markdown links.";
+		"into a persistent cache (sources are snapshotted, so images keep " +
+		"rendering after the source file is deleted). Relative paths, missing " +
+		"files, or non-image URLs render as plain markdown links.";
 	pi.on("before_agent_start", (event) => {
 		if (detectImageProtocol() === null) return;
 		return { systemPrompt: event.systemPrompt + IMAGE_PROMPT_DOC };
@@ -995,7 +1070,7 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 		if (!message) return;
 		// TUI-only decoration; don't bloat sessions from `pi -p` / JSON mode.
 		if (ctx.mode === "print" || ctx.mode === "json") return;
-		// Pre-fetch/convert markdown image refs: message_end handlers resolve
+		// Pre-fetch/snapshot markdown image refs: message_end handlers resolve
 		// before the finalized message re-renders, so the sync transformer finds
 		// the cached PNG and inlines it on the first finalized pass. Remote
 		// fetches are bounded by REMOTE_WAIT_MS — stragglers appear on the next
@@ -1003,7 +1078,7 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 		await Promise.all(markdownImageTargets(message).map((target) =>
 			/^https?:\/\//i.test(target)
 				? withTimeout(ensureRemotePng(target), REMOTE_WAIT_MS)
-				: ensureConvertedPng(target)
+				: ensureSourceSnapshot(target)
 		));
 		const found = imagesInMessage(message);
 		if (found.length === 0) return;
