@@ -62,9 +62,14 @@
     xdg-desktop-portal
   ];
 
-  custom.persistence.directories = [
-    "/var/lib/nixos"
-    "/var/lib/systemd"
-    "/var/tmp"
-  ];
+  custom.persistence = {
+    directories = [
+      "/var/lib/nixos"
+      "/var/lib/systemd"
+      "/var/tmp"
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
+  };
 }
