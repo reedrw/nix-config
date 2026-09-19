@@ -856,13 +856,21 @@ function rebuild(
     // Thinking-anchored batch (§2.3): the anchor's row hosts the batch
     // header line above its own branch label. The header carries its own
     // OSC 8 batch link, so the label link is applied to the label only.
-    const headerLine = scope.kind === "anchor" && tree ? tree.batchHeaderLine(scope.batchIndex) : undefined;
-    // Leading blank line so the block stands apart; the trailing newline
-    // separates the header from the branch label — none when collapsed
-    // (nothing follows the header then).
-    const headerPrefix = headerLine ? (anchorCollapsed ? `\n${headerLine}` : `\n${headerLine}\n`) : "";
+    // The header line MUST be recomputed per labelFor call, not captured: it
+    // is the batch's animated element (spinner frame, shimmer verb, elapsed),
+    // and the label recompute runs at PAINT time — after the tick stopped
+    // rebuilding anchors, paint is the only thing that refreshes it. A
+    // captured prefix would freeze the header at the last rebuild.
+    const anchorHostsHeader = scope.kind === "anchor" && tree !== undefined;
+    const headerPrefix = () => {
+      if (!anchorHostsHeader) return "";
+      const headerLine = tree.batchHeaderLine(scope.batchIndex);
+      if (headerLine === undefined) return "";
+      return anchorCollapsed ? `\n${headerLine}` : `\n${headerLine}\n`;
+    };
     const labelFor = (canExpand: boolean) => {
       const api = customUiAnim();
+      const headerPad = headerPrefix();
       // Standalone rows keep the pre-tree presentation: one-space indent
       // with a blank line above and below (the old label Text's padding 1/1,
       // which branch/anchor rows must not inherit — they are flush tree
@@ -871,7 +879,7 @@ function rebuild(
       if (anchorCollapsed) {
         // The collapsed header IS the row (§2.2). The line carries its own
         // OSC 8 batch link; no glyph/label/thought URL of our own.
-        return headerPrefix;
+        return headerPad;
       }
       if (!completed) {
         const seconds = timing
@@ -891,7 +899,7 @@ function rebuild(
           // must keep its own click target.
           const core = tree ? tree.staticLabel(`Thinking… ${seconds}`) : `Thinking… ${seconds}`;
           const label = tree ? tree.linkWrap(glyph + core, url) : glyph + core;
-          return headerPrefix + label;
+          return headerPad + label;
         }
         // Fresh thinking (no batch): the animated standalone label.
         if (api) {
@@ -914,7 +922,7 @@ function rebuild(
         // Same no-nesting rule as above: the label segment gets the thought
         // link; the header line keeps its own batch link.
         const label = tree ? tree.linkWrap(glyph + core, url) : glyph + core;
-        return headerPrefix + label;
+        return headerPad + label;
       }
       return tree ? standalonePad(tree.linkWrap(core, url)) : standalonePad(core);
     };

@@ -150,6 +150,7 @@ export function settleStatus(context: any, error: boolean): void {
 		const toolCallId = context.toolCallId as string | undefined;
 		const run = toolCallId ? toolRuns().get(toolCallId) : undefined;
 		if (run && run.completedAt === undefined) run.completedAt = Date.now();
+		if (toolCallId) groupState().settledTools.add(toolCallId);
 		setTimeout(() => context.invalidate(), 0);
 	}
 }
@@ -586,6 +587,9 @@ interface GroupState {
 	// Settled diffstat per edit toolCallId (+added/−removed lines), summed
 	// into the batch header's diff section.
 	editStats: Map<string, { adds: number; dels: number }>;
+	// Tool calls whose final status is known (settleStatus). The batch tick
+	// skips them — only the header carrier and in-flight rows animate.
+	settledTools: Set<string>;
 	// Tool calls whose streaming has started (toolcall_start delivered). The
 	// TUI creates a call row as early as the first text delta — pi's message
 	// content array is shared across streaming events, so the block can exist
@@ -619,6 +623,7 @@ function freshGroupState(): GroupState {
 		notes: new Map(),
 		editIds: new Set(),
 		editStats: new Map(),
+		settledTools: new Set(),
 		streamingCalls: new Set(),
 	};
 }
@@ -1082,8 +1087,29 @@ export function tickOpenBatch(): boolean {
 	if (s.current === undefined) return false;
 	animState().tick();
 	const batch = s.batches[s.current];
-	invalidateRows(batch.ids);
-	if (batch.anchor !== undefined) invalidateThoughtRows([batch.anchor]);
+	// Per-frame only the animated rows need to re-render: the header carrier
+	// (spinner/shimmer/live count — the header is visible even when
+	// sticky-closed) and rows still in flight (in-progress dotsCircle dot,
+	// bash elapsed timer). Settled rows are static between state changes;
+	// invalidating them every tick was pure waste — big batches made the
+	// tick a full-transcript repaint 12.5×/s. Settled rows still repaint on
+	// real changes via their registered invalidators (toggle handlers etc.).
+	const animating = batch.ids.filter((id, i) => i === 0 || !s.settledTools.has(id));
+	invalidateRows(animating);
+	// The animated batch header lives inside the anchor's label — and the
+	// label is recomputed at PAINT time (RenderedThinkingSection.render
+	// re-runs labelFor on every frame, unlike the tool rows whose call line
+	// is baked at build time). So ticks must NOT rebuild the anchor: a
+	// rebuild re-runs pi's updateContent — a full Markdown re-parse of the
+	// message — and doing that 12.5×/s was the big mid-turn CPU sink.
+	// Streaming thoughts are the exception: their `Thinking… Ns` seconds
+	// derive from record.now, refreshed only on rebuild, so they keep the
+	// rebuild (each delta rebuilds anyway; the tick keeps the counter alive
+	// through provider-latency pauses).
+	if (batch.anchor !== undefined) {
+		const timing = thoughtTiming(batch.anchor);
+		if (timing && timing.completedAt === undefined) invalidateThoughtRows([batch.anchor]);
+	}
 	animState().requestRender?.();
 	return true;
 }
