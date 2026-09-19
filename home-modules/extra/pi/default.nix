@@ -283,6 +283,18 @@ in
           workflow = "none";
         };
       };
+      ".pi/agent/keybindings.json" = {
+        force = true;
+        # User bindings replace an action's defaults entirely. Only actions
+        # that differ from pi's defaults need to be listed. Edit the deployed
+        # ~/.pi/agent/keybindings.json by hand between switches — pi's own
+        # keybinding editor persists there, and those writes will fail while
+        # it's a read-only nix store symlink.
+        source = jsonFormat.generate "pi-keybindings.json" {
+          # alt is the WM mod key; plain up must stay editor cursor-up.
+          "app.message.dequeue" = "shift+up";
+        };
+      };
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
