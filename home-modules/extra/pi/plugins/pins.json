@@ -671,8 +671,8 @@
       "hash": "sha512-SozWqMNv8vAro468zl8Pp8hHzOu5JLoncwuEz3k3UE/E8/jmFVteWMiKI0bQl9lXbZSHxQYrvL7S4UH/wyi6QQ=="
     },
     "pi-web-access": {
-      "version": "0.29.0",
-      "hash": "sha512-1l4sAWYkFhiBynJf/mXuxmCHxjhiAyWJ4rfQVFu8UPa0JQhCS9oXAmNXcL0Q1SfrO00plmb6L4IkypJ3n1Q4Kg==",
+      "version": "0.30.0",
+      "hash": "sha512-BvqLP36JXfH9OBrmLiJ6IXeeCi9LVqJdLxpexeODM+LoVdCBV13vYiVEG8SQ3J+p+egbGmfPxdDQJ6V631LLUg==",
       "dependencies": [
         "@mozilla/readability",
         "defuddle",
@@ -898,14 +898,13 @@
       ]
     },
     "typed-array-byte-offset": {
-      "version": "1.0.4",
-      "hash": "sha512-bTlAFB/FBYMcuX81gbL4OcpH5PmlFHqlCCpAl8AlEzMz5k53oNDvN8p1PNOWLEmI2x4orp3raOFB51tv9X+MFQ==",
+      "version": "1.0.5",
+      "hash": "sha512-0FHJvLPqZ7KJzp17O13jfsAjsqazgrxBu2zEK95PmUz8lv2+GjRuxUInCr2Rk9Dms3ihN21zJ929ZO43yJ95QQ==",
       "dependencies": [
         "available-typed-arrays",
         "call-bind",
         "for-each",
         "gopd",
-        "has-proto",
         "is-typed-array",
         "reflect.getprototypeof"
       ]
@@ -985,8 +984,8 @@
       ]
     },
     "which-typed-array": {
-      "version": "1.1.22",
-      "hash": "sha512-fvO4ExWMFsqyhG3AiPAObMuY1lxaqgYcxbc49CNdWDDECOJNgQyvsOWVwbZc+qf3rzRtxojBK+CMEv0Ld5CYpw==",
+      "version": "1.1.24",
+      "hash": "sha512-wk4Mf4pR5mRP7eYuuTBCIQ9d0ud2Fv2jRLQpfgnRjbOxAFHmjKFValgTpitVKzJJS8ajnYQV2Du1SZ8j6b/EUQ==",
       "dependencies": [
         "available-typed-arrays",
         "call-bind",
