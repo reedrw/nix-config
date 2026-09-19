@@ -94,6 +94,7 @@ import {
 	readCallSlot,
 	readTextResult,
 	resetTurnTokens,
+	noteToolExecutionStart,
 	scanToolGroupsFromHistory,
 	setLiveThemeSource,
 	settleStatus,
@@ -1641,6 +1642,7 @@ export default function customUi(pi: ExtensionAPI) {
 		inFlightTools += 1;
 		const e = event as { toolCallId?: string };
 		if (typeof e.toolCallId === "string") {
+			noteToolExecutionStart(e.toolCallId);
 			trackGroupToolCall(e.toolCallId);
 			ensureTick();
 		}

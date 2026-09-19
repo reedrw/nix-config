@@ -93,16 +93,63 @@ function statusDot(theme: Theme, context: any): string {
 	return animState().inProgressDot();
 }
 
+// ── Tool execution timings ───────────────────────────────────
+//
+// Wall-clock start of each tool's execution (tool_execution_start, recorded
+// by custom-ui.ts) and completion (settleStatus, from the renderResult
+// path). bash's renderCall reads the span to show a live elapsed timer next
+// to the timeout argument; the batch tick already repaints running rows
+// every frame, so the counter counts up without any timer of its own and
+// freezes at the final duration once the tool settles. Lives on globalThis
+// like the rest of the shared state (per-extension module instances).
+const TOOL_RUNS_KEY = "__piCustomUiToolRuns";
+
+interface ToolRun {
+	startedAt: number;
+	completedAt?: number;
+}
+
+function toolRuns(): Map<string, ToolRun> {
+	const w = globalThis as Record<string, unknown>;
+	return (w[TOOL_RUNS_KEY] ??= new Map()) as Map<string, ToolRun>;
+}
+
+export function noteToolExecutionStart(toolCallId: string): void {
+	if (!toolCallId) return;
+	const runs = toolRuns();
+	if (!runs.has(toolCallId)) runs.set(toolCallId, { startedAt: Date.now() });
+}
+
+export function toolRunMs(toolCallId: string | undefined | null): number | undefined {
+	if (!toolCallId) return undefined;
+	const run = toolRuns().get(toolCallId);
+	if (!run) return undefined;
+	return Math.max(0, (run.completedAt ?? Date.now()) - run.startedAt);
+}
+
+// Whole-second precision — at 0.1s precision the readout aliases against
+// repaint rate (same reason the batch header timer is 1Hz).
+function formatElapsed(ms: number): string {
+	const s = Math.floor(ms / 1000);
+	if (s < 60) return `${s}s`;
+	return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
 // Record the final status of a tool row and request a repaint so the call
 // slot's dot picks it up. Only invalidates on change — renderResult runs on
 // every row render, and an unconditional invalidate would loop forever. The
 // invalidate must be deferred: calling it synchronously from inside
 // renderResult re-enters the row's updateDisplay() mid-rebuild, and the
 // aborted outer pass appends its components again — duplicating every line.
+// Also stamps the execution span's end (toolRunMs reads it — the elapsed
+// timer freezes here instead of running on while the row is still visible).
 export function settleStatus(context: any, error: boolean): void {
 	const status = error ? "error" : "success";
 	if (context?.state && context.state.status !== status) {
 		context.state.status = status;
+		const toolCallId = context.toolCallId as string | undefined;
+		const run = toolCallId ? toolRuns().get(toolCallId) : undefined;
+		if (run && run.completedAt === undefined) run.completedAt = Date.now();
 		setTimeout(() => context.invalidate(), 0);
 	}
 }
@@ -2442,7 +2489,17 @@ export const bash: RenderSlots = withToolNotes({
 	renderCall(args, theme, context) {
 		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
-			const timeout = args.timeout ? theme.fg("muted", ` (timeout ${args.timeout}s)`) : "";
+			// Live elapsed timer next to the timeout argument: `(timeout 120s ·
+			// 14s)`. Shown from tool_execution_start on; the batch tick's
+			// per-frame row invalidation drives it while the tool runs — no
+			// timer of our own. Once settled, the span freezes at the final
+			// duration (settleStatus stamps completedAt).
+			let timeout = "";
+			if (args.timeout) {
+				const runMs = toolRunMs(context?.toolCallId);
+				const live = runMs === undefined ? "" : theme.fg("muted", ` · ${formatElapsed(runMs)}`);
+				timeout = theme.fg("muted", ` (timeout ${args.timeout}s${live ? live : ""})`);
+			}
 			return callLine("Bash", args.command ?? "", theme, timeout, mode, context);
 		});
 	},
