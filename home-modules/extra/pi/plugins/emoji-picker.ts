@@ -5,8 +5,10 @@
 // the search text stays in the editor. While the popup is open, Tab and Enter
 // replace ":query" with the selected emoji (without submitting the message —
 // the key is consumed before the editor sees it), Escape dismisses, and
-// arrows up/down move the selection. Space inserts normally, breaks the
-// ":query" match, and the popup closes.
+// arrows up/down move the selection through ALL results, scrolling a
+// MAX_ROWS-tall window when the selection passes its edge. Underscores in
+// the query match the spaces the dataset's keywords use. Space inserts
+// normally, breaks the ":query" match, and the popup closes.
 //
 // Input is observed via ctx.ui.onTerminalInput as a NON-CONSUMING listener:
 // the TUI input loop returns on { consume: true } before its own
@@ -172,17 +174,23 @@ async function refreshData(): Promise<void> {
 // entry's search string (name + keywords, lowercased, underscores → spaces);
 // matches keep emojilib order, no scoring. So "smile" lists the smileys in
 // familiar picker order instead of ranking an obscure exact-keyword match
-// above them.
+// above them. Query tokens also fold underscores to spaces, so typing
+// "grinning_face" matches the same way the dataset side does.
+function queryTokens(query: string): string[] {
+	return query
+		.split(/[\s/]+/)
+		.map((t) => t.replace(/_/g, " "))
+		.filter((t) => t.length > 0);
+}
+
+// The FULL match list — the popup scrolls it; no MAX_ROWS cap here.
 function searchEntries(entries: EmojiEntry[], query: string): EmojiEntry[] {
-	if (query === "") return entries.slice(0, MAX_ROWS);
-	const tokens = query.split(/[\s/]+/).filter((t) => t.length > 0);
-	if (tokens.length === 0) return entries.slice(0, MAX_ROWS);
+	if (query === "") return entries;
+	const tokens = queryTokens(query);
+	if (tokens.length === 0) return entries;
 	const out: EmojiEntry[] = [];
 	for (const entry of entries) {
-		if (tokens.every((t) => entry[2].includes(t))) {
-			out.push(entry);
-			if (out.length === MAX_ROWS) break;
-		}
+		if (tokens.every((t) => entry[2].includes(t))) out.push(entry);
 	}
 	return out;
 }
@@ -195,6 +203,10 @@ interface PopupState {
 	query: string;
 	items: EmojiEntry[];
 	sel: number;
+	// First visible row of the scrolling viewport (MAX_ROWS tall). Kept in
+	// lockstep by render(): the window slides whenever the selection would
+	// leave it.
+	scroll: number;
 }
 
 let popup: PopupState | null = null;
@@ -231,16 +243,37 @@ function render(): void {
 	if (!popup || !ui) return;
 	widgetVisible = true;
 	const { query, items, sel } = popup;
-	const tokens = query.split(/[\s/]+/).filter((t) => t.length > 0);
+	// Slide the viewport so the selection stays visible.
+	if (popup.sel < popup.scroll) popup.scroll = popup.sel;
+	else if (popup.sel >= popup.scroll + MAX_ROWS) popup.scroll = popup.sel - MAX_ROWS + 1;
+	const scroll = popup.scroll;
+	const end = Math.min(items.length, scroll + MAX_ROWS);
+	const tokens = queryTokens(query);
 	// The factory runs synchronously inside setWidget, receiving the TUI
 	// (already captured) and the live theme. A single Text keeps the widget
 	// comfortably under pi's 10-line cap (header + MAX_ROWS rows).
 	ui.setWidget(WIDGET_KEY, (_t, theme) => {
 		const lines: string[] = [theme.fg("accent", `:${query}`)];
-		for (let i = 0; i < items.length; i++) {
-			const marker = items.length > 1 ? (i === sel ? "▸ " : "  ") : "";
-			const text = `${marker}${styledEntry(items[i], tokens, theme)}`;
-			lines.push(i === sel && items.length > 1 ? theme.fg("accent", text) : text);
+		for (let i = scroll; i < end; i++) {
+			// The marker column doubles as the scroll state: ▲/▼ on the window
+			// edge rows say more results lie beyond (dim, non-selected rows
+			// only — the selected row keeps its ▸).
+			const moreAbove = items.length > 1 && i === scroll && scroll > 0;
+			const moreBelow = items.length > 1 && i === end - 1 && end < items.length;
+			const marker =
+				items.length > 1
+					? i === sel
+						? "▸ "
+						: moreAbove
+							? "▲ "
+							: moreBelow
+								? "▼ "
+								: "  "
+					: "";
+			const raw = `${marker}${styledEntry(items[i], tokens, theme)}`;
+			if (i === sel && items.length > 1) lines.push(theme.fg("accent", raw));
+			else if (marker !== "" && marker !== "  ") lines.push(theme.fg("dim", raw));
+			else lines.push(raw);
 		}
 		return new Text(lines.join("\n"), 1, 0);
 	});
@@ -340,7 +373,7 @@ function scheduleRecompute(): void {
 				hide();
 				return;
 			}
-			popup = { line: cursor.line, startCol, query, items, sel: 0 };
+			popup = { line: cursor.line, startCol, query, items, sel: 0, scroll: 0 };
 			suppressed = null;
 		}
 
@@ -399,6 +432,8 @@ function handleInput(data: string): { consume?: boolean } | undefined {
 			const down = matchesKey(data, "down");
 			const n = popup.items.length;
 			if (n > 1) {
+				// Selection wraps through the FULL match list; the viewport follows
+				// (render() slides the window when the selection leaves it).
 				popup.sel = (popup.sel + (down ? 1 : n - 1)) % n;
 				render();
 				requestRender();
