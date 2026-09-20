@@ -44,7 +44,7 @@ let
     }
     ''
     mkdir -p $out/lib
-    cp ${libxml2.out}/lib/libxml2.so.16.1.3 $out/lib/libxml2.so.2
+    cp "$(readlink -f ${libxml2.out}/lib/libxml2.so)" $out/lib/libxml2.so.2
     chmod +w $out/lib/libxml2.so.2
     patchelf --set-soname libxml2.so.2 $out/lib/libxml2.so.2
   '';

@@ -49,6 +49,7 @@ buildDotnetModule (self: {
       popd || exit 1
     fi
 
+    nix build --impure --no-link --expr "($flake).packages.x86_64-linux.wheel-wizard-unwrapped.src"
     src="$(nix eval --impure --raw --expr "($flake).packages.x86_64-linux.wheel-wizard-unwrapped.src.outPath")"
 
     currentDir="$(pwd)"
