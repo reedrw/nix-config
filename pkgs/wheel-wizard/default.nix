@@ -27,6 +27,7 @@
   libx11,
   libxcursor,
   libxi,
+  libxkbcommon,
   libxrandr,
   libxscrnsaver
 }:
@@ -93,6 +94,7 @@ let
       libxi.dev
       libxrandr.dev
       libxscrnsaver
+      libxkbcommon
     ];
 
     # Export the FHS /usr/bin onto PATH: the app inherits the desktop session's
