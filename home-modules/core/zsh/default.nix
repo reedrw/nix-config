@@ -1,6 +1,27 @@
 { config, osConfig, lib, pkgs, util, ... }:
 let
   sources = (util.importFlake ./plugins).inputs or {};
+
+  # Pre-bake the generated integration scripts instead of forking the
+  # binaries (`eval "$(...)"`) on every shell start. Saves ~6ms per prompt.
+  fzfZshInit = pkgs.runCommand "fzf-zsh-init" { } ''
+    ${pkgs.fzf}/bin/fzf --zsh > $out
+  '';
+  zoxideZshInit = pkgs.runCommand "zoxide-zsh-init" { } ''
+    ${pkgs.zoxide}/bin/zoxide init zsh > $out
+  '';
+
+  # romkatv's instant-zsh trick: print a lookalike prompt before anything else
+  # loads, then swap in the real one. Zcompiled (source prefers the .zwc).
+  instantZshInit = pkgs.runCommand "instant-zsh-init" { } ''
+    cp ${
+      pkgs.fetchurl {
+        url = "https://gist.githubusercontent.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw/3f69117c0d456aa6c8410d553c4799252642a1b4/instant-zsh.zsh";
+        hash = "sha256-YdejPAYKIh0hL+fbxBdMsPxynVUDnVeydQzXXvXMbKM=";
+      }
+    } $out
+    ${pkgs.zsh}/bin/zsh -c "zcompile $out"
+  '';
 in
 {
   imports = [
@@ -17,7 +38,8 @@ in
   programs = {
     fzf = {
       enable = true;
-      enableZshIntegration = true;
+      # integration is sourced from a pre-baked script instead (see initContent)
+      enableZshIntegration = false;
       defaultOptions = [
         "--ansi"
         "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
@@ -90,6 +112,16 @@ in
         save = 99999;
         size = 99999;
       };
+      completionInit = ''
+        autoload -Uz compinit
+        # Keep a zcompiled dump next to .zcompdump; compinit's `source` prefers
+        # the .zwc, which loads ~4ms faster. Regenerate when the dump changes.
+        if [[ ! -s $ZDOTDIR/.zcompdump.zwc || $ZDOTDIR/.zcompdump -nt $ZDOTDIR/.zcompdump.zwc ]]; then
+          compinit -C && zcompile $ZDOTDIR/.zcompdump
+        else
+          compinit -C
+        fi
+      '';
       envExtra = ''
         if [[ "$PROFILE_STARTUP" == true ]]; then
           zmodload zsh/zprof
@@ -98,20 +130,37 @@ in
           setopt xtrace prompt_subst
         fi
       '';
-      completionInit = ''
-        autoload -U compinit && compinit -C
-      '';
-      initContent =
-      with pkgs;
-      ''
+      initContent = lib.mkMerge [
+        # Instant prompt: print a static lookalike prompt before anything else
+        # loads so startup feels instant. Must run before everything else.
+        (lib.mkOrder 500
+        ''
+          source ${instantZshInit}
+          if [[ -t 1 ]]; then
+            typeset -g _instant_loading_prompt
+            if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$DISTROBOX_ENTER_PATH" ]]; then
+              _instant_loading_prompt='%(!.%F{red}.%F{green})%n%f@%F{magenta}%M %B%F{blue}%(!.%d.%~)%f%b  %(!.#.$) '
+            else
+              _instant_loading_prompt='%(!.%F{red}.%F{green})%n%f %B%F{blue}%(!.%d.%~)%f%b  %(!.#.$) '
+            fi
+            instant-zsh-pre "$_instant_loading_prompt"
+          fi
+        '')
+        (with pkgs;
+        ''
         autoload -Uz add-zsh-hook
-        autoload -Uz colors
         autoload -Uz down-line-or-beginning-search
         autoload -Uz up-line-or-beginning-search
 
         setopt histverify
 
         unsetopt nomatch
+
+        # fzf/zoxide integrations sourced from pre-baked scripts (no fork at startup)
+        if [[ $options[zle] = on ]]; then
+          source ${fzfZshInit}
+        fi
+        source ${zoxideZshInit}
 
         source ${oh-my-zsh.src}/lib/async_prompt.zsh
         source ${oh-my-zsh.src}/lib/git.zsh
@@ -124,21 +173,20 @@ in
           . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
         fi
 
-        colors
         setopt promptsubst
-        PROMPT='%{$fg_bold[blue]%}%(!.%d.%~)%{$reset_color%} $(git_prompt_info) %(?..%{%K{19}%F{red}%}!%?%{$reset_color%} )%(!.#.$) '
+        PROMPT='%B%F{blue}%(!.%d.%~)%f%b $(git_prompt_info) %(?..%K{19}%F{red}!%?%k%f )%(!.#.$) '
 
         # show hostname if in ssh session
         if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$DISTROBOX_ENTER_PATH" ]; then
-          PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%}@%{%F{magenta}%}%M $PROMPT"
+          PROMPT="%(!.%F{red}.%F{green})%n%f@%F{magenta}%M $PROMPT"
         else
-          PROMPT="%(!.%{%F{red}%}.%{%F{green}%})%n%{$reset_color%} $PROMPT"
+          PROMPT="%(!.%F{red}.%F{green})%n%f $PROMPT"
         fi
 
         PROMPT_ORIG=$PROMPT
 
-        ZSH_THEME_GIT_PROMPT_PREFIX="(%{$fg[yellow]%}git:"
-        ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%})"
+        ZSH_THEME_GIT_PROMPT_PREFIX="(%F{yellow}git:"
+        ZSH_THEME_GIT_PROMPT_SUFFIX="%f)"
         ZSH_THEME_GIT_PROMPT_DIRTY=" *"
         ZSH_THEME_GIT_PROMPT_CLEAN=""
 
@@ -153,6 +201,7 @@ in
         # Make sure nix-shell gets its completions loaded
         # BUG: Doesn't unload completions when leaving direnv
         function set-completions-from-path() {
+          [[ -n "$ANY_NIX_SHELL_PKGS" ]] || return
           local old_fpath_len=''${#fpath}
           local fpath_union=("''${(@)fpath}")
           typeset -U fpath_union
@@ -172,8 +221,8 @@ in
         }
 
         fpath_backup=("''${(@)fpath}")
-        add-zsh-hook precmd set-completions-from-path
-        add-zsh-hook chpwd set-completions-from-path
+        precmd_functions+=(set-completions-from-path)
+        chpwd_functions+=(set-completions-from-path)
 
         # Draw a horizontal line between commands
         first_command_sent=0
@@ -197,7 +246,7 @@ in
           command clear
         }
 
-        add-zsh-hook precmd draw-separator-line
+        precmd_functions+=(draw-separator-line)
 
         if [[ "$USER" != "root" ]] && [[ "$TMUX" == *"tmux"* ]]; then
           zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
@@ -235,6 +284,7 @@ in
         else
           HISTFILE="$HOME/.zsh_history"
         fi
+        [[ -d ''${HISTFILE:h} ]] || mkdir -p "''${HISTFILE:h}"
 
         zsh-simple-abbreviations --set prog "progress -Mc"
 
@@ -280,7 +330,14 @@ in
           unsetopt xtrace
           exec 2>&3 3>&-; zprof > ~/zshprofile$(date +'%s')
         fi
-      '';
+      '')
+        # Move the _clear-loading-prompt precmd hook to the very end, after every
+        # other module's hooks, so the loading prompt isn't erased too soon.
+        (lib.mkOrder 1600
+        ''
+          instant-zsh-post
+        '')
+      ];
       shellAliases = {
         ":q" = "exit";
         "\\$" = "";

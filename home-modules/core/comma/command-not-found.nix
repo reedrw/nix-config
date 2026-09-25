@@ -28,7 +28,7 @@ in
       else
         color="green"
       fi
-      RPROMPT="%K{$color}%{$fg_bold[black]%} nix-shell %K{#${colors.base02}}%{$fg_bold[$color]%}$ANY_NIX_SHELL_PKGS %{$reset_color%}"
+      RPROMPT="%K{$color}%F{black}%B nix-shell %K{#${colors.base02}}%F{$color}%B$ANY_NIX_SHELL_PKGS %k%f%b"
     fi
     command_not_found_handler(){
       # If user is root, use the default handler

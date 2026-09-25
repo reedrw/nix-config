@@ -1,7 +1,8 @@
 {
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true;
+    # integration is sourced from a pre-baked script instead (see ../default.nix)
+    enableZshIntegration = false;
   };
 
   custom.persistence.directories = [
