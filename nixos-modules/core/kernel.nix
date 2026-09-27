@@ -5,7 +5,7 @@
 
   boot = {
     kernelPackages = lib.mkDefault pkgs.linuxPackages_zen;
-    kernelParams = [ "ip=dhcp" "clearcpuid=umip" ];
+    kernelParams = [ "clearcpuid=umip" ];
     kernelModules = [
       # Nuvoton nct6687 needs this driver
       "nct6683"
