@@ -71,6 +71,8 @@
   boot.loader.grub = {
     gfxmodeEfi = "1920x1080";
     gfxpayloadEfi = "keep";
+    memtest86.enable = true;
+    timeout = 1;
   };
 
   time.timeZone = "America/New_York";
