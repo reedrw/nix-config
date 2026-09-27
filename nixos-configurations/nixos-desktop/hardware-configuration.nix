@@ -11,7 +11,7 @@
   boot = {
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-      kernelModules = [ "dm-snapshot" "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner" ];
+      kernelModules = [ "dm-snapshot" "dm-cache" "dm-cache-smq" "dm-writecache" ];
       luks.devices."enc" = {
         device = "/dev/vg01/nixos";
         # https://nicholaslyz.com/blog/2025/05/14/dm-crypt-causing-system-freezes/
