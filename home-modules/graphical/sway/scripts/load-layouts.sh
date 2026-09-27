@@ -56,7 +56,7 @@ layout_chat(){
 }
 
 layout_audio(){
-  spawn kitty --app-id=bluetuith -e bluetuith
+  spawn kitty --single-instance --app-id=bluetuith -e bluetuith
   focus_tiled bluetuith
   swaymsg "layout splitv"
 
