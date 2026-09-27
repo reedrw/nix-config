@@ -49,7 +49,10 @@
 
   services = {
     lvm.boot.thin.enable = true;
-    btrfs.autoScrub.enable = true;
+    btrfs.autoScrub = {
+      enable = true;
+      interval = "weekly";
+    };
     xserver.videoDrivers = [ "amdgpu" ];
   };
 
@@ -77,7 +80,7 @@
 
   time.timeZone = "America/New_York";
 
-  nix.settings.cores = 8;
+  nix.settings.cores = 16;
 
   programs.droidcam.enable = true;
 
