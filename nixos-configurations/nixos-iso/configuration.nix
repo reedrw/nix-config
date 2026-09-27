@@ -6,7 +6,9 @@
     plymouth.enable = lib.mkForce false;
     initrd.systemd.enable = lib.mkForce false;
     kernelPackages = lib.mkForce pkgs.linuxPackages;
+    kernelModules = [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" ];
   };
+
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
