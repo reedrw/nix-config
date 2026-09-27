@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./lvm-cache-recovery.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
     {
