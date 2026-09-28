@@ -45,6 +45,16 @@
     "hash": "sha256-M2+qSEJk3MncUvFQmA5I5S+Vjf7o5aHnpgXqbbrVT2s="
   },
   {
+    "pname": "Avalonia.Headless",
+    "version": "12.1.2",
+    "hash": "sha256-Zm2O+zx+l58mdAvSFdBN28gzJzpqTp71v9wGadovZAE="
+  },
+  {
+    "pname": "Avalonia.Headless.XUnit",
+    "version": "12.1.2",
+    "hash": "sha256-mO5rHeWWAePWDRXlhK8QBASg1SbgCbVLm1raPt1C6lo="
+  },
+  {
     "pname": "Avalonia.HtmlRenderer",
     "version": "12.0.0",
     "hash": "sha256-TGQQlq7Tbb2znLCYENWV4KO9E9cSz/Kj0KVULjJwEPs="
@@ -138,6 +148,11 @@
     "pname": "MicroCom.Runtime",
     "version": "0.11.6",
     "hash": "sha256-RTr200R3sZuyxi0XQ25ox2p1kVt5R1CbH/YBs21+eNg="
+  },
+  {
+    "pname": "Microsoft.ApplicationInsights",
+    "version": "2.23.0",
+    "hash": "sha256-5sf3bg7CZZjHseK+F3foOchEhmVeioePxMZVvS6Rjb0="
   },
   {
     "pname": "Microsoft.Bcl.AsyncInterfaces",
@@ -360,6 +375,26 @@
     "hash": "sha256-H7wvyuMxgvQZVdszkez4obSqBHQphSZR1Bm2sW60pSM="
   },
   {
+    "pname": "Microsoft.Testing.Extensions.Telemetry",
+    "version": "1.9.1",
+    "hash": "sha256-IlzmkqDCsiJlsbg2OQ/cTgs72dzUHYdAWv9jAbhTZWw="
+  },
+  {
+    "pname": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+    "version": "1.9.1",
+    "hash": "sha256-4nIRA7gBhjcYZqAPK06EM2OzlhBrCzVWmszCyEp0Eso="
+  },
+  {
+    "pname": "Microsoft.Testing.Platform",
+    "version": "1.9.1",
+    "hash": "sha256-3MemlXgL8sDuTwbzDPCroYRbxHafo2R4rEuHV59Xm3Y="
+  },
+  {
+    "pname": "Microsoft.Testing.Platform.MSBuild",
+    "version": "1.9.1",
+    "hash": "sha256-5lZwc0bDtmHey1dPJ5cT7A5G2E5Molk6EoVHm+7vxWc="
+  },
+  {
     "pname": "Microsoft.TestPlatform.ObjectModel",
     "version": "17.13.0",
     "hash": "sha256-6S0fjfj8vA+h6dJVNwLi6oZhYDO/I/6hBZaq2VTW+Uk="
@@ -368,6 +403,11 @@
     "pname": "Microsoft.TestPlatform.TestHost",
     "version": "17.13.0",
     "hash": "sha256-L/CJzou7dhmShUgXq3aXL3CaLTJll17Q+JY2DBdUUpo="
+  },
+  {
+    "pname": "Microsoft.Win32.Registry",
+    "version": "5.0.0",
+    "hash": "sha256-9kylPGfKZc58yFqNKa77stomcoNnMeERXozWJzDcUIA="
   },
   {
     "pname": "Newtonsoft.Json",
@@ -481,8 +521,8 @@
   },
   {
     "pname": "System.Linq.Async",
-    "version": "6.0.1",
-    "hash": "sha256-uH5fZhcyQVtnsFc6GTUaRRrAQm05v5euJyWCXSFSOYI="
+    "version": "6.0.3",
+    "hash": "sha256-i+2XnsOJnD7R/vCFtadp+lwrkDNAscANes2Ur0MSTl8="
   },
   {
     "pname": "System.Threading.RateLimiting",
@@ -511,8 +551,8 @@
   },
   {
     "pname": "Testably.Abstractions.Testing",
-    "version": "4.0.1",
-    "hash": "sha256-EXIEjrR91ZMOwU6Qf0Se5G7v0XEWMEMQe95EXkV1Iw4="
+    "version": "4.3.8",
+    "hash": "sha256-fUxMbR0Msa1Q9YQiGYvia1VTsFWx+7+wYJbZKd5UxTY="
   },
   {
     "pname": "Tmds.DBus.Protocol",
@@ -533,6 +573,11 @@
     "pname": "xunit.analyzers",
     "version": "1.18.0",
     "hash": "sha256-DOgamLnfi9Ua5IDm3JVm9MaOFbSSbmq5l8j2NPO3qd0="
+  },
+  {
+    "pname": "xunit.analyzers",
+    "version": "1.27.0",
+    "hash": "sha256-RjwU14pgJI+Rp2vMYx/2BgniZ5rNCzow8495Re5hkU4="
   },
   {
     "pname": "xunit.assert",
@@ -558,6 +603,51 @@
     "pname": "xunit.runner.visualstudio",
     "version": "3.0.2",
     "hash": "sha256-Q0IxAFO9EDnIGzRl2HCWBujPZL8kqBcNZez1Y29hjPc="
+  },
+  {
+    "pname": "xunit.runner.visualstudio",
+    "version": "3.1.5",
+    "hash": "sha256-O5657884QGldszsEWQFCDRTXViFBmZ4GGC+4iU+usSQ="
+  },
+  {
+    "pname": "xunit.v3",
+    "version": "3.2.2",
+    "hash": "sha256-R6I/IJjyimqmLxVNng52Gn5if/Ccd3iiLjdU1fIBRUM="
+  },
+  {
+    "pname": "xunit.v3.assert",
+    "version": "3.2.2",
+    "hash": "sha256-w3darI8cwsPEoKIQW5exkNygGSTimog7i5nCIPt4e8Y="
+  },
+  {
+    "pname": "xunit.v3.common",
+    "version": "3.2.2",
+    "hash": "sha256-kOWWD94aUCCDozO+db8Fyw3hGwNHFDXDGsSK07xfEpA="
+  },
+  {
+    "pname": "xunit.v3.core.mtp-v1",
+    "version": "3.2.2",
+    "hash": "sha256-gX+ThEy/3ZI6HLQX+w7TAgCIEfSl/cYH2hyaGJWoYIM="
+  },
+  {
+    "pname": "xunit.v3.extensibility.core",
+    "version": "3.2.2",
+    "hash": "sha256-IoW/eGhwHJfi4KD9+J+XdhodSc46wz0c6L/oauVO61E="
+  },
+  {
+    "pname": "xunit.v3.mtp-v1",
+    "version": "3.2.2",
+    "hash": "sha256-xLTSJlR2Odqmac3DRTz7lQW6bAQyzuif/mmCHDN73CM="
+  },
+  {
+    "pname": "xunit.v3.runner.common",
+    "version": "3.2.2",
+    "hash": "sha256-mNTM8ubegG11egY55d/27oGDsPUwSxkyczjRbJ1Aweg="
+  },
+  {
+    "pname": "xunit.v3.runner.inproc.console",
+    "version": "3.2.2",
+    "hash": "sha256-G+3n7N4LU+5x/kpC+q7bZ+K1bGp4aLfj0/IEpB3zqJw="
   },
   {
     "pname": "YamlDotNet",
