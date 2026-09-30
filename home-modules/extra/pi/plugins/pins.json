@@ -997,8 +997,8 @@
       "hash": "sha512-wSvjGK4rdcM0GQ/jnaeCjxpX1DCwWmKVdp5YJMKRp7ixlHx0B2wzA6t4t2Xg4GaHKG4ug/nXPrBOzXAQ5kbF5g=="
     },
     "pi-web-access": {
-      "version": "0.34.0",
-      "hash": "sha512-vZnJHKf88XhhTZxIjLEN+7cZr77RDcuuuhQiLgVCjfL5dG97fOrqeD5OBIOC8aa9rbtsj7labIxYvc2wYYQWzA==",
+      "version": "0.35.0",
+      "hash": "sha512-D1GMJMNDG2omAkL1ztmO6ZEwEyW7LoFpTcckKh2yXjLyAgDFuhpTQrs2jQPAlVtGb3rjAeIXRZrkhFcwSWdGSg==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
