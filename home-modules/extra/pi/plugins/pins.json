@@ -1370,8 +1370,8 @@
       ]
     },
     "undici": {
-      "version": "8.11.2",
-      "hash": "sha512-u4UB2/IrKdU6lFxumHmmo1a3fCQO5tzQllRorfoRS63txhrB7xTpSn1PftwC4qEHkOaqP95fCWW4lJzwErwzhQ=="
+      "version": "8.10.2",
+      "hash": "sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ=="
     },
     "unpdf": {
       "version": "1.8.1",
