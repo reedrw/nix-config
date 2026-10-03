@@ -8,11 +8,11 @@
     "schemes": {
       "flake": false,
       "locked": {
-        "lastModified": 1790677839,
-        "narHash": "sha256-6pEl9T6fqbEpJafjYgKmJFYXjfNZZGTAvmAjP6fz21M=",
+        "lastModified": 1790998275,
+        "narHash": "sha256-vjDM7GtittcsULah9K/r+YXwfkMkQjLO6cGvDrJHgMM=",
         "owner": "tinted-theming",
         "repo": "schemes",
-        "rev": "d70255b752ac8328ee3d549c72a1a55ce5fc794f",
+        "rev": "a70da1dab18008023cfd55a94053f3b6cab4f86e",
         "type": "github"
       },
       "original": {

@@ -677,8 +677,8 @@
       ]
     },
     "ip-address": {
-      "version": "10.7.2",
-      "hash": "sha512-7H/2gFSIitxc0hG3nOI1glS8QLo/EHBFFLk8vEUjXY/xu0AdL8jZ9U1IzO2PUm0d2D/ofQcAifb0g6OBkt8U7w=="
+      "version": "10.7.3",
+      "hash": "sha512-A1kdq/tSb5QjvKvAMgIoEvDBIgL7qaqVP/jkvSwYYRZ9iEzvPpopxp2wQfu3SuZRHtpHNxMn8Fs0bS+gf5Xmwg=="
     },
     "ipaddr.js": {
       "version": "1.9.1",
@@ -993,8 +993,8 @@
       "hash": "sha512-Ngo1m+3lzyi4AE1WxYW2MRKOAYdzvL3XcZSmJg27fqAlJPuDM3Rnp+rqheFBe3ElX+wsK4xZuv1CaZb+FrFKRA=="
     },
     "pi-output-styles": {
-      "version": "0.3.4",
-      "hash": "sha512-wSvjGK4rdcM0GQ/jnaeCjxpX1DCwWmKVdp5YJMKRp7ixlHx0B2wzA6t4t2Xg4GaHKG4ug/nXPrBOzXAQ5kbF5g=="
+      "version": "0.3.5",
+      "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-web-access": {
       "version": "0.35.0",
