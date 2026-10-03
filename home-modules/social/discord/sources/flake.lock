@@ -54,11 +54,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1790810970,
-        "narHash": "sha256-PFDPuFj3UnjZL87m8z5/azH/GYwNXnRjw7dFdO/fZWw=",
+        "lastModified": 1791007510,
+        "narHash": "sha256-R7P+jKdK0iZwHv/V1jeTfBigqhLYwoIKc78mSHtfNAA=",
         "owner": "kaylorben",
         "repo": "nixcord",
-        "rev": "a72323d60993e7cf07b911607e9f5d6fba47c10c",
+        "rev": "1c47afb71426fa2b97b562ff5e50527075dc0110",
         "type": "github"
       },
       "original": {
@@ -85,11 +85,11 @@
     },
     "nixpkgs-ci": {
       "locked": {
-        "lastModified": 1790600678,
-        "narHash": "sha256-6k3n7X2UsZ6tAlWTz99RimiZab+17tMUrw9sRUcELiA=",
+        "lastModified": 1790652569,
+        "narHash": "sha256-641r7xrlSOHYoktL9/aArPIYNgZJ9eM5URzSEOtPJDY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f45c6f04c2f013f004bf94e284e95d72898d9393",
+        "rev": "b6c8664de9b6cc07fe5666a29f91884ba81197c4",
         "type": "github"
       },
       "original": {
@@ -145,11 +145,11 @@
     "vencord": {
       "flake": false,
       "locked": {
-        "lastModified": 1790703663,
-        "narHash": "sha256-LuIwFUAJOoV8Su0g1tvhvXhMEJbkpM2BCCOWzQR4JIA=",
+        "lastModified": 1790981779,
+        "narHash": "sha256-ArqSeQHl31VRDLOz8KwkCxRSUt37jz0IMf3LZHVHMTw=",
         "owner": "Vendicated",
         "repo": "Vencord",
-        "rev": "7f0c10cc29fd789f2f4828ae3dc947623e837920",
+        "rev": "b52ed365cf2ea64a5019b419291a2d9d4d76852d",
         "type": "github"
       },
       "original": {
