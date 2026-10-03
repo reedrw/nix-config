@@ -3,7 +3,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./lvm-cache-recovery.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/pc/ssd"
     {
@@ -36,6 +35,7 @@
     copyPersistPaths = true;
     prevDir = "/var/prev";
     boot = {
+      efi.bootloader = "systemd-boot";
       keyfile-unlock = {
         enable = true;
         device = "enc";
@@ -73,11 +73,7 @@
   };
 
   boot.loader = {
-    grub = {
-      gfxmodeEfi = "1920x1080";
-      gfxpayloadEfi = "keep";
-      memtest86.enable = true;
-    };
+    systemd-boot.memtest86.enable = true;
     timeout = 1;
   };
 
