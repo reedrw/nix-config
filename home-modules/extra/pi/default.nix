@@ -304,12 +304,16 @@ in
           defaultThinkingLevel = "high";
           theme = "stylix";
           tuiMode = "fullscreen";
-          # Consumed by plugins/wheel-scroll.ts: lines scrolled per mouse-wheel
-          # tick in fullscreen mode (pi-tui's wheelScrollLines; pi constructs
-          # TuiAltScreen without it and exposes no setting). Edit the deployed
-          # ~/.pi/agent/settings.json by hand to tune between switches — the
-          # extension re-reads it per event.
-          wheelScrollLines = 5;
+          # Enable the built-in codemode extension next to the default tools
+          # (registered inactive by default). `only`-style entries inherit
+          # pi's default tool selection. Pair with codemode.mode = "only" to
+          # hide active tools from the model entirely.
+          defaultTools = [ "+codemode" ];
+          # Native pi setting: lines per mouse-wheel tick in fullscreen mode
+          # ("auto" | 1-100). Replaces the former wheel-scroll.ts extension —
+          # 0.99 passes this to TuiAltScreen directly, and its routeWheel
+          # signature change broke that extension's prototype patch.
+          fullscreenWheelScrollLines = 5;
           packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
           # Claude Code style tool rendering (one-line calls, terse results).
           # Flip to false to fall back to pi's default boxed tool rendering;

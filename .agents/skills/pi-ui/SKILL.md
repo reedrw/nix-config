@@ -142,10 +142,8 @@ the hard way; violating them fails silently.
   around rendered text re-introduces the nesting bug — route it through
   `linkWrap`.
 - **pi's dist is NOT patched anymore**: the former `pkgs/alias.nix` postFixup
-  seds (wheel scroll ×5 in fullscreen, framing blank above self-shell tool
-  rows) are extension prototype patches now — `wheel-scroll.ts` patches
-  `TuiAltScreen.prototype.routeWheel` (direction ×N ≡ wheelScrollLines = N;
-  N comes from `wheelScrollLines` in settings.json, default 5), and the lib's `installTightSelfRows`
+  seds are covered by other means now — fullscreen wheel scroll is pi's
+  native `fullscreenWheelScrollLines` setting (0.99+), and the lib's `installTightSelfRows`
   strips the blank pi pushes above every self-shell row plus shifts
   `handleMouse` events back (post-0.84 upstream assumes the blank line for
   click y-coordinates — feature-detected). Module identity with pi's own
