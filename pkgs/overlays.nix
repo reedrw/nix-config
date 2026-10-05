@@ -2,7 +2,7 @@
 
 [
   (import ./branches.nix inputs)
-  (import ./.)
+  (import ./. inputs)
   (import ./alias.nix)
   (import ./functions.nix inputs)
 ]

@@ -1,9 +1,11 @@
+inputs:
 self: pkgs:
 let
   myPkgs = {
     gc = pkgs.callPackage ./gc { };
     jdownloader = pkgs.callPackage ./jdownloader { };
     ldp = self.callPackage ./ldp { };
+    linuwux-runtime = pkgs.callPackage ./linuwux-runtime { inherit inputs; };
     mountiso = pkgs.callPackage ./mountiso { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
     unscene = self.callPackage ./unscene { };
