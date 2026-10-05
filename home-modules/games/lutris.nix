@@ -2,7 +2,11 @@
 
 {
   home.packages = with pkgs; [
-    lutris
+    (lutris.override {
+      extraPkgs = _: [
+        pkgs.linuwux-runtime
+      ];
+    })
   ];
 
   custom.persistence.directories = [
