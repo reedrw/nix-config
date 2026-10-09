@@ -25,9 +25,13 @@
 // path-keyed snapshot, so they keep rendering after their source file is
 // deleted (a /tmp screenshot, for example).
 //
-// User messages and `!` shell commands get the zentui-style compact look
-// (accent rail + base01 band, no box) via prototype patches of
-// UserMessageComponent / BashExecutionComponent (see below).
+// `!` shell commands get the zentui-style compact look (accent rail +
+// base01 band, no box) via a prototype patch of BashExecutionComponent
+// (see below). User messages render pi's default look: pi 1.0 dropped the
+// Box around UserMessageComponent's Markdown, which silently fell the old
+// compact-user-message patch back to the default render — and the default
+// (Markdown coloring its own userMessageBg background) looks fine, so the
+// patch was removed.
 //
 // Other extensions opt in voluntarily via the __piCustomUi runtime API
 // (no lib import, no load-order coupling):
@@ -47,7 +51,6 @@ import {
 	type ExtensionAPI,
 	type Theme,
 	ToolExecutionComponent,
-	UserMessageComponent,
 } from "@earendil-works/pi-coding-agent";
 import {
 	convertToPng,
@@ -1107,64 +1110,6 @@ function registerImageFeatures(pi: ExtensionAPI): void {
 	});
 }
 
-// ── User messages: zentui-style "compact" look ────────────────
-
-// Copies the compact user-message style from lmilojevicc/pi-zentui: an
-// accent rail (`▎ `) followed by the message body — no box, no background.
-// pi offers no hook for restyling built-in message components, so this
-// patches UserMessageComponent.prototype.render (fork pattern, guarded by a
-// Symbol.for against stacking; any error falls back to the original render).
-// The component's own Markdown child is reused rather than re-parsing the
-// text, so registered markdown transformers (inline image placeholders) and
-// theming keep working, and the OSC-133 prompt-zone markers the original
-// render adds around the message are preserved.
-
-const USER_MESSAGE_PATCHED = Symbol.for("pi-custom-ui/userMessageRender");
-const OSC_ZONE_START = "\x1b]133;A\x07";
-const OSC_ZONE_END = "\x1b]133;B\x07";
-const OSC_ZONE_FINAL = "\x1b]133;C\x07";
-
-// Markdown pads lines to equal width in places (e.g. code blocks); the rail
-// prefix sits in that padding, so strip it before measuring the line.
-function trimMarkdownPadding(line: string): string {
-	return line.replace(/ +((?:\x1b\[[0-?]*[ -/]*[@-~])*)$/, "$1");
-}
-
-function installCompactUserMessages(getTheme: () => Theme | undefined): void {
-	const proto = UserMessageComponent.prototype as unknown as Record<PropertyKey, unknown>;
-	if (proto[USER_MESSAGE_PATCHED] || typeof proto.render !== "function") return;
-	proto[USER_MESSAGE_PATCHED] = true;
-	const originalRender = proto.render as unknown as (this: Container, width: number) => string[];
-	proto.render = function (this: Container, width: number) {
-		const fallback = () => originalRender.call(this, width);
-		try {
-			if (typeof width !== "number" || width <= 2) return fallback();
-			// children: [Box (padding/bg) → Markdown]
-			const markdown = (this as { children?: Array<{ children?: unknown[] }> }).children?.[0]
-				?.children?.[0] as { render?: (w: number) => string[] } | undefined;
-			if (!markdown || typeof markdown.render !== "function") return fallback();
-			const theme = getTheme();
-			const rail = `${theme ? theme.fg("accent", "▎") : "▎"} `;
-			const railWidth = visibleWidth(rail);
-			const body = markdown.render(width - railWidth);
-			if (!Array.isArray(body) || body.length === 0) return fallback();
-			// Full-width base01 band behind the message (from the stylix
-			// palette; see base16Bg in ./lib/custom-ui.ts).
-			const bg = base16Bg("base01", "131721");
-			const lines = body.map((line) => {
-				const content = truncateToWidth(`${rail}${trimMarkdownPadding(line)}`, width, "");
-				const pad = " ".repeat(Math.max(0, width - visibleWidth(content)));
-				return bg + content + pad + "\x1b[0m";
-			});
-			lines[0] = OSC_ZONE_START + lines[0];
-			lines[lines.length - 1] = OSC_ZONE_END + OSC_ZONE_FINAL + lines[lines.length - 1];
-			return lines;
-		} catch {
-			return fallback();
-		}
-	};
-}
-
 // ── Bash commands (`!`): zentui-style "compact" look ──────────
 
 // Restyles pi's BashExecutionComponent (used for both live `!` runs and
@@ -1456,14 +1401,12 @@ export default function customUi(pi: ExtensionAPI) {
 	// stay as they are (read was registered below; bash stays with nix-comma).
 	if (!customUiEnabled()) return;
 
-	// User messages get the zentui compact look (rail + body, no box). The
-	// theme handle reads ctx.ui.theme lazily at render time — it's a live
-	// getter over the module-level theme, so /theme switches are tracked.
-	let userMessageUi: { theme?: Theme } | undefined;
-	installCompactUserMessages(() => userMessageUi?.theme);
-	// `!` shell commands get the same treatment (yellow rail instead of the
-	// blue user-message rail, same base01 band).
-	installCompactBashCommands(() => userMessageUi?.theme);
+	// `!` shell commands get the zentui compact look (yellow rail + base01
+	// band, no box). The theme handle reads ctx.ui.theme lazily at render
+	// time — it's a live getter over the module-level theme, so /theme
+	// switches are tracked.
+	let bashUi: { theme?: Theme } | undefined;
+	installCompactBashCommands(() => bashUi?.theme);
 	// pi-web-access's search/fetch/check tools get the custom-ui look via the
 	// ToolExecutionComponent prototype patch below.
 	installWebToolSlots();
@@ -1877,7 +1820,7 @@ export default function customUi(pi: ExtensionAPI) {
 		endTurnTokens();
 		clearInterval(loaderTimer);
 		loaderTimer = undefined;
-		userMessageUi = ctx.ui as { theme?: Theme };
+		bashUi = ctx.ui as { theme?: Theme };
 		// Live-theme tier for the lib's base16 resolvers: ctx.ui.theme is a
 		// live getter over pi's theme singleton, so re-reading it per call
 		// tracks /theme changes without an event hook. Registered on
