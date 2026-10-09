@@ -477,8 +477,8 @@
       ]
     },
     "express-rate-limit": {
-      "version": "8.7.0",
-      "hash": "sha512-hOwV7WOxXfjRpAM1DSJWZDXx3GhplwD8IfwuwvogD8i1Qnkgosw/H45s4ZnFAUHDAhPjlY9hLBvJhKmGMyY26g==",
+      "version": "8.7.1",
+      "hash": "sha512-2FXbqkygil3mZiXzEtM0IjE/UBmBNot0J1GEVrJT4JbrvwOSoEtqtO+wHbiMQELWe1eNvHoYRg2dkjOid+6JkA==",
       "dependencies": [
         "debug",
         "ip-address"
@@ -628,8 +628,8 @@
       ]
     },
     "hono": {
-      "version": "4.13.12",
-      "hash": "sha512-6E2QDAc9Ick9Sq77ZrGS/dk2WUYni91aufTw6LJKpV7w8kW5/GxVUc650FOADOmlwg3K+f7Pun6XlV+pYmW6gw=="
+      "version": "4.13.13",
+      "hash": "sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA=="
     },
     "html-escaper": {
       "version": "3.0.3",
@@ -997,8 +997,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-web-access": {
-      "version": "0.35.0",
-      "hash": "sha512-D1GMJMNDG2omAkL1ztmO6ZEwEyW7LoFpTcckKh2yXjLyAgDFuhpTQrs2jQPAlVtGb3rjAeIXRZrkhFcwSWdGSg==",
+      "version": "0.37.0",
+      "hash": "sha512-Je7D5ghQi9dpN0KhpFMuHYwKy0oBvpNrNR7zuTzSyCRsIJDC5in8yGz/3yItxvWYHF1W+q2Sq190nyaLkoWhgg==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
@@ -1370,8 +1370,8 @@
       ]
     },
     "undici": {
-      "version": "8.11.2",
-      "hash": "sha512-u4UB2/IrKdU6lFxumHmmo1a3fCQO5tzQllRorfoRS63txhrB7xTpSn1PftwC4qEHkOaqP95fCWW4lJzwErwzhQ=="
+      "version": "8.10.2",
+      "hash": "sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ=="
     },
     "unpdf": {
       "version": "1.8.1",
