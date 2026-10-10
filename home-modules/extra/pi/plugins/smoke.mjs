@@ -740,6 +740,32 @@ if (!wFull.includes(longQuery)) throw new Error("expanded call line must show th
 closeBatch();
 resetToolGroups();
 
+// rail-safe wrapping: an over-wide running glance (`Search(<56-col arg>) ·
+// Searching "<80-col query>"` clears 130 cols) must wrap under the tree
+// column like every other row — a plain Text soft-wraps at column 0 and the
+// continuation lands orphaned outside the rail. Non-auto-opened sibling of a
+// running pair renders the live glance path (the newest child is the one
+// auto-opened, its phase goes through resultLine).
+resetToolGroups();
+trackGroupToolCall("wp1"); trackGroupToolCall("wp2");
+const wideQ = "long query number ".repeat(8);
+const wWrapRaw = spec.renderResult(
+	{ content: [{ type: "text", text: "" }], details: { phase: "search", currentQuery: wideQ } },
+	{ expanded: false, isPartial: true }, theme, kctx("wp1", { args: { queries: [wideQ, "b"] } }));
+const wWrapStrip = (s) =>
+	s.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").replace(/\x1b\]8;;[^\x1b]*\x1b\\/g, "");
+const wWrapLines = (Array.isArray(wWrapRaw) ? wWrapRaw : wWrapRaw.render(100)).map(wWrapStrip);
+if (wWrapLines.length < 2) throw new Error("wide running glance must wrap: " + JSON.stringify(wWrapLines));
+for (const l of wWrapLines) {
+	// first line carries the label glyph, continuations the connector column
+	if (!/^( ├─| ╰─| │  | {4})/.test(l)) throw new Error("glance continuation left the tree rail: " + JSON.stringify(l));
+}
+if (!wWrapLines.join("").includes('Searching "long query number')) {
+	throw new Error("live phase text lost by the wrap: " + JSON.stringify(wWrapLines));
+}
+closeBatch();
+resetToolGroups();
+
 console.log("OK-WEB-TOOLS");
 
 // ── Click plumbing: OSC 8 pi-action links ────────────────────────

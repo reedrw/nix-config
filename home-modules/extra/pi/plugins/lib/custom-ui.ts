@@ -2006,13 +2006,22 @@ export function base16Bg(name: string, fallbackHex: string): string {
 // to base03 (comments grey, from the base16 palette) so color is reserved
 // for signal — exit codes, diffs, and pre-colored summaries. The row is the
 // primary click-to-expand target.
-export function glanceLine(label: string, arg: string, summary: string, theme: Theme, mode?: GroupMode, toolCallId?: string): Text {
+export function glanceLine(label: string, arg: string, summary: string, theme: Theme, mode?: GroupMode, toolCallId?: string): Component {
 	const base03 = base16Fg("base03", TREE_BASE03);
-	const glyph = mode?.kind === "child" ? childLabelGlyph(mode.last) : "";
 	const head = `${base03}${label}(${clip(arg, 56)})\x1b[39m`;
-	const core = `${glyph}${head} · ${summary}`;
+	const core = `${head} · ${summary}`;
 	const url = toolCallId ? `pi-action://node/tool/${encodeURIComponent(toolCallId)}` : undefined;
-	return new Text(url ? linkWrap(core, url) : core, 0, 0);
+	const wrapped = url ? linkWrap(core, url) : core;
+	if (mode?.kind === "child") {
+		// Rail-safe wrap, like callLine: a running web-search glance is the
+		// widest row in the tree (`Search(<56-col arg>) · Searching "<query>"`
+		// clears 130 cols), and a plain Text soft-wraps at column 0 — the
+		// continuation lands orphaned outside the tree rail. PrefixedText
+		// wraps at (width − prefix) and carries the connector onto every
+		// continuation, keeping glyph column and SGR/OSC-8 state intact.
+		return new PrefixedText(wrapped, childLabelGlyph(mode.last), childLabelContinuation(mode));
+	}
+	return new Text(wrapped, 0, 0);
 }
 
 // ── Tree interaction: toggles, ctrl+o walk, fold renderer ──
