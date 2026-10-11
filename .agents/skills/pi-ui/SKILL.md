@@ -10,11 +10,21 @@ the hard way; violating them fails silently.
 
 ## Ownership & module layout
 
+- **Rendering never registers tools**: since pi 1.0.1, `custom-ui.ts` attaches
+  ALL its renderers (built-ins read/edit/write/grep/find/ls/bash, the web
+  tools, nix-comma's `nix_provision`) through ONE `pi.registerToolRenderer()`
+  resolver consulting the module-level `RENDERED_TOOLS` map. The resolver
+  resolves at render time — restored sessions and later-registered tools
+  included — and spreads `next()` under its slots, so the underlying tool
+  (pi's or another extension's) keeps executing untouched. Renderer-only
+  overrides cannot conflict with `registerTool` ownership.
 - **Tool-name ownership is exclusive**: only one extension may `registerTool` a
-  given name (pi errors on conflicts). `bash` is owned by `nix-comma.ts` (spawn
-  hook); `custom-ui.ts` owns everything else, including `read` with inline
-  kitty-placeholder image rendering (functionality merged from the former
-  image-history.ts — no separate extension anymore).
+  given name (pi errors on conflicts). `bash` is registered by `nix-comma.ts`
+  (pi's built-in definition + its PATH spawn hook, so provisioning works even
+  with custom-ui disabled); custom-ui only draws it. No other tool is
+  re-registered anywhere — including `read`, whose inline kitty-placeholder
+  image rendering (merged from the former image-history.ts) rides entirely on
+  the resolver.
 - Rendering slots are shared via `plugins/lib/custom-ui.ts` (a `lib/` plugin kind —
   not auto-loaded by pi, but installed to `~/.pi/agent/extensions/lib/` for
   `./lib/…` relative imports).
@@ -55,26 +65,32 @@ the hard way; violating them fails silently.
   palette state). Without the palette file the bands follow the theme's
   polarity (light theme → light band) instead of rendering dark Ayu bands
   under light-theme text.
-- **Register tools at LOAD time, never in `session_start`**: pi's session-switch
-  flows (in-app `/resume`, `/new`, `/fork`, tree navigation) render the restored
-  transcript BEFORE re-binding extensions (`rebindCurrentSession({
-  renderBeforeBind: true })` → `renderCurrentSessionState()` first). A tool
-  first registered in `session_start` renders that first pass with pi's
-  built-in renderer; the row also predates the post-bind grouping rescan, never
-  registers a row invalidator (`trackRow` runs only in custom render slots),
-  and if it's the batch's first member it permanently swallows the batch
-  header. Symptom was "skill loads break tool grouping on resume": the agent
-  reads SKILL.md (pi renders that read compactly as `[skill] name`), so the
-  headerless glance rows dangled under the native `[skill]` row. `read` was the
-  offender; `execute` must still resolve paths per session cwd, so the
-  definition is registered once at load (`process.cwd()`) and rebuilt per
-  `ctx.cwd` inside `execute` (same pattern as edit/write/grep/find/ls).
+- **Renderers resolve at render time; register the RESOLVER at load time**:
+  `pi.registerToolRenderer` (pi ≥ 1.0.1) made the old register-every-tool-at-
+  load rule obsolete — the resolver is consulted per render by tool name
+  (interactive-mode's `getRegisteredToolDefinition` → `resolveToolRenderers`,
+  used by the restored-transcript, live `tool_call`, and streaming-update
+  paths alike), so the session-switch pitfall (restored transcript rendering
+  before extensions rebind — the old "skill loads break tool grouping on
+  resume" bug) cannot occur for renderers. The resolver itself must still be
+  registered during extension load, never in `session_start`. Functionality
+  that needs `registerTool` (nix-comma's bash spawn hook, `nix_provision`)
+  keeps the load-time rule.
 - **Shared state must live on `globalThis`**: each extension may get its own module
   instance of the lib, so cross-extension state (e.g. tool batch tracking) uses a
   `globalThis` singleton (`__piCustomUi*` keys), not module scope.
 - `genericSlots(label, argOf)` in the lib gives any tool the full treatment in ~3
-  lines; `pi.getAllTools()` exposes no `execute`, so third-party/MCP tools cannot
-  be re-rendered generically.
+  lines. ALL renderer-less tools are auto-covered by default (the resolver
+  falls back to `genericSlots(genericLabel(toolName), genericArgOf)` when
+  `next()` yields no `renderCall` — MCP tools, bare registerTool extensions),
+  so every call rides the tree/batch machinery. `RENDERED_TOOLS` holds bespoke
+  slots by name (web tools, nix_provision); `UNSTYLED_TOOLS` opts a name out
+  of the auto-cover; a tool shipping its own `renderCall` is left untouched
+  (the former `__piCustomUi.maybeDecorate` globalThis API and the
+  ToolExecutionComponent prototype patch are gone — the resolver made both
+  unnecessary). `pi.getAllTools()` exposes no `execute`, so a resolver still
+  cannot re-render a tool it has no slot for, but it needs no cooperation from
+  the tool's own extension either.
 
 ## Rendering pitfalls
 

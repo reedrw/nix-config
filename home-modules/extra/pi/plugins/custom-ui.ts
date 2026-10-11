@@ -1,14 +1,18 @@
-// custom-ui: custom tool rendering for pi's built-in tools,
-// owned here outright (pi gives tool-name ownership to the first extension
-// that registers; this extension loads before nix-comma, so it wins `bash`).
+// custom-ui: custom tool rendering for pi's built-in tools and named
+// third-party tools, attached via pi.registerToolRenderer() (pi ≥ 1.0.1):
+// renderer-only overrides that resolve at render time — restored sessions
+// and later-registered tools included — and chain through next(). No tool
+// is ever re-registered here, so pi's own definitions (and nix-comma's
+// bash) keep executing untouched, and no extension has to own a tool name
+// for rendering's sake.
 //
 // One-line calls (`● edit src/foo.ts`), one-line result summaries
 // (`⎿  +12 −3`, `⎿  42 lines`), no boxes — full output on demand via
 // ctrl+o. Render slots live in lib/custom-ui.ts.
 //
-// Also owns the `read` tool with inline kitty-placeholder image rendering
-// (merged from image-history.ts): user-message images, assistant-message
-// images, history fallback cells, and tool-result images inside the read row.
+// `read` keeps its inline kitty-placeholder image rendering (merged from
+// image-history.ts): user-message images, assistant-message images,
+// history fallback cells, and tool-result images inside the read row.
 //
 // Images can be embedded in messages as markdown:
 //   `[[Image #N]](file:///…/image-view/blobs/<sha256>.png)`  (pi-image-view)
@@ -33,13 +37,9 @@
 // (Markdown coloring its own userMessageBg background) looks fine, so the
 // patch was removed.
 //
-// Other extensions opt in voluntarily via the __piCustomUi runtime API
-// (no lib import, no load-order coupling):
-//   const api = (globalThis as any).__piCustomUi;
-//   pi.registerTool(api?.maybeDecorate(myTool, { label: "My Tool", argOf: (a) => a.path }) ?? myTool);
-// Registration order: the API installs when this extension loads, which is
-// before user extensions (alphabetical in ~/.pi/agent/extensions), so the
-// simple `api?.maybeDecorate(...) ?? myTool` form is always safe here.
+// Third-party tools are covered by name in the renderer map below
+// (pi-web-access's search/fetch/check/content, nix-comma's nix_provision) —
+// a tool needs no cooperation from its own extension to be drawn custom.
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -50,19 +50,8 @@ import {
 	InteractiveMode,
 	type ExtensionAPI,
 	type Theme,
-	ToolExecutionComponent,
 } from "@earendil-works/pi-coding-agent";
-import {
-	convertToPng,
-	createBashToolDefinition,
-	createEditTool,
-	createFindTool,
-	createGrepTool,
-	createLsTool,
-	createReadToolDefinition,
-	createWriteTool,
-	resizeImage,
-} from "@earendil-works/pi-coding-agent";
+import { convertToPng, resizeImage } from "@earendil-works/pi-coding-agent";
 import {
 	attachNotes,
 	armToolExpandGesture,
@@ -71,6 +60,7 @@ import {
 	beginTurnMessage,
 	clearStreamingCalls,
 	closeBatch,
+	codemode,
 	genericSlots,
 	customUiEnabled,
 	disableLinkActions,
@@ -906,124 +896,94 @@ function imagePortion(
 	return stack;
 }
 
-// ── Read tool registration (owns `read`; merged from image-history) ──
+// ── Read rendering (merged from image-history) ──
+//
+// Renderers only: pi's built-in read keeps executing (it already resolves
+// paths against the session cwd); the tool-renderer resolver below attaches
+// these by tool name at render time.
 
-// Read definitions are rebuilt per cwd at execute time (path resolution must
-// follow the session cwd); the registration itself only carries metadata and
-// renderers, neither of which depends on cwd.
-const readDefinitions = new Map<string, ReturnType<typeof createReadToolDefinition>>();
-function readToolFor(cwd: string): ReturnType<typeof createReadToolDefinition> {
-	let definition = readDefinitions.get(cwd);
-	if (!definition) {
-		definition = createReadToolDefinition(cwd);
-		readDefinitions.set(cwd, definition);
+// With the custom style off, read rows keep the native look plus the
+// tool-result image cells (a rendering fix, not a style choice — same
+// fallback text preview pi's tool-execution renders with no renderResult).
+function readImageFallbackResult(result: any, options: any, theme: Theme, context: any): Component {
+	if (!options.isPartial) settleStatus(context, context.isError === true);
+	const content = Array.isArray(result?.content) ? result.content : [];
+	const text = content
+		.filter((part: any): part is { type: "text"; text: string } =>
+			part?.type === "text" && typeof part.text === "string")
+		.map((part: { text: string }) => part.text)
+		.join("\n");
+
+	const stack = new Container();
+	if (text) {
+		const lines = text.split("\n");
+		const visible = options.expanded ? lines : lines.slice(0, FALLBACK_PREVIEW_LINES);
+		let output = visible.map((line: string) => theme.fg("toolOutput", line)).join("\n");
+		const remaining = lines.length - visible.length;
+		if (remaining > 0) {
+			output += theme.fg("muted", `\n... (${remaining} more lines)`);
+		}
+		stack.addChild(new Text(output, 0, 0));
 	}
-	return definition;
+	const images = imagePortion(result, options, theme, context);
+	if (images) stack.addChild(images);
+	return stack;
 }
 
-// NB: must be called at extension LOAD time, never from session_start. pi's
-// session-switch flows (in-app /resume, /new, /fork, tree navigation) render
-// the restored transcript BEFORE re-binding extensions, so a tool first
-// registered in session_start renders its only pass with pi's built-in
-// renderer — for SKILL.md reads that's the native `[skill] name` compact row.
-// That row also predates the post-bind grouping rescan, never registers a row
-// invalidator, and as a batch's first member would permanently swallow the
-// batch header ("skill loads break tool grouping on resume").
-function registerReadTool(pi: ExtensionAPI): void {
-	if (!customUiEnabled()) {
-		// Default pi look: boxed row with the built-in fallback text preview
-		// (mirrors what tool-execution.ts renders when no renderResult is set).
-		pi.registerTool({
-			...readToolFor(process.cwd()),
-			async execute(toolCallId, params, signal, onUpdate, ctx) {
-				return readToolFor(ctx.cwd).execute(toolCallId, params, signal, onUpdate, ctx);
-			},
-			renderResult(result, options, theme, context) {
-				if (!options.isPartial) settleStatus(context, context.isError === true);
-				const content = Array.isArray(result?.content) ? result.content : [];
-				const text = content
-					.filter((part): part is { type: "text"; text: string } =>
-						part?.type === "text" && typeof part.text === "string")
-					.map((part) => part.text)
-					.join("\n");
-
-				const stack = new Container();
-				if (text) {
-					const lines = text.split("\n");
-					const visible = options.expanded ? lines : lines.slice(0, FALLBACK_PREVIEW_LINES);
-					let output = visible.map((line) => theme.fg("toolOutput", line)).join("\n");
-					const remaining = lines.length - visible.length;
-					if (remaining > 0) {
-						output += theme.fg("muted", `\n... (${remaining} more lines)`);
-					}
-					stack.addChild(new Text(output, 0, 0));
-				}
-				const images = imagePortion(result, options, theme, context);
-				if (images) stack.addChild(images);
-				return stack;
-			},
-		});
-		return;
-	}
-
-	pi.registerTool({
-		...readToolFor(process.cwd()),
-		renderShell: "self",
-		renderCall: readCallSlot,
-		async execute(toolCallId, params, signal, onUpdate, ctx) {
-			return readToolFor(ctx.cwd).execute(toolCallId, params, signal, onUpdate, ctx);
-		},
-		renderResult(result, options, theme, context) {
-			if (!options.isPartial) settleStatus(context, context.isError === true);
-			const mode = groupMode(context.toolCallId);
-			if (mode.kind === "child" && !mode.headerOpen) return new Container();
-			const expandedNow = options.expanded === true || mode.kind !== "child" || mode.outputOpen;
-			const content = Array.isArray(result?.content) ? result.content : [];
-			const images = content.filter(
-				(part): part is { type: "image"; data: string; mimeType: string } =>
-					part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
-				);
-
-			// Collapsed child: single glance line (the click-to-expand target).
-			if (!expandedNow) {
-				const text = content
-					.filter((part): part is { type: "text"; text: string } =>
-						part?.type === "text" && typeof part.text === "string")
-					.map((part) => part.text)
-					.join("\n");
-				const bits: string[] = [];
-				if (text) bits.push(`${text.split("\n").length} lines`);
-				if (images.length > 0) bits.push(`${images.length} image${images.length === 1 ? "" : "s"}`);
-				return glanceLine(
-					"Read",
-					context.args?.path ?? "",
-					context.isError === true
-						? theme.fg("error", bits.join(" · ") || "failed")
-						: theme.fg("dim", bits.join(" · ") || "done"),
-					theme,
-					mode,
-					context.toolCallId,
-				);
-			}
-
-			// Open child: one-line call + "N lines" summary, images appended.
-			const stack = new Container();
-			stack.addChild(
-				readTextResult(
-					result,
-					{ expanded: true, isPartial: options.isPartial },
-					theme,
-					outputCap(mode),
-					mode,
-					context?.toolCallId ? `pi-action://node/tool/${encodeURIComponent(context.toolCallId)}` : undefined,
-				),
+// Custom style: tree-aware call row + glance/expanded result with images.
+const readSlots = {
+	renderShell: "self" as const,
+	renderCall: readCallSlot,
+	renderResult(result: any, options: any, theme: Theme, context: any): Component {
+		if (!options.isPartial) settleStatus(context, context.isError === true);
+		const mode = groupMode(context.toolCallId);
+		if (mode.kind === "child" && !mode.headerOpen) return new Container();
+		const expandedNow = options.expanded === true || mode.kind !== "child" || mode.outputOpen;
+		const content = Array.isArray(result?.content) ? result.content : [];
+		const images = content.filter(
+			(part: any): part is { type: "image"; data: string; mimeType: string } =>
+				part?.type === "image" && typeof part.data === "string" && part.data.length > 0,
 			);
-			const imagePortionComponent = imagePortion(result, { expanded: true }, theme, context);
-			if (imagePortionComponent) stack.addChild(imagePortionComponent);
-			return attachNotes(stack, context, theme);
-		},
-	});
-}
+
+		// Collapsed child: single glance line (the click-to-expand target).
+		if (!expandedNow) {
+			const text = content
+				.filter((part: any): part is { type: "text"; text: string } =>
+					part?.type === "text" && typeof part.text === "string")
+				.map((part: { text: string }) => part.text)
+				.join("\n");
+			const bits: string[] = [];
+			if (text) bits.push(`${text.split("\n").length} lines`);
+			if (images.length > 0) bits.push(`${images.length} image${images.length === 1 ? "" : "s"}`);
+			return glanceLine(
+				"Read",
+				context.args?.path ?? "",
+				context.isError === true
+					? theme.fg("error", bits.join(" · ") || "failed")
+					: theme.fg("dim", bits.join(" · ") || "done"),
+				theme,
+				mode,
+				context.toolCallId,
+			);
+		}
+
+		// Open child: one-line call + "N lines" summary, images appended.
+		const stack = new Container();
+		stack.addChild(
+			readTextResult(
+				result,
+				{ expanded: true, isPartial: options.isPartial },
+				theme,
+				outputCap(mode),
+				mode,
+				context?.toolCallId ? `pi-action://node/tool/${encodeURIComponent(context.toolCallId)}` : undefined,
+			),
+		);
+		const imagePortionComponent = imagePortion(result, { expanded: true }, theme, context);
+		if (imagePortionComponent) stack.addChild(imagePortionComponent);
+		return attachNotes(stack, context, theme);
+	},
+};
 
 // ── Image features (independent of custom-ui) ─────────────
 
@@ -1235,14 +1195,9 @@ function installCompactBashCommands(getTheme: () => Theme | undefined): void {
 // ── pi-web-access tools: Search / Fetch / Check / Content ──
 
 // web_search, fetch_content, source_check, and get_search_content are
-// registered by the pi-web-access package. Tool names are owned exclusively
-// by their registrar and the package doesn't consult the maybeDecorate API,
-// so the slots can't
-// be swapped at registration; instead ToolExecutionComponent's renderer
-// getters are prototype-patched (fork-style, guarded against stacking) to
-// route those tools to the lib's details-driven renderers. History rebuilds
-// go through the same component, so restored sessions match too.
-const WEB_TOOLS_PATCHED = Symbol.for("pi-custom-ui/webToolSlots");
+// registered by the pi-web-access package. Their renderers route through
+// the tool-renderer resolver by name — resolved at render time, so it does
+// not matter that the package registers them itself (or later than us).
 
 // 1024-based, one decimal — matches how the agent quotes fetch sizes.
 const fmtChars = (n: number): string =>
@@ -1331,30 +1286,43 @@ const webToolSpecs: Record<string, ReturnType<typeof webToolSlots>> = {
 	}),
 };
 
-function installWebToolSlots(): void {
-	const proto = ToolExecutionComponent.prototype as unknown as Record<PropertyKey, unknown>;
-	if (proto[WEB_TOOLS_PATCHED] || typeof proto.getRenderShell !== "function") return;
-	proto[WEB_TOOLS_PATCHED] = true;
-	// toolName is TS-private on ToolExecutionComponent; intersecting collapses
-	// the type to never (same trap as the Loader patch above), so use a plain
-	// structural view for the patched receivers.
-	type ToolExecView = { toolName?: string };
-	const originalShell = proto.getRenderShell as (this: ToolExecView) => string;
-	proto.getRenderShell = function (this: ToolExecView) {
-		if (this.toolName && webToolSpecs[this.toolName]) return "self";
-		return originalShell.call(this);
-	};
-	for (const [getter, slotKey] of [
-		["getCallRenderer", "renderCall"],
-		["getResultRenderer", "renderResult"],
-	] as const) {
-		const original = proto[getter] as (this: ToolExecView) => unknown;
-		proto[getter] = function (this: ToolExecView) {
-			const spec = this.toolName ? webToolSpecs[this.toolName] : undefined;
-			if (spec) return spec[slotKey];
-			return original.call(this);
-		};
+// Every tool the suite draws, by name: pi's built-ins, the web tools, and
+// nix-comma's provision tool. The resolver consults this map; anything
+// unmapped falls through to next() untouched.
+const RENDERED_TOOLS: Record<string, { renderShell: "self"; renderCall: any; renderResult: any }> = {
+	read: readSlots,
+	edit,
+	write,
+	grep,
+	find,
+	ls,
+	bash,
+	codemode,
+	...webToolSpecs,
+	nix_provision: genericSlots("Nix Provision", (args: any) => `${args.attr ?? ""}${args.cmd ? ` · ${args.cmd}` : ""}`),
+};
+
+// Tools never drawn custom, even renderer-less ones (reserved escape hatch).
+const UNSTYLED_TOOLS = new Set<string>();
+
+// Label for auto-covered tools: `mcp__server__tool` reads better as
+// `server · tool`; anything else passes through as-is.
+function genericLabel(toolName: string): string {
+	if (toolName.startsWith("mcp__")) return toolName.slice(5).replaceAll("__", " · ");
+	return toolName;
+}
+
+// Argument summary for auto-covered tools: the first non-empty string arg
+// (command, path, pattern, query, url — the primary input of most tools).
+function genericArgOf(args: any): string {
+	if (!args || typeof args !== "object") return "";
+	for (const value of Object.values(args)) {
+		if (typeof value === "string" && value.trim()) {
+			const text = value.trim().replace(/\s+/g, " ");
+			return text.length > 80 ? `${text.slice(0, 79)}…` : text;
+		}
 	}
+	return "";
 }
 
 export default function customUi(pi: ExtensionAPI) {
@@ -1363,11 +1331,32 @@ export default function customUi(pi: ExtensionAPI) {
 	// fix, not a style choice. Only the tool rendering below is gated.
 	registerImageFeatures(pi);
 
-	// Owns `read` (merged from image-history). Load-time registration is
-	// load-bearing: see the NB on registerReadTool. Must run before the
-	// customUiEnabled gate — the disabled branch still registers read (with
-	// the built-in look plus tool-result image rendering).
-	registerReadTool(pi);
+	// Tool renderers: one resolver for everything this suite draws — pi's
+	// built-ins (read/edit/write/grep/find/ls/bash), the web tools, and
+	// nix-comma's nix_provision. Resolves at render time (restored sessions
+	// and tools registered later included — the session-switch flows render
+	// the transcript BEFORE extensions rebind), chains through next(), so the
+	// underlying tool keeps executing untouched. Load-time registration: the
+	// resolver must exist before the first restored-transcript render. Runs
+	// before the customUiEnabled gate — with the style off, read still keeps
+	// its tool-result image cells (a rendering fix, not a style choice).
+	//
+	// Anything NOT in the map is auto-covered when it has no renderCall of
+	// its own (MCP tools, bare registerTool extensions): a generic glance row
+	// from the tool name + first string arg. A tool that ships a renderer is
+	// left alone; UNSTYLED_TOOLS opts a name out of the auto-cover.
+	pi.registerToolRenderer((toolName, next) => {
+		if (!customUiEnabled()) {
+			if (toolName !== "read") return next();
+			return { ...next(), renderResult: readImageFallbackResult };
+		}
+		const slot = RENDERED_TOOLS[toolName];
+		if (slot) return { ...next(), ...slot };
+		if (UNSTYLED_TOOLS.has(toolName)) return next();
+		const base = next();
+		if (base?.renderCall !== undefined) return base;
+		return { ...base, ...genericSlots(genericLabel(toolName), genericArgOf) };
+	});
 
 	// ctrl+o (tool output expansion) prints a "Tool output: expanded/collapsed"
 	// status row straight into the chat scrollback; landing between grouped
@@ -1398,7 +1387,8 @@ export default function customUi(pi: ExtensionAPI) {
 	installThinkingFold(pi);
 
 	// With the style disabled nothing further happens here: pi's built-ins
-	// stay as they are (read was registered below; bash stays with nix-comma).
+	// stay as they are (the resolver above only keeps read's image cells;
+	// bash is nix-comma's registration).
 	if (!customUiEnabled()) return;
 
 	// `!` shell commands get the zentui compact look (yellow rail + base01
@@ -1407,9 +1397,6 @@ export default function customUi(pi: ExtensionAPI) {
 	// switches are tracked.
 	let bashUi: { theme?: Theme } | undefined;
 	installCompactBashCommands(() => bashUi?.theme);
-	// pi-web-access's search/fetch/check tools get the custom-ui look via the
-	// ToolExecutionComponent prototype patch below.
-	installWebToolSlots();
 
 	// ctrl+o walks the whole tree via the lib (expand/collapse every node),
 	// replacing the fork's global-flag observer.
@@ -1855,102 +1842,13 @@ export default function customUi(pi: ExtensionAPI) {
 		// Arm the ctrl+o tree walk from the real keypress: a mouse-driven
 		// per-row setExpanded must not walk every node (see the lib).
 		armToolExpandGesture(ctx);
-		// Rebuild the newest-image-read pointer. (`read` itself is registered
-		// at load time with per-cwd execute — see registerReadTool — so no
-		// re-registration is needed on session switches.)
+		// Rebuild the newest-image-read pointer. (Read rendering goes through
+		// the load-time tool-renderer resolver — no re-registration on session
+		// switches.)
 		scanHistoryForReadTracking(
 			ctx.sessionManager.getEntries() as Array<{ type: string; message?: unknown }>,
 		);
 		readInvalidators.clear();
 	});
-
-	// Original tools are recreated per cwd at execute time (cached); the
-	// registration itself only borrows description/parameters/prompt metadata
-	// from the cwd at load time. The five tools have different param schemas,
-	// so the cache holds them at the registerTool wire type (each keeps its own
-	// `parameters` at runtime; only the shared shape is typed here) — typing it
-	// as one tool's shape would coerce the other four, and a plain union would
-	// not satisfy registerTool's generic inference.
-	const slots = { edit, write, grep, find, ls } as const;
-	type BuiltinName = keyof typeof slots;
-	type RegisteredTool = Parameters<ExtensionAPI["registerTool"]>[0];
-	// The factories return AgentTools (4-arg execute, no ctx — the cwd is
-	// captured in the closure); the registration wire type declares 5 because
-	// pi passes the context to registered tools. Cache the real shape so the
-	// original executes with its own arity.
-	type BuiltinTool = Omit<RegisteredTool, "execute"> & {
-		execute: (toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any) => Promise<any>;
-	};
-	const cache = new Map<string, Record<BuiltinName, BuiltinTool>>();
-	function builtins(cwd: string): Record<BuiltinName, BuiltinTool> {
-		let tools = cache.get(cwd);
-		if (!tools) {
-			tools = {
-				edit: createEditTool(cwd),
-				write: createWriteTool(cwd),
-				grep: createGrepTool(cwd),
-				find: createFindTool(cwd),
-				ls: createLsTool(cwd),
-			};
-			cache.set(cwd, tools);
-		}
-		return tools;
-	}
-
-	for (const name of Object.keys(slots) as BuiltinName[]) {
-		const original = builtins(process.cwd())[name];
-		const slot = slots[name];
-		pi.registerTool({
-			...original,
-			renderShell: slot.renderShell,
-			renderCall: slot.renderCall,
-			renderResult: slot.renderResult,
-			async execute(toolCallId, params, signal, onUpdate, ctx) {
-				return builtins(ctx.cwd)[name].execute(toolCallId, params, signal, onUpdate);
-			},
-		});
-	}
-
-	// `bash` ownership: this extension loads before nix-comma, so its
-	// registration wins. The PATH spawn hook from nix-comma is consulted
-	// through its published handle (globalThis.__nixCommaSpawnHook); with
-	// nix-comma absent this is plain bash with custom-ui rendering.
-	pi.registerTool({
-		...createBashToolDefinition(process.cwd(), {
-			spawnHook: ({ command, cwd, env }) => {
-				const hook = (globalThis as Record<string, unknown>).__nixCommaSpawnHook as
-					| ((h: { command: string; cwd: string; env: Record<string, string | undefined> }) =>
-							| { command: string; cwd: string; env: Record<string, string | undefined> }
-							| undefined)
-					| undefined;
-				const patched = hook?.({ command, cwd, env });
-				return { command, cwd, env: { ...env, ...(patched?.env ?? {}) } };
-			},
-		}),
-		renderShell: bash.renderShell,
-		renderCall: bash.renderCall,
-		renderResult: bash.renderResult,
-	});
-
-	// Opt-in API for third-party tools (see header comment). maybeDecorate
-	// returns a custom-ui-rendered copy of the caller's tool definition —
-	// the caller registers the returned value. Without this extension loaded
-	// (or with the style off) callers register their plain tool unchanged:
-	// they either consult this API or don't, their choice.
-	const STYLE_API_KEY = "__piCustomUi";
-	const api = {
-		version: 1 as const,
-		maybeDecorate<T extends Record<string, unknown>>(
-			tool: T,
-			opts?: { label?: string; argOf?: (args: any) => string },
-		): T {
-			const slotSet = genericSlots(
-				opts?.label ?? String(tool?.name ?? "Tool"),
-				opts?.argOf ?? (() => ""),
-			);
-			return { ...tool, renderShell: slotSet.renderShell, renderCall: slotSet.renderCall, renderResult: slotSet.renderResult };
-		},
-	};
-	(globalThis as Record<string, unknown>)[STYLE_API_KEY] = api;
 
 }

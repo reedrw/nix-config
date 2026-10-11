@@ -20,7 +20,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { Container, getCapabilities, getKeybindings, Text, visibleWidth } from "@earendil-works/pi-tui";
 import type { Component } from "@earendil-works/pi-tui";
-import { keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
+import { highlightCode, keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
 import type { ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 
 // Max width of a one-line call/summary before ellipsis. Terminal-width-aware
@@ -32,6 +32,9 @@ const MAX_EXPANDED_DIFF_LINES = 400;
 // Same cap for a fully expanded write: the file content rides in the call
 // args (the result only carries a byte count) and can be arbitrarily large.
 const MAX_EXPANDED_WRITE_LINES = 400;
+// Streaming write preview: line cap while the args stream in (matches pi's
+// native write renderer); the auto-open cap of the running child wins.
+const WRITE_STREAM_PREVIEW_LINES = 10;
 
 // Global style toggle: `customUi: false` in .pi/settings.json (project)
 // or ~/.pi/agent/settings.json (global; project wins) keeps pi's default
@@ -2574,6 +2577,114 @@ export const bash: RenderSlots = withToolNotes({
 });
 
 // ---------------------------------------------------------------------------
+// codemode — the script is the call arg; expanded view rebuilds the useful
+// half of pi's native renderer (highlighted script via the package root's
+// highlightCode, nested tool-call status from result.details.calls, output)
+// as tree-railed blocks, so the row joins the batch tree instead of sitting
+// full-width and rail-less between glance rows.
+// ---------------------------------------------------------------------------
+
+const CODEMODE_OUTPUT_HEADER = /^Script (completed|failed)\nWall time [^\n]*\nOutput:\n/;
+
+function codemodeCallArg(args: any): string {
+	const code = typeof args?.code === "string" ? args.code : "";
+	const first = code.split("\n").find((l: string) => l.trim()) ?? "";
+	return first.trim().replace(/\s+/g, " ");
+}
+
+function codemodeCallLines(calls: any[], theme: Theme): string {
+	return calls
+		.map((call: any) => {
+			const icon =
+				call?.status === "running" ? theme.fg("warning", "…")
+				: call?.status === "error" ? theme.fg("error", "✗")
+				: call?.status === "cancelled" ? theme.fg("muted", "⊘")
+				: theme.fg("success", "✓");
+			const arg = typeof call?.args === "string" ? clip(call.args.replace(/\s+/g, " "), 60) : "";
+			const ms = typeof call?.durationMs === "number" ? call.durationMs : undefined;
+			const dur = ms === undefined ? "" : theme.fg("dim", ` ${ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`}`);
+			return `${icon} ${theme.fg("toolTitle", String(call?.name ?? ""))}${arg ? ` ${theme.fg("muted", arg)}` : ""}${dur}`;
+		})
+		.join("\n");
+}
+
+export const codemode: RenderSlots = withToolNotes({
+	renderShell: "self",
+	renderCall(args, theme, context) {
+		const mode = groupMode(context?.toolCallId, context);
+		return treeCall(mode, theme, context, () => {
+			// No function-call skeuomorphism when the expanded script block is
+			// visible — the call line is just `● codemode` there. The script line
+			// remains as the streaming preview and in collapsed glances, where
+			// no other view of the code exists.
+			const expandedNow = context?.expanded === true || mode.kind !== "child" || mode.outputOpen;
+			const showArg = context?.isPartial === true || !expandedNow;
+			return callLine("codemode", showArg ? codemodeCallArg(args) : "", theme, "", mode, context);
+		});
+	},
+	renderResult(result, { expanded, isPartial }, theme, context) {
+		const args = context.args ?? {};
+		const mode = groupMode(context?.toolCallId);
+		if (mode.kind === "child" && !mode.headerOpen) {
+			// Hidden child: still settle the status for a later re-open.
+			if (!isPartial) settleStatus(context, context.isError);
+			return new Container();
+		}
+		const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
+		// Nested tool calls stream via onUpdate while the script runs (status
+		// icons flip …→✓/✗); the output text only exists in the final result.
+		const calls = Array.isArray(result?.details?.calls) ? result.details.calls : [];
+		const output = resultText(result).replace(CODEMODE_OUTPUT_HEADER, "").replace(/\n+$/, "");
+		if (isPartial && !expandedNow) {
+			if (mode.kind === "child") return new Container();
+			return glanceLine("codemode", codemodeCallArg(args), theme.fg("dim", "running…"), theme, mode, context?.toolCallId);
+		}
+		if (isPartial && expandedNow && calls.length > 0) {
+			const prefix = childOutputPrefix(mode, theme);
+			return new PrefixedText(codemodeCallLines(calls, theme), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+		}
+		settleStatus(context, context.isError);
+		if (!expandedNow) {
+			const summary = context.isError
+				? theme.fg("error", clip(firstLine(output) || "failed", 40))
+				: theme.fg("dim", "done");
+			return glanceLine("codemode", codemodeCallArg(args), summary, theme, mode, context?.toolCallId);
+		}
+		// Expanded: highlighted script, nested-call status, output/error — the
+		// same structure for failed scripts (the full tool call stays visible
+		// next to its error). Blocks separate with a blank line that carries
+		// the tree prefix — a bare Spacer would break the rail column, and a
+		// leading \n inside the block would collapse (wrapTreeText skips a
+		// forced break on an empty line). For mid-list children the separator
+		// line draws the │ through-connector; last children and solo rows get
+		// a plain blank line.
+		const stack = new Container();
+		const prefix = childOutputPrefix(mode, theme);
+		const url = toolToggleUrl(context);
+		// Factory, not instance: the same separator can be added twice, and
+		// component instances must not be shared between container children.
+		const separator = () => new Text(mode.kind === "child" ? prefix : "", 0, 0);
+		const code = typeof args.code === "string" ? args.code.replace(/\r/g, "").replace(/\n+$/, "") : "";
+		if (code) {
+			const highlighted = highlightCode(code, "javascript").join("\n");
+			const scriptBlock = new PrefixedText(highlighted, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+			stack.addChild(url ? new ClickToggle(scriptBlock, url) : scriptBlock);
+		}
+		if (calls.length > 0) {
+			if (stack.children.length > 0) stack.addChild(separator());
+			stack.addChild(new PrefixedText(codemodeCallLines(calls, theme), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT));
+		}
+		const body = context.isError ? output || resultText(result) || "error" : output;
+		if (body) {
+			if (stack.children.length > 0) stack.addChild(separator());
+			stack.addChild(expandedBlock(body, theme, context.isError === true, outputCap(mode), mode, url));
+		}
+		if (stack.children.length === 0) return resultLine(theme, "done", false, mode);
+		return stack;
+	},
+});
+
+// ---------------------------------------------------------------------------
 // read — `path:12-40` range suffix, "N lines" summary. Call and text half of
 // the result are exported separately so image-history.ts (which owns `read`
 // and appends inline image cells to the row) can compose them.
@@ -2717,9 +2828,25 @@ export const write: RenderSlots = {
 	renderCall(args, theme, context) {
 		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
-			const lines = typeof args.content === "string" ? args.content.split("\n").length : 0;
+			const content = typeof args.content === "string" ? args.content.replace(/\n+$/, "") : "";
+			const lines = content ? content.split("\n").length : 0;
 			const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
-			return callLine("Write", shortenPath(args.path ?? ""), theme, suffix, mode, context);
+			const call = callLine("Write", shortenPath(args.path ?? ""), theme, suffix, mode, context);
+			// Live preview while the args stream: pi renders only the call row
+			// until a result exists, so without this the written lines never
+			// appear during streaming (the settled view is renderResult's job).
+			// isPartial stays true through execution until the result lands,
+			// so the preview holds steady where pi's native renderer did.
+			if (!content || context?.isPartial !== true) return call;
+			const cap = outputCap(mode) ?? WRITE_STREAM_PREVIEW_LINES;
+			const shown = content.split("\n").slice(0, cap).map((line: string) => theme.fg("toolOutput", line));
+			const rest = lines - shown.length;
+			if (rest > 0) shown.push(theme.fg("muted", `… +${rest} more lines`));
+			const prefix = childOutputPrefix(mode, theme);
+			const stack = new Container();
+			stack.addChild(call);
+			stack.addChild(new PrefixedText(shown.join("\n"), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT));
+			return stack;
 		});
 	},
 	renderResult(result, { expanded, isPartial }, theme, context) {

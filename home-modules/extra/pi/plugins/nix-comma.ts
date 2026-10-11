@@ -34,7 +34,7 @@ import { homedir } from "node:os";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import { Type } from "typebox";
-import { defineTool, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { createBashToolDefinition, defineTool, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import type { Type as TType } from "typebox";
 
 const NIX_INDEX_DB = join(homedir(), ".cache/nix-index");
@@ -599,20 +599,29 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 		}
 	}
 
-	// PATH injection hook, published for whoever owns the `bash` tool
-	// registration (custom-ui loads first and consults it; without it
-	// pi's built-in bash runs un-provisioned). Publishing a hook instead of
-	// registering bash keeps this extension independent of any UI.
-	(globalThis as Record<string, unknown>).__nixCommaSpawnHook = ({ env }: { env: Record<string, string | undefined> }) =>
-		sessionPaths.length === 0
-			? undefined
-			: { env: { ...env, PATH: `${sessionPaths.join(":")}:${env.PATH ?? process.env.PATH ?? ""}` } };
-
+	// Owns the `bash` tool: pi's built-in definition plus this extension's
+	// PATH spawn hook, registered here directly. custom-ui attaches its
+	// rendering through pi.registerToolRenderer (a renderer-only override
+	// that never conflicts with registrations), so functionality and style
+	// stay fully decoupled — and provisioning keeps working with custom-ui
+	// disabled or absent.
+	pi.registerTool(
+		createBashToolDefinition(process.cwd(), {
+			spawnHook: ({ command, cwd, env }) =>
+				sessionPaths.length === 0
+					? { command, cwd, env }
+					: {
+							command,
+							cwd,
+							env: { ...env, PATH: `${sessionPaths.join(":")}:${env.PATH ?? process.env.PATH ?? ""}` },
+						},
+		}),
+	);
 
 	// Explicit provisioning: pick a variant among ambiguous candidates, override
 	// an earlier auto-provision, or make a known attr available on demand.
-	// Opts into custom-ui rendering via its runtime API (if loaded); without
-	// it the tool registers plain.
+	// custom-ui draws it through its tool-renderer resolver (by name); without
+	// custom-ui the plain pi look applies.
 	// defineTool keeps the schema inference for a standalone definition (a plain
 	// object literal would leave the execute params implicitly `any`).
 	const provisionTool = defineTool({
@@ -666,15 +675,7 @@ export default function nixCommaExtension(pi: ExtensionAPI) {
 			};
 		},
 	});
-	const styleApi = (globalThis as Record<string, unknown>).__piCustomUi as
-		| { maybeDecorate: (tool: any, opts?: { label?: string; argOf?: (args: any) => string }) => any }
-		| undefined;
-	pi.registerTool(
-		styleApi?.maybeDecorate(provisionTool, {
-			label: "Nix Provision",
-			argOf: (args: any) => `${args.attr ?? ""}${args.cmd ? ` · ${args.cmd}` : ""}`,
-		}) ?? provisionTool,
-	);
+	pi.registerTool(provisionTool);
 
 	// Tell the agent up front that missing commands resolve themselves.
 	pi.on("before_agent_start", async (event) => {
