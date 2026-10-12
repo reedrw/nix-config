@@ -17,13 +17,6 @@
         "/var/lib/jellyfin"
       ];
     }
-    {
-      services.thelounge.enable = true;
-
-      custom.persistence.directories = [
-        "/var/lib/thelounge"
-      ];
-    }
   ];
 
   networking.hostName = "nixos-desktop";
