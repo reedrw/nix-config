@@ -1198,9 +1198,49 @@ export const DOTS_SPINNERS: readonly (readonly string[])[] = [
 
 // zentui's working-line verb catalog, in display order.
 const VERBS = [
-	"Sautéing", "Cooking", "Ionizing", "Zigzagging", "Razzle-dazzling",
-	"Photosynthesizing", "Nucleating", "Brewing", "Combobulating", "Boogieing",
-	"Befuddling", "Alchemizing", "Conjuring", "Baking", "Simmering", "Blanching",
+	// kitchen
+	"Sautéing", "Cooking", "Brewing", "Baking", "Simmering", "Blanching",
+	"Fermenting", "Pickling", "Kneading", "Caramelizing", "Deglazing",
+	"Emulsifying", "Poaching", "Marinating", "Whisking", "Zesting",
+	// laboratory
+	"Ionizing", "Nucleating", "Photosynthesizing", "Distilling", "Calibrating",
+	"Centrifuging", "Polymerizing", "Crystallizing", "Oxidizing", "Titrating",
+	"Sequencing", "Accelerating", "Levitating", "Mutating",
+	// arcane
+	"Alchemizing", "Conjuring", "Transmogrifying", "Enchanting", "Bewitching",
+	"Scrying", "Summoning", "Banishing", "Divining", "Manifesting",
+	"Vanishing", "Materializing", "Befuddling", "Combobulating",
+	// computing
+	"Compiling", "Optimizing", "Minifying", "Memoizing", "Parallelizing",
+	"Refactoring", "Debouncing", "Throttling", "Vectorizing", "Quantizing",
+	"Compressing", "Defragmenting", "Indexing", "Caching", "Recursing",
+	"Pipelining", "Overclocking", "Bootstrapping", "Rasterizing", "Antialiasing",
+	"Raytracing", "Splining", "Tweening", "Swizzling", "Wrangling",
+	// contemplative
+	"Pondering", "Mulling", "Cogitating", "Ruminating", "Percolating",
+	"Gestating", "Germinating", "Perambulating",
+	// physical
+	"Boogieing", "Zigzagging", "Razzle-dazzling", "Wobbling", "Jiggling",
+	"Moseying", "Slurping", "Warping", "Blending", "Voguing",
+	"Sashaying", "Kibitzing", "Shimmering", "Confabulating",
+	// goose energy (Claude Code's hand-curated set)
+	"Beaming", "Booping", "Bouncing", "Bubbling", "Chasing", "Churning",
+	"Coalescing", "Crafting", "Crunching", "Cuddling", "Dancing", "Dazzling",
+	"Discovering", "Doodling", "Dreaming", "Drifting", "Exploring", "Finding",
+	"Floating", "Fluttering", "Foraging", "Forging", "Frolicking", "Gathering",
+	"Giggling", "Gliding", "Greeting", "Growing", "Hatching", "Herding",
+	"Honking", "Hopping", "Hugging", "Humming", "Imagining", "Inventing",
+	"Jingling", "Juggling", "Jumping", "Kindling", "Knitting", "Launching",
+	"Leaping", "Mapping", "Meandering", "Mixing", "Munching", "Napping",
+	"Nibbling", "Noodling", "Orbiting", "Painting", "Plotting", "Popping",
+	"Prancing", "Purring", "Puzzling", "Questing", "Riding", "Roaming",
+	"Rolling", "Sauteeing", "Scribbling", "Seeking", "Shimmying", "Singing",
+	"Skipping", "Sleeping", "Snacking", "Sniffing", "Snuggling", "Soaring",
+	"Sparking", "Spinning", "Splashing", "Sprouting", "Squishing", "Stargazing",
+	"Stirring", "Strolling", "Swimming", "Swinging", "Tickling", "Tinkering",
+	"Toasting", "Tumbling", "Twirling", "Waddling", "Wandering", "Watching",
+	"Weaving", "Whistling", "Wibbling", "Wiggling", "Wishing", "Wondering",
+	"Yawning", "Zooming",
 ];
 
 // cli-spinners' dotsCircle — every frame is exactly 2 cells (the spaces are
