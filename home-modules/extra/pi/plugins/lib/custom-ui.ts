@@ -1299,33 +1299,56 @@ function shimmerColors(stops: readonly string[]): { grad: Rgb[]; base: Rgb } {
 	return p;
 }
 
-// One shimmer frame over `text`: a sine wave rides the string, and cells
-// above the threshold blend from the base tone toward a gradient stop (the
-// ramp position itself scrolls with the frame). Raw truecolor SGR — the
-// colors come from the stylix palette, but per-character coloring is beyond
-// theme.fg. `stops` names the base16 gradient (default: the batch header's
-// base0D→base0E→base0C sweep).
+// One shimmer frame over `text`: a brightness pulse travels LEFT TO RIGHT
+// across the label — a raised-cosine bump (periodic in position, so it
+// exits right and re-enters left with no seam) lifts each character from
+// the muted base04 tone toward the full gradient. The gradient hue itself
+// sweeps the whole label and drifts slowly with the frame. Raw truecolor
+// SGR — the colors come from the stylix palette, but per-character coloring
+// is beyond theme.fg. `stops` names the base16 gradient (default: the
+// batch header's base0D→base0E→base0C sweep).
+const SHIMMER_SWEEP = 0.1; // bump travel per frame (80ms tick ≈ crosses the label in ~1s)
+const SHIMMER_GAP = 0.75; // darkness between pulses, in label-widths
+const SHIMMER_WIDTH = 0.18; // gaussian band width, in label-widths
+const SHIMMER_DRIFT = 0.03; // gradient hue phase per frame
 export function shimmerFrame(
 	text: string,
 	frame: number,
 	stops: readonly string[] = ["base0D", "base0E", "base0C"],
 ): string {
 	const { grad, base } = shimmerColors(stops);
+	const span = Math.max(1, text.length - 1);
+	// Circular interpolation: the last stop blends back into the first, so
+	// the hue drift phase wraps with no seam.
+	const sample = (phase: number): Rgb => {
+		const gi = (phase - Math.floor(phase)) * grad.length;
+		const idx = Math.floor(gi);
+		const a = grad[idx] ?? grad[0]!;
+		const b = grad[(idx + 1) % grad.length] ?? a;
+		const f = gi - idx;
+		return [
+			Math.round(a[0] + (b[0] - a[0]) * f),
+			Math.round(a[1] + (b[1] - a[1]) * f),
+			Math.round(a[2] + (b[2] - a[2]) * f),
+		];
+	};
 	let line = "";
 	for (let i = 0; i < text.length; i++) {
-		const wave = Math.sin((i - frame * 0.3) * 0.8);
-		if (wave > 0.3) {
-			const intensity = (wave - 0.3) / 0.7;
-			const gi = Math.floor((i + frame * 0.5) % (grad.length * 2));
-			const gIdx = gi < grad.length ? gi : grad.length * 2 - 1 - gi;
-			const gc = grad[Math.min(gIdx, grad.length - 1)];
-			const r = Math.round(base[0] + (gc[0] - base[0]) * intensity);
-			const g = Math.round(base[1] + (gc[1] - base[1]) * intensity);
-			const b = Math.round(base[2] + (gc[2] - base[2]) * intensity);
-			line += `\x1b[1m\x1b[38;2;${r};${g};${b}m${text[i]}\x1b[22m`;
-		} else {
-			line += `\x1b[38;2;${base[0]};${base[1]};${base[2]}m${text[i]}`;
-		}
+		// Brightness bump: a gaussian sweeping across the label, then a long
+		// dark stretch (the bump center travels off the right edge before
+		// wrapping to the left — the jump happens while nothing is lit, so the
+		// sweep reads as discrete pulses: fast crossing, long dark interval).
+		const pos = (frame * SHIMMER_SWEEP) % (1 + SHIMMER_GAP);
+		const d = (i / span - pos) / SHIMMER_WIDTH;
+		const bump = Math.exp(-d * d);
+		const mix = bump;
+		// Trough tone: base04 pulled 40% toward black — darker than any dim
+		// theme role, so the un-pulsed label nearly vanishes.
+		const gc = sample(i / span - frame * SHIMMER_DRIFT);
+		const r = Math.round(base[0] * 0.6 + (gc[0] - base[0] * 0.6) * mix);
+		const g = Math.round(base[1] * 0.6 + (gc[1] - base[1] * 0.6) * mix);
+		const b = Math.round(base[2] * 0.6 + (gc[2] - base[2] * 0.6) * mix);
+		line += `\x1b[1m\x1b[38;2;${r};${g};${b}m${text[i]}\x1b[22m`;
 	}
 	return line + "\x1b[0m";
 }
