@@ -7,16 +7,16 @@
   ],
   "packages": {
     "@hono/node-server": {
-      "version": "1.19.17",
-      "hash": "sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ=="
+      "version": "2.1.4",
+      "hash": "sha512-2g1qeHl4BduwDn6L8nkAvDrPUWPMlkQ//a5NhP/zIyaXKMjZNRV+cG9Csu+BiJFf6+68pqzjf4Hi5sJGKHuS1g=="
     },
     "@mixmark-io/domino": {
       "version": "2.2.0",
       "hash": "sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw=="
     },
     "@modelcontextprotocol/sdk": {
-      "version": "1.27.1",
-      "hash": "sha512-sr6GbP+4edBwFndLbM60gf07z0FQ79gaExpnsjMGePXqFcSSb7t6iscpjk9DhFhwd+mTEQrzNafGP8/iGGFYaA==",
+      "version": "1.32.1",
+      "hash": "sha512-2DdE+SJDtzLEEWzY1ZjY7Q+VcPhcV1KisD3zI4u0XZyktsjHum1mwbMI+JaulUBi2OZk+KJAi2uPXzxichPkdw==",
       "dependencies": [
         "@hono/node-server",
         "ajv",
@@ -152,8 +152,8 @@
       "hash": "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="
     },
     "content-disposition": {
-      "version": "1.1.0",
-      "hash": "sha512-5jRCH9Z/+DRP7rkvY83B+yGIGX96OYdJmzngqnw2SBSxqCFPd0w2km3s5iawpGX8krnwSGmF0FW5Nhr0Hfai3g=="
+      "version": "2.0.1",
+      "hash": "sha512-e+H0ZXHSWYrENhQzw1LPuP4oF5MzVKmDU6d3hxlvaPEYLLg62MxtQNPRx4SYSuYJSBUgnQIG4HIN2tEtNv7Dog=="
     },
     "content-type": {
       "version": "1.0.5",
@@ -443,8 +443,8 @@
       "hash": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ=="
     },
     "express": {
-      "version": "5.2.1",
-      "hash": "sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==",
+      "version": "5.3.0",
+      "hash": "sha512-qCqy1xSoaugxOD4IVHb1ZWdkvCF2W3aE2okKouWj8VwJ+ztskSiXoBnCSJqfKT+cVPJhuJqe9YLbY425+Zh00g==",
       "dependencies": [
         "accepts",
         "body-parser",
@@ -677,8 +677,8 @@
       ]
     },
     "ip-address": {
-      "version": "10.7.3",
-      "hash": "sha512-A1kdq/tSb5QjvKvAMgIoEvDBIgL7qaqVP/jkvSwYYRZ9iEzvPpopxp2wQfu3SuZRHtpHNxMn8Fs0bS+gf5Xmwg=="
+      "version": "10.7.4",
+      "hash": "sha512-DWBMKyeM25D70nrIiTkgQth59/G+naKOTep6huF9j+GmeK3DMD60Zvxg5d5qQnz+38AHgou6ean2LECX+lrKDg=="
     },
     "ipaddr.js": {
       "version": "1.9.1",
@@ -989,16 +989,16 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-context-view": {
-      "version": "0.6.0",
-      "hash": "sha512-Ngo1m+3lzyi4AE1WxYW2MRKOAYdzvL3XcZSmJg27fqAlJPuDM3Rnp+rqheFBe3ElX+wsK4xZuv1CaZb+FrFKRA=="
+      "version": "0.7.0",
+      "hash": "sha512-27defDIclkYuuG6nEg47C/NZ3ld2EmAKjs05dGU7vB6Ho2UMP2ybt2dRmwmz2QPRECIld9LGojshsnV+Te0IZA=="
     },
     "pi-output-styles": {
       "version": "0.3.5",
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-web-access": {
-      "version": "0.37.0",
-      "hash": "sha512-Je7D5ghQi9dpN0KhpFMuHYwKy0oBvpNrNR7zuTzSyCRsIJDC5in8yGz/3yItxvWYHF1W+q2Sq190nyaLkoWhgg==",
+      "version": "0.39.0",
+      "hash": "sha512-LfVbaOLXDZuVw0WC3mnBtG8RILH4joBs0WrKrXYWj2HGuX3SpozxcGZvUDlwvio4lIFYjEONvgcTTqQYD0Dv4Q==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
@@ -1454,8 +1454,8 @@
       "hash": "sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ=="
     },
     "zod": {
-      "version": "4.6.5",
-      "hash": "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="
+      "version": "4.6.7",
+      "hash": "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg=="
     },
     "zod-to-json-schema": {
       "version": "3.25.2",
