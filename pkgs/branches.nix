@@ -1,5 +1,5 @@
 inputs:
-_: pkgs:
+self: pkgs:
 {
   nur = import inputs.NUR {
     inherit pkgs;
@@ -10,4 +10,6 @@ _: pkgs:
     config = import ./config.nix;
     inherit (pkgs.stdenv.hostPlatform) system;
   };
+
+  unstable = self.mv.tip;
 }

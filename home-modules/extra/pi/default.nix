@@ -253,7 +253,7 @@ in
     # (release) lags far behind for pi. No wrapper needed — nix-locate (for
     # nix-comma.ts) is already on PATH via home.packages in
     # home-modules/core/comma/default.nix.
-    packages = [ pkgs.mv.tip.pi-coding-agent ];
+    packages = [ pkgs.unstable.pi-coding-agent ];
 
     # pi-output-styles keeps its user default (/style … --save) and custom
     # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
@@ -298,7 +298,7 @@ in
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
-          lastChangelogVersion = pkgs.mv.tip.pi-coding-agent.version;
+          lastChangelogVersion = pkgs.unstable.pi-coding-agent.version;
           defaultProvider = "opencode-go";
           defaultModel = "glm-5.3-flash";
           defaultThinkingLevel = "high";
