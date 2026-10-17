@@ -1,0 +1,37 @@
+--- a/src/scripts/node/state-stream.lua
++++ b/src/scripts/node/state-stream.lua
+@@ -54,6 +54,17 @@
+
+     local stored_values = getStoredStreamProps (key) or {}
+
++    -- [stop-gap backport of wireplumber !867 / issue #974]
++    -- Treat stored empty/all-zero volumes as garbage: fall back to the
++    -- healthy default instead of restoring a poisoned entry.
++    if stored_values.channelVolumes ~= nil then
++      local sum = 0
++      for _, v in ipairs (stored_values.channelVolumes) do sum = sum + v end
++      if #stored_values.channelVolumes == 0 or sum < 0.0001 then
++        stored_values.channelVolumes = nil
++      end
++    end
++
+     -- restore node Props (volumes, channelMap, etc...)
+     if Settings.get_boolean ("node.stream.restore-props") and stream_props ["state.restore-props"] ~= "false"
+     then
+@@ -179,8 +190,14 @@
+           hasChanges = true
+         end
+         if props.channelVolumes then
+-          stored_values.channelVolumes = props.channelVolumes
+-          hasChanges = true
++          -- [stop-gap backport] never persist empty/all-zero volumes:
++          -- they are uninitialized snapshots, not user preferences.
++          local sum = 0
++          for _, v in ipairs (props.channelVolumes) do sum = sum + v end
++          if #props.channelVolumes > 0 and sum >= 0.0001 then
++            stored_values.channelVolumes = props.channelVolumes
++            hasChanges = true
++          end
+         end
+         if props.channelMap then
+           stored_values.channelMap = props.channelMap
