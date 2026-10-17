@@ -54,11 +54,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1791789228,
-        "narHash": "sha256-H4oPz8lX2fHV4FOhxp9txUT/GVC/QB5mypkAkUhW31o=",
+        "lastModified": 1792236246,
+        "narHash": "sha256-SttBwl9KAlNK6ilyTG5IFvZw9FHKG0uHVJo+L3lJKiI=",
         "owner": "kaylorben",
         "repo": "nixcord",
-        "rev": "58298812834393c79a6c1b78d5b68e3a301a0ec1",
+        "rev": "fc11ff6901b9bb2de811db719346a6aa70e990aa",
         "type": "github"
       },
       "original": {
@@ -136,11 +136,11 @@
     "vencord": {
       "flake": false,
       "locked": {
-        "lastModified": 1791572145,
-        "narHash": "sha256-bUbzsfrrOd7uWf1q51EohRelG9jfAoFY20gqcQ+enoE=",
+        "lastModified": 1792011962,
+        "narHash": "sha256-HMCXOlMkeBPsqgkwidqBo6mRtVLOFVhSH+7T5lySfxQ=",
         "owner": "Vendicated",
         "repo": "Vencord",
-        "rev": "16ec4ea838899706019e7f472e45f055070abeb1",
+        "rev": "32c90633ce6a95d7e56c95479efbb431bacf1eac",
         "type": "github"
       },
       "original": {
