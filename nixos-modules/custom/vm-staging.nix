@@ -54,6 +54,19 @@ in
     # Passwordless sudo so the agent can rebuild from within the VM.
     security.sudo.wheelNeedsPassword = lib.mkForce false;
 
+    # NixOS 26.05 can map `sudo` to run0 (systemd), which authenticates via
+    # polkit instead of /etc/sudoers — making the setting above a no-op and
+    # breaking agent root access over non-interactive SSH. Grant wheel
+    # passwordless consent for systemd management actions. Staging VM only.
+    security.polkit.enable = true;
+    environment.etc."polkit-1/rules.d/10-vm-staging-wheel.rules".text = ''
+      polkit.addRule(function(action, subject) {
+        if (subject.isInGroup("wheel")) {
+          return polkit.Result.YES;
+        }
+      });
+    '';
+
     services = {
       # --- SSH for the agent ---------------------------------------------
       openssh = {
