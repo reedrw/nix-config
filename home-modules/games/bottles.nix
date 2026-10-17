@@ -2,7 +2,12 @@
 
 {
   home.packages = with pkgs; [
-    bottles
+    (unstable.bottles.override {
+      removeWarningPopup = true;
+      extraPkgs = _: [
+        pkgs.linuwux-runtime
+      ];
+    })
     ludusavi
   ];
 

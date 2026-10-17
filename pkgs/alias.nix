@@ -12,10 +12,6 @@ in
     ];
   });
 
-  bottles = pkgs.bottles.override {
-    removeWarningPopup = true;
-  };
-
   librepods = pkgs.librepods.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/librepods/pa-eol-deadlock.patch
