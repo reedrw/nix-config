@@ -70,6 +70,9 @@
     timeout = 1;
   };
 
+  boot.extraModprobeConfig = "options mt7921e disable_aspm=1";
+  networking.networkmanager.wifi.powersave = false;
+
   time.timeZone = "America/New_York";
 
   nix.settings.cores = 16;
