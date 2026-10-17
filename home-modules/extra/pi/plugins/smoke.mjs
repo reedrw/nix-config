@@ -19,6 +19,7 @@ import {
 	webToolSlots,
 	bash,
 	edit,
+	write,
 	branchScope,
 	forkBatchHeaderLine,
 	forkThoughtConnector,
@@ -1350,6 +1351,109 @@ if (plainRow(edit.renderCall({ path: "b.ts" }, theme, kctx("vfail2", { args: { p
 }
 resetToolGroups();
 console.log("OK-VALIDATION-FAIL-RAIL");
+
+// ── write: syntax highlighting + tail preview while streaming ───
+// The streaming preview used to pin the file's head (and render it flat);
+// what an in-progress write is doing lives at the tail, and the content is
+// highlighted through pi's highlighter (which reads the real theme
+// singleton — the mock theme above only tags roles, it never sees the SGR).
+initTheme("dark");
+resetToolGroups();
+trackGroupToolCall("w1");
+const writeLines = Array.from({ length: 30 }, (_, i) => `const v${i} = ${i}; // line ${i}`);
+const writeArgs = { path: "/tmp/demo.ts", content: `${writeLines.join("\n")}\n` };
+const writeCtx = kctx("w1", { args: writeArgs });
+const streamRaw = write.renderCall(writeArgs, theme, writeCtx).render(120).join("\n");
+const streamRow = plainRow(write.renderCall(writeArgs, theme, writeCtx));
+if (streamRow.includes("const v0 ")) throw new Error(`streaming write preview must not show the head: ${JSON.stringify(streamRow)}`);
+if (!streamRow.includes("const v29 = 29")) throw new Error(`streaming write preview must show the tail: ${JSON.stringify(streamRow)}`);
+if (!/… \(\d+ earlier lines\)/.test(streamRow)) throw new Error(`trimmed head must be marked: ${JSON.stringify(streamRow)}`);
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(streamRaw)) throw new Error("streaming write preview must syntax-highlight .ts content");
+
+// A newer call taking the batch's auto-open cap must NOT shrink the earlier
+// write's preview: the call-row preview height is fixed (10 rows plus the
+// trim marker), not driven by the tree's result cap. The old code followed
+// outputCap(mode), so each additional write in the same message flipped the
+// previous block 16→10 rows — the vertical jumping.
+const streamHeight = write.renderCall(writeArgs, theme, writeCtx).render(120).length;
+trackGroupToolCall("w1-newer");
+const demotedRaw = write.renderCall(writeArgs, theme, writeCtx).render(120).join("\n");
+if (demotedRaw.split("\n").length !== streamHeight) {
+	throw new Error(`demoted write preview changed height: ${streamHeight} → ${demotedRaw.split("\n").length}`);
+}
+if (!plainRow(demotedRaw).includes("const v29 = 29")) throw new Error("demoted write preview must keep the tail");
+
+// unknown extension → pi's plain toolOutput fallback (no highlighter)
+resetToolGroups();
+trackGroupToolCall("w2");
+const txtArgs = { path: "/tmp/notes.txt", content: "plain text" };
+const txtRaw = write.renderCall(txtArgs, theme, kctx("w2", { args: txtArgs })).render(120).join("\n");
+if (!txtRaw.includes("[toolOutput]")) throw new Error("unknown extensions must fall back to plain toolOutput coloring");
+
+// settled + opened (solo header click opens the child): full file from the
+// head, still highlighted
+resetToolGroups();
+trackGroupToolCall("w3");
+closeBatch();
+toggleBatch(0);
+const settledRaw = write
+	.renderResult({ content: [{ type: "text", text: "Successfully wrote to /tmp/demo.ts" }] }, { expanded: false, isPartial: false }, theme, kctx("w3", { args: writeArgs }))
+	.render(120)
+	.join("\n");
+const settledRow = stripSgr(settledRaw);
+if (!settledRow.includes("const v0 = 0") || !settledRow.includes("const v29 = 29")) {
+	throw new Error(`settled write output must show the whole file: ${JSON.stringify(settledRow)}`);
+}
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(settledRaw)) throw new Error("settled write output must syntax-highlight");
+
+// Args stream in MODEL order — content-first streams are real (observed in a
+// session: `{"content":…, "path":…}`). The path is unknown for most of the
+// stream, so the preview must still color from the shebang sniff, and the
+// sniffed/remembered language must never override the real path once it
+// arrives.
+const streamBody = Array.from({ length: 40 }, (_, i) => (i % 5 === 4 ? "" : `const value${i} = ${i}; // line ${i}`));
+streamBody.unshift("#!/usr/bin/env node");
+const streamText = streamBody.join("\n");
+resetToolGroups();
+trackGroupToolCall("w4");
+const contentFirstArgs = { content: streamText }; // no path yet
+const contentFirstRaw = write.renderCall(contentFirstArgs, theme, kctx("w4", { args: contentFirstArgs })).render(120).join("\n");
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(contentFirstRaw)) {
+	throw new Error("content-first stream with a shebang must highlight before the path arrives");
+}
+// no path and nothing recognizable → pi's plain fallback, not a wrong guess
+resetToolGroups();
+trackGroupToolCall("w5");
+const proseArgs = { content: "plain prose, no shebang\nsecond line" };
+const proseRaw = write.renderCall(proseArgs, theme, kctx("w5", { args: proseArgs })).render(120).join("\n");
+if (!proseRaw.includes("[toolOutput]")) throw new Error("pathless non-code content must fall back to plain toolOutput");
+// exact language is remembered on the row's renderer state, so later
+// pathless re-renders keep coloring
+resetToolGroups();
+trackGroupToolCall("w6");
+const rememberCtx = kctx("w6", { args: { path: "/tmp/demo.ts", content: streamText } });
+write.renderCall({ path: "/tmp/demo.ts", content: streamText }, theme, rememberCtx);
+const rememberedRaw = write.renderCall({ content: streamText }, theme, rememberCtx).render(120).join("\n");
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(rememberedRaw)) throw new Error("remembered exact language must survive later pathless renders");
+
+// Height stability: as the tail window slides, the preview grows to the cap
+// and then keeps a CONSTANT row count — blank source lines no longer make it
+// breathe (wrapTreeText used to swallow them).
+resetToolGroups();
+trackGroupToolCall("w7");
+const heights = new Set();
+let lastHeight = 0;
+for (let n = 10; n <= streamText.length; n += 23) {
+	const args = { content: streamText.slice(0, n) };
+	const height = write.renderCall(args, theme, kctx("w7", { args })).render(120).length;
+	if (height < lastHeight) throw new Error(`streaming preview height must not shrink: ${lastHeight} → ${height} at n=${n}`);
+	lastHeight = height;
+	if (n > 700) heights.add(height);
+}
+if (heights.size !== 1) throw new Error(`preview height must be fixed once the window is full: ${[...heights]}`);
+resetToolGroups();
+console.log("OK-WRITE-PREVIEW");
+
 
 
 

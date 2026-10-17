@@ -146,6 +146,21 @@ the hard way; violating them fails silently.
   silently swallowed every blank line — it made a streaming preview change
   height whenever a source blank line slid through its tail window
   (the "vertical ping-pong").
+  The streaming write preview in `renderCall` uses a FIXED line cap
+  (`WRITE_STREAM_PREVIEW_LINES`, or `MAX_EXPANDED_WRITE_LINES` when pi's
+  `context.expanded` is set by ctrl+o) — do NOT drive it from
+  `outputCap(mode)`: the auto-open cap moves to whichever call is newest, so
+  several writes in one message made earlier previews shrink 16→10 rows
+  mid-stream (visible vertical jumping).
+  Write-preview LANGUAGE resolution (`writeLanguage`) must not depend on
+  `args.path` alone: tool args stream in MODEL order and providers do emit
+  `content` before `path` (observed in a real session — the path arrived only
+  at the end of a 250-line write, so the preview sat unhighlighted the whole
+  time). Order of resolution: exact `getLanguageFromPath(path)`, remembered
+  exact language on `context.state` (`WriteRowState.writeLang`, survives
+  later pathless renders), then a first-line shebang/`<?php`/`<!doctype`
+  sniff. Never cache a sniff as exact — only path-derived languages are
+  remembered, so the sniff yields when the real path appears.
   Expanded CONTENT is clickable too: thinking text (fold renderer) and tool output
   (`ClickToggle` around every `expandedBlock`/`liveStream`/edit diff) carry
   the node's own toggle URL per line, so clicking the body collapses it.

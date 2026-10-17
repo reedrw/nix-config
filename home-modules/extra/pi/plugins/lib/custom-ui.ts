@@ -20,7 +20,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { Container, getCapabilities, getKeybindings, Text, visibleWidth } from "@earendil-works/pi-tui";
 import type { Component } from "@earendil-works/pi-tui";
-import { highlightCode, keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
+import { getLanguageFromPath, highlightCode, keyText, ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
 import type { ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 
 // Max width of a one-line call/summary before ellipsis. Terminal-width-aware
@@ -3048,7 +3048,109 @@ export const edit: RenderSlots = withToolNotes({
 
 // ---------------------------------------------------------------------------
 // write — line count from the call args (the result carries no size info).
+// Content is syntax-highlighted through pi's theme-aware highlighter (the same
+// extension→language table pi's native renderer uses) and, while the args
+// stream, tail-capped: the newest lines are what an in-progress write is
+// doing, so the preview scrolls with the cursor instead of pinning the head.
 // ---------------------------------------------------------------------------
+
+// Same normalization pi's native write renderer applies: CRs stripped, tabs
+// expanded (the tree wrapper measures visible width per grapheme, so a raw tab
+// would under-count and break the rail alignment).
+function writeContentLines(content: string): string[] {
+	return content.replace(/\r/g, "").replace(/\t/g, "   ").split("\n");
+}
+
+// `count` lines of `lines` starting at `start`, syntax-highlighted with
+// `lang`. The highlighter is fed a short lead-in window above `start` so
+// multi-line constructs (block comments, template literals) opening just above
+// a tail preview keep their state; only the requested range is returned.
+// No language (or an unknown one) falls back to plain toolOutput coloring,
+// like pi's native renderer.
+// Highlighting the whole file is not an option: cli-highlight costs ~40 ms on a
+// 3k-line file and the streaming preview re-renders on every delta.
+const WRITE_HIGHLIGHT_LEAD_LINES = 40;
+
+function writeSliceLines(
+	lines: string[],
+	start: number,
+	count: number,
+	lang: string | undefined,
+	theme: Theme,
+): string[] {
+	const end = Math.min(lines.length, start + count);
+	const from = Math.max(0, start - WRITE_HIGHLIGHT_LEAD_LINES);
+	const shown = lines.slice(start, end);
+	if (!lang) return shown.map((line) => theme.fg("toolOutput", line));
+	const highlighted = highlightCode(lines.slice(from, end).join("\n"), lang);
+	return shown.map((line, i) => highlighted[start - from + i] ?? line);
+}
+
+// Language for a write row: the path's extension once the args carry it, else
+// the language remembered from an earlier render, else a first-line sniff.
+//
+// Streaming args arrive in MODEL order, and providers really do emit `content`
+// before `path` — for most of a content-first stream there is no path at all
+// (pi's native renderer has the same blind spot). A remembered exact language
+// covers the path-arrives-late case; the sniff keeps script files (shebang)
+// colored from their first streamed line.
+const SHEBANG_LANGUAGES: Record<string, string> = {
+	node: "typescript",
+	nodejs: "typescript",
+	deno: "typescript",
+	bun: "typescript",
+	"ts-node": "typescript",
+	tsx: "typescript",
+	python: "python",
+	python2: "python",
+	python3: "python",
+	bash: "bash",
+	sh: "bash",
+	zsh: "bash",
+	dash: "bash",
+	ksh: "bash",
+	ruby: "ruby",
+	perl: "perl",
+	lua: "lua",
+	luajit: "lua",
+	php: "php",
+};
+
+function sniffLanguage(lines: readonly string[]): string | undefined {
+	let first = "";
+	for (const line of lines) {
+		if (line.trim() !== "") {
+			first = line.trim();
+			break;
+		}
+	}
+	if (first.startsWith("#!")) {
+		for (const token of first.slice(2).trim().split(/\s+/)) {
+			const name = token.split("/").pop()?.toLowerCase() ?? "";
+			const lang = SHEBANG_LANGUAGES[name];
+			if (lang) return lang;
+		}
+	}
+	if (/^<\?php\b/i.test(first)) return "php";
+	if (/^<!doctype html/i.test(first) || /^<html[\s>]/i.test(first)) return "html";
+	return undefined;
+}
+
+// Only exact (path-derived) languages are remembered: a sniff is a guess and
+// must yield as soon as the real path streams in.
+type WriteRowState = { writeLang?: string };
+
+function writeLanguage(args: any, context: any, lines: readonly string[]): string | undefined {
+	const state: WriteRowState | undefined = context?.state;
+	const path = typeof args?.path === "string" ? args.path : "";
+	const exact = path ? getLanguageFromPath(path) : undefined;
+	if (exact) {
+		if (state) state.writeLang = exact;
+		return exact;
+	}
+	if (state?.writeLang) return state.writeLang;
+	return sniffLanguage(lines);
+}
 
 export const write: RenderSlots = {
 	renderShell: "self",
@@ -3056,19 +3158,27 @@ export const write: RenderSlots = {
 		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
 			const content = typeof args.content === "string" ? args.content.replace(/\n+$/, "") : "";
-			const lines = content ? content.split("\n").length : 0;
-			const suffix = lines > 0 ? theme.fg("muted", ` (${lines} lines)`) : "";
+			const lines = content ? writeContentLines(content) : [];
+			const suffix = lines.length > 0 ? theme.fg("muted", ` (${lines.length} lines)`) : "";
 			const call = callLine("Write", shortenPath(args.path ?? ""), theme, suffix, mode, context);
 			// Live preview while the args stream: pi renders only the call row
 			// until a result exists, so without this the written lines never
 			// appear during streaming (the settled view is renderResult's job).
 			// isPartial stays true through execution until the result lands,
-			// so the preview holds steady where pi's native renderer did.
+			// so the preview holds steady where pi's native renderer did. The
+			// window is the TAIL of the content — an in-progress write's newest
+			// lines are the interesting ones, and pinning the head meant the
+			// preview never moved past the file's opening lines.
 			if (!content || context?.isPartial !== true) return call;
-			const cap = outputCap(mode) ?? WRITE_STREAM_PREVIEW_LINES;
-			const shown = content.split("\n").slice(0, cap).map((line: string) => theme.fg("toolOutput", line));
-			const rest = lines - shown.length;
-			if (rest > 0) shown.push(theme.fg("muted", `… +${rest} more lines`));
+			// A FIXED preview height: the tree's auto-open cap
+			// (LATEST_EXPANDED_LINES) belongs to result output, and letting it
+			// drive the call-row preview made the block jump 16→10 rows whenever a
+			// newer tool call took the cap over — several writes in one message
+			// visibly jittered. A deliberate expansion (ctrl+o) shows the file.
+			const cap = context?.expanded === true ? MAX_EXPANDED_WRITE_LINES : WRITE_STREAM_PREVIEW_LINES;
+			const start = Math.max(0, lines.length - cap);
+			const shown = writeSliceLines(lines, start, cap, writeLanguage(args, context, lines), theme);
+			if (start > 0) shown.unshift(theme.fg("muted", `… (${start} earlier lines)`));
 			const prefix = childOutputPrefix(mode, theme);
 			const stack = new Container();
 			stack.addChild(call);
@@ -3104,10 +3214,11 @@ export const write: RenderSlots = {
 		// expanded-diff block (cap, child prefix, click-to-collapse).
 		const content = typeof args.content === "string" ? args.content.replace(/\n+$/, "") : "";
 		if (!content) return resultLine(theme, "Written", false, mode);
-		const colored = withMore(content, outputCap(mode) ?? MAX_EXPANDED_WRITE_LINES, theme)
-			.split("\n")
-			.map((line) => theme.fg("toolOutput", line))
-			.join("\n");
+		const lines = writeContentLines(content);
+		const cap = outputCap(mode) ?? MAX_EXPANDED_WRITE_LINES;
+		const shown = writeSliceLines(lines, 0, cap, writeLanguage(args, context, lines), theme);
+		if (lines.length > shown.length) shown.push(theme.fg("muted", `… (${lines.length - shown.length} more lines)`));
+		const colored = shown.join("\n");
 		const prefix = childOutputPrefix(mode, theme);
 		const contentBlock = new PrefixedText(colored, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
 		const writeUrl = toolToggleUrl(context);
