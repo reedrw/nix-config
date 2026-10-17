@@ -3,11 +3,11 @@
     "ArtCNN": {
       "flake": false,
       "locked": {
-        "lastModified": 1791326317,
-        "narHash": "sha256-RgdvWplM9wjj4zcmRFer8RokHx9uxXlkaXy+BtjGgeo=",
+        "lastModified": 1792023119,
+        "narHash": "sha256-tCklo2fcr/fIr8f1kG+cXcmjLE/OOGGYUF/73fWN/JM=",
         "owner": "Artoriuz",
         "repo": "ArtCNN",
-        "rev": "8789539dfae120f2877a89bb6218026d56809612",
+        "rev": "e138cc15c0d9fb6ec04b86fc453f7faa30e2b5d3",
         "type": "github"
       },
       "original": {
