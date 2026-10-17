@@ -131,10 +131,29 @@ the hard way; violating them fails silently.
   split-less runs at the width, fills lines to the brim (no stranded stubby
   heads), re-opens the active OSC 8 link + SGR state on every continuation
   and closes them at each line end. Hard `\n` = forced break. Do NOT patch
-  pi-tui's wrapper for this — the lib owns the tree wrapping.
+  pi-tui's wrapper for this — the lib owns the tree wrapping. The carried
+  SGR is a NORMALIZED per-group state (`SgrState`: fg / bg / attribute map),
+  not a concatenation: 39/49 and the attribute close codes replace or clear
+  their group, and codes queued on a hard `\n` are folded in too. Never go
+  back to accumulating code strings — the old version appended every code
+  (each theme `\x1b[39m` included) forever, so continuation prefixes grew
+  O(n²) in color runs: a 400-line syntax-highlighted write re-opened a
+  ~36 KB prefix on its last line and the expanded row cost ~140 ms per
+  repaint (linkWrap rescans every byte).
+  Blank lines in the content are REAL rows: a hard `\n` on an empty line
+  pushes a blank line, EXCEPT right after a soft wrap (that newline maps to
+  the break the wrapper already made). The old `if (lineW > 0)` guard
+  silently swallowed every blank line — it made a streaming preview change
+  height whenever a source blank line slid through its tail window
+  (the "vertical ping-pong").
   Expanded CONTENT is clickable too: thinking text (fold renderer) and tool output
   (`ClickToggle` around every `expandedBlock`/`liveStream`/edit diff) carry
   the node's own toggle URL per line, so clicking the body collapses it.
+  `ClickToggle` MUST cache its linked lines per width (and drop the cache in
+  `invalidate()`): pi's frame layout calls `render()` on every component each
+  frame, and `ToolExecutionComponent.render` renders a self-shell row's
+  container a SECOND time for its blank-line patch. Uncached, the toggle
+  re-linkified a whole expanded block on every repaint (and twice per frame).
   A batch whose LAST child is a thinking branch ends with one blank line
   (fold `trailingBlank`, set when `scope.last`) — tool children get their
   separation from the next block's own spacing, branch rows must supply

@@ -211,6 +211,130 @@ interface TreeWrapUnit {
 	hard?: true; // a forced break (hard newline in the source)
 }
 
+// Normalized active SGR state for wrapTreeText's line carrying. One code per
+// attribute group: setting a group replaces its previous code, the matching
+// close code clears it. Keeps continuation prefixes from accumulating codes.
+interface SgrState {
+	fg: string;
+	bg: string;
+	attrs: Map<string, string>;
+}
+
+function sgrGroup(param: number): string | undefined {
+	switch (param) {
+		case 1:
+		case 2:
+			return "intensity";
+		case 3:
+			return "italic";
+		case 4:
+			return "underline";
+		case 5:
+		case 6:
+			return "blink";
+		case 7:
+			return "inverse";
+		case 8:
+			return "conceal";
+		case 9:
+			return "strike";
+	}
+	return undefined;
+}
+
+function sgrOffGroup(param: number): string | undefined {
+	switch (param) {
+		case 22:
+			return "intensity";
+		case 23:
+			return "italic";
+		case 24:
+			return "underline";
+		case 25:
+			return "blink";
+		case 27:
+			return "inverse";
+		case 28:
+			return "conceal";
+		case 29:
+			return "strike";
+	}
+	return undefined;
+}
+
+// Fold one SGR sequence into the active state. Extended colors (38/48;5;n and
+// 38/48;2;r;g;b) form one group; bare 30-37/90-97 and 40-47/100-107 are the
+// basic fg/bg groups; 39/49 clear them. Anything else is a single attribute
+// (multi-parameter codes like `1;31` land each part in its own group).
+function applySgrCode(state: SgrState, code: string): void {
+	const params = code.slice(2, -1);
+	if (params === "") {
+		state.fg = "";
+		state.bg = "";
+		state.attrs.clear();
+		return;
+	}
+	const parts = params.split(";").map((p) => (p === "" ? 0 : Number.parseInt(p, 10)));
+	if (parts.some((p) => Number.isNaN(p))) {
+		state.attrs.set(`raw:${params}`, code);
+		return;
+	}
+	let i = 0;
+	while (i < parts.length) {
+		const p = parts[i];
+		if (p === 0) {
+			state.fg = "";
+			state.bg = "";
+			state.attrs.clear();
+			i++;
+			continue;
+		}
+		if (p === 38 || p === 48) {
+			const kind = parts[i + 1];
+			const len = kind === 5 ? 3 : kind === 2 ? 5 : 2;
+			const seq = `\x1b[${parts.slice(i, i + len).join(";")}m`;
+			if (p === 38) state.fg = seq;
+			else state.bg = seq;
+			i += len;
+			continue;
+		}
+		if (p === 39) {
+			state.fg = "";
+			i++;
+			continue;
+		}
+		if (p === 49) {
+			state.bg = "";
+			i++;
+			continue;
+		}
+		if ((p >= 30 && p <= 37) || (p >= 90 && p <= 97)) {
+			state.fg = `\x1b[${p}m`;
+			i++;
+			continue;
+		}
+		if ((p >= 40 && p <= 47) || (p >= 100 && p <= 107)) {
+			state.bg = `\x1b[${p}m`;
+			i++;
+			continue;
+		}
+		const off = sgrOffGroup(p);
+		if (off) {
+			state.attrs.delete(off);
+			i++;
+			continue;
+		}
+		state.attrs.set(sgrGroup(p) ?? `attr:${p}`, `\x1b[${p}m`);
+		i++;
+	}
+}
+
+function sgrString(state: SgrState): string {
+	let out = "";
+	for (const code of state.attrs.values()) out += code;
+	return out + state.fg + state.bg;
+}
+
 function tokenizeTree(text: string): TreeWrapUnit[] {
 	const units: TreeWrapUnit[] = [];
 	const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
@@ -250,7 +374,16 @@ export function wrapTreeText(text: string, width: number): string[] {
 	const lines: string[] = [];
 	let line = "";
 	let lineW = 0;
-	let sgr = ""; // active SGR after placed units ("" = plain)
+	// Active SGR after placed units, normalized per attribute group. The
+	// previous version concatenated every code it saw — including each `39m`
+	// "default foreground" close — into one string that could only grow, and
+	// re-opened that whole prefix on every continuation line: output grew
+	// O(n²) in color runs. Syntax-highlighted content made it visible (a
+	// 400-line write carried ~36 KB of prefix on its last line, and linkWrap
+	// over those lines cost ~140 ms per frame in the expanded row). One code
+	// per group (fg / bg / a handful of attributes), replaced or cleared by
+	// the matching close, keeps the carry bounded.
+	const sgr: SgrState = { fg: "", bg: "", attrs: new Map() };
 	let osc8 = ""; // active OSC 8 opener after placed units ("" = none)
 
 	const applyCode = (code: string): void => {
@@ -258,8 +391,7 @@ export function wrapTreeText(text: string, width: number): string[] {
 			const url = code.slice(4, code.indexOf("\x1b", 4));
 			osc8 = url === "" ? "" : code;
 		} else if (code.endsWith("m")) {
-			const params = code.slice(2, -1);
-			sgr = params === "" || /^0(;0)*$/.test(params) ? "" : sgr + code;
+			applySgrCode(sgr, code);
 		}
 	};
 	const place = (u: TreeWrapUnit): void => {
@@ -272,19 +404,34 @@ export function wrapTreeText(text: string, width: number): string[] {
 	const closeLine = (): void => {
 		let out = line;
 		if (osc8) out += TREE_OSC8_CLOSE;
-		if (sgr) out += "\x1b[0m";
+		const activeSgr = sgrString(sgr);
+		if (activeSgr) out += "\x1b[0m";
 		lines.push(out);
-		line = (osc8 ?? "") + (sgr ?? "");
+		line = osc8 + activeSgr;
 		lineW = 0;
 	};
 
 	const work = tokenizeTree(text);
+	// Was the current line ended by a SOFT wrap? A hard newline then maps to
+	// that same visual break and must not add a blank row. When the line was
+	// NOT softly wrapped, a hard newline on an empty line is a real blank line
+	// in the content and must be emitted (previously `if (lineW > 0)` silently
+	// swallowed them, so a streamed write preview changed height whenever a
+	// blank line scrolled through the window).
+	let closedByWrap = false;
 	for (let ui = 0; ui < work.length; ui++) {
 		const u = work[ui];
 		if (u.hard) {
 			// forced break: close what is on the line, carry queued codes over
-			if (lineW > 0) closeLine();
+			// (and fold them into the carry state — a code queued on the newline
+			// itself, typically the `39m` closing the line's last color, must not
+			// leak into the next wrap's re-opened prefix)
+			if (lineW > 0 || !closedByWrap) closeLine();
 			line += u.codes;
+			for (const part of u.codes.split(TREE_ANSI_SPLIT_RE)) {
+				if (part) applyCode(part);
+			}
+			closedByWrap = false;
 			continue;
 		}
 		const uw = visibleWidth(u.text);
@@ -309,6 +456,7 @@ export function wrapTreeText(text: string, width: number): string[] {
 				place({ codes: u.codes, text: fill });
 			}
 			closeLine();
+			closedByWrap = true;
 			// the remainder re-tokenizes (its split chars and codes survive);
 			// a fresh line always fits the first grapheme, so this recurses
 			// at most one level.
@@ -318,12 +466,13 @@ export function wrapTreeText(text: string, width: number): string[] {
 			continue;
 		}
 		closeLine();
+		closedByWrap = true;
 		place(u);
 	}
 	if (lineW > 0 || lines.length === 0) {
 		let out = line;
 		if (osc8) out += TREE_OSC8_CLOSE;
-		if (sgr) out += "\x1b[0m";
+		if (sgrString(sgr)) out += "\x1b[0m";
 		lines.push(out);
 	}
 	return lines;
@@ -430,15 +579,25 @@ function toolToggleUrl(context: any): string | undefined {
 class ClickToggle implements Component {
 	private inner: Component;
 	private url: string;
+	// linkWrap is the expensive half of this component (it scans each line for
+	// ANSI/URLs) and pi renders a row more than once per frame: every frame
+	// re-runs the whole transcript's layout, so an expanded 400-line output
+	// re-linked all 400 lines on each repaint. Cache per width; invalidate()
+	// (theme change, content change) drops it.
+	private cache?: { width: number; lines: string[] };
 	constructor(inner: Component, url: string) {
 		this.inner = inner;
 		this.url = url;
 	}
 	invalidate(): void {
+		this.cache = undefined;
 		this.inner.invalidate();
 	}
 	render(width: number): string[] {
-		return this.inner.render(width).map((line) => (line.trim() ? linkWrap(line, this.url) : line));
+		if (this.cache?.width === width) return this.cache.lines;
+		const lines = this.inner.render(width).map((line) => (line.trim() ? linkWrap(line, this.url) : line));
+		this.cache = { width, lines };
+		return lines;
 	}
 }
 
@@ -2647,7 +2806,12 @@ export const bash: RenderSlots = withToolNotes({
 // full-width and rail-less between glance rows.
 // ---------------------------------------------------------------------------
 
-const CODEMODE_OUTPUT_HEADER = /^Script (completed|failed)\nWall time [^\n]*\nOutput:\n/;
+// codemode results arrive as TWO text blocks: a header block
+// (`Script completed\nWall time …\nOutput:\n`) and the output block. Match the
+// header block exactly and drop it whole — stripping it from the JOINED text
+// left the joining newline behind and rendered a spurious leading blank row
+// (visible as a double gap after the nested-calls list).
+const CODEMODE_OUTPUT_HEADER = /^Script (completed|failed)\nWall time [^\n]*\nOutput:\n$/;
 
 function codemodeCallArg(args: any): string {
 	const code = typeof args?.code === "string" ? args.code : "";

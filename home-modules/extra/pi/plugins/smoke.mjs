@@ -823,6 +823,7 @@ if (!linkedHeader.includes("pi-action://node/batch/0")) throw new Error("header 
 if (!linkedHeader.includes("▾")) throw new Error("open header must render the ▾ triangle");
 const liveH = liveGroupHeaderLine(theme, 2, 1200, 0, 0, 0, "pi-action://node/batch/0");
 if (!liveH.includes(FAKE)) throw new Error("live header must emit the batch link");
+
 // fork-side linkWrap wraps labels with the thought URL
 if (!tree.linkWrap("label", "pi-action://node/thought/9").includes(`${FAKE}pi-action://node/thought/9`)) {
 	throw new Error("fork linkWrap must wrap the thought URL");
@@ -1122,10 +1123,46 @@ enableLinkActions({ mode: "fullscreen", openUrl: () => {}, requestRender() {} })
 	for (let i = 1; i < colored.length; i++) {
 		if (!colored[i].startsWith("\x1b[31m")) throw new Error(`continuation ${i} lost its color`);
 	}
+	// The carried SGR must stay BOUNDED: theme.styled content repeats a
+	// handful of color runs per line, and the old carry concatenated every
+	// code (including each 39m close) forever — a 400-line highlighted write
+	// ended up with a ~36 KB prefix on its last line and repainted at ~140 ms
+	// per frame. Assert the bytes never grow with the line count.
+	const runs = Array.from({ length: 400 }, () => "\x1b[38;2;1;2;3mkeyword\x1b[39m \x1b[38;2;4;5;6mstr\x1b[39m 1; // c").join("\n");
+	const carried = wrapTreeText(runs, 80);
+	const worst = carried.reduce((m, l) => Math.max(m, l.length), 0);
+	if (worst > 1000) throw new Error(`SGR carry grows unbounded (max line ${worst} bytes)`);
+	// 39m is a foreground RESET, not state to carry: once a run is followed by
+	// `39m`, the next continuation must not re-open the previous color. (The
+	// line that contains the `39m` itself still opens with the pre-reset color
+	// and immediately cancels it — that's the correct ordering across a break.)
+	const resetLines = wrapTreeText(`\x1b[31mred\x1b[39m\n${"plain ".repeat(20)}`, 20);
+	const afterReset = resetLines.slice(2);
+	if (afterReset.length === 0 || afterReset.some((l) => l.includes("\x1b[31m"))) {
+		throw new Error(`39m must clear the carried foreground: ${JSON.stringify(resetLines)}`);
+	}
+	// a color set twice keeps ONE carried code, not two
+	const doubled = wrapTreeText("\x1b[31m\x1b[32mgreen ".repeat(20), 20);
+	for (const line of doubled.slice(1)) {
+		if (line.startsWith("\x1b[31m")) throw new Error("a replaced color must not be carried alongside the new one");
+		if (!line.startsWith("\x1b[32m")) throw new Error(`continuation must carry exactly the active color: ${JSON.stringify(line.slice(0, 40))}`);
+	}
 	// hard newlines force breaks and keep independent wrapping
 	const multi = wrapTreeText("aaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", 20);
 	if (noAnsi(multi[0]) !== "aaa") throw new Error(`hard newlines must force breaks: ${JSON.stringify(multi.map(noAnsi))}`);
 	if (multi.slice(1).some((l) => noAnsi(l).length > 20)) throw new Error(`post-newline run must hard-break: ${JSON.stringify(multi.map(noAnsi))}`);
+	// Blank lines are REAL content and must occupy a row. They used to be
+	// swallowed (a hard break on an empty line pushed nothing), which made a
+	// streaming write preview change height every time a source blank line
+	// entered or left its tail window — the visible vertical ping-pong.
+	const blanks = wrapTreeText("a\n\nb", 40).map(noAnsi);
+	if (blanks.join("|") !== "a||b") throw new Error(`blank lines must be preserved: ${JSON.stringify(blanks)}`);
+	// ... but a trailing newline is not a blank line, and a newline right after
+	// a SOFT wrap maps to that same visual break (no extra row).
+	const trailingBlank = wrapTreeText("a\n\n", 40).map(noAnsi);
+	if (trailingBlank.join("|") !== "a|") throw new Error(`trailing newline must not stack blanks: ${JSON.stringify(trailingBlank)}`);
+	const softThenHard = wrapTreeText(`${"ab ".repeat(10).trim()}\nz`, 10).map(noAnsi);
+	if (softThenHard.some((line) => line === "")) throw new Error(`soft wrap + newline must not add a blank row: ${JSON.stringify(softThenHard)}`);
 }
 console.log("OK-TREE-WRAP");
 
@@ -1313,3 +1350,6 @@ if (plainRow(edit.renderCall({ path: "b.ts" }, theme, kctx("vfail2", { args: { p
 }
 resetToolGroups();
 console.log("OK-VALIDATION-FAIL-RAIL");
+
+
+
