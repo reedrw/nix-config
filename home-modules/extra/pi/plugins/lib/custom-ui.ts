@@ -703,7 +703,10 @@ function withMore(text: string, cap: number, theme: Theme): string {
 //   auto-opens with the 16-line live cap;
 // - a user collapse of a running batch is STICKY (wins over auto-open until
 //   the user re-opens or a new batch starts);
-// - settled batches default closed; user-opened children persist.
+// - settled batches default closed, EXCEPT a SOLO batch (exactly one tool
+//   call): its header and that call's output stay open (same live cap) while
+//   its thought branches stay collapsed — one call is not worth a collapse;
+// - user-opened children persist.
 //
 // Leading thoughts (§2.3): a contiguous run of pure-thinking messages
 // directly before a batch's first tool call joins the batch — the FIRST
@@ -728,7 +731,7 @@ interface TreeBatch {
 	// Leading thought hosting the header (fold-side); undefined for bare
 	// batches (the first tool row carries the header, as before).
 	anchor?: number;
-	// User toggle; undefined = live default (running → open, settled → closed).
+	// User toggle; undefined = live default (running/solo → open, else closed).
 	open?: boolean;
 	// User collapsed while running: wins over the auto-open until re-opened.
 	stickyClosed?: boolean;
@@ -742,7 +745,7 @@ interface TreeBatch {
 	// themselves is left alone on diff-close).
 	editsOpenedHeader?: boolean;
 	// Live batch (more tool calls may join). Settled batches keep their state
-	// but default closed.
+	// but default closed (a solo batch, one tool call, stays open).
 	running: boolean;
 	// Index into DOTS_SPINNERS, drawn once per batch so the header spinner
 	// varies across turns (zentui-style).
@@ -1016,10 +1019,23 @@ export function closeBatch(): void {
 }
 
 // Effective open state of a batch header: user toggle first, then the live
-// defaults (running → open unless sticky-closed, settled → closed).
+// defaults (running → open unless sticky-closed; settled → open for a SOLO
+// batch, closed otherwise).
 function batchOpen(batch: TreeBatch): boolean {
-	return batch.open ?? (batch.running ? !batch.stickyClosed : false);
+	if (batch.open !== undefined) return batch.open;
+	if (batch.running) return !batch.stickyClosed;
+	return soloBatch(batch);
 }
+
+// A SOLO batch holds exactly one tool call. Its tree is small enough that
+// collapsing it on settle only hides the one row that matters, so it keeps
+// the live defaults: the header stays open and the call's output stays
+// expanded (capped), while its thought branches stay collapsed. Multi-call
+// batches still settle closed.
+function soloBatch(batch: TreeBatch): boolean {
+	return batch.ids.length === 1;
+}
+
 export function pushToolNote(text: string): boolean {
 	const s = groupState();
 	if (s.current === undefined) return false;
@@ -1215,11 +1231,22 @@ export function groupMode(toolCallId: string | undefined | null, context?: any):
 	// its children entirely (sticky user collapse wins over auto-open). It is
 	// uniform across running batches: a reasoning block does NOT suppress it.
 	// The old solo-with-thoughts exemption conflated this with the header-CLICK
-	// rule (a solo 1-tool tree's click also opens depth 3; with a thought
-	// branch the click grows node by node) and made the first tool call of a
+	// rule (a solo 1-tool tree's click also opens depth 3 for the call; the
+	// thought branches stay collapsed) and made the first tool call of a
 	// thinking turn — usually think → one call — the only calls that never
 	// showed their output while running.
-	const autoOpen = batch.running && headerOpen && newest && !s.closedTools.has(toolCallId);
+	//
+	// A SOLO batch keeps the auto-open once it settles: the header stays open
+	// (see batchOpen) and its single call stays expanded under the same live
+	// cap, so a think → one call turn does not snap shut when it completes.
+	// Thought branches are unaffected (depth-3 reasoning is opt-in), which
+	// leaves the call expanded next to collapsed thinking. Edits keep their
+	// own rule: only the header diffstat click starts a diff expanded.
+	const soloSettled = !batch.running && soloBatch(batch) && !s.editIds.has(toolCallId);
+	const autoOpen =
+		headerOpen &&
+		!s.closedTools.has(toolCallId) &&
+		((batch.running && newest) || soloSettled);
 	let outputOpen = userOpen || autoOpen;
 	let cap = autoOpen && !userOpen ? LATEST_EXPANDED_LINES : undefined;
 	// The header diffstat's batch-wide edit override (set by clicking the
@@ -2315,8 +2342,9 @@ export function glanceLine(label: string, arg: string, summary: string, theme: T
 // Toggle a batch header: open/close all its children. Collapsing a RUNNING
 // batch is sticky — it wins over the auto-open until the user re-opens (or a
 // new batch starts and this one settles). A SOLO batch (exactly one tool
-// call) toggles that call's output in the same gesture — one click expands
-// the whole block. Edits are the exception: the diffstat owns their expansion.
+// call, reasoning branches or not) toggles that call's output in the same
+// gesture — one click expands the whole block while any thought branches stay
+// collapsed. Edits are the exception: the diffstat owns their expansion.
 export function toggleBatch(batchIndex: number): void {
 	const s = groupState();
 	const batch = s.batches[batchIndex];
@@ -2328,14 +2356,17 @@ export function toggleBatch(batchIndex: number): void {
 		batch.open = true;
 		batch.stickyClosed = false;
 	}
-	// A SOLO batch of exactly ONE node (one tool call, no reasoning block)
-	// toggles that call's output in the same gesture — one click expands the
-	// whole block. Anything bigger (a thought branch, multiple tools) grows
-	// node by node via its own click targets. Edits are excluded regardless:
-	// their output starts expanded ONLY via the header diffstat click, the
-	// dedicated affordance for "show me what changed".
+	// A SOLO batch (exactly ONE tool call) toggles that call's output in the
+	// same gesture — one click expands the whole block. Reasoning blocks do
+	// NOT disqualify it: with a single tool call there is no ambiguity about
+	// which node the header click meant, so the call opens while its thought
+	// branches stay collapsed (only the header's depth-2 visibility changes
+	// for them). Multiple tools grow node by node via their own click
+	// targets. Edits are excluded regardless: their output starts expanded
+	// ONLY via the header diffstat click, the dedicated affordance for "show
+	// me what changed".
 	batch.editsOpenedHeader = undefined;
-	if (batch.ids.length === 1 && batch.thoughts.length === 0 && !s.editIds.has(batch.ids[0])) {
+	if (batch.ids.length === 1 && !s.editIds.has(batch.ids[0])) {
 		const id = batch.ids[0];
 		if (batchOpen(batch)) {
 			s.openTools.add(id);

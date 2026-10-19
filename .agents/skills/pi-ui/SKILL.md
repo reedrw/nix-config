@@ -125,7 +125,8 @@ the hard way; violating them fails silently.
 - **Tree model**: the transcript is an interactive tree. Every tool batch is
   a disclosure header (`▸/▾ Thought for Xs · Ran N tool calls` — bold grey
   base03, italic, one leading space; collapsed by
-  default when settled); glance rows and thinking branches are its children
+  default when settled — except a SOLO batch, which stays open); glance rows
+  and thinking branches are its children
   (`├─`/`╰─`, visible iff the header is open, one column in so the glyphs sit under the header's `▾` — every child prefix, continuation, and output rail shares that column);
   each child's output/reasoning is depth 3 (visible iff the child is open).
   `│` appears ONLY as the through-connector on the content lines of an
@@ -285,15 +286,16 @@ the hard way; violating them fails silently.
   it (`pi-action://node/edits/<i>`) sets `batch.editsOpen`, a batch-wide
   override of edit-row output flags (dissolved by per-row toggles or
   ctrl+o walks), and OPENING also opens the batch header — one click
-  straight to the changes. A SOLO batch of exactly ONE node (1 tool call,
-  NO reasoning block, non-edit) also toggles that call's output when the
-  header is clicked — one click expands the block; anything bigger grows
-  node by node, and an EDIT's output only opens via the diffstat click. The diffstat is a FULL toggle: its second click
+  straight to the changes. A SOLO batch (exactly ONE tool call, reasoning
+  branches or not, non-edit) also toggles that call's output when the header
+  is clicked — one click expands the block while any thought branches stay
+  collapsed (a single tool call leaves no ambiguity about which node the click
+  meant); multiple tools grow node by node, and an EDIT's output only opens via
+  the diffstat click. The diffstat is a FULL toggle: its second click
   collapses the header it opened (a user-opened header survives). Auto-
   open of the newest child's output (16-line cap) applies to EVERY running
-  batch, reasoning block or not — the "no reasoning" clause above governs
-  only the header CLICK (a thought branch makes "which node did the click
-  mean" ambiguous). The old solo-with-reasoning exemption from auto-open
+  batch, reasoning block or not (independent of the header-CLICK rule above).
+  The old solo-with-reasoning exemption from auto-open
   made the first call of a thinking turn — usually think → one tool — the
   only calls that never showed output while running; do not reintroduce it.
 - **Nested calls are not batch members**: pi fires `tool_execution_start` (and
@@ -312,7 +314,11 @@ the hard way; violating them fails silently.
   `openThoughts` sets on the state). A RUNNING batch auto-opens and its
   newest child auto-opens with a 16-line cap; a user collapse of a running
   batch is sticky (wins over auto-open until re-open); settled batches
-  default closed; user-opened children persist. There are NO derived
+  default closed EXCEPT a SOLO batch (exactly one tool call): its header and
+  that call's output stay open (same 16-line cap, so the row does not jump at
+  settle) while its thought branches stay collapsed — one call is not worth a
+  collapse. Edits keep their own rule (only the diffstat click opens a diff),
+  and a user-opened child persists. There are NO derived
   `collapsed`/`folded`/`latest` flags and no `effectiveExpanded` precedence
   chain — clicks flip exactly one node's flag (`pi-action://node/batch/<i>`,
   `node/tool/<id>`, `node/thought/<ts>` OSC 8 links,

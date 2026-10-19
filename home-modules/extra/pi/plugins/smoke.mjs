@@ -451,7 +451,7 @@ scanToolGroupsFromHistory([
 ]);
 scope = tree.branchScope(31);
 if (scope.kind !== "branch" || scope.batchIndex !== 0) throw new Error(`narrated think must join the preceding batch: ${JSON.stringify(scope)}`);
-if (scope.headerOpen) throw new Error("settled parent header must be closed");
+if (!scope.headerOpen) throw new Error("a settled solo header must stay open");
 m = groupMode("q2");
 if (m.batchIndex !== 1 || m.anchorHosted) throw new Error("narrated message's tool must open a bare batch");
 
@@ -497,17 +497,25 @@ const callOf = (id) => plainRow(bash.renderCall({ command: "echo hi" }, theme, k
 const resultOf = (id, text = "out\nout2", extra = {}) =>
 	plainRow(bash.renderResult({ content: [{ type: "text", text }] }, { expanded: false, isPartial: false }, theme, kctx(id, { args: { command: "echo hi" }, ...extra })));
 
-// collapsed bare batch: the header IS the row
+// a settled SOLO batch (exactly one tool call) does not collapse: header,
+// call row and output (under the 16-line live cap) stay on screen — only
+// thought branches stay collapsed
 trackGroupToolCall("g1"); closeBatch();
 let row = callOf("g1");
-if (!row.includes("▸ Ran 1 tool call") || row.includes("Bash(")) throw new Error(`collapsed header must replace the call line: ${JSON.stringify(row)}`);
+if (!row.includes("▾ Ran 1 tool call")) throw new Error(`settled solo header must stay open: ${JSON.stringify(row)}`);
 if (row.includes("to expand")) throw new Error("settled headers carry no hint suffix");
+row = resultOf("g1");
+if (!row.includes("out") || !row.includes("out2")) throw new Error(`settled solo call must stay expanded: ${JSON.stringify(row)}`);
+if (row.includes("├") || row.includes("│")) throw new Error("last child has no connector");
+// a user collapse still wins: the header folds the whole tree away
+toggleBatch(0);
+row = callOf("g1");
+if (!row.includes("▸ Ran 1 tool call") || row.includes("Bash(")) throw new Error(`collapsed header must replace the call line: ${JSON.stringify(row)}`);
 if (resultOf("g1").length !== 0) throw new Error("hidden child must render nothing");
-// open settled: header + glance child, ╰─ corner for the last child
+// re-open: header + call row + output (deliberate open lifts the cap)
 toggleBatch(0);
 row = callOf("g1");
 if (!row.includes("▾ Ran 1 tool call") || !row.includes("Bash(echo hi)")) throw new Error(`solo open must show the call row: ${JSON.stringify(row)}`);
-// solo batch: the header click expands the single tool's output too
 row = resultOf("g1");
 if (!row.includes("out") || !row.includes("out2")) throw new Error("solo header click must open the inner output");
 if (row.includes("├") || row.includes("│")) throw new Error("last child has no connector");
@@ -570,7 +578,7 @@ resetToolGroups();
 // space indent under ╰─ (the corner already turned)
 resetToolGroups();
 trackGroupToolCall("lc1"); closeBatch();
-toggleBatch(0); // solo batch: header click opens header + output
+// (a settled solo batch is expanded by default — no click needed)
 const lcCtx = kctx("lc1", { args: { command: longLine } });
 const lcBlock = bash.renderResult({ content: [{ type: "text", text: longLine }] }, { expanded: false, isPartial: false }, theme, lcCtx);
 const lcLines = lcBlock.render(40).map(stripSgr).filter((l) => l.trim());
@@ -997,8 +1005,11 @@ if (!dotted.includes(`https://example.com\x1b]8;;\x1b\\`)) throw new Error("URL 
 
 // dispatch through the patched openUrl toggles state; other URLs fall through
 trackGroupToolCall("h1"); closeBatch();
+if (!groupMode("h1").outputOpen) throw new Error("settled solo call must default open");
 handle.openUrl("pi-action://node/tool/h1");
-if (groupMode("h1").outputOpen !== true) throw Error("patched openUrl must toggle the child");
+if (groupMode("h1").outputOpen !== false) throw Error("patched openUrl must toggle the child");
+handle.openUrl("pi-action://node/tool/h1");
+if (groupMode("h1").outputOpen !== true) throw Error("patched openUrl must toggle the child back");
 handle.openUrl("https://example.com");
 if (handle.opened !== "https://example.com") throw new Error("non-action URLs must reach the original handler");
 disableLinkActions();
@@ -1073,41 +1084,52 @@ handleActionUrl("pi-action://node/tool/e1");
 if (groupMode("e1").outputOpen) throw new Error("per-row close must stick");
 if (groupMode("e2").outputOpen) throw new Error("override must dissolve after a per-row toggle");
 
-// solo batch: the header click toggles the single tool's output too
+// solo batch: the settled default keeps the header AND the single tool open
+// (live cap); a header click collapses both, the next expands both again
 resetToolGroups();
 trackGroupToolCall("solo1"); closeBatch();
-handleActionUrl("pi-action://node/batch/0");
-if (!groupMode("solo1").headerOpen || !groupMode("solo1").outputOpen) throw new Error("solo batch click must expand the inner tool as well");
+if (!groupMode("solo1").headerOpen || !groupMode("solo1").outputOpen) throw new Error("settled solo batch must stay expanded");
+if (groupMode("solo1").cap !== 16) throw new Error("settled solo output keeps the live cap");
 handleActionUrl("pi-action://node/batch/0");
 if (groupMode("solo1").headerOpen || groupMode("solo1").outputOpen) throw new Error("solo batch close must collapse both");
+handleActionUrl("pi-action://node/batch/0");
+if (!groupMode("solo1").headerOpen || !groupMode("solo1").outputOpen) throw new Error("solo batch click must expand the inner tool as well");
 
-// EXCEPT edits: a solo edit batch's header click must NOT expand the diff —
-// only the diffstat click starts edit tools expanded
+// EXCEPT edits: a settled solo edit batch keeps its header open but its diff
+// does not auto-expand — only the diffstat click starts a diff expanded
 resetToolGroups();
 trackGroupToolCall("se1"); closeBatch();
 edit.renderCall({ path: "a.ts" }, theme, kctx("se1", { args: { path: "a.ts" } }));
+if (!groupMode("se1").headerOpen) throw new Error("settled solo edit header must stay open");
+if (groupMode("se1").outputOpen) throw new Error("a settled edit diff must not auto-expand — only the diffstat does");
+handleActionUrl("pi-action://node/batch/0"); // user collapse
+if (groupMode("se1").headerOpen) throw new Error("solo edit header click must close the header");
 handleActionUrl("pi-action://node/batch/0");
 if (!groupMode("se1").headerOpen) throw new Error("solo edit header click must open the header");
 if (groupMode("se1").outputOpen) throw new Error("header click must not expand an edit — only the diffstat does");
 handleActionUrl("pi-action://node/edits/0");
 if (!groupMode("se1").outputOpen) throw new Error("diffstat click must expand the solo edit");
 
-// a solo batch with a reasoning block is MORE than one node — the header
-// click opens the header only, never the tool output
+// a solo batch with a reasoning block: the settled default keeps the header
+// and the single call expanded while the thought branch stays collapsed
 resetToolGroups();
 trackGroupToolCall("sn1");
 trackThoughtStart(600); // joins the open batch as a branch
 closeBatch();
+if (!groupMode("sn1").headerOpen) throw new Error("settled solo-with-thought header must stay open");
+if (!groupMode("sn1").outputOpen) throw new Error("settled solo-with-thought call must stay expanded");
+if (tree.branchScope(600).contentOpen) throw new Error("settled solo-with-thought must leave the thought collapsed");
 handleActionUrl("pi-action://node/batch/0");
-if (!groupMode("sn1").headerOpen) throw new Error("multi-node solo header click must open the header");
-if (groupMode("sn1").outputOpen) throw new Error("multi-node solo (tool + reasoning) must not expand on header click");
+if (groupMode("sn1").headerOpen || groupMode("sn1").outputOpen) throw new Error("solo-with-thought header click must collapse the tree");
 handleActionUrl("pi-action://node/batch/0");
+if (!groupMode("sn1").outputOpen) throw new Error("solo-with-thought header click must expand the single tool");
+if (tree.branchScope(600).contentOpen) throw new Error("solo-with-thought header click must leave the thought collapsed");
 
 // expanded content is a click target too: every output line carries the
 // node's toggle URL, so clicking the body collapses the node
 resetToolGroups();
 trackGroupToolCall("ct1"); closeBatch();
-handleActionUrl("pi-action://node/batch/0");
+// (a settled solo batch is expanded by default — the output body is live)
 const clickBody = bash.renderResult(
 	{ content: [{ type: "text", text: "alpha\nbeta" }] },
 	{ expanded: true, isPartial: false },
@@ -1538,12 +1560,12 @@ const txtArgs = { path: "/tmp/notes.txt", content: "plain text" };
 const txtRaw = write.renderCall(txtArgs, theme, kctx("w2", { args: txtArgs })).render(120).join("\n");
 if (!txtRaw.includes("[toolOutput]")) throw new Error("unknown extensions must fall back to plain toolOutput coloring");
 
-// settled + opened (solo header click opens the child): full file from the
-// head, still highlighted
+// settled + deliberately expanded (ctrl+o lifts the solo batch's live cap):
+// full file from the head, still highlighted
 resetToolGroups();
 trackGroupToolCall("w3");
 closeBatch();
-toggleBatch(0);
+walkTree(true);
 const settledRaw = write
 	.renderResult({ content: [{ type: "text", text: "Successfully wrote to /tmp/demo.ts" }] }, { expanded: false, isPartial: false }, theme, kctx("w3", { args: writeArgs }))
 	.render(120)
@@ -1690,11 +1712,12 @@ const cmRunRow = stripSgr(
 );
 if (cmRunRow.includes("const v0")) throw new Error("running result must not duplicate the script");
 if (!cmRunRow.includes("read")) throw new Error("running result must list the nested calls");
-// settled + opened: the whole script, still above the call status
+// settled + deliberately expanded (ctrl+o lifts the live cap): the whole
+// script, still above the call status
 resetToolGroups();
 trackGroupToolCall("cm3");
 closeBatch();
-toggleBatch(0);
+walkTree(true);
 const cmSettledRow = stripSgr(
 	codemode
 		.renderResult(
