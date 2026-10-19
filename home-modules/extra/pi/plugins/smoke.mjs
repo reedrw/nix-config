@@ -18,6 +18,7 @@ import {
 	walkTree,
 	webToolSlots,
 	bash,
+	codemode,
 	edit,
 	write,
 	branchScope,
@@ -1453,6 +1454,127 @@ for (let n = 10; n <= streamText.length; n += 23) {
 if (heights.size !== 1) throw new Error(`preview height must be fixed once the window is full: ${[...heights]}`);
 resetToolGroups();
 console.log("OK-WRITE-PREVIEW");
+
+
+// ── codemode: the script is visible while it streams ─────────────// The tree row used to show only the FIRST line of the script until the model
+// finished writing it (pi's native renderer showed a capped preview of the
+// code itself), and the script then disappeared from the running result as
+// soon as the first nested call streamed in. Both are regressions against the
+// native renderer.
+const cmCode = Array.from({ length: 14 }, (_, i) => `const v${i} = await tools.read({ path: "f${i}.ts" });`).join("\n");
+resetToolGroups();
+trackGroupToolCall("cm1");
+const cmStreamCtx = kctx("cm1", { args: { code: cmCode }, executionStarted: false });
+const cmStreamRaw = codemode.renderCall({ code: cmCode }, theme, cmStreamCtx).render(120).join("\n");
+const cmStreamRow = stripSgr(cmStreamRaw);
+if (!cmStreamRow.includes('const v0 = await tools.read({ path: "f0.ts" })')) {
+	throw new Error(`streaming codemode row must show the script: ${JSON.stringify(cmStreamRow)}`);
+}
+if (cmStreamRow.includes("const v10") || !cmStreamRow.includes("more lines")) {
+	throw new Error("streaming script preview must be head-capped with a marker");
+}
+if (cmStreamRow.includes('codemode(const v0')) throw new Error("script must not be duplicated into the call line");
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(cmStreamRaw)) throw new Error("streaming codemode script must syntax-highlight");
+// ctrl+o lifts the preview cap
+const cmExpandedRows = codemode
+	.renderCall({ code: cmCode }, theme, { ...cmStreamCtx, expanded: true })
+	.render(120)
+	.join("\n");
+if (!stripSgr(cmExpandedRows).includes("const v13")) throw new Error("expanded streaming preview must show the whole script");
+// Execution start is NOT a phase boundary for the script: pi keeps rendering
+// the call slot, but the result slot does not exist until codemode sends its
+// first nested-call update — and a script with NO nested calls sends none until
+// it finishes. Gating the preview on `executionStarted` left the script
+// invisible for that whole window (the actual "I only see one line" bug).
+resetToolGroups();
+trackGroupToolCall("cm2");
+const cmExecCall = stripSgr(
+	codemode
+		.renderCall({ code: cmCode }, theme, kctx("cm2", { args: { code: cmCode }, executionStarted: true }))
+		.render(120)
+		.join("\n"),
+);
+if (!cmExecCall.includes("const v0")) throw new Error("executing call row must keep the script preview");
+// ...and the running RESULT carries only the nested-call statuses, so the
+// script is not duplicated while the row is open.
+const cmCalls = [{ name: "read", args: '{"path":"f0.ts"}', status: "running" }];
+const cmRunRow = stripSgr(
+	codemode
+		.renderResult({ content: [], details: { calls: cmCalls } }, { expanded: false, isPartial: true }, theme, { ...cmStreamCtx, executionStarted: true })
+		.render(120)
+		.join("\n"),
+);
+if (cmRunRow.includes("const v0")) throw new Error("running result must not duplicate the script");
+if (!cmRunRow.includes("read")) throw new Error("running result must list the nested calls");
+// settled + opened: the whole script, still above the call status
+resetToolGroups();
+trackGroupToolCall("cm3");
+closeBatch();
+toggleBatch(0);
+const cmSettledRow = stripSgr(
+	codemode
+		.renderResult(
+			{ content: [{ type: "text", text: "Script completed\nWall time 0.4 seconds\nOutput:\n" }, { type: "text", text: "fine" }], details: { calls: [{ name: "read", args: "{}", status: "ok", durationMs: 12 }] } },
+			{ expanded: false, isPartial: false },
+			theme,
+			kctx("cm3", { args: { code: cmCode } }),
+		)
+		.render(120)
+		.join("\n"),
+);
+if (!cmSettledRow.includes("const v13")) throw new Error(`settled expanded codemode shows the whole script: ${JSON.stringify(cmSettledRow)}`);
+if (cmSettledRow.includes("Script completed")) throw new Error("the codemode result header must be dropped");
+resetToolGroups();
+console.log("OK-CODEMODE-SCRIPT");
+
+// ── codemode end-to-end through pi's real ToolExecutionComponent ─
+// The slot assertions above cannot see pi's row ASSEMBLY: the CALL slot is
+// always rendered, the RESULT slot only once a result exists. Driving the real
+// component pins the phase where the script must stay visible — execution has
+// started but no result exists yet (codemode sends no update until its first
+// nested call, and a script without nested calls never sends one until it
+// finishes). Rendering the script only in renderResult left exactly that
+// window blank.
+initTheme("dark");
+resetToolGroups();
+noteStreamingCall("cm-e2e");
+trackGroupToolCall("cm-e2e");
+const e2eRow = new ToolExecutionComponent(
+	"codemode",
+	"cm-e2e",
+	{},
+	{ showImages: false, outputPad: 0 },
+	{ renderShell: "self", renderCall: codemode.renderCall, renderResult: codemode.renderResult },
+	{ requestRender() {} },
+	process.cwd(),
+);
+const e2eCode = "const a = await tools.bash({ command: 'x' });\nreturn 'ok';";
+const e2eText = () => stripSgr(e2eRow.render(100).join("\n"));
+e2eRow.updateArgs({ code: e2eCode });
+if (!e2eText().includes("const a = await")) throw new Error("e2e: script must show while args stream");
+e2eRow.markExecutionStarted();
+if (!e2eText().includes("const a = await")) {
+	throw new Error(`e2e: script must stay visible after execution starts with no result yet: ${JSON.stringify(e2eText())}`);
+}
+e2eRow.updateResult({ content: [], details: { calls: [{ name: "bash", args: "x", status: "running" }] } }, true);
+if (!e2eText().includes("const a = await")) throw new Error("e2e: script must stay visible while a nested call runs");
+if (!e2eText().includes("bash")) throw new Error("e2e: nested call status must show while running");
+e2eRow.updateResult(
+	{
+		content: [
+			{ type: "text", text: "Script completed\nWall time 0.1 seconds\nOutput:\n" },
+			{ type: "text", text: "ok" },
+		],
+		details: { calls: [{ name: "bash", args: "x", status: "ok", durationMs: 5 }] },
+	},
+	false,
+);
+const e2eSettled = e2eText();
+if (!e2eSettled.includes("const a = await") || !e2eSettled.includes("ok") || e2eSettled.includes("Script completed")) {
+	throw new Error(`e2e: settled row must show script and clean output: ${JSON.stringify(e2eSettled)}`);
+}
+resetToolGroups();
+console.log("OK-CODEMODE-E2E");
 
 
 

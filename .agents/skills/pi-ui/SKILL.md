@@ -147,11 +147,30 @@ the hard way; violating them fails silently.
   height whenever a source blank line slid through its tail window
   (the "vertical ping-pong").
   The streaming write preview in `renderCall` uses a FIXED line cap
-  (`WRITE_STREAM_PREVIEW_LINES`, or `MAX_EXPANDED_WRITE_LINES` when pi's
+  (`STREAM_PREVIEW_LINES`, or `MAX_EXPANDED_CONTENT_LINES` when pi's
   `context.expanded` is set by ctrl+o) — do NOT drive it from
   `outputCap(mode)`: the auto-open cap moves to whichever call is newest, so
   several writes in one message made earlier previews shrink 16→10 rows
   mid-stream (visible vertical jumping).
+  The codemode slot keeps the script in `renderCall` for the WHOLE partial
+  life of the row: while the args stream AND while the script executes. pi
+  always renders the call slot, but the result slot only exists once codemode
+  sends its first nested-call update — and a script with no nested calls sends
+  none until it finishes — so gating the preview on `context.executionStarted`
+  (or drawing the script only in `renderResult`) leaves the script invisible
+  for most of the run. The partial `renderResult` therefore carries ONLY the
+  nested-call status lines (no script duplicate), the call-row preview is
+  head-capped at `STREAM_PREVIEW_LINES` (whole script with ctrl+o), and the
+  settled expanded view shows the full script above the call statuses and
+  output. Only `mode.outputOpen` rows grow: earlier children of a running batch
+  keep the one-line glance.
+  The codemode result header (`Script completed\nWall time …\nOutput:\n`) is
+  a SEPARATE content block: drop the block like pi's native renderer does.
+  The old end-anchored regex applied to the JOINED text never matched, so
+  every expanded row printed the header as output.
+  `new Text("   ", 0, 0)` renders NOTHING (pi-tui's Text drops
+  whitespace-only content), so a rail-carrying blank separator needs
+  `TreeBlankLine` — the old codemode separator rows were silently absent.
   Write-preview LANGUAGE resolution (`writeLanguage`) must not depend on
   `args.path` alone: tool args stream in MODEL order and providers do emit
   `content` before `path` (observed in a real session — the path arrived only

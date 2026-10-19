@@ -29,12 +29,13 @@ import type { ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 const MAX_LINE = 120;
 // Cap for expanded diff output; bash etc. rely on pi's upstream truncation.
 const MAX_EXPANDED_DIFF_LINES = 400;
-// Same cap for a fully expanded write: the file content rides in the call
-// args (the result only carries a byte count) and can be arbitrarily large.
-const MAX_EXPANDED_WRITE_LINES = 400;
-// Streaming write preview: line cap while the args stream in (matches pi's
+// Same cap for content that rides in the call args instead of the result (a
+// write's file text, a codemode script expanded with ctrl+o); it can be
+// arbitrarily large.
+const MAX_EXPANDED_CONTENT_LINES = 400;
+// Streaming content preview: line cap while the args stream in (matches pi's
 // native write renderer); the auto-open cap of the running child wins.
-const WRITE_STREAM_PREVIEW_LINES = 10;
+const STREAM_PREVIEW_LINES = 10;
 
 // Global style toggle: `customUi: false` in .pi/settings.json (project)
 // or ~/.pi/agent/settings.json (global; project wins) keeps pi's default
@@ -509,6 +510,21 @@ class PrefixedText implements Component {
 		const lines = segs.map((seg, i) => (i === 0 ? this.prefix : this.contPrefix) + seg);
 		this.cache = { width: w, lines };
 		return lines;
+	}
+}
+
+// A blank separator row that still carries the tree prefix. pi-tui's Text
+// renders NOTHING for whitespace-only content, so `new Text(prefix, 0, 0)`
+// silently dropped the separator and left a last child's blank line missing
+// entirely; a bare Spacer would break the rail column of a mid-list child.
+class TreeBlankLine implements Component {
+	private prefix: string;
+	constructor(prefix: string) {
+		this.prefix = prefix;
+	}
+	invalidate(): void {}
+	render(): string[] {
+		return [this.prefix];
 	}
 }
 
@@ -2808,15 +2824,44 @@ export const bash: RenderSlots = withToolNotes({
 
 // codemode results arrive as TWO text blocks: a header block
 // (`Script completed\nWall time …\nOutput:\n`) and the output block. Match the
-// header block exactly and drop it whole — stripping it from the JOINED text
-// left the joining newline behind and rendered a spurious leading blank row
-// (visible as a double gap after the nested-calls list).
-const CODEMODE_OUTPUT_HEADER = /^Script (completed|failed)\nWall time [^\n]*\nOutput:\n$/;
+// header block itself and drop it WHOLE, like pi's native renderer (which
+// tests `result.content[0]` and renders the rest) — stripping it from the
+// JOINED text both left the joining newline behind and, with the old
+// end-anchored regex tested against the joined string, never matched at all,
+// so every expanded row printed "Script completed / Wall time … / Output:".
+const CODEMODE_OUTPUT_HEADER = /^Script (completed|failed)\nWall time [^\n]*\nOutput:\n*$/;
+
+function codemodeOutput(result: any): string {
+	const content = (result?.content ?? []).filter(
+		(c: any) => !(c?.type === "text" && CODEMODE_OUTPUT_HEADER.test(c.text ?? "")),
+	);
+	return resultText({ ...result, content }).replace(/\n+$/, "");
+}
 
 function codemodeCallArg(args: any): string {
 	const code = typeof args?.code === "string" ? args.code : "";
 	const first = code.split("\n").find((l: string) => l.trim()) ?? "";
 	return first.trim().replace(/\s+/g, " ");
+}
+
+// Script source as highlighted lines, HEAD-capped at `cap` with a muted
+// "… +N more lines (ctrl+o to expand)" marker. pi's native codemode renderer
+// keeps the start of the script too: the top of a script says what it does.
+function codemodeScriptLines(code: string, theme: Theme, cap: number): string[] {
+	const lines = highlightCode(code.replace(/\r/g, "").replace(/\n+$/, ""), "javascript");
+	if (lines.length <= cap) return lines;
+	return [
+		...lines.slice(0, cap),
+		theme.fg("muted", `… +${lines.length - cap} more lines (${keyText("app.tools.expand")} to expand)`),
+	];
+}
+
+// Streaming/running script cap: the same fixed preview height as write's (a
+// deliberate ctrl+o expansion lifts it). Never drive this from outputCap():
+// the auto-open cap of the running child belongs to result output and moves
+// to whichever call is newest.
+function codemodeScriptCap(context: any): number {
+	return context?.expanded === true ? MAX_EXPANDED_CONTENT_LINES : STREAM_PREVIEW_LINES;
 }
 
 function codemodeCallLines(calls: any[], theme: Theme): string {
@@ -2840,13 +2885,38 @@ export const codemode: RenderSlots = withToolNotes({
 	renderCall(args, theme, context) {
 		const mode = groupMode(context?.toolCallId, context);
 		return treeCall(mode, theme, context, () => {
-			// No function-call skeuomorphism when the expanded script block is
-			// visible — the call line is just `● codemode` there. The script line
-			// remains as the streaming preview and in collapsed glances, where
-			// no other view of the code exists.
+			const code = typeof args?.code === "string" ? args.code : "";
+			// The call line carries the first script line ONLY where no other
+			// view of the code exists: the collapsed glance. Whenever the row
+			// shows the script itself (running preview, expanded result) the
+			// call line is just `● codemode` — no function-call skeuomorphism,
+			// and no duplicated opening line.
 			const expandedNow = context?.expanded === true || mode.kind !== "child" || mode.outputOpen;
-			const showArg = context?.isPartial === true || !expandedNow;
-			return callLine("codemode", showArg ? codemodeCallArg(args) : "", theme, "", mode, context);
+			// The script is THIS row's job for as long as the tool is partial:
+			// pi always renders the call slot, but the result slot only exists
+			// once a result does — and codemode sends no update at all between
+			// execution start and its first nested call (a script with no nested
+			// calls sends none until it finishes). Drawing the script only in
+			// renderResult left it invisible for exactly that window, which is
+			// most of a run. The settled view still owns the whole script plus
+			// the output. Earlier children of a running batch keep the one-line
+			// glance (their output is not open, and they must not each add ten
+			// rows to the tree).
+			const preview = code.trim() !== "" && context?.isPartial === true && (mode.kind !== "child" || mode.outputOpen);
+			const showArg = !expandedNow && !preview;
+			const call = callLine("codemode", showArg ? codemodeCallArg(args) : "", theme, "", mode, context);
+			if (!preview) return call;
+			const prefix = childOutputPrefix(mode, theme);
+			const script = new PrefixedText(
+				codemodeScriptLines(code, theme, codemodeScriptCap(context)).join("\n"),
+				prefix,
+				mode.kind === "child" ? prefix : GLANCE_INDENT,
+			);
+			const url = toolToggleUrl(context);
+			const stack = new Container();
+			stack.addChild(call);
+			stack.addChild(url ? new ClickToggle(script, url) : script);
+			return stack;
 		});
 	},
 	renderResult(result, { expanded, isPartial }, theme, context) {
@@ -2861,14 +2931,25 @@ export const codemode: RenderSlots = withToolNotes({
 		// Nested tool calls stream via onUpdate while the script runs (status
 		// icons flip …→✓/✗); the output text only exists in the final result.
 		const calls = Array.isArray(result?.details?.calls) ? result.details.calls : [];
-		const output = resultText(result).replace(CODEMODE_OUTPUT_HEADER, "").replace(/\n+$/, "");
+		const output = codemodeOutput(result);
 		if (isPartial && !expandedNow) {
 			if (mode.kind === "child") return new Container();
 			return glanceLine("codemode", codemodeCallArg(args), theme.fg("dim", "running…"), theme, mode, context?.toolCallId);
 		}
-		if (isPartial && expandedNow && calls.length > 0) {
-			const prefix = childOutputPrefix(mode, theme);
-			return new PrefixedText(codemodeCallLines(calls, theme), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+		// The script stays in the call row while the tool is partial (see
+		// renderCall), so the running result is just the nested-call statuses,
+		// separated from the script by a rail-carrying blank row. The settled
+		// view below owns the whole script once the result lands.
+		const code = typeof args.code === "string" ? args.code.replace(/\r/g, "").replace(/\n+$/, "") : "";
+		const prefix = childOutputPrefix(mode, theme);
+		const url = toolToggleUrl(context);
+		if (isPartial) {
+			const running = new Container();
+			if (calls.length > 0) {
+				running.addChild(new TreeBlankLine(mode.kind === "child" ? prefix : ""));
+				running.addChild(new PrefixedText(codemodeCallLines(calls, theme), prefix, mode.kind === "child" ? prefix : GLANCE_INDENT));
+			}
+			return running;
 		}
 		settleStatus(context, context.isError);
 		if (!expandedNow) {
@@ -2886,12 +2967,9 @@ export const codemode: RenderSlots = withToolNotes({
 		// line draws the │ through-connector; last children and solo rows get
 		// a plain blank line.
 		const stack = new Container();
-		const prefix = childOutputPrefix(mode, theme);
-		const url = toolToggleUrl(context);
 		// Factory, not instance: the same separator can be added twice, and
 		// component instances must not be shared between container children.
-		const separator = () => new Text(mode.kind === "child" ? prefix : "", 0, 0);
-		const code = typeof args.code === "string" ? args.code.replace(/\r/g, "").replace(/\n+$/, "") : "";
+		const separator = () => new TreeBlankLine(mode.kind === "child" ? prefix : "");
 		if (code) {
 			const highlighted = highlightCode(code, "javascript").join("\n");
 			const scriptBlock = new PrefixedText(highlighted, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
@@ -3175,7 +3253,7 @@ export const write: RenderSlots = {
 			// drive the call-row preview made the block jump 16→10 rows whenever a
 			// newer tool call took the cap over — several writes in one message
 			// visibly jittered. A deliberate expansion (ctrl+o) shows the file.
-			const cap = context?.expanded === true ? MAX_EXPANDED_WRITE_LINES : WRITE_STREAM_PREVIEW_LINES;
+			const cap = context?.expanded === true ? MAX_EXPANDED_CONTENT_LINES : STREAM_PREVIEW_LINES;
 			const start = Math.max(0, lines.length - cap);
 			const shown = writeSliceLines(lines, start, cap, writeLanguage(args, context, lines), theme);
 			if (start > 0) shown.unshift(theme.fg("muted", `… (${start} earlier lines)`));
@@ -3215,7 +3293,7 @@ export const write: RenderSlots = {
 		const content = typeof args.content === "string" ? args.content.replace(/\n+$/, "") : "";
 		if (!content) return resultLine(theme, "Written", false, mode);
 		const lines = writeContentLines(content);
-		const cap = outputCap(mode) ?? MAX_EXPANDED_WRITE_LINES;
+		const cap = outputCap(mode) ?? MAX_EXPANDED_CONTENT_LINES;
 		const shown = writeSliceLines(lines, 0, cap, writeLanguage(args, context, lines), theme);
 		if (lines.length > shown.length) shown.push(theme.fg("muted", `… (${lines.length - shown.length} more lines)`));
 		const colored = shown.join("\n");
