@@ -285,10 +285,12 @@ the hard way; violating them fails silently.
   header is clicked — one click expands the block; anything bigger grows
   node by node, and an EDIT's output only opens via the diffstat click. The diffstat is a FULL toggle: its second click
   collapses the header it opened (a user-opened header survives). Auto-
-  open of the newest child's output (16-line cap) does NOT apply to solo
-  trees carrying a reasoning block (1 tool + thoughts): their streaming
-  tool shows only its call row — treeCall keeps `isPartial` call rows
-  visible and the partial glance yields to it.
+  open of the newest child's output (16-line cap) applies to EVERY running
+  batch, reasoning block or not — the "no reasoning" clause above governs
+  only the header CLICK (a thought branch makes "which node did the click
+  mean" ambiguous). The old solo-with-reasoning exemption from auto-open
+  made the first call of a thinking turn — usually think → one tool — the
+  only calls that never showed output while running; do not reintroduce it.
 - **Nested calls are not batch members**: pi fires `tool_execution_start` (and
   `tool_call`/`tool_result`/`tool_execution_end`) for a codemode script's
   `tools.x()` and any `ctx.executeTool()` call, with `parentToolCallId` set and

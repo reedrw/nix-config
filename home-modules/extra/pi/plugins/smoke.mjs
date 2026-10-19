@@ -454,13 +454,14 @@ if (scope.headerOpen) throw new Error("settled parent header must be closed");
 m = groupMode("q2");
 if (m.batchIndex !== 1 || m.anchorHosted) throw new Error("narrated message's tool must open a bare batch");
 
-// solo trees WITH a reasoning block never auto-expand their output — only
-// a bare 1-tool tree does
+// a solo tree carrying a reasoning block auto-expands too: auto-open is
+// uniform (the "no reasoning" clause belongs to the header-CLICK rule, not
+// to auto-open)
 resetToolGroups();
 trackThoughtStart(700); trackGroupToolCall("st1");
 m = groupMode("st1");
 if (m.kind !== "child" || !m.running) throw new Error(`anchor solo mode wrong: ${JSON.stringify(m)}`);
-if (m.outputOpen || m.cap !== undefined) throw new Error("1 tool + 1 reasoning must not auto-expand");
+if (!m.outputOpen || m.cap !== 16) throw new Error("1 tool + 1 reasoning must auto-expand like any running newest child");
 resetToolGroups();
 trackGroupToolCall("st2");
 if (!groupMode("st2").outputOpen) throw new Error("bare 1-tool tree must auto-expand");
@@ -587,12 +588,15 @@ closeBatch();
 resetToolGroups();
 
 // solo-with-thought running tool: the call row stays visible while
-// streaming, and the partial glance must NOT duplicate it
+// streaming and the partial output streams in beside it (auto-open now
+// applies to every running newest child) — it must not duplicate the call
+// row as a second glance line
 trackThoughtStart(9500);
 trackGroupToolCall("g4");
 if (!callOf("g4").includes("Bash(echo hi)")) throw new Error("partial tool call row must stay visible (solo-with-thought)");
-const partialGlance = plainRow(bash.renderResult({ content: [{ type: "text", text: "out" }] }, { expanded: false, isPartial: true }, theme, kctx("g4", { args: { command: "echo hi" } })));
-if (partialGlance.length !== 0) throw new Error(`partial glance must yield to the call row: ${JSON.stringify(partialGlance)}`);
+const partialOut = plainRow(bash.renderResult({ content: [{ type: "text", text: "out" }] }, { expanded: false, isPartial: true }, theme, kctx("g4", { args: { command: "echo hi" } })));
+if (partialOut.includes("Bash(") || partialOut.includes("Running")) throw new Error(`partial output must not duplicate the call row as a glance: ${JSON.stringify(partialOut)}`);
+if (!partialOut.includes("out")) throw new Error(`partial output must stream while auto-opened: ${JSON.stringify(partialOut)}`);
 closeBatch();
 resetToolGroups();
 

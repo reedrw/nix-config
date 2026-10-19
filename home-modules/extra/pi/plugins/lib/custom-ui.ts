@@ -1212,11 +1212,14 @@ export function groupMode(toolCallId: string | undefined | null, context?: any):
 	const headerOpen = batchOpen(batch);
 	const userOpen = s.openTools.has(toolCallId);
 	// Auto-open applies only while the header is open — a closed header hides
-	// its children entirely (sticky user collapse wins over auto-open). Solo
-	// trees carrying a reasoning block are excluded: 1 tool + thoughts keeps
-	// its output glanced; only a bare 1-tool tree auto-expands its output.
-	const soloWithThoughts = batch.ids.length === 1 && batch.thoughts.length > 0;
-	const autoOpen = batch.running && headerOpen && newest && !soloWithThoughts && !s.closedTools.has(toolCallId);
+	// its children entirely (sticky user collapse wins over auto-open). It is
+	// uniform across running batches: a reasoning block does NOT suppress it.
+	// The old solo-with-thoughts exemption conflated this with the header-CLICK
+	// rule (a solo 1-tool tree's click also opens depth 3; with a thought
+	// branch the click grows node by node) and made the first tool call of a
+	// thinking turn — usually think → one call — the only calls that never
+	// showed their output while running.
+	const autoOpen = batch.running && headerOpen && newest && !s.closedTools.has(toolCallId);
 	let outputOpen = userOpen || autoOpen;
 	let cap = autoOpen && !userOpen ? LATEST_EXPANDED_LINES : undefined;
 	// The header diffstat's batch-wide edit override (set by clicking the
