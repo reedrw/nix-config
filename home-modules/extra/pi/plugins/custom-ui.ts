@@ -121,8 +121,8 @@ type HistoryImage = { data: string; mimeType: string };
 // History thumbnails don't need model-grade fidelity — cap the encoded size.
 const HISTORY_MAX_DIMENSION = 800;
 const HISTORY_MAX_BYTES = 3 * 1024 * 1024;
-// PNGs at or below this base64 length are already small (e.g. pi-image-view's
-// 480px preview thumbnails) — skip resizing entirely.
+// PNGs at or below this base64 length are already small (e.g. a cropped
+// screenshot) — skip resizing entirely.
 const SMALL_PNG_BASE64_BYTES = 512 * 1024;
 // Max on-screen size of a history image, in terminal cells.
 const MAX_WIDTH_CELLS = 44;

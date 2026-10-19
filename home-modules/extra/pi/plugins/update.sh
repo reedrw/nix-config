@@ -2,8 +2,8 @@
 #! nix-shell -i bash -p nodejs jq
 # Updates pins.json: resolves every root (and its transitive
 # runtime deps) to the latest npm version via a lockfile-only install, then
-# rewrites versions + SRI hashes. Also warns when the vendored packages
-# are behind upstream (rebase manually — see FORK.md).
+# rewrites versions + SRI hashes. Also reports drift for any vendored package
+# (a local fork directory kept here) — rebasing those is manual.
 # Run by `update-all` (finds update.sh files) or directly.
 set -euo pipefail
 cd "$(dirname "$(realpath "$0")")"
@@ -69,7 +69,7 @@ EOF
 cd "$script_dir"
 
 # Vendored packages (any subdirectory with a package.json that isn't pinned
-# above): report drift from upstream. Rebasing is manual — see FORK.md.
+# above): report drift from upstream. Rebasing is manual. None at the moment.
 for pkg_dir in */; do
   [ -f "$pkg_dir/package.json" ] || continue
   name="$(jq -r .name "$pkg_dir/package.json")"

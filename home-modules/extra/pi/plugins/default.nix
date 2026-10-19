@@ -12,7 +12,7 @@
 #                 pi (only extensions/*.ts and */index.ts are); it's shared
 #                 code that extension files import via ./lib/… relative paths
 #   - vendored:   any subdirectory with a package.json (+ default.nix), e.g. a
-#                 fork like pi-image-view; symlinked to ~/.pi/agent/<name>
+#                 local fork you maintain here; symlinked to ~/.pi/agent/<name>
 #   - pinned npm: roots of pins.json, tarballs fetched at pinned versions with
 #                 all pinned deps assembled into one shared flat node_modules
 #                 (npm dep graphs can be cyclic, so it cannot be per-package);

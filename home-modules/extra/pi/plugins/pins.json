@@ -2,6 +2,7 @@
   "_comment": "Versions and SRI hashes for npm-sourced pi packages, pinned natively. 'roots' are the pi plugins exposed by plugins/default.nix (loaded by pi from local dirs); 'packages' holds every pinned package including transitive deps. npm dep graphs may be cyclic, so 'dependencies' is metadata only — plugins/default.nix builds one flat shared node_modules (npm's deduped layout) instead of per-package links. Regenerate with ./update.sh (also run automatically by `update-all`).",
   "roots": [
     "pi-context-view",
+    "pi-image-view",
     "pi-output-styles",
     "pi-web-access"
   ],
@@ -991,6 +992,10 @@
     "pi-context-view": {
       "version": "0.7.0",
       "hash": "sha512-27defDIclkYuuG6nEg47C/NZ3ld2EmAKjs05dGU7vB6Ho2UMP2ybt2dRmwmz2QPRECIld9LGojshsnV+Te0IZA=="
+    },
+    "pi-image-view": {
+      "version": "0.5.0",
+      "hash": "sha512-vCf/7WzX1jZVIb9djZIwRSI9jW9MfO62C5RHMEdRQMM82/LE5Vo1bxX2OP4xsPuk9Wb6QuYJtVtiUdUr7MiDDg=="
     },
     "pi-output-styles": {
       "version": "0.3.5",
