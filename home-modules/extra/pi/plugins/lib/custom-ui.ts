@@ -3558,3 +3558,204 @@ export function webToolSlots(spec: WebToolSpec): RenderSlots {
 		},
 	});
 }
+
+// ---------------------------------------------------------------------------
+// subagent — pi-subagents ships its own call/result renderers (per-child lane
+// trees, live activity lines, per-run stat chips) that draw full-width and
+// rail-less, so the row never joins the batch tree. This slot rebuilds the
+// useful half in the tree look: a call line naming the agent(s), a glance with
+// status + turn/token stats read from `result.details`, and the child's report
+// as the expanded body.
+//
+// details shape (checked against a real session): { mode: "single" |
+// "parallel" | "chain" | "workflow" | "management", runId?, asyncId?, results:
+// [{ agent, task, exitCode, stopReason, detached?, stopped?, interrupted?,
+// usage: { input, output, turns, cost }, ... }], progress?: [{ agent, status,
+// tokens, turns, toolCount, currentTool, currentToolArgs, durationMs }],
+// artifacts?, totalChildUsage? }. Every field is optional here: streaming
+// updates carry only `progress`, management actions return no results, and a
+// detached run settles with `detached` set.
+// ---------------------------------------------------------------------------
+
+// The tool's own params are flattened at execute time, but a scripted caller
+// nests them under `options`, and the call row streams before any result
+// exists — so read both. NOT `params.args`: that is the workflow script's
+// INPUT object ("args requires workflow", public-execution.js), so probing it
+// for `action`/`agent`/`id` would let a workflow input hijack the call row.
+function subagentArg(args: any, key: string): any {
+	for (const scope of [args, args?.options]) {
+		const value = scope?.[key];
+		if (value !== undefined) return value;
+	}
+	return undefined;
+}
+
+function subagentAgentNames(args: any): string[] {
+	const names: string[] = [];
+	const add = (value: any) => {
+		if (typeof value === "string" && value.trim()) names.push(value.trim());
+	};
+	const addTasks = (tasks: any) => {
+		if (!Array.isArray(tasks)) return;
+		for (const entry of tasks) {
+			add(entry?.agent);
+			for (const nested of entry?.parallel ?? []) add(nested?.agent);
+		}
+	};
+	for (const scope of [args, args?.options]) {
+		add(scope?.agent);
+		addTasks(scope?.tasks);
+		if (Array.isArray(scope?.chain)) for (const step of scope.chain) addTasks([step]);
+	}
+	return [...new Set(names)];
+}
+
+// Call-row argument, in the order that reads best: a management action, then
+// the workflow key, then the agents involved.
+function subagentCallArg(args: any): string {
+	const action = subagentArg(args, "action");
+	if (typeof action === "string" && action.trim()) {
+		const target = subagentArg(args, "agent") ?? subagentArg(args, "id");
+		const named = typeof target === "string" && target.trim() ? ` ${target.trim()}` : "";
+		return `${clip(action, 40)}${named}`;
+	}
+	const workflow = subagentArg(args, "workflow");
+	if (workflow === true) return "workflow (reply block)";
+	if (typeof workflow === "string" && workflow.trim()) return `workflow ${workflow.trim()}`;
+	const names = subagentAgentNames(args);
+	if (names.length <= 1) return names[0] ?? "";
+	// A chain reads left-to-right; parallel children are peers.
+	const chained = [args, args?.options].some((scope) => Array.isArray(scope?.chain));
+	const visible = names.slice(0, 4).join(chained ? " → " : " · ");
+	return names.length > 4 ? `${visible} +${names.length - 4}` : visible;
+}
+
+function subagentRuns(details: any): any[] {
+	const results = details?.results;
+	if (!Array.isArray(results)) return [];
+	return results.filter((run: any) => run && typeof run === "object");
+}
+
+// Live activity for a running row: the progress snapshot names the child's
+// current tool long before any report text exists. Empty when the child is
+// only thinking — `liveStream`/the caller fall back to the streamed text.
+function subagentActivity(details: any): string {
+	const progress = Array.isArray(details?.progress) ? details.progress : [];
+	for (const entry of progress) {
+		if (!entry || typeof entry !== "object") continue;
+		const tool = typeof entry.currentTool === "string" ? entry.currentTool.trim() : "";
+		if (!tool) continue;
+		const toolArgs = typeof entry.currentToolArgs === "string" ? clip(entry.currentToolArgs, 60) : "";
+		return toolArgs ? `${tool} ${toolArgs}` : tool;
+	}
+	return "";
+}
+
+// Settled summary: `complete · ⟳ 7 · 67k tokens`. Multi-run calls lead with
+// the count so `2 agents · failed` reads at a glance, and the state label is the
+// one thing the run ids alone cannot tell you. Upstream exit codes carry state,
+// not just success: a foreground detach is `exitCode: -2, detached: true` (a
+// NON-error tool result — the child keeps running), and a stopped run is
+// `exitCode: 1, stopped: true`. Counting those as failures painted a red label
+// next to the row's own green dot, and made the detached/stopped branches dead.
+function subagentFailure(run: any): boolean {
+	if (run.detached === true || run.stopped === true || run.interrupted === true) return false;
+	// Workflow child entries carry `success`/`state`, never an exit code
+	// (workflowResultChildren in subagent-executor.js).
+	if (run.success === false) return true;
+	return typeof run.exitCode === "number" && run.exitCode !== 0;
+}
+
+function subagentSummary(details: any, context: any, theme: Theme): string {
+	const runs = subagentRuns(details);
+	const failed = runs.filter(subagentFailure);
+	const bad = context.isError === true || failed.length > 0;
+	const detached = runs.some((run) => run.detached === true);
+	const stopped = runs.some((run) => run.stopped === true || run.interrupted === true);
+	const running = runs.filter((run) => run.state === "running").length;
+	const turns = runs.reduce((sum, run) => sum + (typeof run.usage?.turns === "number" ? run.usage.turns : 0), 0);
+	const tokens = runs.reduce(
+		(sum, run) =>
+			sum +
+			(typeof run.usage?.input === "number" ? run.usage.input : 0) +
+			(typeof run.usage?.output === "number" ? run.usage.output : 0),
+		0,
+	);
+	// An async LAUNCH receipt is a settled tool result with no runs at all — the
+	// delegated work is still going (`results: []` + `asyncId`), and workflow
+	// launches are async by default, so `done` would be a lie.
+	if (runs.length === 0 && typeof details?.asyncId === "string")
+		return theme.fg("dim", `async ${details.asyncId.slice(0, 8)}`);
+	const state: string[] = [];
+	if (bad) state.push(failed.length > 1 ? `${failed.length} failed` : "failed");
+	else if (detached) state.push("detached");
+	else if (stopped) state.push("stopped");
+	else if (running > 0) state.push("running");
+	else if (runs.length > 0) state.push("complete");
+	const facts: string[] = [];
+	if (runs.length > 1) facts.push(`${runs.length} agents`);
+	if (turns > 0) facts.push(`⟳ ${turns}`);
+	if (tokens > 0) facts.push(`${formatTokens(tokens)} tokens`);
+	const parts = [
+		...state.map((fact) => theme.fg(bad ? "error" : "dim", fact)),
+		...facts.map((fact) => theme.fg("dim", fact)),
+	];
+	return parts.length > 0 ? parts.join(` ${theme.fg("dim", "·")} `) : theme.fg("dim", "done");
+}
+
+export const subagent: RenderSlots = withToolNotes({
+	renderShell: "self",
+	renderCall(args, theme, context) {
+		const mode = groupMode(context?.toolCallId, context);
+		return treeCall(mode, theme, context, () => {
+			// Live elapsed timer, like bash's: a delegation runs for minutes and
+			// the row must show it is still moving. The batch tick repaints
+			// running rows, so the counter needs no timer of its own and freezes
+			// once settleStatus stamps the end of the span.
+			const runMs = toolRunMs(context?.toolCallId);
+			const elapsed = runMs === undefined ? "" : theme.fg("muted", ` · ${formatElapsed(runMs)}`);
+			const detached = subagentArg(args, "async") === true ? theme.fg("warning", " [async]") : "";
+			return callLine("Subagent", subagentCallArg(args), theme, `${detached}${elapsed}`, mode, context);
+		});
+	},
+	renderResult(result, { expanded, isPartial }, theme, context) {
+		const args = context.args ?? {};
+		const details = result?.details ?? {};
+		const mode = groupMode(context?.toolCallId);
+		const callArg = subagentCallArg(args);
+		if (mode.kind === "child" && !mode.headerOpen) {
+			// Hidden child (parent header closed): still settle the status so a
+			// later re-open shows the right dot.
+			if (!isPartial) settleStatus(context, context.isError);
+			return new Container();
+		}
+		const expandedNow = expanded === true || mode.kind !== "child" || mode.outputOpen;
+		const text = resultText(result, "[nix-comma]").replace(/\n+$/, "");
+		if (isPartial && !context.isError) {
+			if (!expandedNow) {
+				const live = subagentActivity(details) || clip(lastLine(text), 80);
+				return glanceLine("Subagent", callArg, live ? `Running… ${live}` : "Running…", theme, mode, context?.toolCallId);
+			}
+			// Streamed report text wins; a progress-only update (thinking, no text
+			// yet) renders the activity line instead of an empty block.
+			if (text.split("\n").some((line) => line.trim())) return liveStream(text, theme, mode, toolToggleUrl(context));
+			return resultLine(theme, clip(subagentActivity(details) || "Running…", 80), false, mode);
+		}
+		settleStatus(context, context.isError);
+		const summary = subagentSummary(details, context, theme);
+		if (!expandedNow) {
+			// A failed call's message is its content: show it, not just "failed".
+			const line = context.isError ? theme.fg("error", clip(firstLine(text) || "failed", 80)) : summary;
+			return glanceLine("Subagent", callArg, line, theme, mode, context?.toolCallId);
+		}
+		// Expanded: the stats line leads, the child's report follows — the same
+		// shape the web slots use (details-driven summary above the raw output).
+		const lines = capLines(text.split("\n"), outputCap(mode), theme);
+		const color = context.isError ? "error" : "toolOutput";
+		const body = [summary, ...lines.map((line) => theme.fg(color, line))].join("\n");
+		const prefix = childOutputPrefix(mode, theme);
+		const block = new PrefixedText(body, prefix, mode.kind === "child" ? prefix : GLANCE_INDENT);
+		const url = toolToggleUrl(context);
+		return url ? new ClickToggle(block, url) : block;
+	},
+});

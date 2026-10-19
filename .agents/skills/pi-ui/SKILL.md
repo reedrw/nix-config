@@ -84,11 +84,16 @@ the hard way; violating them fails silently.
   falls back to `genericSlots(genericLabel(toolName), genericArgOf)` when
   `next()` yields no `renderCall` — MCP tools, bare registerTool extensions),
   so every call rides the tree/batch machinery. `RENDERED_TOOLS` holds bespoke
-  slots by name (web tools, nix_provision); `UNSTYLED_TOOLS` opts a name out
-  of the auto-cover; a tool shipping its own `renderCall` is left untouched
-  (the former `__piCustomUi.maybeDecorate` globalThis API and the
-  ToolExecutionComponent prototype patch are gone — the resolver made both
-  unnecessary). `pi.getAllTools()` exposes no `execute`, so a resolver still
+  slots by name (web tools, nix_provision, pi-subagents' `subagent`);
+  `UNSTYLED_TOOLS` opts a name out of the auto-cover; a tool shipping its own
+  `renderCall` is left untouched by the AUTO-COVER (the former
+  `__piCustomUi.maybeDecorate` globalThis API and the ToolExecutionComponent
+  prototype patch are gone — the resolver made both unnecessary). A bespoke
+  slot is the exception: it is spread over `next()`, so it REPLACES a tool's own
+  renderers — that is how `subagent` (pi-subagents ships call/result renderers
+  of its own) joins the tree. Everything else pi-subagents draws is
+  `setWidget`/own-keybinding UI (async widget, FleetView, /subagents panes) and
+  stays outside the resolver's reach. `pi.getAllTools()` exposes no `execute`, so a resolver still
   cannot re-render a tool it has no slot for, but it needs no cooperation from
   the tool's own extension either.
 

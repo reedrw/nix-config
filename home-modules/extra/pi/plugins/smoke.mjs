@@ -19,6 +19,7 @@ import {
 	toggleThought,
 	walkTree,
 	webToolSlots,
+	subagent,
 	bash,
 	codemode,
 	edit,
@@ -794,6 +795,127 @@ closeBatch();
 resetToolGroups();
 
 console.log("OK-WEB-TOOLS");
+
+// ── subagent: tree slot over pi-subagents' own renderers ─────────
+// pi-subagents ships renderCall/renderResult of its own, which draw full-width
+// and rail-less. custom-ui.ts's resolver spreads a bespoke RENDERED_TOOLS slot
+// over next(), so this slot (not the tool's own) is what the transcript draws.
+resetToolGroups();
+const subCall = (args, id = "sa1") => plainRow(subagent.renderCall(args, theme, kctx(id, { args })));
+for (const [args, want] of [
+	[{ agent: "scout" }, "Subagent(scout)"],
+	[{ options: { tasks: [{ agent: "scout" }, { agent: "worker" }] } }, "scout · worker"],
+	[{ options: { chain: [{ agent: "scout" }, { agent: "worker" }] } }, "scout → worker"],
+	[{ workflow: "review" }, "workflow review"],
+	[{ action: "steer", agent: "scout" }, "steer scout"],
+]) {
+	const got = subCall(args);
+	if (!got.includes(want)) throw new Error(`subagent call arg: want ${JSON.stringify(want)}, got ${JSON.stringify(got)}`);
+}
+// `params.args` is the workflow script's INPUT object, not a nested params bag
+// ("args requires workflow") — a workflow input named action/agent must not
+// hijack the call row.
+const hijack = subCall({ workflow: true, args: { action: "deploy", agent: "scout", tasks: [{ agent: "worker" }] } });
+if (!hijack.includes("workflow (reply block)")) throw new Error("workflow input args must not drive the call row: " + hijack);
+for (const leaked of ["deploy", "worker"]) {
+	if (hijack.includes(leaked)) throw new Error(`workflow input ${JSON.stringify(leaked)} leaked into the call row: ` + hijack);
+}
+
+// five-peer fanout collapses to the first four + a remainder count
+const many = subCall({ options: { tasks: ["a", "b", "c", "d", "e"].map((agent) => ({ agent })) } });
+if (!many.includes("+1")) throw new Error("subagent call must summarize a wide fanout: " + many);
+
+// a running row reads its activity from details.progress — the report text
+// does not exist yet while the child is thinking/working
+trackGroupToolCall("sa1");
+trackGroupToolCall("sa1b");
+const subLive = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "" }], details: { mode: "single", progress: [{ currentTool: "bash", currentToolArgs: "rg TODO" }] } },
+	{ expanded: false, isPartial: true }, theme, kctx("sa1", { args: { agent: "scout" } })));
+if (!subLive.includes("Running… bash rg TODO")) throw new Error("subagent running glance must show the child's current tool: " + subLive);
+
+// settled glance: status + turn/token stats from details, never "N lines"
+const subSettled = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "report body\n" }], details: { mode: "single", results: [{ agent: "scout", exitCode: 0, usage: { input: 60000, output: 7000, turns: 7 } }] } },
+	{ expanded: false, isPartial: false }, theme, kctx("sa1", { args: { agent: "scout" }, isPartial: false })));
+for (const want of ["complete", "⟳ 7", "67k tokens"]) {
+	if (!subSettled.includes(want)) throw new Error(`subagent glance missing ${JSON.stringify(want)}: ` + subSettled);
+}
+if (/\blines\b/.test(subSettled)) throw new Error("subagent glance must not fall back to a line count: " + subSettled);
+
+// a failed child is error-toned and counted; a parallel fanout leads with the
+// agent count so `2 agents · 1 failed` reads at a glance
+const subFailed = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "child exited 1" }], details: { mode: "parallel", results: [
+		{ agent: "scout", exitCode: 0, usage: { turns: 1, input: 10, output: 5 } },
+		{ agent: "worker", exitCode: 1, usage: { turns: 3, input: 20, output: 5 } },
+	] } },
+	{ expanded: false, isPartial: false }, theme, kctx("sa1", { args: { agent: "scout" }, isPartial: false })));
+for (const want of ["2 agents", "failed", "⟳ 4"]) {
+	if (!subFailed.includes(want)) throw new Error(`subagent failed glance missing ${JSON.stringify(want)}: ` + subFailed);
+}
+
+// Upstream exit codes carry STATE, not just success: a foreground detach is
+// `exitCode: -2, detached: true` (a NON-error result — the child keeps
+// running), a stop is `exitCode: 1, stopped: true`. Neither may read "failed":
+// the row's own status dot is already green, and the detach is user-requested.
+const stateGlance = (details, extra = {}) => plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "" }], details }, { expanded: false, isPartial: false }, theme,
+	kctx("sa1", { args: { agent: "scout" }, isPartial: false, ...extra })));
+const detachRow = stateGlance({ mode: "single", results: [{ agent: "scout", exitCode: -2, detached: true, usage: { turns: 2, input: 100, output: 50 } }] });
+if (!detachRow.includes("detached") || detachRow.includes("failed")) throw new Error("detached receipt must not read failed: " + detachRow);
+const stopRow = stateGlance({ mode: "single", results: [{ agent: "scout", exitCode: 1, stopped: true }] });
+if (!stopRow.includes("stopped") || stopRow.includes("failed")) throw new Error("stopped run must not read failed: " + stopRow);
+const interruptRow = stateGlance({ mode: "single", results: [{ agent: "scout", exitCode: 1, interrupted: true }] });
+if (!interruptRow.includes("stopped") || interruptRow.includes("failed")) throw new Error("interrupted run must not read failed: " + interruptRow);
+
+// workflow children carry `success`/`state`, never an exit code: a caught child
+// failure must still read failed, and an uncollected child must not read
+// complete
+const workflowFail = stateGlance({ mode: "workflow", results: [
+	{ workflowKey: "a", agent: "scout", success: true },
+	{ workflowKey: "b", agent: "worker", success: false, error: "tests broke" },
+] });
+if (!workflowFail.includes("failed") || !workflowFail.includes("2 agents")) throw new Error("workflow child failure not counted: " + workflowFail);
+const workflowRunning = stateGlance({ mode: "workflow", results: [
+	{ workflowKey: "a", agent: "scout", success: true },
+	{ workflowKey: "b", agent: "worker", state: "running" },
+] });
+if (!workflowRunning.includes("running") || workflowRunning.includes("complete")) throw new Error("uncollected workflow child must not read complete: " + workflowRunning);
+
+// an async launch receipt settles with NO results and an asyncId while the
+// delegated run keeps going — `done` would be a lie (workflow launches are
+// async by default)
+const asyncRow = stateGlance({ mode: "workflow", results: [], asyncId: "0a1b2c3d-4567-8901-2345-678901234567", asyncDir: "/tmp/x" });
+if (!asyncRow.includes("async 0a1b2c3d")) throw new Error("async launch receipt must name the run: " + asyncRow);
+
+// an isError result shows its message, not just "failed" (pi-subagents throws
+// on logical failure, so the error text is the whole content)
+const subError = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "unknown agent: nope" }], details: { mode: "management", results: [] } },
+	{ expanded: false, isPartial: false }, theme, kctx("sa1", { args: { agent: "nope" }, isPartial: false, isError: true })));
+if (!subError.includes("unknown agent: nope")) throw new Error("subagent error glance must show the message: " + subError);
+
+// expanded: the stats line leads, the child's report follows
+toggleTool("sa1");
+const subExpanded = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "## Verdict\nreport body\n\n" }], details: { mode: "single", results: [{ agent: "scout", exitCode: 0, usage: { turns: 7, input: 60000, output: 7000 } }] } },
+	{ expanded: false, isPartial: false }, theme, kctx("sa1", { args: { agent: "scout" }, isPartial: false })));
+for (const want of ["complete", "## Verdict", "report body"]) {
+	if (!subExpanded.includes(want)) throw new Error(`subagent expanded body missing ${JSON.stringify(want)}: ` + subExpanded);
+}
+if (/\n\s*\n/.test(subExpanded.trim())) throw new Error("subagent expanded body must not trail blank rows: " + JSON.stringify(subExpanded));
+
+// hidden child of a collapsed header renders nothing (still settles the dot)
+toggleBatch(0);
+const subHidden = plainRow(subagent.renderResult(
+	{ content: [{ type: "text", text: "report body" }], details: { mode: "single", results: [{ agent: "scout", exitCode: 0 }] } },
+	{ expanded: false, isPartial: false }, theme, kctx("sa1", { args: { agent: "scout" }, isPartial: false })));
+if (subHidden.trim() !== "") throw new Error("subagent row under a closed header must render nothing: " + JSON.stringify(subHidden));
+closeBatch();
+resetToolGroups();
+
+console.log("OK-SUBAGENT");
 
 // ── Click plumbing: OSC 8 pi-action links ────────────────────────
 // Links are inert until enableLinkActions patches a fullscreen TUI handle.

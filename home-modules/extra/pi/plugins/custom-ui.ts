@@ -38,8 +38,12 @@
 // patch was removed.
 //
 // Third-party tools are covered by name in the renderer map below
-// (pi-web-access's search/fetch/check/content, nix-comma's nix_provision) —
-// a tool needs no cooperation from its own extension to be drawn custom.
+// (pi-web-access's search/fetch/check/content, nix-comma's nix_provision,
+// pi-subagents' subagent) — a tool needs no cooperation from its own
+// extension to be drawn custom. `subagent` is the one that ships its own
+// call/result renderers, so its slot REPLACES them (the resolver spreads the
+// bespoke slot over next()); the rest of pi-subagents' chrome (the async
+// widget, FleetView, /subagents panes) is setWidget UI and stays its own.
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -95,6 +99,7 @@ import {
 	settleStatus,
 	settleTurnMessage,
 	shimmerFrame,
+	subagent,
 	tickOpenBatch,
 	trackThoughtStart,
 	animState,
@@ -1300,6 +1305,7 @@ const RENDERED_TOOLS: Record<string, { renderShell: "self"; renderCall: any; ren
 	ls,
 	bash,
 	codemode,
+	subagent,
 	...webToolSpecs,
 	nix_provision: genericSlots("Nix Provision", (args: any) => `${args.attr ?? ""}${args.cmd ? ` · ${args.cmd}` : ""}`),
 };
