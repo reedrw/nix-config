@@ -8,8 +8,8 @@
   ],
   "packages": {
     "@hono/node-server": {
-      "version": "2.1.4",
-      "hash": "sha512-2g1qeHl4BduwDn6L8nkAvDrPUWPMlkQ//a5NhP/zIyaXKMjZNRV+cG9Csu+BiJFf6+68pqzjf4Hi5sJGKHuS1g=="
+      "version": "2.1.5",
+      "hash": "sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q=="
     },
     "@mixmark-io/domino": {
       "version": "2.2.0",
@@ -990,8 +990,8 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-context-view": {
-      "version": "0.7.0",
-      "hash": "sha512-27defDIclkYuuG6nEg47C/NZ3ld2EmAKjs05dGU7vB6Ho2UMP2ybt2dRmwmz2QPRECIld9LGojshsnV+Te0IZA=="
+      "version": "0.7.2",
+      "hash": "sha512-i8jtZJA1ovhMLsBHHWE0mB8mzX28Mhm125Zy4QDiD9+bYCgcsYdMzXE7fPnmtx64MB3MNkMIAeMtTrJQ7HtuWQ=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1002,8 +1002,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-web-access": {
-      "version": "0.39.0",
-      "hash": "sha512-LfVbaOLXDZuVw0WC3mnBtG8RILH4joBs0WrKrXYWj2HGuX3SpozxcGZvUDlwvio4lIFYjEONvgcTTqQYD0Dv4Q==",
+      "version": "0.42.0",
+      "hash": "sha512-AUtkNFw1wltHSzxEQGF9yjUjijQE75opicgXrOLCX7iRWWXaKoj0fOlPAWUHVMqRRHeUwN6S/sYFrm3+2QOtMQ==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
@@ -1044,8 +1044,8 @@
       ]
     },
     "qs": {
-      "version": "6.16.0",
-      "hash": "sha512-h6fhOIaRrID2CbEY2fqs+7t+UXZo+MLAnU5gRIq85uFtdiUPCdsApMlHhXogKVM4HM2DVbIjGNTTYH2OcmP1vA==",
+      "version": "6.16.1",
+      "hash": "sha512-5Px6J7rfHBAGUhNQ3es4YzcOdBBw0SDcVtThJml4RdnKw4tKs2epA0kPZ+K8X+WiHktT93RHVcQ/3ym5aTCgtg==",
       "dependencies": [
         "es-define-property",
         "side-channel"
@@ -1379,8 +1379,8 @@
       "hash": "sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ=="
     },
     "unpdf": {
-      "version": "1.8.1",
-      "hash": "sha512-xkURhy2SoGpOIH0a1gLHNkASPIQYonadDJs2AQwPEfUakafeD9EA1WTWWsaR++gfTCXJpV27W7tU1nXuk82UKQ=="
+      "version": "1.9.0",
+      "hash": "sha512-YIXl+jZUBneP22IkRUwFA1b71l+Ad2uX7o7dMfxLSLuCOtaKAQvak7Sz3MtdVsWTsocblznSIGidfXyhnBgBMA=="
     },
     "unpipe": {
       "version": "1.0.0",
