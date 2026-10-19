@@ -17,7 +17,8 @@
 #                 all pinned deps assembled into one shared flat node_modules
 #                 (npm dep graphs can be cyclic, so it cannot be per-package);
 #                 symlinked to ~/.pi/agent/<name> and listed in pi's
-#                 settings.json packages
+#                 settings.json packages. Local fixes go in
+#                 patches/<package>/ and are wired up in packagePatches below.
 {
   lib,
   callPackage,
@@ -26,9 +27,20 @@
 let
   pins = builtins.fromJSON (builtins.readFile ./pins.json);
 
+  # Unified diffs applied to a pinned tarball at -p1 (npm-package.nix). Used
+  # instead of vendoring a whole fork for a one-constant fix; when the patch
+  # stops applying after a pins bump, the build fails on that line.
+  packagePatches = {
+    pi-subagents = [ ./patches/pi-subagents/widget-animation.patch ];
+  };
+
   # One derivation per pinned npm tarball (plain unpack, no node_modules).
   npmPkgs = lib.mapAttrs (
-    name: pin: callPackage ./npm-package.nix { inherit name pin; }
+    name: pin:
+    callPackage ./npm-package.nix {
+      inherit name pin;
+      patches = packagePatches.${name} or [ ];
+    }
   ) pins.packages;
 
   # npm dependency graphs may contain cycles (es-abstract <->

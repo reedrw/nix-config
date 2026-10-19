@@ -3,7 +3,9 @@
 # Updates pins.json: resolves every root (and its transitive
 # runtime deps) to the latest npm version via a lockfile-only install, then
 # rewrites versions + SRI hashes. Also reports drift for any vendored package
-# (a local fork directory kept here) — rebasing those is manual.
+# (a local fork directory kept here) — rebasing those is manual, as is checking
+# the local patches in patches/<name>/ still apply (a failed patch shows up at
+# build time, in the derivation's log).
 # Run by `update-all` (finds update.sh files) or directly.
 set -euo pipefail
 cd "$(dirname "$(realpath "$0")")"
