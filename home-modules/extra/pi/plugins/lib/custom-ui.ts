@@ -638,6 +638,31 @@ function expandedBlock(text: string, theme: Theme, error = false, cap?: number, 
 	return url ? new ClickToggle(block, url) : block;
 }
 
+// Syntax-highlighted variant of expandedBlock for file contents (read). The
+// cap note is appended AFTER highlighting: it is not code, and a highlighter
+// fed it would tint it. No language (or an error message, filtered out by
+// readLanguage) falls back to plain toolOutput coloring.
+function highlightedBlock(
+	text: string,
+	lang: string | undefined,
+	theme: Theme,
+	cap?: number,
+	mode?: GroupMode,
+	url?: string,
+): Component {
+	const lines = text.split("\n");
+	const clipped = cap !== undefined && lines.length > cap;
+	const shown = clipped ? lines.slice(0, cap) : lines;
+	const colored = highlightReadLines(shown, lang, theme);
+	if (clipped) {
+		const rest = lines.length - (cap ?? shown.length);
+		colored.push(theme.fg("muted", `… +${rest} more lines (${keyText("app.tools.expand")} to expand)`));
+	}
+	const prefix = childOutputPrefix(mode ?? { kind: "normal" }, theme);
+	const block = new PrefixedText(colored.join("\n"), prefix, mode?.kind === "child" ? prefix : GLANCE_INDENT);
+	return url ? new ClickToggle(block, url) : block;
+}
+
 function resultText(result: any, excludeMarker?: string): string {
 	return (result?.content ?? [])
 		.filter(
@@ -3019,7 +3044,7 @@ export function readCallSlot(args: any, theme: Theme, context?: any): Component 
 
 export function readTextResult(
 	result: any,
-	{ expanded, isPartial }: any,
+	{ expanded, isPartial, language }: any,
 	theme: Theme,
 	cap?: number,
 	mode?: GroupMode,
@@ -3029,9 +3054,26 @@ export function readTextResult(
 	const text = resultText(result);
 	if (!text) return new Text("", 0, 0);
 	if (expanded) {
-		return expandedBlock(text, theme, false, cap, mode, url);
+		return highlightedBlock(text, language, theme, cap, mode, url);
 	}
 	return resultLine(theme, `${text.split("\n").length} lines${truncationNote(result.details, theme)}`, false, mode);
+}
+
+// Language for a read row's content, from pi's own extension→language table
+// (the same one its native renderer uses). An error result is a message, not
+// file contents, so it stays unhighlighted.
+export function readLanguage(context: any): string | undefined {
+	if (context?.isError === true) return undefined;
+	const path = typeof context?.args?.path === "string" ? context.args.path : "";
+	return path ? getLanguageFromPath(path) : undefined;
+}
+
+// Highlight (or plainly color) file-content lines. Shared by the tree read row
+// and custom-ui.ts's with-images fallback, which replaces pi's native read
+// renderer and must keep its syntax coloring.
+export function highlightReadLines(lines: readonly string[], lang: string | undefined, theme: Theme): string[] {
+	if (!lang) return lines.map((line) => theme.fg("toolOutput", line));
+	return writeSliceLines([...lines], 0, lines.length, lang, theme);
 }
 
 // ---------------------------------------------------------------------------

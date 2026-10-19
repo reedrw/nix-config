@@ -85,7 +85,9 @@ import {
 	noteTurnProviderOutput,
 	pushToolNote,
 	readCallSlot,
+	readLanguage,
 	readTextResult,
+	highlightReadLines,
 	resetTurnTokens,
 	noteToolExecutionStart,
 	scanToolGroupsFromHistory,
@@ -918,7 +920,7 @@ function readImageFallbackResult(result: any, options: any, theme: Theme, contex
 	if (text) {
 		const lines = text.split("\n");
 		const visible = options.expanded ? lines : lines.slice(0, FALLBACK_PREVIEW_LINES);
-		let output = visible.map((line: string) => theme.fg("toolOutput", line)).join("\n");
+		let output = highlightReadLines(visible, readLanguage(context), theme).join("\n");
 		const remaining = lines.length - visible.length;
 		if (remaining > 0) {
 			output += theme.fg("muted", `\n... (${remaining} more lines)`);
@@ -972,7 +974,7 @@ const readSlots = {
 		stack.addChild(
 			readTextResult(
 				result,
-				{ expanded: true, isPartial: options.isPartial },
+				{ expanded: true, isPartial: options.isPartial, language: readLanguage(context) },
 				theme,
 				outputCap(mode),
 				mode,

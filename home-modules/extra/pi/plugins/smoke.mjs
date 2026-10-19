@@ -10,6 +10,8 @@ import {
 	batchHeaderAnimated,
 	liveGroupHeaderLine,
 	groupHeaderLine,
+	readLanguage,
+	readTextResult,
 	resetToolGroups,
 	scanToolGroupsFromHistory,
 	toggleBatch,
@@ -1473,6 +1475,43 @@ for (let n = 10; n <= streamText.length; n += 23) {
 if (heights.size !== 1) throw new Error(`preview height must be fixed once the window is full: ${[...heights]}`);
 resetToolGroups();
 console.log("OK-WRITE-PREVIEW");
+
+// ── read: expanded file contents are syntax-highlighted ─────────
+// (pi's native read renderer highlights through the same table; the tree row
+// used to color every line plain toolOutput.)
+const readCtx = { args: { path: "/tmp/demo.ts" }, isError: false };
+const readRaw = readTextResult(
+	{ content: [{ type: "text", text: "const answer = 42;\nfunction f() { return answer; }" }] },
+	{ expanded: true, isPartial: false, language: readLanguage(readCtx) },
+	theme,
+)
+	.render(100)
+	.join("\n");
+if (!/\x1b\[38;2;\d+;\d+;\d+mconst/.test(readRaw)) throw new Error("expanded read output must syntax-highlight");
+if (!stripSgr(readRaw).includes("function f() { return answer; }")) throw new Error("expanded read output must show every line");
+// An error result is a message, not file contents: no language, plain coloring.
+const readErrorRaw = readTextResult(
+	{ content: [{ type: "text", text: "ENOENT: no such file or directory" }] },
+	{ expanded: true, isPartial: false, language: readLanguage({ ...readCtx, isError: true }) },
+	theme,
+)
+	.render(100)
+	.join("\n");
+if (/\x1b\[38;2;/.test(readErrorRaw)) throw new Error("read errors must not be syntax-highlighted");
+// The cap note is appended after highlighting and stays muted.
+const readCappedRaw = readTextResult(
+	{ content: [{ type: "text", text: "const a = 1;\nconst b = 2;\nconst c = 3;" }] },
+	{ expanded: true, isPartial: false, language: "typescript" },
+	theme,
+	2,
+)
+	.render(100)
+	.join("\n");
+const readCappedNote = readCappedRaw.split("\n").find((line) => line.includes("more lines"));
+if (!readCappedNote || !readCappedNote.includes("[muted]") || readCappedNote.includes("38;2;")) {
+	throw new Error(`read cap note must stay muted: ${JSON.stringify(readCappedNote)}`);
+}
+console.log("OK-READ-HIGHLIGHT");
 
 
 // ── codemode: the script is visible while it streams ─────────────// The tree row used to show only the FIRST line of the script until the model

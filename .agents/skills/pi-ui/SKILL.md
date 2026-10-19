@@ -180,6 +180,12 @@ the hard way; violating them fails silently.
   later pathless renders), then a first-line shebang/`<?php`/`<!doctype`
   sniff. Never cache a sniff as exact — only path-derived languages are
   remembered, so the sniff yields when the real path appears.
+  The read row's expanded content is highlighted through the same table:
+  `readLanguage(context)` (path extension; an error result gets NO language —
+  its text is a message, not code) feeds `highlightReadLines`, which
+  custom-ui.ts's with-images fallback also uses. The cap note is appended
+  AFTER highlighting so the highlighter never tints it, and only the capped
+  slice is highlighted (the lead-in window keeps block-comment state).
   Expanded CONTENT is clickable too: thinking text (fold renderer) and tool output
   (`ClickToggle` around every `expandedBlock`/`liveStream`/edit diff) carry
   the node's own toggle URL per line, so clicking the body collapses it.
