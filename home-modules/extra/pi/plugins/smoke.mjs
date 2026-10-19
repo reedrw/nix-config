@@ -142,6 +142,25 @@ toggleTool("k1");
 if (groupMode("k1").outputOpen) throw new Error("click must close the child");
 resetToolGroups();
 
+// ── nested calls never join the batch ───────────────────────────
+// pi emits tool_execution_start for a codemode script's nested calls too
+// (parentToolCallId set, id `<parent>/<n>`), even though they never get a
+// transcript row. Treating them as batch members made the parent batch
+// announce "Ran 4 tool calls" for ONE call, demoted the visible row out of the
+// newest-child slot (no auto-open → one-line glance while running, `├─`
+// instead of `╰─`) and left invisible ids as the batch's last child.
+resetToolGroups();
+trackGroupToolCall("outer");
+trackGroupToolCall("outer/1", "outer");
+trackGroupToolCall("outer/2", "outer");
+m = groupMode("outer");
+if (m.count !== 1) throw new Error(`nested calls must not join the batch: count ${m.count}`);
+if (!m.last || !m.outputOpen || m.cap !== 16) {
+	throw new Error(`nested calls must not demote the parent row: ${JSON.stringify(m)}`);
+}
+resetToolGroups();
+console.log("OK-NESTED-CALLS");
+
 // ── Thought branches & anchor (live) ───────────────────────────
 // Fresh thinking (no batch) is standalone; when the batch opens it anchors,
 // and the run joins as first children in order (§2.3).

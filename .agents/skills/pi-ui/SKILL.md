@@ -283,6 +283,17 @@ the hard way; violating them fails silently.
   trees carrying a reasoning block (1 tool + thoughts): their streaming
   tool shows only its call row — treeCall keeps `isPartial` call rows
   visible and the partial glance yields to it.
+- **Nested calls are not batch members**: pi fires `tool_execution_start` (and
+  `tool_call`/`tool_result`/`tool_execution_end`) for a codemode script's
+  `tools.x()` and any `ctx.executeTool()` call, with `parentToolCallId` set and
+  id `<parent>/<n>`. They never get a transcript row — the parent's result
+  renders them. `trackGroupToolCall(id, parentToolCallId)` drops them, and the
+  entry forwards the id verbatim. Tracking them (the pre-fix behavior) made the
+  batch header announce `Ran 4 tool calls` for one call, demoted the visible
+  row out of the newest-child slot (so no auto-open — the codemode row sat as a
+  one-line glance while running, with `├─` instead of `╰─`) and left invisible
+  ids as the batch's last child. Symptom was "the codemode script is one line
+  again", but it affects every nested-call tool.
 - **State machine**: batch open/closed is USER state with live defaults
   (`open?` + `stickyClosed?` on each batch; `openTools`/`closedTools`/
   `openThoughts` sets on the state). A RUNNING batch auto-opens and its

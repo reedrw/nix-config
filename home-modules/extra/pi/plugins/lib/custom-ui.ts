@@ -867,7 +867,17 @@ function groupState(): GroupState {
 // Idempotent: custom-ui tracks on tool_execution_start (fires for every
 // call, BEFORE pi validates args) and keeps the legacy tool_call handler;
 // a call that passes validation fires both.
-export function trackGroupToolCall(toolCallId: string): void {
+//
+// NESTED calls (a codemode script's `tools.bash`, any `ctx.executeTool`) are
+// never batch members: pi emits tool_execution_start for them too (with
+// `parentToolCallId`, id `<parent>/<n>`) but they never get a transcript row of
+// their own — their parent's result owns them. Tracking them made the parent
+// batch announce "Ran 4 tool calls" for ONE call, pushed the visible row out of
+// the newest-child slot (no auto-open, `├─` instead of `╰─`) and left invisible
+// ids as the batch's last child, so the parent row collapsed to a one-line
+// glance while it was running.
+export function trackGroupToolCall(toolCallId: string, parentToolCallId?: string): void {
+	if (parentToolCallId !== undefined) return;
 	const s = groupState();
 	if (s.memberBatch.has(toolCallId)) return;
 	s.order.set(toolCallId, ++s.counter);
