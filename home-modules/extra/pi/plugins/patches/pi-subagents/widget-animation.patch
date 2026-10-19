@@ -1,0 +1,15 @@
+--- a/src/shared/types.js
++++ b/src/shared/types.js
+@@ -129,7 +129,11 @@
+ export const SLASH_SUBAGENT_UPDATE_EVENT = "subagent:slash:update";
+ export const SLASH_SUBAGENT_CANCEL_EVENT = "subagent:slash:cancel";
+ export const POLL_INTERVAL_MS = 250;
+-export const WIDGET_ANIMATION_INTERVAL_MS = 1000;
++// [nix-config patch] 80ms: this constant is both the widget's frame clock and
++// the animation repaint gate (async-job-tracker). Upstream's 1000ms quantized
++// the braille spinner to 1 fps -- a 10s revolution -- while the rest of the UI
++// ticks at 80ms.
++export const WIDGET_ANIMATION_INTERVAL_MS = 80;
+ export const MAX_WIDGET_JOBS = 4;
+ export const DEFAULT_SUBAGENT_MAX_DEPTH = 2;
+ export const SUBAGENT_ACTIONS = ["list", "get", "models", "children.list", "guide", "validate", "create", "update", "delete", "eject", "disable", "enable", "reset", "mission.create", "mission.list", "mission.show", "mission.update", "mission.resolve-decision", "mission.attach-run", "mission.close", "worktree.discard", "worktree.cleanup", "lane.status", "lane.recordMerge", "lane.recordSupersession", "refine", "refine.show", "refine.rollback", "inspector.open", "inspector.command", "inspector.status", "inspector.close", "project.open", "project.status", "project.close", "status", "debug.run", "grant-spawn-budget", "interrupt", "resume", "steer", "stop", "command.status", "command.yield", "command.cancel", "dismiss", "doctor", "watchdog.status", "watchdog.check", "watchdog.configure", "watchdog.recommend-model", "schedule.create", "schedule.list", "schedule.show", "schedule.history", "schedule.pause", "schedule.resume", "schedule.run", "schedule.run-due", "schedule.delete"];
