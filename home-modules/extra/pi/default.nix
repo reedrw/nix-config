@@ -295,6 +295,13 @@ in
           "app.message.dequeue" = "shift+up";
         };
       };
+      # Global (agent-dir) instructions: privilege contract — journalctl and
+      # read-only systemctl work as reed without sudo; elevation needs an
+      # explained polkit prompt. Applies in every working directory.
+      ".pi/agent/AGENTS.md" = {
+        force = true;
+        source = ./AGENTS.md;
+      };
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
