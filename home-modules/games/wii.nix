@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     # dolphin-emu
-    (mullvadExclude wheel-wizard)
+    (mullvadExclude wheelwizard)
   ];
 
   custom.persistence.directories = [
