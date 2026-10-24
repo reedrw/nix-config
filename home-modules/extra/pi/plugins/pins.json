@@ -113,8 +113,8 @@
       ]
     },
     "body-parser": {
-      "version": "2.3.0",
-      "hash": "sha512-2cGmJupaNgg+QUwVLAucDuWuoMZ6EX9iHDRswZ5lsNYEmwPaRknMPCLZz07yTzVq/83p4o/wzbDZbBrTvGGTIw==",
+      "version": "2.4.0",
+      "hash": "sha512-Ifk1KcLrxaGt1occQagQNFNNOqRt1LFuehEnHHzB8Z6cRgIxRU1TBaiIsUiCdA+gy5PL7Y1IX31DNKkRmxtXjQ==",
       "dependencies": [
         "bytes",
         "content-type",
@@ -876,8 +876,8 @@
       "hash": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="
     },
     "jose": {
-      "version": "6.2.12",
-      "hash": "sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw=="
+      "version": "6.2.13",
+      "hash": "sha512-7TIg10ZE1x82YediN+lcrPNvGMKge9yFHQD+Qho/b8y2adfugU3AsvvHfxV0fzyFllT6l9xCjf4RWY9g/Z9PJQ=="
     },
     "jsbi": {
       "version": "4.3.2",
@@ -968,8 +968,8 @@
       ]
     },
     "on-finished": {
-      "version": "2.4.1",
-      "hash": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+      "version": "2.4.2",
+      "hash": "sha512-ATWUv387i+nLD49EiDoOft5scf32Vsdz3ktrQJG9bi7jRFmaXTssvyvj1EmeKVVgvesbqUtvQQvaS2TpTukAZQ==",
       "dependencies": [
         "ee-first"
       ]
@@ -1038,8 +1038,8 @@
       ]
     },
     "pi-web-access": {
-      "version": "0.42.0",
-      "hash": "sha512-AUtkNFw1wltHSzxEQGF9yjUjijQE75opicgXrOLCX7iRWWXaKoj0fOlPAWUHVMqRRHeUwN6S/sYFrm3+2QOtMQ==",
+      "version": "0.44.0",
+      "hash": "sha512-8YK2Nb0P7ezRL0FS7P1cPYu7gDUOuhXWA3FOBev0bKsuPtG2QrDVm2GriKBgZI1Sq7SC8QRsfVFYYP8huUEo8w==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
