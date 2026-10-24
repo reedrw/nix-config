@@ -1011,8 +1011,8 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-context-view": {
-      "version": "0.7.2",
-      "hash": "sha512-i8jtZJA1ovhMLsBHHWE0mB8mzX28Mhm125Zy4QDiD9+bYCgcsYdMzXE7fPnmtx64MB3MNkMIAeMtTrJQ7HtuWQ=="
+      "version": "0.8.0",
+      "hash": "sha512-ppGVRYlMeU9YuiyPInf8IKNuzc3MG/YJx3L4qzg0h5kyuiBjmkw9GLLO/DTBkOmkkiUonlJn2QGFxnKyrEUc1Q=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1027,8 +1027,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.79.1",
-      "hash": "sha512-7r+Dz2G9ewTuRrgmLnXGfK+nc14ZjVC+sWkw2WaL40MbYmlHeIxmfTMxDRvVSlK+CptKUArV6PtXAQtWZzCUVQ==",
+      "version": "0.81.0",
+      "hash": "sha512-nS4otciP317cYBqIs+6IE8nsudWpPTbI0Lzx7BLgZHbawGs6KThjLc9429Z6eHBc5ip7rXCMRc9XhgZKyF+9Dg==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
