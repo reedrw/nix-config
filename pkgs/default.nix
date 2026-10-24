@@ -8,6 +8,7 @@ let
     linuwux-runtime = pkgs.callPackage ./linuwux-runtime { inherit inputs; };
     mountiso = pkgs.callPackage ./mountiso { };
     persist-path-manager = pkgs.callPackage ./persist-path-manager { };
+    pi-bolt = pkgs.callPackage ./pi-bolt { };
     unscene = self.callPackage ./unscene { };
     update-all = pkgs.callPackage ./update-all { };
     why-diff = pkgs.callPackage ./why-diff { };
