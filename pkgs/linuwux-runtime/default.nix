@@ -4,6 +4,7 @@
   appendOverlays,
   makeRustPlatform,
   fetchFromGitHub,
+  patchelf,
   stdenv
 }:
 let
@@ -30,6 +31,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   cargoHash = "sha256-J3eeXYKn11KEuTvVV4DbtWHtpOYgg5qX0kmeuFJSXIc=";
 
+  nativeBuildInputs = [ patchelf ];
+
   # The shared object is produced by the xtask linker driver (export map,
   # constructor ordering checks, strip), not by a plain `cargo build`.
   buildPhase = ''
@@ -54,6 +57,24 @@ rustPlatform.buildRustPackage (finalAttrs: {
   '';
 
   doCheck = false;
+
+  # The object's only shared dependencies are libc/libm/libdl/libpthread, so
+  # stdenv's fixupPhase bakes a RUNPATH into *our* glibc's lib directory -- and
+  # that is wrong for an LD_PRELOAD shim. Preloading into a process running a
+  # newer glibc (e.g. Bottles' FHS env on glibc 2.44) then pins libm 2.42 in
+  # that process, so every later dlopen() of a library built against a newer
+  # glibc fails on versioned symbols: libasound.so.2 imports
+  # sqrtf@GLIBC_2.43, which kills winealsa.so/winepulse.so and leaves Wine's
+  # mmdevapi with no audio driver. Dropping the RUNPATH lets the loader of the
+  # host process supply libc/libm, which is correct in every environment.
+  postFixup = ''
+    patchelf --remove-rpath "$out/lib/LinUwUx.so"
+    patchelf --print-rpath "$out/lib/LinUwUx.so" | grep -q . && {
+      echo "error: LinUwUx.so still has a RUNPATH" >&2
+      exit 1
+    }
+    true
+  '';
 
   meta = {
     description = "LD_PRELOAD compatibility runtime for Windows games under Wine/Proton";
