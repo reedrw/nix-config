@@ -125,7 +125,8 @@ the hard way; violating them fails silently.
 - **Tree model**: the transcript is an interactive tree. Every tool batch is
   a disclosure header (`▸/▾ Thought for Xs · Ran N tool calls` — bold grey
   base03, italic, one leading space; collapsed by
-  default when settled — except a SOLO batch, which stays open); glance rows
+  default when settled — except a SOLO batch of a reading tool, which stays
+  open); glance rows
   and thinking branches are its children
   (`├─`/`╰─`, visible iff the header is open, one column in so the glyphs sit under the header's `▾` — every child prefix, continuation, and output rail shares that column);
   each child's output/reasoning is depth 3 (visible iff the child is open).
@@ -314,10 +315,21 @@ the hard way; violating them fails silently.
   `openThoughts` sets on the state). A RUNNING batch auto-opens and its
   newest child auto-opens with a 16-line cap; a user collapse of a running
   batch is sticky (wins over auto-open until re-open); settled batches
-  default closed EXCEPT a SOLO batch (exactly one tool call): its header and
-  that call's output stay open (same 16-line cap, so the row does not jump at
-  settle) while its thought branches stay collapsed — one call is not worth a
-  collapse. Edits keep their own rule (only the diffstat click opens a diff),
+  default closed EXCEPT a SOLO batch (exactly one tool call) of a READING
+  tool — `SOLO_EXPANDED_TOOLS` in the lib, i.e. bash/write/read/edit/ls/find/
+  grep, the calls whose expanded body is what the user came to read: its
+  header and
+  that call's output stay open (same 16-line cap, so a long output does not
+  jump at settle — it keeps exactly the partial view it showed while
+  running, cap note included) while its thought branches stay collapsed —
+  one call is not worth a
+  collapse. A solo call of ANYTHING else (web tools, subagent, codemode,
+  MCP, …) settles closed like any other batch: one glance line is its whole
+  story. The tool name per call id comes from `tool_execution_start`
+  (`trackGroupToolCall(id, parentId, toolName)`) and from the history scan's
+  `toolCall` parts; an UNKNOWN name takes the closed path — never guess, or
+  a restored row could expand a tool that was supposed to stay a glance.
+  Edits keep their own rule (only the diffstat click opens a diff),
   and a user-opened child persists. There are NO derived
   `collapsed`/`folded`/`latest` flags and no `effectiveExpanded` precedence
   chain — clicks flip exactly one node's flag (`pi-action://node/batch/<i>`,

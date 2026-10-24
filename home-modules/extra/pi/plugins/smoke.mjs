@@ -409,12 +409,12 @@ resetToolGroups();
 scanToolGroupsFromHistory([
 	{ type: "message", message: { role: "assistant", timestamp: 10, content: [{ type: "thinking", thinking: "a" }] } },
 	{ type: "message", message: { role: "assistant", timestamp: 11, content: [{ type: "thinking", thinking: "b" }] } },
-	{ type: "message", message: { role: "assistant", timestamp: 12, content: [{ type: "toolCall", id: "r1" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 12, content: [{ type: "toolCall", id: "r1", name: "bash" }] } },
 	{ type: "message", message: { role: "assistant", timestamp: 13, content: [{ type: "thinking", thinking: "c" }] } },
-	{ type: "message", message: { role: "assistant", timestamp: 14, content: [{ type: "toolCall", id: "r2" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 14, content: [{ type: "toolCall", id: "r2", name: "bash" }] } },
 	{ type: "message", message: { role: "user", content: "go on" } },
 	{ type: "message", message: { role: "assistant", timestamp: 15, content: [{ type: "thinking", thinking: "d" }] } },
-	{ type: "message", message: { role: "assistant", timestamp: 16, content: [{ type: "toolCall", id: "r3" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 16, content: [{ type: "toolCall", id: "r3", name: "read" }] } },
 ]);
 if (tree.branchScope(10).kind !== "anchor") throw new Error("first leading think must anchor batch 0");
 if (tree.branchScope(11).kind !== "branch") throw new Error("second leading think must be a branch");
@@ -446,8 +446,8 @@ if (!m.first) throw new Error("bare batch header rides the first tool");
 // bare batch (no double-count)
 resetToolGroups();
 scanToolGroupsFromHistory([
-	{ type: "message", message: { role: "assistant", timestamp: 30, content: [{ type: "toolCall", id: "q1" }] } },
-	{ type: "message", message: { role: "assistant", timestamp: 31, content: [{ type: "thinking", thinking: "hmm" }, { type: "text", text: "narration" }, { type: "toolCall", id: "q2" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 30, content: [{ type: "toolCall", id: "q1", name: "bash" }] } },
+	{ type: "message", message: { role: "assistant", timestamp: 31, content: [{ type: "thinking", thinking: "hmm" }, { type: "text", text: "narration" }, { type: "toolCall", id: "q2", name: "web_search" }] } },
 ]);
 scope = tree.branchScope(31);
 if (scope.kind !== "branch" || scope.batchIndex !== 0) throw new Error(`narrated think must join the preceding batch: ${JSON.stringify(scope)}`);
@@ -500,7 +500,7 @@ const resultOf = (id, text = "out\nout2", extra = {}) =>
 // a settled SOLO batch (exactly one tool call) does not collapse: header,
 // call row and output (under the 16-line live cap) stay on screen — only
 // thought branches stay collapsed
-trackGroupToolCall("g1"); closeBatch();
+trackGroupToolCall("g1", undefined, "bash"); closeBatch();
 let row = callOf("g1");
 if (!row.includes("▾ Ran 1 tool call")) throw new Error(`settled solo header must stay open: ${JSON.stringify(row)}`);
 if (row.includes("to expand")) throw new Error("settled headers carry no hint suffix");
@@ -525,6 +525,30 @@ toggleTool("g1");
 row = resultOf("g1");
 if (!row.includes("╰─ Bash(echo hi)") || !row.includes("2 lines")) throw new Error(`last-child glance needs the corner: ${JSON.stringify(row)}`);
 if (row.includes("├") || row.includes("│")) throw new Error("last child has no connector");
+
+// a settled SOLO batch stays expanded only for a READING tool
+// (SOLO_EXPANDED_TOOLS: bash/write/read/edit/ls/find/grep). A glance-only
+// tool has nothing below its one line, so it settles closed like any other
+// batch; a call whose tool name is unknown takes the same closed path
+// instead of guessing (the history scan records restored names).
+resetToolGroups();
+trackGroupToolCall("w1", undefined, "web_search"); closeBatch();
+m = groupMode("w1");
+if (m.headerOpen || m.outputOpen) throw new Error(`non-reading solo tool must settle closed: ${JSON.stringify(m)}`);
+resetToolGroups();
+for (const name of ["bash", "write", "read", "edit", "ls", "find", "grep"]) {
+	trackGroupToolCall(`s_${name}`, undefined, name);
+	closeBatch();
+	m = groupMode(`s_${name}`);
+	if (!m.headerOpen) throw new Error(`reading tool ${name} must keep its solo header open: ${JSON.stringify(m)}`);
+	// edit's output starts expanded only via the header diffstat click
+	if (name !== "edit" && (!m.outputOpen || m.cap !== 16)) {
+		throw new Error(`reading tool ${name} must keep its output open, capped: ${JSON.stringify(m)}`);
+	}
+	resetToolGroups();
+}
+trackGroupToolCall("w2"); closeBatch();
+if (groupMode("w2").headerOpen) throw new Error("unknown tool name must settle closed, not expanded");
 
 // mid-list children: ├─ labels; an expanded mid-list child's output carries
 // the through-connector `│` linking its corner past its content
@@ -577,7 +601,7 @@ resetToolGroups();
 // the LAST child's wrapped output keeps the tree's no-rail rule: bare
 // space indent under ╰─ (the corner already turned)
 resetToolGroups();
-trackGroupToolCall("lc1"); closeBatch();
+trackGroupToolCall("lc1", undefined, "bash"); closeBatch();
 // (a settled solo batch is expanded by default — no click needed)
 const lcCtx = kctx("lc1", { args: { command: longLine } });
 const lcBlock = bash.renderResult({ content: [{ type: "text", text: longLine }] }, { expanded: false, isPartial: false }, theme, lcCtx);
@@ -590,7 +614,7 @@ resetToolGroups();
 
 // thinking-anchored batch: the first tool row must NOT host the header
 trackThoughtStart(9000);
-trackGroupToolCall("g3");
+trackGroupToolCall("g3", undefined, "bash");
 if (callOf("g3").includes("Ran 1 tool call")) throw new Error("anchor batch: header belongs to the think row, not the tool");
 if (!callOf("g3").includes("Bash(echo hi)")) throw new Error("anchor batch tool still renders its call row");
 closeBatch();
@@ -1004,7 +1028,7 @@ if (!dotted.includes(`${FAKE}https://example.com\x1b\\`)) throw new Error("URL l
 if (!dotted.includes(`https://example.com\x1b]8;;\x1b\\`)) throw new Error("URL link must close after the URL");
 
 // dispatch through the patched openUrl toggles state; other URLs fall through
-trackGroupToolCall("h1"); closeBatch();
+trackGroupToolCall("h1", undefined, "bash"); closeBatch();
 if (!groupMode("h1").outputOpen) throw new Error("settled solo call must default open");
 handle.openUrl("pi-action://node/tool/h1");
 if (groupMode("h1").outputOpen !== false) throw Error("patched openUrl must toggle the child");
@@ -1087,7 +1111,7 @@ if (groupMode("e2").outputOpen) throw new Error("override must dissolve after a 
 // solo batch: the settled default keeps the header AND the single tool open
 // (live cap); a header click collapses both, the next expands both again
 resetToolGroups();
-trackGroupToolCall("solo1"); closeBatch();
+trackGroupToolCall("solo1", undefined, "read"); closeBatch();
 if (!groupMode("solo1").headerOpen || !groupMode("solo1").outputOpen) throw new Error("settled solo batch must stay expanded");
 if (groupMode("solo1").cap !== 16) throw new Error("settled solo output keeps the live cap");
 handleActionUrl("pi-action://node/batch/0");
@@ -1098,7 +1122,7 @@ if (!groupMode("solo1").headerOpen || !groupMode("solo1").outputOpen) throw new 
 // EXCEPT edits: a settled solo edit batch keeps its header open but its diff
 // does not auto-expand — only the diffstat click starts a diff expanded
 resetToolGroups();
-trackGroupToolCall("se1"); closeBatch();
+trackGroupToolCall("se1", undefined, "edit"); closeBatch();
 edit.renderCall({ path: "a.ts" }, theme, kctx("se1", { args: { path: "a.ts" } }));
 if (!groupMode("se1").headerOpen) throw new Error("settled solo edit header must stay open");
 if (groupMode("se1").outputOpen) throw new Error("a settled edit diff must not auto-expand — only the diffstat does");
@@ -1113,7 +1137,7 @@ if (!groupMode("se1").outputOpen) throw new Error("diffstat click must expand th
 // a solo batch with a reasoning block: the settled default keeps the header
 // and the single call expanded while the thought branch stays collapsed
 resetToolGroups();
-trackGroupToolCall("sn1");
+trackGroupToolCall("sn1", undefined, "bash");
 trackThoughtStart(600); // joins the open batch as a branch
 closeBatch();
 if (!groupMode("sn1").headerOpen) throw new Error("settled solo-with-thought header must stay open");
@@ -1128,7 +1152,7 @@ if (tree.branchScope(600).contentOpen) throw new Error("solo-with-thought header
 // expanded content is a click target too: every output line carries the
 // node's toggle URL, so clicking the body collapses the node
 resetToolGroups();
-trackGroupToolCall("ct1"); closeBatch();
+trackGroupToolCall("ct1", undefined, "bash"); closeBatch();
 // (a settled solo batch is expanded by default — the output body is live)
 const clickBody = bash.renderResult(
 	{ content: [{ type: "text", text: "alpha\nbeta" }] },

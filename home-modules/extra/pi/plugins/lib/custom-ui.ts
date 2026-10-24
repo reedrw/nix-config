@@ -704,8 +704,12 @@ function withMore(text: string, cap: number, theme: Theme): string {
 // - a user collapse of a running batch is STICKY (wins over auto-open until
 //   the user re-opens or a new batch starts);
 // - settled batches default closed, EXCEPT a SOLO batch (exactly one tool
-//   call): its header and that call's output stay open (same live cap) while
-//   its thought branches stay collapsed — one call is not worth a collapse;
+//   call) of a reading tool (SOLO_EXPANDED_TOOLS: bash/write/read/edit/ls/
+//   find/grep): its header and that call's output stay open (same live cap,
+//   so a long output keeps the partial view it showed while running) while
+//   its thought branches stay collapsed — one call is not worth a collapse.
+//   A solo call of anything else (web search, subagent, codemode, MCP, …)
+//   settles closed like any other batch: one glance row is its whole story;
 // - user-opened children persist.
 //
 // Leading thoughts (§2.3): a contiguous run of pure-thinking messages
@@ -790,6 +794,10 @@ interface GroupState {
 	// toolCallIds that render through the edit slots (registered on first
 	// render) — the header diffstat override and totals only reach edit rows.
 	editIds: Set<string>;
+	// Tool name per toolCallId, recorded from tool_execution_start and the
+	// history scan. Read by soloBatch: only a call of a reading tool keeps its
+	// solo batch expanded once settled.
+	toolNames: Map<string, string>;
 	// Settled diffstat per edit toolCallId (+added/−removed lines), summed
 	// into the batch header's diff section.
 	editStats: Map<string, { adds: number; dels: number }>;
@@ -828,6 +836,7 @@ function freshGroupState(): GroupState {
 		thoughtRows: new Map(),
 		notes: new Map(),
 		editIds: new Set(),
+		toolNames: new Map(),
 		editStats: new Map(),
 		settledTools: new Set(),
 		streamingCalls: new Set(),
@@ -904,9 +913,12 @@ function groupState(): GroupState {
 // the newest-child slot (no auto-open, `├─` instead of `╰─`) and left invisible
 // ids as the batch's last child, so the parent row collapsed to a one-line
 // glance while it was running.
-export function trackGroupToolCall(toolCallId: string, parentToolCallId?: string): void {
+export function trackGroupToolCall(toolCallId: string, parentToolCallId?: string, toolName?: string): void {
 	if (parentToolCallId !== undefined) return;
 	const s = groupState();
+	// Recorded even for an already-tracked call: the streaming-adoption path
+	// (groupMode) joins a row before tool_execution_start delivers its name.
+	if (toolName !== undefined && s.toolNames.get(toolCallId) !== toolName) s.toolNames.set(toolCallId, toolName);
 	if (s.memberBatch.has(toolCallId)) return;
 	s.order.set(toolCallId, ++s.counter);
 	if (s.current === undefined) {
@@ -1020,20 +1032,41 @@ export function closeBatch(): void {
 
 // Effective open state of a batch header: user toggle first, then the live
 // defaults (running → open unless sticky-closed; settled → open for a SOLO
-// batch, closed otherwise).
+// batch of a reading tool, closed otherwise).
 function batchOpen(batch: TreeBatch): boolean {
 	if (batch.open !== undefined) return batch.open;
 	if (batch.running) return !batch.stickyClosed;
 	return soloBatch(batch);
 }
 
+// Tools whose solo batch keeps the live defaults once it settles: file
+// content, diffs and command output are what the user came to read, so the
+// header stays open and the call stays expanded under the live cap (a long
+// output therefore keeps the exact partial view it showed while running —
+// and that view also carries the cap note, which is where expanding lives).
+// Every other solo call (web tools, subagent, codemode, MCP, …) is a one-line
+// glance with nothing below it, so its batch settles closed.
+const SOLO_EXPANDED_TOOLS: ReadonlySet<string> = new Set([
+	"bash",
+	"write",
+	"read",
+	"edit",
+	"ls",
+	"find",
+	"grep",
+]);
+
 // A SOLO batch holds exactly one tool call. Its tree is small enough that
-// collapsing it on settle only hides the one row that matters, so it keeps
-// the live defaults: the header stays open and the call's output stays
-// expanded (capped), while its thought branches stay collapsed. Multi-call
-// batches still settle closed.
+// collapsing it on settle only hides the one row that matters, so a call of
+// a reading tool (SOLO_EXPANDED_TOOLS) keeps the live defaults: the header
+// stays open and the call's output stays expanded (capped), while its thought
+// branches stay collapsed. Multi-call batches still settle closed, and so does
+// a solo batch whose tool name is unknown (restored rows record theirs in the
+// history scan; rendering never depends on a guess).
 function soloBatch(batch: TreeBatch): boolean {
-	return batch.ids.length === 1;
+	if (batch.ids.length !== 1) return false;
+	const name = groupState().toolNames.get(batch.ids[0]);
+	return name !== undefined && SOLO_EXPANDED_TOOLS.has(name);
 }
 
 export function pushToolNote(text: string): boolean {
@@ -1151,7 +1184,12 @@ export function scanToolGroupsFromHistory(entries: Iterable<{ type: string; mess
 					(part as { type?: unknown }).type === "toolCall" &&
 					typeof (part as { id?: unknown }).id === "string"
 				) {
-					trackGroupToolCall((part as { id: string }).id);
+					const name = (part as { name?: unknown }).name;
+					trackGroupToolCall(
+						(part as { id: string }).id,
+						undefined,
+						typeof name === "string" ? name : undefined,
+					);
 				}
 			}
 		}
@@ -1236,9 +1274,10 @@ export function groupMode(toolCallId: string | undefined | null, context?: any):
 	// thinking turn — usually think → one call — the only calls that never
 	// showed their output while running.
 	//
-	// A SOLO batch keeps the auto-open once it settles: the header stays open
-	// (see batchOpen) and its single call stays expanded under the same live
-	// cap, so a think → one call turn does not snap shut when it completes.
+	// A SOLO batch of a reading tool keeps the auto-open once it settles: the
+	// header stays open (see batchOpen) and its single call stays expanded
+	// under the same live cap, so a think → one call turn does not snap shut
+	// when it completes.
 	// Thought branches are unaffected (depth-3 reasoning is opt-in), which
 	// leaves the call expanded next to collapsed thinking. Edits keep their
 	// own rule: only the header diffstat click starts a diff expanded.

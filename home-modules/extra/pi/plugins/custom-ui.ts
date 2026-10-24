@@ -1578,12 +1578,13 @@ export default function customUi(pi: ExtensionAPI) {
 	pi.on("tool_execution_start", async (event) => {
 		noteAgentActivity();
 		inFlightTools += 1;
-		const e = event as { toolCallId?: string; parentToolCallId?: string };
+		const e = event as { toolCallId?: string; parentToolCallId?: string; toolName?: string };
 		if (typeof e.toolCallId === "string") {
 			noteToolExecutionStart(e.toolCallId);
 			// The parent id keeps nested calls (codemode scripts, ctx.executeTool)
-			// out of the batch tree — see trackGroupToolCall.
-			trackGroupToolCall(e.toolCallId, e.parentToolCallId);
+			// out of the batch tree, and the name decides whether a solo batch
+			// stays expanded once settled — see trackGroupToolCall.
+			trackGroupToolCall(e.toolCallId, e.parentToolCallId, e.toolName);
 			ensureTick();
 		}
 	});
