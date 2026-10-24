@@ -88,6 +88,9 @@ in
         nix-update
         update-all
       ] ++ config.pre-commit.settings.enabledPackages;
+      # plugins/typecheck.sh typechecks the extensions against Pi's npm tree
+      # (not on PATH: the runtime CLI is Pi-Bolt, home-modules/extra/pi).
+      PI_CODING_AGENT_MONOREPO = "${pkgs.unstable.pi-coding-agent}/lib/node_modules/pi-monorepo";
       inherit (config.pre-commit.settings) shellHook;
       SHELLCHECK_OPTS = "-e SC1008";
     };

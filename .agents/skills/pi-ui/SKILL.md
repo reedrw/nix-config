@@ -422,8 +422,10 @@ which reads like sloppy code, not a missing symlink. Notes it encodes:
 store is read-only), `@earendil-works/` must be a real dir too (the store's own
 `@earendil-works` dir has no `pi-coding-agent`, and `pi-coding-agent` must
 resolve to the monorepo root), and every bundled `@earendil-works/*` package is
-linked (pi-ai, pi-agent-core, pi-tui, …). Re-run it after a pi update; it finds
-pi via `readlink -f "$(command -v pi)"` minus `/bin/pi`. The tracked
+linked (pi-ai, pi-agent-core, pi-tui, …). Re-run it after a Pi update; it
+reads Pi's npm tree from `$PI_CODING_AGENT_MONOREPO` (the dev shell points it at
+nixpkgs' `pi-coding-agent`, since the CLI on PATH is Pi-Bolt, which ships no npm
+tree) and otherwise from `readlink -f "$(command -v pi)"` minus `/bin/pi`. The tracked
 `plugins/package.json` (`"type": "module"`) is a typecheck-scope marker only —
 never installed; without it NodeNext infers CJS and
 `lib/thinking-fold/model-behaviors.ts`'s `import.meta` usage fails with TS1470.

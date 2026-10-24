@@ -249,11 +249,17 @@ let
 in
 {
   home = {
-    # mv.tip tracks the newest indexed nixpkgs revision — plain nixpkgs
-    # (release) lags far behind for pi. No wrapper needed — nix-locate (for
-    # nix-comma.ts) is already on PATH via home.packages in
-    # home-modules/core/comma/default.nix.
-    packages = [ pkgs.unstable.pi-coding-agent ];
+    # Pi-Bolt (pkgs/pi-bolt): Pi compiled ahead of time, same config, sessions
+    # and extensions as pi. `pi` stays a real command, not just a shell alias,
+    # so scripts and subprocesses started from anywhere find Pi-Bolt too.
+    # No wrapper needed for pi-bolt itself — nix-locate (for nix-comma.ts) is
+    # already on PATH via home.packages in home-modules/core/comma/default.nix.
+    packages = [
+      pkgs.pi-bolt
+      (pkgs.aliasToPackage {
+        pi = ''exec ${lib.getExe pkgs.pi-bolt} "$@"'';
+      })
+    ];
 
     # pi-output-styles keeps its user default (/style … --save) and custom
     # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
@@ -305,7 +311,8 @@ in
       ".pi/agent/settings.json" = {
         force = true;
         source = jsonFormat.generate "pi-settings.json" {
-          lastChangelogVersion = pkgs.unstable.pi-coding-agent.version;
+          # Pi's version, not Pi-Bolt's: the changelog shown is Pi's.
+          lastChangelogVersion = pkgs.pi-bolt.piVersion;
           defaultProvider = "opencode-go";
           defaultModel = "glm-5.3-flash";
           defaultThinkingLevel = "high";

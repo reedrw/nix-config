@@ -4,11 +4,12 @@
 # tl;dr: `./typecheck.sh` must be clean. Any error it prints is yours.
 #
 # Runtime never uses this: pi's extension loader (jiti) aliases
-# @earendil-works/* to its own modules and the nix package ships no
-# node_modules (see default.nix). tsc, however, needs real files on disk, so
-# this rebuilds an untracked node_modules of symlinks into the installed pi:
+# @earendil-works/* to its own modules and neither Pi-Bolt nor the nix pi
+# package ships node_modules (see default.nix). tsc, however, needs real files
+# on disk, so this rebuilds an untracked node_modules of symlinks into Pi's npm
+# tree:
 #
-#   - every entry of pi's bundled node_modules/* (typebox, zod, …)
+#   - every entry of Pi's bundled node_modules/* (typebox, zod, …)
 #   - @earendil-works/pi-coding-agent -> the package root (pi-monorepo)
 #   - @earendil-works/<pkg> -> each bundled package (pi-tui, pi-ai,
 #     pi-agent-core, …). These matter: type-only imports like
@@ -18,17 +19,23 @@
 #
 # The dir must be REAL (symlinking node_modules itself breaks resolution), and
 # @earendil-works/ must be a real dir too (pi-coding-agent has no entry in the
-# store's @earendil-works dir). Re-run whenever pi is updated.
+# store's @earendil-works dir). Re-run whenever Pi is updated.
+#
+# The tree comes from $PI_CODING_AGENT_MONOREPO (the repo dev shell points it at
+# nixpkgs' pi-coding-agent, since the CLI on PATH is Pi-Bolt); otherwise it is
+# taken from the `pi` npm package first on PATH.
 set -euo pipefail
 cd "$(dirname "$(realpath "$0")")"
 
-pi_bin="$(command -v pi)" || {
-  echo "typecheck: 'pi' not on PATH — install it first" >&2
-  exit 1
-}
-pi_root="${pi_bin%/bin/pi}"
-pi_root="$(readlink -f "$pi_root")"
-monorepo="$pi_root/lib/node_modules/pi-monorepo"
+if [ -n "${PI_CODING_AGENT_MONOREPO:-}" ]; then
+  monorepo="$PI_CODING_AGENT_MONOREPO"
+else
+  pi_bin="$(command -v pi)" || {
+    echo "typecheck: no Pi npm tree: set PI_CODING_AGENT_MONOREPO (see the dev shell) or install pi" >&2
+    exit 1
+  }
+  monorepo="$(readlink -f "${pi_bin%/bin/pi}")/lib/node_modules/pi-monorepo"
+fi
 bundled="$monorepo/node_modules"
 
 if [ ! -d "$bundled" ]; then
