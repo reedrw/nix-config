@@ -22,16 +22,16 @@
 
 let
   hashes = {
-    x64 = "sha256-69yqb2oNBPZkRnDFmeVYRBoiOEgLNJM0WEAj2I+Wy00=";
-    x64-baseline = "sha256-UFeEZF8xQmnHq6tPPlGMRO2C8/iDTMVV/+dGFsBXrZk=";
-    x64-jit = "sha256-G3TmNnox4kzqLuKv3dQXO+xBJ8g3MDadJL6aSRRAB4E=";
-    arm64 = "sha256-z0cpHsBx1nBlJhhg5A4afZhk3YIuXJn2dpLv7snU3yo=";
-    arm64-jit = "sha256-lkemoyb6TyAqH2PZrdjxArhjHmb1Vu0PN6DAhOjWW/c=";
+    x64 = "sha256-HHQUYT82MWI2vYpzIZP7263RrIkygTqM10MZaqdB92k=";
+    x64-baseline = "sha256-7lI0yr0nNf5QADtMzAzEZLx/7y0uW9B8fbdAK1X/unQ=";
+    x64-jit = "sha256-39VI5nyUXusEFM/qP4GeIdG7u614N6+juYkpS+FhQy0=";
+    arm64 = "sha256-vzTWOc9Ma1b1sVZKZOraDIM1kkMbZpQ/N0mGdREWESU=";
+    arm64-jit = "sha256-rQwsQ40WgB6GNrLYo7KPVgngvQnaoG3XEx06jOPC7RE=";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "pi-bolt";
-  version = "1.0.1";
+  version = "1.0.3";
 
   src = fetchurl {
     url = "https://github.com/opensec-git/Pi-Bolt/releases/download/bolt-v${finalAttrs.version}/pi-bolt-linux-${variant}.tar.xz";
