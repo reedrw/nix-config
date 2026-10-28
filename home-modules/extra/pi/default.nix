@@ -246,26 +246,91 @@ let
         infoBg = exportInfoBg;
       };
     };
+
+  # Everything the plugin set puts in the agent dir, keyed by its path there.
+  # Deployed as-is, and handed to compile.nix so the extensions are baked into
+  # Pi-Bolt at exactly these store paths.
+  pluginAgentFiles = extensionFiles // libFiles // assetFiles // dirPackageFiles;
+
+  # pi's settings.json. Also the source of the package list compile.nix needs
+  # to find the local-dir packages it compiles in.
+  piSettings = {
+    # Pi's version, not Pi-Bolt's: the changelog shown is Pi's.
+    lastChangelogVersion = pkgs.pi-bolt.piVersion;
+    defaultProvider = "opencode-go";
+    defaultModel = "glm-5.3-flash";
+    defaultThinkingLevel = "high";
+    theme = "stylix";
+    tuiMode = "fullscreen";
+    # Enable the built-in codemode extension next to the default tools
+    # (registered inactive by default). `only`-style entries inherit
+    # pi's default tool selection. Pair with codemode.mode = "only" to
+    # hide active tools from the model entirely.
+    defaultTools = [ "+codemode" ];
+    # Native pi setting: lines per mouse-wheel tick in fullscreen mode
+    # ("auto" | 1-100). Replaces the former wheel-scroll.ts extension —
+    # 0.99 passes this to TuiAltScreen directly, and its routeWheel
+    # signature change broke that extension's prototype patch.
+    fullscreenWheelScrollLines = 5;
+    packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
+    # Claude Code style tool rendering (one-line calls, terse results).
+    # Flip to false to fall back to pi's default boxed tool rendering;
+    # takes effect on restart or /reload.
+    customUi = true;
+    # custom-ui renders tool-result images inside the tool row via
+    # kitty placeholders; disable pi's built-in Image path, which draws
+    # outside the box (and is tmux-disabled anyway).
+    terminal.showImages = false;
+  };
 in
 {
   home = {
     # Pi-Bolt (pkgs/pi-bolt): Pi compiled ahead of time, same config, sessions
     # and extensions as pi. `pi` stays a real command, not just a shell alias,
     # so scripts and subprocesses started from anywhere find Pi-Bolt too.
-    # No wrapper needed for pi-bolt itself — nix-locate (for nix-comma.ts) is
-    # already on PATH via home.packages in home-modules/core/comma/default.nix.
-    packages = [
-      pkgs.pi-bolt
+    # No other wrapper needed — nix-locate (for nix-comma.ts) is already on
+    # PATH via home.packages in home-modules/core/comma/default.nix.
+    packages = let
+      # Pi-Bolt with this plugin set compiled in (pkgs/pi-bolt/compile.nix):
+      # extensions are machine code instead of TypeScript transpiled on every
+      # start, which removes most of the cold-start cost. Compiled-in copies
+      # are used while the deployed file is unchanged; pi falls back to loading
+      # a changed one (a hand-edited extension) from its files.
+      #
+      # Both `pi` and `pi-bolt` must exec this wrapped build (see below), or the
+      # env vars below only apply to whichever entry point happens to use it.
+      pi-bolt = pkgs.wrapEnv (pkgs.callPackage ../../../pkgs/pi-bolt/compile.nix {
+        inherit (pkgs) pi-bolt;
+        runtime = pkgs.pi-bolt.compileRuntime;
+        kit = pkgs.pi-bolt.compileKit;
+        agentFiles = lib.mapAttrs (_: file: file.source) pluginAgentFiles;
+        # Absolute store paths, not the "./name" form the deployed settings use:
+        # `compile` bakes an extension's own `import.meta.url`-derived data paths
+        # into the binary as constants, and a package reached through
+        # ~/.pi/agent would fold to that symlink path (inside the build's
+        # scratch home) instead of the store path it resolves to at run time.
+        # Pi resolves both forms to the same directory.
+        settings.packages = map toString (lib.attrValues dirPlugins);
+      }) {
+        # pi-output-styles keeps its user default (/style … --save) and custom
+        # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
+        PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
+        # Silence the startup "Update Available" banner: pi-bolt is a Nix store
+        # install, so the `pi-bolt update` it suggests cannot write there. Any
+        # non-empty value skips the GitHub release check (empty string does not
+        # — the check is a plain truthiness test on the variable). PI_OFFLINE
+        # is the only switch for the separate "Package Updates Available"
+        # notice, which local-path packages never trigger.
+        PI_SKIP_VERSION_CHECK = "1";
+      };
+    in [
+      pi-bolt
       (pkgs.aliasToPackage {
-        pi = ''exec ${lib.getExe pkgs.pi-bolt} "$@"'';
+        pi = ''exec ${lib.getExe pi-bolt} "$@"'';
       })
     ];
 
-    # pi-output-styles keeps its user default (/style … --save) and custom
-    # styles under $PI_OUTPUT_STYLES_HOME instead of ~/.omp/agent.
-    sessionVariables.PI_OUTPUT_STYLES_HOME = "${config.home.homeDirectory}/.pi/agent";
-
-    file = extensionFiles // libFiles // assetFiles // dirPackageFiles // {
+    file = pluginAgentFiles // {
       # Palette consumed by lib/custom-ui.ts (see base16Json above).
       ".pi/agent/extensions/lib/base16.json" = {
         force = true;
@@ -310,34 +375,7 @@ in
       };
       ".pi/agent/settings.json" = {
         force = true;
-        source = jsonFormat.generate "pi-settings.json" {
-          # Pi's version, not Pi-Bolt's: the changelog shown is Pi's.
-          lastChangelogVersion = pkgs.pi-bolt.piVersion;
-          defaultProvider = "opencode-go";
-          defaultModel = "glm-5.3-flash";
-          defaultThinkingLevel = "high";
-          theme = "stylix";
-          tuiMode = "fullscreen";
-          # Enable the built-in codemode extension next to the default tools
-          # (registered inactive by default). `only`-style entries inherit
-          # pi's default tool selection. Pair with codemode.mode = "only" to
-          # hide active tools from the model entirely.
-          defaultTools = [ "+codemode" ];
-          # Native pi setting: lines per mouse-wheel tick in fullscreen mode
-          # ("auto" | 1-100). Replaces the former wheel-scroll.ts extension —
-          # 0.99 passes this to TuiAltScreen directly, and its routeWheel
-          # signature change broke that extension's prototype patch.
-          fullscreenWheelScrollLines = 5;
-          packages = lib.mapAttrsToList (name: _: "./${name}") dirPlugins;
-          # Claude Code style tool rendering (one-line calls, terse results).
-          # Flip to false to fall back to pi's default boxed tool rendering;
-          # takes effect on restart or /reload.
-          customUi = true;
-          # custom-ui renders tool-result images inside the tool row via
-          # kitty placeholders; disable pi's built-in Image path, which draws
-          # outside the box (and is tmux-disabled anyway).
-          terminal.showImages = false;
-        };
+        source = jsonFormat.generate "pi-settings.json" piSettings;
       };
     };
   };

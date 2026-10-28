@@ -51,6 +51,10 @@
       "version": "0.6.0",
       "hash": "sha512-juG5VWh4qAivzTAeMzvY9xs9HY5rAcr2E4I7tiSSCokRFi7XIZCAu92ZkSTsIj1OPceCifL3cpfteP3pDT9/QQ=="
     },
+    "@xmldom/xmldom": {
+      "version": "0.9.10",
+      "hash": "sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw=="
+    },
     "accepts": {
       "version": "2.0.0",
       "hash": "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==",
@@ -906,6 +910,13 @@
       "version": "1.1.0",
       "hash": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g=="
     },
+    "mathml-to-latex": {
+      "version": "1.8.0",
+      "hash": "sha512-gQ0uK3zqB8HwlfaXJkEL5rgaZNbKUiBMmBP/B/W+b+t6KcseLSuYb1b0BjLgS9ZiQa24ePkqTX8/6FaQuDL7wQ==",
+      "dependencies": [
+        "@xmldom/xmldom"
+      ]
+    },
     "media-typer": {
       "version": "1.1.1",
       "hash": "sha512-yz3xRaG20c6/BOzvYoDaGtPmGscs7YivItZEEqe6GbwNfHuxu9YNmvnEkMzKldAGY4/80pRcQRZSEnhquk9XuQ=="
@@ -1331,6 +1342,10 @@
         "define-properties",
         "es-object-atoms"
       ]
+    },
+    "temml": {
+      "version": "0.13.3",
+      "hash": "sha512-GLNEdf5qBWux3adbOxFus4jlds8nCdEIkkKq99m/4GGTfqnsjlVlK/i371Ux7yYSg/WNmOyAkNT/GJlZoJ0v+w=="
     },
     "toidentifier": {
       "version": "1.0.1",

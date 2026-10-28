@@ -32,7 +32,6 @@ if [[ "$(head -n 1 "$sums")" != "# pi-bolt ${version}" ]]; then
 fi
 
 sed -i "s/^  version = \"[^\"]*\";/  version = \"${version}\";/" default.nix
-
 pi_version=$(jq -r '.pi.tag | ltrimstr("v")' "$sources")
 sed -i "s/^    piVersion = \"[^\"]*\";/    piVersion = \"${pi_version}\";/" default.nix
 
@@ -45,4 +44,19 @@ for variant in x64 x64-baseline x64-jit arm64 arm64-jit; do
   fi
   sri=$(nix-hash --type sha256 --to-sri "$hex")
   sed -i "s#^    ${variant} = \"sha256-[^\"]*\";#    ${variant} = \"${sri}\";#" default.nix
+done
+
+# `pi-bolt compile` assets (see compileHashes): one Bun runtime and one compile
+# kit per platform.
+for flavour in x64 arm64; do
+  for asset in runtime kit; do
+    file="pi-bolt-${asset}-linux-${flavour}.tar.gz"
+    hex=$(awk -v asset="$file" '$2 == asset { print $1 }' "$sums")
+    if [[ -z "$hex" ]]; then
+      echo "error: ${file} is not listed in SHA256SUMS" >&2
+      exit 1
+    fi
+    sri=$(nix-hash --type sha256 --to-sri "$hex")
+    sed -i "s#^    ${flavour}-${asset} = \"sha256-[^\"]*\";#    ${flavour}-${asset} = \"${sri}\";#" default.nix
+  done
 done

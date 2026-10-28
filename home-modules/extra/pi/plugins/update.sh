@@ -32,12 +32,19 @@ const resolved = {};
 for (const [key, entry] of Object.entries(lock.packages ?? {})) {
   if (!key.startsWith("node_modules/")) continue;
   const name = key.slice("node_modules/".length);
+  // Optional deps are real at run time: defuddle, for one, imports
+  // mathml-to-latex (`require`, not a guarded dynamic import) from its
+  // package.json optionalDependencies. Leaving them out yields a flat
+  // node_modules the extension cannot be bundled from. Peer deps stay out:
+  // pi provides its own.
+  const dependencies = [
+    ...Object.keys(entry.dependencies ?? {}),
+    ...Object.keys(entry.optionalDependencies ?? {}),
+  ];
   resolved[name] = {
     version: entry.version,
     hash: entry.integrity,
-    ...(entry.dependencies && Object.keys(entry.dependencies).length > 0
-      ? { dependencies: Object.keys(entry.dependencies).sort() }
-      : {}),
+    ...(dependencies.length > 0 ? { dependencies: dependencies.sort() } : {}),
   };
 }
 

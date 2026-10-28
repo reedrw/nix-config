@@ -97,6 +97,26 @@ the hard way; violating them fails silently.
   cannot re-render a tool it has no slot for, but it needs no cooperation from
   the tool's own extension either.
 
+## Compiled into pi-bolt: data paths and build cost
+
+Every extension here is AOT-compiled into the `pi-bolt` binary at build time
+(`pkgs/pi-bolt/compile.nix`) — that is ~188 ms of every startup. Two things
+follow, both of which fail quietly otherwise:
+
+- **Never resolve a data file through `import.meta.url`.** Bun constant-folds it
+  to the path on the build machine, so `readFileSync(new URL("./x.json",
+  import.meta.url))` works when the extension runs from files and throws ENOENT
+  once it is compiled in. Use `lib/agent-dir.ts` — `agentPath("extensions", …)`
+  — and keep the `import.meta.url` path only as an `existsSync` fallback (see
+  `lib/thinking-fold/model-behaviors.ts`, `pet.ts`). The compiled copy is only
+  used while the deployed file is unchanged; anything you hand-edit straight
+  into `~/.pi/agent` keeps loading from its files.
+- **Editing any file here rebuilds the compiled pi-bolt** (bundle + AOT + a
+  ~300 MB copy: about a minute), and the build fails if extension loading
+  measures ≥ 20 ms. That number means a fingerprint did not match and an
+  extension fell back to TypeScript, so read the build log's `extension load:`
+  line rather than assuming the build is fast.
+
 ## Rendering pitfalls
 
 - **Never call `context.invalidate()` synchronously from a render slot**: it

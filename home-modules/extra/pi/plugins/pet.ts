@@ -22,7 +22,7 @@
 // WezTerm, Warp). Works inside tmux (`allow-passthrough on`) via the stdout
 // filter in lib/pet/tmux.ts.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -52,9 +52,15 @@ import {
 import { buildTransmitChunks, deleteImageLine, deletePlacementLine, placementLine } from "./lib/pet/kitty.ts";
 import { installTmuxPassthrough, outerTerminalHasKittyGraphics } from "./lib/pet/tmux.ts";
 import { base16Fg } from "./lib/custom-ui.ts";
+import { agentPath } from "./lib/agent-dir.ts";
 
 // ---- Assets (installed as ~/.pi/agent/extensions/pet-assets/) ----
-const ASSETS_DIR = join(dirname(fileURLToPath(import.meta.url)), "pet-assets");
+// Next to this module for a plain file install; from the agent dir otherwise,
+// because compiled into Pi-Bolt import.meta.url is the build-time path.
+const ASSETS_DIR = (() => {
+	const besideModule = join(dirname(fileURLToPath(import.meta.url)), "pet-assets");
+	return existsSync(besideModule) ? besideModule : agentPath("extensions", "pet-assets");
+})();
 
 interface AnimMeta {
 	frames: number;

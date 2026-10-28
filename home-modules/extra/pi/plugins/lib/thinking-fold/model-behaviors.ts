@@ -1,5 +1,7 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { agentPath } from "../agent-dir.ts";
 
 export type ConfiguredThinkingBehavior = "trace" | "summary";
 
@@ -22,7 +24,13 @@ export interface ModelIdentity {
   model: string;
 }
 
-const BUILT_IN_CONFIG_PATH = fileURLToPath(new URL("./model-behaviors.json", import.meta.url));
+// Read next to this module when that file is there (a plain file install), and
+// from the deployed copy otherwise: compiled into Pi-Bolt, import.meta.url is
+// the build-time path, which no longer exists at run time.
+const MODULE_CONFIG_PATH = fileURLToPath(new URL("./model-behaviors.json", import.meta.url));
+const BUILT_IN_CONFIG_PATH = existsSync(MODULE_CONFIG_PATH)
+  ? MODULE_CONFIG_PATH
+  : agentPath("extensions", "lib", "thinking-fold", "model-behaviors.json");
 
 function optionalPattern(value: unknown, field: string, index: number): string | undefined {
   if (value === undefined) return undefined;

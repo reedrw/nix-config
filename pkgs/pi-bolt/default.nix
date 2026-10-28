@@ -1,8 +1,10 @@
 {
   lib,
   stdenv,
+  stdenvNoCC,
   fetchurl,
   autoPatchelfHook,
+  patchelf,
   versionCheckHook,
   libxcb,
 
@@ -28,8 +30,84 @@ let
     arm64 = "sha256-vzTWOc9Ma1b1sVZKZOraDIM1kkMbZpQ/N0mGdREWESU=";
     arm64-jit = "sha256-rQwsQ40WgB6GNrLYo7KPVgngvQnaoG3XEx06jOPC7RE=";
   };
+
+  # `pi-bolt compile` (compile.nix) needs two extra release assets, per
+  # platform rather than per variant: a stock Bun runtime to bundle the
+  # extensions with, and the "compile kit" (node_modules and build scaffolding)
+  # they are bundled against. Fetched here so compiling needs no network.
+  compileHashes = {
+    x64-runtime = "sha256-dFQI9YWTxMTWxrnhI6RJJ3YhKTfnJdIwuM15tPbZMvw=";
+    x64-kit = "sha256-R6rA9D3CUGiGQ5FRU36yB8BR/avF+tfvUo58OkAeBz8=";
+    arm64-runtime = "sha256-bCkGWd9KU5bI6GYWhwyJcb336tADBoikjLOkVjr8BkU=";
+    arm64-kit = "sha256-wyA6wO34flrl3CtNUKYLoIPZoP3xkVulQvMqaDmi8pw=";
+  };
 in
-stdenv.mkDerivation (finalAttrs: {
+stdenv.mkDerivation (finalAttrs:
+  let
+    runtimeFlavour =
+      {
+        x86_64-linux = "x64";
+        aarch64-linux = "arm64";
+      }
+      .${stdenv.hostPlatform.system}
+        or (throw "pi-bolt: no compile assets for ${stdenv.hostPlatform.system}");
+
+    # Bun as shipped for compiling against; only the dynamic loader needs
+    # fixing up for NixOS.
+    compileRuntime = stdenvNoCC.mkDerivation {
+      pname = "pi-bolt-runtime";
+      inherit (finalAttrs) version;
+
+      src = fetchurl {
+        url = "https://github.com/opensec-git/Pi-Bolt/releases/download/bolt-v${finalAttrs.version}/pi-bolt-runtime-linux-${runtimeFlavour}.tar.gz";
+        hash = compileHashes."${runtimeFlavour}-runtime";
+      };
+
+      nativeBuildInputs = [ patchelf ];
+      dontConfigure = true;
+      dontBuild = true;
+      dontStrip = true;
+
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 bun $out/bin/bun
+        patchelf \
+          --set-interpreter "$(cat ${stdenv.cc}/nix-support/dynamic-linker)" \
+          --set-rpath "${lib.makeLibraryPath [ stdenv.cc.libc ]}" \
+          $out/bin/bun
+        runHook postInstall
+      '';
+
+      meta.platforms = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+    };
+
+    # The kit is a tree `compile` bundles against and then rewrites; left
+    # read-only like any store path, compile.nix works on a writable copy.
+    compileKit = stdenvNoCC.mkDerivation {
+      pname = "pi-bolt-kit";
+      inherit (finalAttrs) version;
+
+      src = fetchurl {
+        url = "https://github.com/opensec-git/Pi-Bolt/releases/download/bolt-v${finalAttrs.version}/pi-bolt-kit-linux-${runtimeFlavour}.tar.gz";
+        hash = compileHashes."${runtimeFlavour}-kit";
+      };
+
+      sourceRoot = "pi-bolt-kit-linux-${runtimeFlavour}";
+      dontConfigure = true;
+      dontBuild = true;
+
+      installPhase = ''
+        runHook preInstall
+        mkdir -p $out
+        cp -a ./. $out/
+        runHook postInstall
+      '';
+    };
+  in
+  {
   pname = "pi-bolt";
   version = "1.0.3";
 
@@ -71,6 +149,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru = {
     updateScript = ./update.sh;
+    inherit compileRuntime compileKit variant;
     # The Pi release this Pi-Bolt build is compiled from, not the Pi-Bolt
     # release version: `pi-bolt --version` prints both. Used by pi settings
     # that track Pi's changelog.
