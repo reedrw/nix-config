@@ -24,11 +24,11 @@
 
 let
   hashes = {
-    x64 = "sha256-HHQUYT82MWI2vYpzIZP7263RrIkygTqM10MZaqdB92k=";
-    x64-baseline = "sha256-7lI0yr0nNf5QADtMzAzEZLx/7y0uW9B8fbdAK1X/unQ=";
-    x64-jit = "sha256-39VI5nyUXusEFM/qP4GeIdG7u614N6+juYkpS+FhQy0=";
-    arm64 = "sha256-vzTWOc9Ma1b1sVZKZOraDIM1kkMbZpQ/N0mGdREWESU=";
-    arm64-jit = "sha256-rQwsQ40WgB6GNrLYo7KPVgngvQnaoG3XEx06jOPC7RE=";
+    x64 = "sha256-+MAnMcMyiLdl708GYMshvmZ6tEv0Li0HCvThBIUtN0w=";
+    x64-baseline = "sha256-YE8tGVlK5F0weIXAt0dpFZc35jyF1TX3hgjjvxMgdG8=";
+    x64-jit = "sha256-H0jHVizNct8mzd+ansu9k99kidf7uj7ptHaH6uibr1Y=";
+    arm64 = "sha256-WqLgdwrXvHYYwUzh8CyZXxTwmC05D381pOxSgnhkP9g=";
+    arm64-jit = "sha256-AhxMyr3d8eci6a6y66Ee2PbawNixfZXD8bgX+6UZpko=";
   };
 
   # `pi-bolt compile` (compile.nix) needs two extra release assets, per
@@ -36,10 +36,10 @@ let
   # extensions with, and the "compile kit" (node_modules and build scaffolding)
   # they are bundled against. Fetched here so compiling needs no network.
   compileHashes = {
-    x64-runtime = "sha256-dFQI9YWTxMTWxrnhI6RJJ3YhKTfnJdIwuM15tPbZMvw=";
-    x64-kit = "sha256-R6rA9D3CUGiGQ5FRU36yB8BR/avF+tfvUo58OkAeBz8=";
-    arm64-runtime = "sha256-bCkGWd9KU5bI6GYWhwyJcb336tADBoikjLOkVjr8BkU=";
-    arm64-kit = "sha256-wyA6wO34flrl3CtNUKYLoIPZoP3xkVulQvMqaDmi8pw=";
+    x64-runtime = "sha256-KpAr4x0dljL47HehARpmP4iZ9nbeI8cpZ2DN+885IGA=";
+    x64-kit = "sha256-WJESYeCNMTmqcjE20nhouCqxE4f8OoGpxNEx/xhzT4U=";
+    arm64-runtime = "sha256-pxd89CcjXEssgRwriDmddvBZeaOmYAdR7LIrdZDG2KY=";
+    arm64-kit = "sha256-FGr/n1lftTII4jjZBVR3i/F9dZmo+gLO8jS868+hLoY=";
   };
 in
 stdenv.mkDerivation (finalAttrs:
@@ -109,7 +109,7 @@ stdenv.mkDerivation (finalAttrs:
   in
   {
   pname = "pi-bolt";
-  version = "1.0.3";
+  version = "1.0.7";
 
   src = fetchurl {
     url = "https://github.com/opensec-git/Pi-Bolt/releases/download/bolt-v${finalAttrs.version}/pi-bolt-linux-${variant}.tar.xz";

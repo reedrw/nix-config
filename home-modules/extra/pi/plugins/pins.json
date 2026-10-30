@@ -52,8 +52,8 @@
       "hash": "sha512-juG5VWh4qAivzTAeMzvY9xs9HY5rAcr2E4I7tiSSCokRFi7XIZCAu92ZkSTsIj1OPceCifL3cpfteP3pDT9/QQ=="
     },
     "@xmldom/xmldom": {
-      "version": "0.9.10",
-      "hash": "sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw=="
+      "version": "0.9.12",
+      "hash": "sha512-5AXjrcMClTryPe9LgZrygpB1lj7s0S9E0+W+AHaVKAVyHanafK86iPSvG5xHVSp/jC+VH1UXu0TAEmY279xH7A=="
     },
     "accepts": {
       "version": "2.0.0",
@@ -277,7 +277,11 @@
       "version": "0.19.3",
       "hash": "sha512-5ZbOQ/B+iiRRqSQWwmCx/zEuqZOA/5q7gxyE2/4O2Bxq7nUC0PgKw9EdyxqWbFF1nrrrYemSeR25jg4TmA2fsA==",
       "dependencies": [
-        "commander"
+        "commander",
+        "linkedom",
+        "mathml-to-latex",
+        "temml",
+        "turndown"
       ]
     },
     "depd": {
@@ -327,8 +331,8 @@
       "hash": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="
     },
     "encodeurl": {
-      "version": "2.0.0",
-      "hash": "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg=="
+      "version": "2.0.1",
+      "hash": "sha512-Ev/hIyePLZtpL98x562lvPtenrUfGr0lfaf44HFZ+hDEwso7ccV9QAZrEVLg0hxNAzygaAFxy2dYaAKKM0G06A=="
     },
     "entities": {
       "version": "4.5.0",
@@ -495,8 +499,8 @@
       ]
     },
     "express-rate-limit": {
-      "version": "8.7.1",
-      "hash": "sha512-2FXbqkygil3mZiXzEtM0IjE/UBmBNot0J1GEVrJT4JbrvwOSoEtqtO+wHbiMQELWe1eNvHoYRg2dkjOid+6JkA==",
+      "version": "8.7.2",
+      "hash": "sha512-U1ScocxDD9WI09LaBVypvNkOtNR5yWAmZLkuKJdAzIchA4YKFYF6GT5IKER7epG58oXtjvGlV0/6ii0F83EyZg==",
       "dependencies": [
         "debug",
         "ip-address"
@@ -880,8 +884,8 @@
       "hash": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="
     },
     "jose": {
-      "version": "6.2.13",
-      "hash": "sha512-7TIg10ZE1x82YediN+lcrPNvGMKge9yFHQD+Qho/b8y2adfugU3AsvvHfxV0fzyFllT6l9xCjf4RWY9g/Z9PJQ=="
+      "version": "6.2.14",
+      "hash": "sha512-3JasLuki1NRLQvY4wCoC37KZk4qxoBx2k2aFqLxT84IezqW0bkJKnNtxnZj/Fu1xsQivoc/lytxaRHJoGLjJ1A=="
     },
     "jsbi": {
       "version": "4.3.2",
@@ -1022,8 +1026,8 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-context-view": {
-      "version": "0.8.0",
-      "hash": "sha512-ppGVRYlMeU9YuiyPInf8IKNuzc3MG/YJx3L4qzg0h5kyuiBjmkw9GLLO/DTBkOmkkiUonlJn2QGFxnKyrEUc1Q=="
+      "version": "0.8.1",
+      "hash": "sha512-osm2QOQjCb+aX29UlrjrdOxjzT0b8hE7Lo9AbM4OZAUmd62P+kWwLw+3wm9iwlfrazSinE3vY9OiLd+VQDfVzg=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1038,8 +1042,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.82.1",
-      "hash": "sha512-CLDX/+iO0zpCyk2xL5tVtRPHrXObCC7jd0t0Axst6S5IFWTDHAVpcOogCzSudqOihCsadiZ8xhpYCpAG5E067A==",
+      "version": "0.84.0",
+      "hash": "sha512-IagE1hcBxLi82jTxTmcy/pIWckBuqhMH1GfAOe6/aIMVfnopMybCbcTMUS5K0CNy4tqSwHGleaXabaDmJS1QOg==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
@@ -1049,8 +1053,8 @@
       ]
     },
     "pi-web-access": {
-      "version": "0.44.0",
-      "hash": "sha512-8YK2Nb0P7ezRL0FS7P1cPYu7gDUOuhXWA3FOBev0bKsuPtG2QrDVm2GriKBgZI1Sq7SC8QRsfVFYYP8huUEo8w==",
+      "version": "0.46.0",
+      "hash": "sha512-UfeJKU0TPmQU/3hmfAC5Ot/e5Ib0uHkg2+VHM7Ae4kVilLZf7ocGqHFzBzOkYuGLZ87LobzkrhwTAq8lO/N7cQ==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
@@ -1091,8 +1095,8 @@
       ]
     },
     "qs": {
-      "version": "6.16.1",
-      "hash": "sha512-5Px6J7rfHBAGUhNQ3es4YzcOdBBw0SDcVtThJml4RdnKw4tKs2epA0kPZ+K8X+WiHktT93RHVcQ/3ym5aTCgtg==",
+      "version": "6.17.1",
+      "hash": "sha512-jd3COkaKVgGUW+ZHyEHCG9bH7RoaaiWuMgzsIBjUMVjLAaWGWpoUAVwljVvBHxRu/2qEHnadLGZrkutYUBPQJA==",
       "dependencies": [
         "es-define-property",
         "side-channel"
@@ -1344,8 +1348,8 @@
       ]
     },
     "temml": {
-      "version": "0.13.3",
-      "hash": "sha512-GLNEdf5qBWux3adbOxFus4jlds8nCdEIkkKq99m/4GGTfqnsjlVlK/i371Ux7yYSg/WNmOyAkNT/GJlZoJ0v+w=="
+      "version": "0.13.5",
+      "hash": "sha512-aPkDDgunanpLNL0ql32HbolqLep+w8DRcVXRql7rWrMt/PhczdLgL4UBYYVU3BYjCNjkGq4EqwIicu/zWr1iOg=="
     },
     "toidentifier": {
       "version": "1.0.1",
