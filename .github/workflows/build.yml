@@ -74,6 +74,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Enable Nix sandboxing
+      run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
     - name: Install Cachix
       uses: cachix/cachix-action@v17
       continue-on-error: true
