@@ -15,6 +15,11 @@
 // A whale (🐋) sits right-justified on the status line; clicking it toggles
 // the desktop pet (/pet) through pet.ts's globalThis toggle bridge.
 //
+// Plan quota replaces the routing line for gateway models: OpenCode Go's three
+// dollar-metered windows (lib/opencode.ts) and Command Code's two credit
+// windows plus its remaining credit pool (lib/commandcode.ts). Both libs read
+// the provider's own quota endpoint with the session's API key.
+//
 // While the agent is working (between agent_start and agent_settled) the
 // effort label animates: the level's color pulses through grey text, and
 // "maximum" gets a rolling rainbow. A live tok/s meter (rolling 3s window
@@ -37,6 +42,12 @@ import {
 	opencodeUsage,
 	type OpencodeUsage,
 } from "./lib/opencode.ts";
+import {
+	commandcodeUsage,
+	ensureCommandcodeUsage,
+	isCommandcodeModel,
+	type CommandcodeWindow,
+} from "./lib/commandcode.ts";
 import {
 	PIN_URL,
 	endpointFor,
@@ -188,10 +199,12 @@ function fmtDuration(ms: number): string {
 // Same style as reset_label in claude-statusline.sh (the rate-limit timers):
 // a dimmed countdown to the window reset, appended after the meter. A days
 // tier is added on top for windows longer than the shell script's 7-day max
-// (the Go plan's monthly window resets ~30 days out).
-function resetLabel(resetsAt: string | undefined): string {
-  if (!resetsAt) return "";
-  const diff = (Date.parse(resetsAt) - Date.now()) / 1000;
+// (the Go plan's monthly window resets ~30 days out). Accepts an ISO stamp
+// (OpenCode Go) or epoch milliseconds (Command Code).
+function resetLabel(resetsAt: string | number | undefined): string {
+  if (resetsAt === undefined) return "";
+  const at = typeof resetsAt === "number" ? resetsAt : Date.parse(resetsAt);
+  const diff = (at - Date.now()) / 1000;
   if (!Number.isFinite(diff) || diff <= 0) return "";
   if (diff >= 86400)
     return ` ${DIM}${Math.floor(diff / 86400)}d${String(Math.floor((diff % 86400) / 3600)).padStart(2, "0")}h${RESET}`;
@@ -245,20 +258,23 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   let cachedRepo: string | null = null;
   let uiCtx: any = null;
 
-  // Quota refresh when the Go usage line is (or may be) visible. The
-  // render path also calls ensure, but message_end is where spending
-  // actually moved the bars.
-  const ensureGoUsage = (ctx: any) =>
-    ensureOpencodeUsage(ctx?.model, () => tuiRef?.requestRender());
+  // Quota refresh when a plan usage line is (or may be) visible. The render
+  // path also calls ensure, but message_end is where spending actually moved
+  // the bars. Both libs no-op when the current model is not theirs, so one
+  // call covers whichever gateway the session is on.
+  const ensureUsage = (ctx: any) => {
+    const onDone = () => tuiRef?.requestRender();
+    ensureOpencodeUsage(ctx?.model, onDone);
+    ensureCommandcodeUsage(ctx?.model, onDone);
+  };
 
-  // Background prefetch for the Go quota meters: without this the first
-  // click on the model chip waited on the network before the meters drew.
-  // Warm once as soon as a session exists, then keep the cache fresh every
-  // couple of minutes (the lib's TTL + in-flight dedup still gate the real
-  // fetches). The interval re-reads uiCtx each fire, so a model switch
-  // redirects it at the current gateway; unref'd so it never holds the
-  // process open.
-  const OPENCODE_PREFETCH_MS = 120_000;
+  // Background prefetch for the quota meters: without this the first click on
+  // the model chip waited on the network before the meters drew. Warm once as
+  // soon as a session exists, then keep the cache fresh every couple of
+  // minutes (the libs' TTL + in-flight dedup still gate the real fetches).
+  // The interval re-reads uiCtx each fire, so a model switch redirects it at
+  // the current gateway; unref'd so it never holds the process open.
+  const QUOTA_PREFETCH_MS = 120_000;
   let prefetchTimer: ReturnType<typeof setInterval> | null = null;
 
   const stopPrefetch = () => {
@@ -269,9 +285,9 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   };
 
   const startPrefetch = (ctx: any) => {
-    ensureGoUsage(ctx);
+    ensureUsage(ctx);
     if (prefetchTimer) return;
-    prefetchTimer = setInterval(() => ensureGoUsage(uiCtx), OPENCODE_PREFETCH_MS);
+    prefetchTimer = setInterval(() => ensureUsage(uiCtx), QUOTA_PREFETCH_MS);
     prefetchTimer.unref?.();
   };
 
@@ -293,7 +309,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
         expanded = !expanded;
         if (expanded) {
           ensureEndpointData();
-          ensureGoUsage(uiCtx);
+          ensureUsage(uiCtx);
         }
         return true;
       }
@@ -314,7 +330,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
       if (url === PIN_URL) {
         expanded = true;
         ensureEndpointData();
-        ensureGoUsage(uiCtx);
+        ensureUsage(uiCtx);
         void openPinDialog(uiCtx, { onRequestRender: () => tuiRef?.requestRender() });
         return true;
       }
@@ -503,12 +519,17 @@ export default function statuslineExtension(pi: ExtensionAPI) {
                 const routed = routing(); // before the local `routing` below shadows the lib import
                 if (expanded) {
                   const model = ctx.model as { provider?: string; id?: string; baseUrl?: string } | undefined;
-                  // OpenCode Go: the plan's own limit windows replace the
-                  // OpenRouter routing info there is nothing to route
+                  // Gateway plans: the plan's own limit windows replace the
+                  // OpenRouter routing info — there is nothing to route.
                   if (isOpencodeGoModel(model)) {
-                    ensureGoUsage(ctx);
+                    ensureUsage(ctx);
                     lines.push(
                       truncateToWidth(linkWrap(goUsageLine(), ROUTING_URL), width),
+                    );
+                  } else if (isCommandcodeModel(model)) {
+                    ensureUsage(ctx);
+                    lines.push(
+                      truncateToWidth(linkWrap(commandCodeUsageLine(), ROUTING_URL), width),
                     );
                   } else {
                   const routing = truncateToWidth(linkWrap(routingLine(), ROUTING_URL), width);
@@ -589,6 +610,38 @@ export default function statuslineExtension(pi: ExtensionAPI) {
       return meter(label, Math.round(pct), resetLabel(w?.resetsAt));
     });
     return `${DIM}↳ OpenCode Go${RESET} ${DIM}·${RESET} ` + bits.join(`${DIM} · ${RESET}`);
+  };
+
+  // Second footer line for Command Code models: the plan's two credit
+  // windows (rolling 5h, weekly) as the same ctx-style bars, plus what is
+  // left of the credit pool the plan draws from. Percentages are local
+  // arithmetic on the server's used/cap pair — unlike the Go endpoint it
+  // reports amounts, not percentages. Carries the same toggle link.
+  const commandCodeUsageLine = (): string => {
+    const u = commandcodeUsage();
+    if (!u.data && !u.loading) return `${DIM}↳ Command Code: usage unavailable${RESET}`;
+    const windowBit = (label: string, w: CommandcodeWindow | undefined): string => {
+      const pct = w && w.cap > 0 ? (w.used / w.cap) * 100 : null;
+      if (pct == null || !Number.isFinite(pct)) return `${DIM}${label} --%${RESET}`;
+      return meter(label, Math.round(pct), resetLabel(w?.resetAt ?? undefined));
+    };
+    const bits: string[] = [
+      windowBit("⌚ 5h", u.data?.fiveHour),
+      windowBit("📅 wk", u.data?.weekly),
+    ];
+    const credits = u.data?.credits;
+    if (credits) {
+      // remaining + spent is the pool the billing period started from; the
+      // remainder alone is the number that matters at a glance
+      const left = `${YELLOW}$${credits.remaining.toFixed(2)}${RESET}`;
+      const pool =
+        credits.spent === undefined
+          ? ""
+          : ` of ${DIM}$${(credits.remaining + credits.spent).toFixed(2)}${RESET}`;
+      bits.push(`💰 ${left}${pool} ${DIM}left${RESET}`);
+    }
+    const plan = u.data?.planId ? ` ${DIM}${u.data.planId}${RESET}` : "";
+    return `${DIM}↳ Command Code${RESET}${plan} ${DIM}·${RESET} ` + bits.join(`${DIM} · ${RESET}`);
   };
 
   pi.registerCommand("statusbar", {
@@ -710,7 +763,7 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   pi.on("message_end", async () => {
     liveRead = 0;
     livePrompt = 0;
-    if (expanded) ensureGoUsage(uiCtx);
+    if (expanded) ensureUsage(uiCtx);
     tuiRef?.requestRender();
   });
 
@@ -721,8 +774,8 @@ export default function statuslineExtension(pi: ExtensionAPI) {
   });
 
   // Model switches may leave the endpoints cache pointing at the old model.
-  // The background prefetch also needs the freshest model — it gates on
-  // isOpencodeGoModel itself, so pointing it at a non-Go model just no-ops.
+  // The background prefetch also needs the freshest model — the quota libs
+  // gate on their own provider id, so pointing them at another model no-ops.
   pi.on("model_select", async (_event, ctx) => {
     uiCtx = ctx;
     if (!expanded) return;
