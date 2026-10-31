@@ -1031,8 +1031,8 @@
       "hash": "sha512-vmQLbEq2bkbJdI/7MPBYf4o3lNYZeJlPqiEsgkAQ3bkiL2joToxgtDnpNDG5aTwrBVaGRSPDQtEPX0NjJbN3zg=="
     },
     "pi-context-view": {
-      "version": "0.8.1",
-      "hash": "sha512-osm2QOQjCb+aX29UlrjrdOxjzT0b8hE7Lo9AbM4OZAUmd62P+kWwLw+3wm9iwlfrazSinE3vY9OiLd+VQDfVzg=="
+      "version": "0.8.2",
+      "hash": "sha512-wsYHQuiPmzDeCRzmzlwo8hlAgPmW4HqUoE99WsQZDedpszkDHKWkrLsGjuem+MC0Z1XtFuMhvnuZm3z06fOiLw=="
     },
     "pi-image-view": {
       "version": "0.5.0",
