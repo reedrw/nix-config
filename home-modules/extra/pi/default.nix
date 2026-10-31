@@ -257,8 +257,8 @@ let
   piSettings = {
     # Pi's version, not Pi-Bolt's: the changelog shown is Pi's.
     lastChangelogVersion = pkgs.pi-bolt.piVersion;
-    defaultProvider = "opencode-go";
-    defaultModel = "glm-5.3-flash";
+    defaultProvider = "commandcode";
+    defaultModel = "z-ai/glm-5.3-flash";
     defaultThinkingLevel = "high";
     theme = "stylix";
     tuiMode = "fullscreen";
