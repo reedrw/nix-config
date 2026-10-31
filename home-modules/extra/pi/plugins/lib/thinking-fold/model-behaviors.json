@@ -27,8 +27,9 @@
       "behavior": "trace"
     },
     {
-      "id": "responses-summary",
+      "id": "responses-openai-family-summary",
       "api": "responses$",
+      "model": "^(gpt-|o[1-9])",
       "behavior": "summary"
     },
     {

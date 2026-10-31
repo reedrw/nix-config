@@ -63,6 +63,7 @@ import {
 	formatStreamingThinkingSeconds,
 	installThinkingFoldPatch,
 } from "./lib/thinking-fold/renderer.ts";
+import { resolveConfiguredThinkingBehavior } from "./lib/thinking-fold/model-behaviors.ts";
 
 const theme = {
 	fg: (c, t) => `\x1b[44m[${c}]\x1b[0m${t}`,
@@ -1457,6 +1458,32 @@ if (formatStreamingThinkingSeconds(90_000) !== "1m 30s") throw new Error("format
 		resetToolGroups();
 	} finally {
 		foldPatch.dispose();
+	}
+}
+// Model-behavior rules: the responses summary rule must key on the OpenAI
+// model family, not the API alone. Proxies serve non-OpenAI models over
+// openai-responses and stream FULL reasoning traces (observed: glm over
+// commandcode, grok over xai/opencode) — classifying them as summary
+// collapsed every standalone streaming thought to a bare label (the
+// "reasoning no longer streams" regression), while in-batch branches stayed
+// preview (they ignore the configured behavior), so only the batch-less case
+// went dark.
+{
+	const behaviorOf = (identity) => resolveConfiguredThinkingBehavior(identity) ?? "trace";
+	const cases = [
+		// regression: glm over an openai-responses proxy must stream trace
+		[{ api: "openai-responses", provider: "commandcode", model: "z-ai/glm-5.3-flashx" }, "trace"],
+		[{ api: "openai-responses", provider: "xai", model: "grok-4.7" }, "trace"],
+		// first-party OpenAI models over responses stay summary-only
+		[{ api: "openai-responses", provider: "openai", model: "gpt-5.4" }, "summary"],
+		[{ api: "openai-responses", provider: "github-copilot", model: "o3-mini" }, "summary"],
+		// other APIs unchanged
+		[{ api: "openai-completions", provider: "opencode-go", model: "glm-5.3-flash" }, "trace"],
+		[{ api: "anthropic-messages", provider: "anthropic", model: "claude-x" }, "summary"],
+	];
+	for (const [identity, want] of cases) {
+		const got = behaviorOf(identity);
+		if (got !== want) throw new Error(`model-behavior ${JSON.stringify(identity)}: want ${want}, got ${got}`);
 	}
 }
 console.log("OK-THINKING-FOLD");
