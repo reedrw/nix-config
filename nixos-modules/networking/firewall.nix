@@ -8,6 +8,9 @@
       # HTTP
       8080
 
+      # shairport-sync
+      5000
+
       # qbittorrent
       43173
     ];
@@ -17,6 +20,10 @@
 
       # qbittorrent
       43173
+    ];
+    allowedUDPPortRanges = [
+      # shairport-sync
+      { from = 6001; to = 6011; }
     ];
   };
 
