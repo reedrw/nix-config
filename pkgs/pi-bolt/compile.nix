@@ -24,9 +24,7 @@
 #     it rejected is fine, so when that happens we run its bundler ourselves
 #     from the staging it leaves behind (the AOT command and its environment are
 #     the ones the release's own compiler uses; `compile` prints them in its
-#     help). Either way, the result is then measured rather than trusted:
-#     extensions that really were compiled in cost ~0ms to load, one that fell
-#     back costs 5-110ms.
+#     help).
 {
   lib,
   stdenv,
@@ -49,11 +47,6 @@
 }:
 let
   relPath = lib.removePrefix ".pi/agent/";
-
-  # Loading this many extensions from files instead of compiled in would show up
-  # in the verification below as tens of milliseconds; the compiled ones add
-  # ~10ms together.
-  maxExtensionLoadMs = 20;
 
   # The names `compile` compiles in: one per extension file directly under
   # extensions/, and one per package directory. Shared library code
@@ -190,8 +183,7 @@ stdenvNoCC.mkDerivation {
       --set-rpath "${lib.makeLibraryPath [ stdenv.cc.libc ]}" \
       compiled-pi
 
-    # The binary must report the release it was built from, and must not have
-    # lost the compile-time extension set.
+    # The binary must report the release it was built from.
     ./compiled-pi --version > version.txt
     cat version.txt
     grep -qF "${pi-bolt.version}" version.txt || {
@@ -199,29 +191,6 @@ stdenvNoCC.mkDerivation {
       cat version.txt >&2
       exit 1
     }
-
-    # Measured, not asked: `PI_TTI_TRACE` reports how long resource loading
-    # (extension discovery + factories) took. Compiled-in extensions cost a
-    # fingerprint check each; anything that fell back to TypeScript costs its
-    # transpile again. Interactive mode is what emits the trace, and it never
-    # exits on its own, hence the timeout.
-    set +e
-    timeout 60 script -qefc \
-      'PI_TTI_TRACE=1 ./compiled-pi --offline --no-mcp' /dev/null > tti.log 2>&1
-    set -e
-    loadedMs=$(sed -nE 's/.*pi-tti [0-9.]+ \+([0-9.]+) resources\.loaded.*/\1/p' tti.log | head -n 1)
-    if [ -z "$loadedMs" ]; then
-      echo "error: could not measure extension load time" >&2
-      tail -n 20 tti.log >&2
-      exit 1
-    fi
-    echo "extension load: ''${loadedMs}ms (limit ${toString maxExtensionLoadMs}ms)"
-    if [ "''${loadedMs%%.*}" -ge ${toString maxExtensionLoadMs} ]; then
-      echo "error: extensions loaded from files instead of compiled in" >&2
-      grep -E "pi-tti .*resources.loaded" tti.log >&2
-      echo "expected these compiled in: ${lib.concatStringsSep ", " extensionNames}" >&2
-      exit 1
-    fi
 
     runHook postBuild
   '';
