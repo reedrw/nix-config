@@ -11,8 +11,8 @@
   ],
   "packages": {
     "@hono/node-server": {
-      "version": "2.1.5",
-      "hash": "sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q=="
+      "version": "2.1.6",
+      "hash": "sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ=="
     },
     "@js-temporal/polyfill": {
       "version": "0.5.1",
@@ -500,8 +500,8 @@
       ]
     },
     "express-rate-limit": {
-      "version": "8.7.2",
-      "hash": "sha512-U1ScocxDD9WI09LaBVypvNkOtNR5yWAmZLkuKJdAzIchA4YKFYF6GT5IKER7epG58oXtjvGlV0/6ii0F83EyZg==",
+      "version": "8.7.3",
+      "hash": "sha512-zPLqDI2f0gV2WmGnacLf9XSSqn4VldRyP5LCzOwx0BKH40mO6+2PCFkoSsRO2jePx87/Kf6NUF6P2QOTKXHbQA==",
       "dependencies": [
         "debug",
         "ip-address"
@@ -651,8 +651,8 @@
       ]
     },
     "hono": {
-      "version": "4.13.14",
-      "hash": "sha512-yhRLQ21U6qa9Hsu2N7Qcbh8tE+WKEcoErjIo56LeSGiGXGp9sA7UpE86Ui9uexb61KakiGwuHMn2QdV7w6i6kQ=="
+      "version": "4.13.16",
+      "hash": "sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A=="
     },
     "html-escaper": {
       "version": "3.0.3",
@@ -700,8 +700,8 @@
       ]
     },
     "ip-address": {
-      "version": "10.7.5",
-      "hash": "sha512-t2v0rkILYv9WXmSL7TpAaU3HXgaFYOPUcH3QHgwQ++gpJuH3bqyMy4Fvt/DJCTKwzH3Cf+bAp5W/mFL39KPLzA=="
+      "version": "10.7.6",
+      "hash": "sha512-00LYkM6byILa9eQIx6qoaXCM40xTLd56AZ4vyaPW3YTyb49VZYPo5xsiAq4tuQ54GH4R7gVdYScJ1B7B77PuTg=="
     },
     "ipaddr.js": {
       "version": "1.9.1",
@@ -885,8 +885,8 @@
       "hash": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="
     },
     "jose": {
-      "version": "6.2.14",
-      "hash": "sha512-3JasLuki1NRLQvY4wCoC37KZk4qxoBx2k2aFqLxT84IezqW0bkJKnNtxnZj/Fu1xsQivoc/lytxaRHJoGLjJ1A=="
+      "version": "6.2.15",
+      "hash": "sha512-qdF6ewcZARtef63fJ9AKKZPgxw+t7USH6HLXYcD4CrdmSvDp79rpJSPFEKc90QBeGS63u1KQtN2MZQHC0yDIzA=="
     },
     "jsbi": {
       "version": "4.3.2",
@@ -1027,12 +1027,12 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-commandcode-provider": {
-      "version": "0.7.11",
-      "hash": "sha512-vmQLbEq2bkbJdI/7MPBYf4o3lNYZeJlPqiEsgkAQ3bkiL2joToxgtDnpNDG5aTwrBVaGRSPDQtEPX0NjJbN3zg=="
+      "version": "0.8.0",
+      "hash": "sha512-sVC3JYKRIsS9JbU5VsvFNEGEpCcatB2vYKHB6Rij9lpsT1D9YnQiWVdarNNic3Q56irYqb5zPAdOb1M3nD1JRg=="
     },
     "pi-context-view": {
-      "version": "0.8.1",
-      "hash": "sha512-osm2QOQjCb+aX29UlrjrdOxjzT0b8hE7Lo9AbM4OZAUmd62P+kWwLw+3wm9iwlfrazSinE3vY9OiLd+VQDfVzg=="
+      "version": "0.8.3",
+      "hash": "sha512-gkeblBXXwz0uxhCSWa4RrMU64E3TYHr8vSyM10wcIkOAKaL8zoO6ob4bE9s+KjFfNVZ7WcPClSDnOOo2BjyhUw=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1047,8 +1047,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.84.0",
-      "hash": "sha512-IagE1hcBxLi82jTxTmcy/pIWckBuqhMH1GfAOe6/aIMVfnopMybCbcTMUS5K0CNy4tqSwHGleaXabaDmJS1QOg==",
+      "version": "0.86.0",
+      "hash": "sha512-+q9kOsndSjopV1LM4JtigTUrv1BWpbVbM8gtN6L9mmWQ8qblYpwDEZGxUh8jJYKLw5Zoe/wBpW+CD4RDc3qp+w==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
@@ -1058,8 +1058,8 @@
       ]
     },
     "pi-web-access": {
-      "version": "0.46.0",
-      "hash": "sha512-UfeJKU0TPmQU/3hmfAC5Ot/e5Ib0uHkg2+VHM7Ae4kVilLZf7ocGqHFzBzOkYuGLZ87LobzkrhwTAq8lO/N7cQ==",
+      "version": "0.47.0",
+      "hash": "sha512-Z176wTJjHw9Y+NpZ3WxOmKnh/7Sy3mu4QR05nBS/v6GRd5Cp7g5GnLIzI9LOT1IdR1105qXFS+L3LBUfkOMy8g==",
       "dependencies": [
         "@modelcontextprotocol/sdk",
         "@mozilla/readability",
@@ -1361,8 +1361,8 @@
       "hash": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA=="
     },
     "turndown": {
-      "version": "7.2.4",
-      "hash": "sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ==",
+      "version": "7.2.5",
+      "hash": "sha512-EKZvCCFHh8sWttpAMs10U6niZFJ2cpz8LkCPlylxoG4JcHF50J7EHnnBW3AY1qXtUMu7kDjCp7dnggB1sIbqEQ==",
       "dependencies": [
         "@mixmark-io/domino"
       ]
@@ -1435,8 +1435,8 @@
       ]
     },
     "undici": {
-      "version": "8.10.2",
-      "hash": "sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ=="
+      "version": "8.12.3",
+      "hash": "sha512-+fdndUTwBP86cVjihTp21hZHo7d6oj1c/47XPA3lL8mM0XHs+C4EkcjmgRsFnFk2f/UONGDy9ItBItmXsLOQHw=="
     },
     "unpdf": {
       "version": "1.9.1",
