@@ -651,8 +651,8 @@
       ]
     },
     "hono": {
-      "version": "4.13.16",
-      "hash": "sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A=="
+      "version": "4.13.17",
+      "hash": "sha512-vZIcbkvjOR5hHRWERbGkr8fGfF0GGM1ooYkuH448iO3b2AdVEr3AXZSw4Z3Kn+1L5z0CVoVeyV29VGYmFh05kQ=="
     },
     "html-escaper": {
       "version": "3.0.3",
@@ -1047,8 +1047,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.86.0",
-      "hash": "sha512-+q9kOsndSjopV1LM4JtigTUrv1BWpbVbM8gtN6L9mmWQ8qblYpwDEZGxUh8jJYKLw5Zoe/wBpW+CD4RDc3qp+w==",
+      "version": "0.87.0",
+      "hash": "sha512-+XjSB0xEUqrvodRh3bSQGj5/DqCfI/bLlYb0PYfBPFR757S/oOGTWA6uAAOsg3SqAu2ZYyH04Up2Zbi6q4OPMA==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
