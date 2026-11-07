@@ -292,7 +292,7 @@ in
           # check if the last argument is an image
           case "''${@[-1]}" in
             *.gif|*.png|*.jpg|*.jpeg|*.webp)
-              kitty +kitten icat "$@"
+              kitten icat "$@"
             ;;
             *)
               bat \
