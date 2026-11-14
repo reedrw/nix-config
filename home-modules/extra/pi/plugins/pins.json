@@ -11,8 +11,8 @@
   ],
   "packages": {
     "@hono/node-server": {
-      "version": "2.1.6",
-      "hash": "sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ=="
+      "version": "2.1.8",
+      "hash": "sha512-jdf7FHh6A1lzjpHHQUgxsg2GeER2vMetnAOfeActzcoli6jamlK+NAwL6Dsr5Fl3BS3tYUQzCdtZjU8Qxv7bEA=="
     },
     "@js-temporal/polyfill": {
       "version": "0.5.1",
@@ -332,8 +332,8 @@
       "hash": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="
     },
     "encodeurl": {
-      "version": "2.0.1",
-      "hash": "sha512-Ev/hIyePLZtpL98x562lvPtenrUfGr0lfaf44HFZ+hDEwso7ccV9QAZrEVLg0hxNAzygaAFxy2dYaAKKM0G06A=="
+      "version": "2.0.3",
+      "hash": "sha512-mIteYONiEfc4xWf2F1WXovh1c8npzS00vNeiUPdwFF+QlVJni+gNvpQltLMQhob8rew/bWWc/bGTuUr0EUGt0w=="
     },
     "entities": {
       "version": "4.5.0",
@@ -500,8 +500,8 @@
       ]
     },
     "express-rate-limit": {
-      "version": "8.7.3",
-      "hash": "sha512-zPLqDI2f0gV2WmGnacLf9XSSqn4VldRyP5LCzOwx0BKH40mO6+2PCFkoSsRO2jePx87/Kf6NUF6P2QOTKXHbQA==",
+      "version": "8.7.4",
+      "hash": "sha512-LKBXzX700wz3zAGNNmVnjRI5mEbYkLv7UbMI4+9Xa+JPcg2UZh6AgY/2CZh9RrJjFM5ttC/N1lD+KzyFoZITCw==",
       "dependencies": [
         "debug",
         "ip-address"
@@ -651,8 +651,8 @@
       ]
     },
     "hono": {
-      "version": "4.13.16",
-      "hash": "sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A=="
+      "version": "4.13.18",
+      "hash": "sha512-H9q/E1XizaWstJxUW881dmLxEj+t/TrGGnyxINkm4+sK0qUwsMtFdo2BWI9Vs3cIS19MU6b6iCijoUoEf4f3DA=="
     },
     "html-escaper": {
       "version": "3.0.3",
@@ -885,8 +885,8 @@
       "hash": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="
     },
     "jose": {
-      "version": "6.2.15",
-      "hash": "sha512-qdF6ewcZARtef63fJ9AKKZPgxw+t7USH6HLXYcD4CrdmSvDp79rpJSPFEKc90QBeGS63u1KQtN2MZQHC0yDIzA=="
+      "version": "6.2.17",
+      "hash": "sha512-wOuK9V1yujQFH5S0ZWmLcDZN7+IKh9bUCC2ZPCf2HDlol3WWHy+PPyNjEI75FXRLMp3vDKQcupP59xhVU95hcg=="
     },
     "jsbi": {
       "version": "4.3.2",
@@ -1027,12 +1027,12 @@
       "hash": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA=="
     },
     "pi-commandcode-provider": {
-      "version": "0.8.0",
-      "hash": "sha512-sVC3JYKRIsS9JbU5VsvFNEGEpCcatB2vYKHB6Rij9lpsT1D9YnQiWVdarNNic3Q56irYqb5zPAdOb1M3nD1JRg=="
+      "version": "0.8.3",
+      "hash": "sha512-asbUDb+39H0zPGv+uSWck99oJ1IoEVnPiB7UJ00fzbHKxwjl//0/JQ92JQwZMNFN8BBr22tFp93AZIC7rl08Mg=="
     },
     "pi-context-view": {
-      "version": "0.8.3",
-      "hash": "sha512-gkeblBXXwz0uxhCSWa4RrMU64E3TYHr8vSyM10wcIkOAKaL8zoO6ob4bE9s+KjFfNVZ7WcPClSDnOOo2BjyhUw=="
+      "version": "0.8.4",
+      "hash": "sha512-ss1WICGiQGTJszw8cqVsW/+cjtTUvM9EkiPUNCuAa3KwcYOscjpZi+RIU5gcdyFhe5KR46SRsy8X5Kq6nal4cg=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1047,8 +1047,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.86.0",
-      "hash": "sha512-+q9kOsndSjopV1LM4JtigTUrv1BWpbVbM8gtN6L9mmWQ8qblYpwDEZGxUh8jJYKLw5Zoe/wBpW+CD4RDc3qp+w==",
+      "version": "0.88.1",
+      "hash": "sha512-Yrt0kBT+ChgnmcVzBu2004lwuwmRTHdr1jGUdLd9X7+TAdpLaCILCRFHQhnM9u4fnyOPDLE8wASnedp0nuXc9g==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
