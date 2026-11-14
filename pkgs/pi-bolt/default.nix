@@ -24,11 +24,11 @@
 
 let
   hashes = {
-    x64 = "sha256-5HpfOtWGHr8lXxShc+4jnbA+i9RFYGBlK1qbzu5E3YM=";
-    x64-baseline = "sha256-qvAo8TCpp9cXPuSB3nUc8BaT9OiuEWrQqkAZasgazGs=";
-    x64-jit = "sha256-vFeOW0HUJ5wNSW8rlNenrREBBe6Z/vaQB2PeOIiroJQ=";
-    arm64 = "sha256-tMN8SmNkM08ewfPrU5l8Wdq+KqlYCYAzgrgkSzXmIBo=";
-    arm64-jit = "sha256-LsNEeweEMfBhVU7fsrNZGqakZVwb8iG0RhBZp2zl1vI=";
+    x64 = "sha256-2xyqfwenM6QCZ3Vp/kT9oVwZpCQC8JQNWmk068yd9No=";
+    x64-baseline = "sha256-sloVrhZPFp1gMWN5thl9REv39StGwFbtS9nhLQzdx5o=";
+    x64-jit = "sha256-W9UeG8qY9nL93Q3VCqzFh2UhTsNuuYIIBKqk3bOCcpE=";
+    arm64 = "sha256-8LmXeO0ka/GsrrPQ5eYypPyFcIgKNTgcYWn4uapfnMQ=";
+    arm64-jit = "sha256-ZYA/4Drs1QzVehqKIGZYBqTnXv2lVy3OBn0vHMyscjE=";
   };
 
   # `pi-bolt compile` (compile.nix) needs two extra release assets, per
@@ -36,10 +36,10 @@ let
   # extensions with, and the "compile kit" (node_modules and build scaffolding)
   # they are bundled against. Fetched here so compiling needs no network.
   compileHashes = {
-    x64-runtime = "sha256-esWNx3e78HVywS3d2B+J5+2CQ/+EDYnJFZVYHy2aJMI=";
-    x64-kit = "sha256-9bmPD6mJQUOHD0mVCPzWq0RVRTVBJXjA0IFPP/vZhhg=";
-    arm64-runtime = "sha256-RUuL6CEsB7Iz3R5rrZoOffXEjoeSzsNALZiOlkjddg4=";
-    arm64-kit = "sha256-3uekV+M+axKktrrJtvla+RD/KpqCdXygWrkR8PPAeDs=";
+    x64-runtime = "sha256-JdfExfjaUb0hzY7ChOmbDa22u0f6nO7QcS6eMJPckzc=";
+    x64-kit = "sha256-tQqPN6z2nSE+PUc/Rn7a1H32Wt034nWcdtmLsEcoEg0=";
+    arm64-runtime = "sha256-gKVweKbshoBqtbpOTYM2yo1Sz0IV7YjMl8ef+3YMaeI=";
+    arm64-kit = "sha256-1fs1CAD1uCbfpqggZxI4JO+/GtUDF5X3dNjT5qJcJDw=";
   };
 in
 stdenv.mkDerivation (finalAttrs:
@@ -109,7 +109,7 @@ stdenv.mkDerivation (finalAttrs:
   in
   {
   pname = "pi-bolt";
-  version = "1.1.2";
+  version = "1.2.1";
 
   src = fetchurl {
     url = "https://github.com/opensec-git/Pi-Bolt/releases/download/bolt-v${finalAttrs.version}/pi-bolt-linux-${variant}.tar.xz";
@@ -153,7 +153,7 @@ stdenv.mkDerivation (finalAttrs:
     # The Pi release this Pi-Bolt build is compiled from, not the Pi-Bolt
     # release version: `pi-bolt --version` prints both. Used by pi settings
     # that track Pi's changelog.
-    piVersion = "1.5.0";
+    piVersion = "1.5.2";
   };
 
   meta = {
