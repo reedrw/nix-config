@@ -6,12 +6,17 @@ let
     jq        # json processor
     moreutils # more scripting tools
     mountiso  # easy iso mounting
-    rar       # rar unzipper
     ripgrep   # recursive grep
     screen    # terminal multiplexer
     wget      # download utility
     progress  # progress viewer
     p7zip     # 7z unzipper
+
+    # archive tools
+    rar
+    zip
+    unzip
+
     # global aliases
     (aliasToPackage {
       hms = ''home-manager switch -L "$@"'';
