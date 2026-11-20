@@ -2805,7 +2805,7 @@ index 632fc24..4a38c72 100644
 +rlW035izIEU4sYwQoC1Nx0Svy+mMTRai50LqFQ+A1/Hq6xHHDNx7CI83d23Erw==
 +-----END CERTIFICATE-----
 diff --git a/unalix/package_data/rulesets/data.min.json b/unalix/package_data/rulesets/data.min.json
-index f2a54b1..e4ff3c8 100644
+index f2a54b1..7de1cf0 100644
 --- a/unalix/package_data/rulesets/data.min.json
 +++ b/unalix/package_data/rulesets/data.min.json
 @@ -1,1628 +1,1988 @@
@@ -5904,7 +5904,7 @@ index f2a54b1..e4ff3c8 100644
 +        "_branch_match_id",
 +        "share_id"
 +      ],
-+      "urlPattern": "^https?:\\/\\/(?:[a-z0-9-]+\\.)*?reddit.com"
++      "urlPattern": "^https?:\\/\\/(?:(?:[a-z0-9-]+\\.)*?reddit.com|click\\.redditmail\\.com\\/.*?url=)"
 +    },
 +    "redfin.com": {
 +      "rules": [
