@@ -35,13 +35,13 @@ in
       plugins = {
         betterSettings.enable = true;
         betterUploadButton.enable = true;
+        betterYouTubeEmbeds.enable = true;
         clearUrls.enable = true;
         fakeNitro = {
           enable = true;
           transformCompoundSentence = true;
         };
         fixImagesQuality.enable = true;
-        fixYoutubeEmbeds.enable = true;
         loadingQuotes.enable = true;
         messageLinkEmbeds.enable = true;
         noBlockedMessages.enable = true;
@@ -60,7 +60,6 @@ in
         typingIndicator.enable = true;
         unindent.enable = true;
         voiceMessages.enable = true;
-        youtubeAdblock.enable = true;
       };
     };
   };
