@@ -651,8 +651,8 @@
       ]
     },
     "hono": {
-      "version": "4.13.19",
-      "hash": "sha512-KmXvQAXwcAHV+muzbIwoJ23niEB5nMoDVr9WcRkU8mvjUECm/1+7v4Jgp7P7a+H6MLFrh+vXrGonGrGS+RQfkA=="
+      "version": "4.13.23",
+      "hash": "sha512-OS90dj7dcsftEEWCOef8jRbnHE5lbrOq0hNRqjSyPsOnaGZvvfof1KS05hQNb4kUOCfDq1mG3PmHoX37DMnHQg=="
     },
     "html-escaper": {
       "version": "3.0.3",
@@ -700,8 +700,8 @@
       ]
     },
     "ip-address": {
-      "version": "10.7.6",
-      "hash": "sha512-00LYkM6byILa9eQIx6qoaXCM40xTLd56AZ4vyaPW3YTyb49VZYPo5xsiAq4tuQ54GH4R7gVdYScJ1B7B77PuTg=="
+      "version": "10.7.7",
+      "hash": "sha512-He15rAs4jip5AEAz7XM9L+S6Y8LBMIDj6YewbYuJfmDnOCKWb+3TLOGnHFBTAIW7wpm5ohtZ+Xyo5PEaG+O2vQ=="
     },
     "ipaddr.js": {
       "version": "1.9.1",
@@ -1031,8 +1031,8 @@
       "hash": "sha512-2V366yAL4meEtZ1CpYxP8mHyNDymYg3Ai6NHGsIGRT0juZ+ZuD4RXsnaj9oWan0oUxU6xnSB0GgZolE7ljMh2w=="
     },
     "pi-context-view": {
-      "version": "0.8.4",
-      "hash": "sha512-ss1WICGiQGTJszw8cqVsW/+cjtTUvM9EkiPUNCuAa3KwcYOscjpZi+RIU5gcdyFhe5KR46SRsy8X5Kq6nal4cg=="
+      "version": "0.9.0",
+      "hash": "sha512-a6Q9H3xuo1vQ3vXtisecm0vfWW4dJMze/aM6GV0029O2NVPDKUoLtaP+PCdfCTeACaPArAie1OYGOeMt0V6XjQ=="
     },
     "pi-image-view": {
       "version": "0.5.0",
@@ -1047,8 +1047,8 @@
       "hash": "sha512-z23AYoTuQFCBrX4Sc6vH59YGsGifCi7tvicLml0U2LWpeNLILugcgIxhw+7ZkPgGyR4XjEC9RkTGloGDdAx0bA=="
     },
     "pi-subagents": {
-      "version": "0.89.1",
-      "hash": "sha512-DLJZpQmXyoMcyOc+etnls3dthorn79YLEAW6CmzVmHYyG3hzMU9TENUE6h8aIBHBITZPZjGDrfapksiHLSqMpA==",
+      "version": "0.90.0",
+      "hash": "sha512-C8fc4uXluFCiE9GhTlepSeYPOCZ44v4DfUMa8KTy7DS/6YKGay+ap96d7BzenlkUlM17dnlLUtbB5DlDJOMJ5Q==",
       "dependencies": [
         "@js-temporal/polyfill",
         "acorn",
@@ -1073,8 +1073,8 @@
       ]
     },
     "pkce-challenge": {
-      "version": "5.0.1",
-      "hash": "sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ=="
+      "version": "5.0.2",
+      "hash": "sha512-vCc54+qyIfKC5e2UN28AZKElwqjLINgiIV3RKI8pDu93TjaAJoB3QrgMzEBouy8yOKsXVXdAinO1QArJf9x5WA=="
     },
     "possible-typed-array-names": {
       "version": "1.1.0",
